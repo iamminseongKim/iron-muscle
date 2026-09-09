@@ -180,6 +180,24 @@ jobs:
             echo "tag=v3.1.0" >> $GITHUB_OUTPUT
           fi
 
+      - name: Clean Outdated Release Assets
+        run: |
+          TAG="${{ steps.release_tag.outputs.tag }}"
+          echo "Checking for existing release assets under tag: $TAG"
+          RELEASE_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
+          RELEASE_ID=$(echo "$RELEASE_DATA" | jq -r '.id // empty')
+          if [ -n "$RELEASE_ID" ] && [ "$RELEASE_ID" != "null" ]; then
+            echo "Found existing release ID: $RELEASE_ID. Purging any old assets..."
+            ASSET_IDS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets" | jq -r '.[].id // empty')
+            for ASSET_ID in $ASSET_IDS; do
+              echo "Deleting old asset $ASSET_ID"
+              curl -s -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/releases/assets/$ASSET_ID"
+            done
+          fi
+
       - name: Publish GitHub Release (Android APK & iOS IPA)
         uses: softprops/action-gh-release@v2
         with:
