@@ -32,10 +32,17 @@ export const App: React.FC = () => {
 
   // 1. 안드로이드 WebView 커서/물방울 핸들/시스템 복사 툴바 원천 차단 리스너
   useEffect(() => {
-    // 롱프레스 시 안드로이드 돋보기/복사/검색 팝업 차단
+    // 롱프레스 시 안드로이드 돋보기/복사/검색 팝업 차단.
+    // 단, 메모/노트 등 자유 텍스트 입력(textarea, type!=number인 input, select, contentEditable)은
+    // 붙여넣기가 가능해야 하므로 예외 처리한다.
     const handleContextMenu = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement | null;
-      if (target && target.tagName === 'INPUT' && (target as HTMLInputElement).type !== 'number') {
+      const isFreeTextField =
+        (target?.tagName === 'INPUT' && (target as HTMLInputElement).type !== 'number') ||
+        target?.tagName === 'TEXTAREA' ||
+        target?.tagName === 'SELECT' ||
+        Boolean(target?.isContentEditable);
+      if (isFreeTextField) {
         return;
       }
       e.preventDefault();
@@ -59,12 +66,34 @@ export const App: React.FC = () => {
       }
     };
 
-    // 스크롤 시 커서 물방울 공중 잔존 방지
+    // 스크롤하면 내용은 이동하는데 안드로이드 물방울 선택 핸들 오버레이는 스크롤을 안 따라가고
+    // 화면상 예전 좌표에 그대로 남는 경우가 있음(크로미움 컴포지터가 오버레이 레이어를
+    // 다시 그리지 않는 것으로 보임). blur/removeAllRanges만으로는 이미 화면에 그려진
+    // 핸들 비트맵 자체가 안 지워지므로, 스크롤이 멎으면 숫자 입력들을 한 프레임 동안
+    // disabled로 만들었다 되돌려서 강제로 다시 그리게 한다.
+    let scrollSettleTimer: any = null;
+    const forceNumericInputsRepaint = () => {
+      const numericInputs = document.querySelectorAll<HTMLInputElement>(
+        'input[type="number"], .numeric-set-input'
+      );
+      numericInputs.forEach((el) => {
+        el.disabled = true;
+      });
+      requestAnimationFrame(() => {
+        numericInputs.forEach((el) => {
+          el.disabled = false;
+        });
+      });
+    };
+
     const handleScroll = () => {
       if (document.activeElement && (document.activeElement as HTMLElement).blur) {
         (document.activeElement as HTMLElement).blur();
       }
       window.getSelection()?.removeAllRanges();
+
+      clearTimeout(scrollSettleTimer);
+      scrollSettleTimer = setTimeout(forceNumericInputsRepaint, 150);
     };
 
     document.addEventListener('contextmenu', handleContextMenu, { capture: true });
@@ -73,6 +102,7 @@ export const App: React.FC = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
+      clearTimeout(scrollSettleTimer);
       document.removeEventListener('contextmenu', handleContextMenu, { capture: true });
       document.removeEventListener('touchstart', handleGlobalTouch, { capture: true });
       document.removeEventListener('touchend', handleGlobalTouch, { capture: true });

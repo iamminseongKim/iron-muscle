@@ -66,6 +66,15 @@ export const SetRow: React.FC<SetRowProps> = ({
 
   const handleWeightBlur = () => {
     setIsWeightFresh(false);
+    // blur만으로는 이미 화면에 그려진 물방울 핸들 오버레이가 안 지워지는 경우가 있어
+    // 한 프레임 동안 disabled로 만들었다 되돌려 강제로 다시 그리게 한다.
+    const el = weightInputRef.current;
+    if (el) {
+      el.disabled = true;
+      requestAnimationFrame(() => {
+        el.disabled = false;
+      });
+    }
   };
 
   const handleWeightChange = (rawVal: string) => {
@@ -102,6 +111,13 @@ export const SetRow: React.FC<SetRowProps> = ({
 
   const handleRepsBlur = () => {
     setIsRepsFresh(false);
+    const el = repsInputRef.current;
+    if (el) {
+      el.disabled = true;
+      requestAnimationFrame(() => {
+        el.disabled = false;
+      });
+    }
   };
 
   const handleRepsChange = (rawVal: string) => {
