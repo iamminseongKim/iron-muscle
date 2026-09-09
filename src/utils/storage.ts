@@ -65,6 +65,9 @@ export function saveActiveSession(session: WorkoutSession | null): void {
     } else {
       localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
     }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('iron_active_session_change', { detail: session }));
+    }
   } catch (e) {
     console.error('Failed to save active session', e);
   }

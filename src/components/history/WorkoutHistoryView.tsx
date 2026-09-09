@@ -165,7 +165,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
         md += `### ${eIdx + 1}. ${name}${groupLabel}${weightStandardNote} (${loadLabel} / ${modeLabel})\n`;
         if (ex.machineBrand) md += `- **기구 브랜드**: ${ex.machineBrand}${ex.machineSetting ? ` (세팅: ${ex.machineSetting})` : ''}\n`;
 
-        md += `| 세트 | 중량(kg) | 횟수 | 1RM 추정 | RPE | 템포 | 휴식시간 | 편측 | 메모/태그 |\n`;
+        const exUnit = ex.weightUnit || 'kg';
+        md += `| 세트 | 중량(${exUnit}) | 횟수 | 1RM 추정 | RPE | 템포 | 휴식시간 | 편측 | 메모/태그 |\n`;
         md += `|---|---|---|---|---|---|---|---|---|\n`;
 
         ex.sets.forEach((set) => {
@@ -175,7 +176,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           const sideStr = set.side === 'left' ? '좌(L)' : set.side === 'right' ? '우(R)' : set.side === 'both' ? '양쪽' : '-';
           const tagsStr = [...(set.tags || []), set.comment].filter(Boolean).join(', ') || '-';
 
-          md += `| #${set.setNumber} | ${set.weight}kg | ${set.reps}회 | ${e1rm}kg | ${set.rpe || '-'} | ${tempoStr} | ${restStr} | ${sideStr} | ${tagsStr} |\n`;
+          md += `| #${set.setNumber} | ${set.weight}${exUnit} | ${set.reps}회 | ${e1rm}${exUnit} | ${set.rpe || '-'} | ${tempoStr} | ${restStr} | ${sideStr} | ${tagsStr} |\n`;
         });
         md += `\n`;
       });
@@ -483,7 +484,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                                     </span>
                                   )}
                                   <span className="font-extrabold text-[#1D1D1F] dark:text-white">
-                                    {set.weight}kg × {set.reps}회
+                                    {set.weight}{exItem.weightUnit || 'kg'} × {set.reps}회
                                   </span>
                                 </div>
 

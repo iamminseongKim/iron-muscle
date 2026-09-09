@@ -145,6 +145,7 @@ export interface WorkoutExercise {
   equipmentType: EquipmentType;
   loadType?: LoadType; // 'plate-loaded' | 'pin-loaded' (머신 시 플레이트 vs 핀머신 실시간 토글)
   executionMode?: ExecutionMode; // 'bilateral' | 'unilateral' (투암 vs 원암 실시간 토글)
+  weightUnit?: WeightUnit; // 'kg' | 'lbs' (종목별 개별 단위 설정, 기본값 'kg')
   machineBrand?: string;
   machineSetting?: string; // 예: "의자 높이 4, 등받이 2칸"
   sets: WorkoutSet[];

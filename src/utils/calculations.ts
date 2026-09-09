@@ -44,13 +44,15 @@ export function calculateTUTLoad(weight: number, reps: number, tempo?: Tempo): n
   return Math.round(weight * tut);
 }
 
-// 4. 세션 총 볼륨 (kg) 계산
+// 4. 세션 총 볼륨 (kg 기준 통일) 계산
 export function calculateSessionVolume(session: WorkoutSession): number {
   let totalVolume = 0;
   session.exercises.forEach(ex => {
+    const isLbs = ex.weightUnit === 'lbs';
     ex.sets.forEach(s => {
       if (s.completed && s.weight > 0 && s.reps > 0) {
-        totalVolume += s.weight * s.reps;
+        const weightInKg = isLbs ? s.weight / KG_TO_LBS : s.weight;
+        totalVolume += weightInKg * s.reps;
       }
     });
   });

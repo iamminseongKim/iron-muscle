@@ -1,14 +1,10 @@
 import React from 'react';
 import { Flame, Sun, Moon } from 'lucide-react';
 
-import { WeightUnit } from '../../types/workout';
-
 interface HeaderProps {
   activeTab: 'workout' | 'history' | 'analytics';
   isDark: boolean;
   onToggleTheme: () => void;
-  weightUnit?: WeightUnit;
-  onToggleWeightUnit?: () => void;
   totalWorkoutSeconds?: number;
   isWorkoutTimerRunning?: boolean;
   onToggleWorkoutTimer?: () => void;
@@ -17,8 +13,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   isDark,
   onToggleTheme,
-  weightUnit = 'kg',
-  onToggleWeightUnit,
   totalWorkoutSeconds,
   isWorkoutTimerRunning = true,
   onToggleWorkoutTimer,
@@ -70,35 +64,6 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         <div className="flex items-center gap-1.5 shrink-0">
-          {/* 무게 단위 (kg / lbs) 원터치 토글 세그먼트 */}
-          {onToggleWeightUnit && (
-            <button
-              type="button"
-              onClick={onToggleWeightUnit}
-              className="flex items-center p-0.5 rounded-full bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/10 text-xs font-bold transition hover:opacity-90"
-              title={`현재 중량 단위: ${weightUnit.toUpperCase()} (클릭하여 kg / lbs 전환)`}
-            >
-              <span
-                className={`px-2 py-0.5 rounded-full text-[11px] font-black transition-all ${
-                  weightUnit === 'kg'
-                    ? 'bg-white dark:bg-[#2C2C2E] text-[#007AFF] shadow-xs'
-                    : 'text-gray-400 dark:text-gray-500'
-                }`}
-              >
-                kg
-              </span>
-              <span
-                className={`px-2 py-0.5 rounded-full text-[11px] font-black transition-all ${
-                  weightUnit === 'lbs'
-                    ? 'bg-white dark:bg-[#2C2C2E] text-[#007AFF] shadow-xs'
-                    : 'text-gray-400 dark:text-gray-500'
-                }`}
-              >
-                lb
-              </span>
-            </button>
-          )}
-
           {/* 라이트 / 다크 모드 토글 스위처 */}
           <button
             type="button"

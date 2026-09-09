@@ -6,7 +6,7 @@ import {
 import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { SetRow } from './SetRow';
-import { getExerciseRecords } from '../../utils/calculations';
+import { getExerciseRecords, convertWeight } from '../../utils/calculations';
 import { AnatomyDualViewer } from '../3d/AnatomyDualViewer';
 import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
 import { resolveExercise } from '../../utils/exerciseResolver';
@@ -27,8 +27,8 @@ interface ExerciseCardProps {
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   exerciseItem,
-  weightUnit = 'kg',
-  onToggleWeightUnit,
+  weightUnit: fallbackUnit = 'kg',
+  onToggleWeightUnit: externalToggle,
   onUpdate,
   onDelete,
   onTriggerRestTimer,
@@ -37,6 +37,23 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onUnlinkGroup,
   isDark = false,
 }) => {
+  // 이 종목 고유의 단위 (없으면 기본값 'kg')
+  const currentUnit: WeightUnit = exerciseItem.weightUnit || fallbackUnit;
+
+  // 해당 종목만의 단위 토글 및 기존 세트 중량 스마트 자동 환산
+  const handleToggleExerciseUnit = () => {
+    const nextUnit: WeightUnit = currentUnit === 'kg' ? 'lbs' : 'kg';
+    const updatedSets = exerciseItem.sets.map((s) => ({
+      ...s,
+      weight: convertWeight(s.weight, currentUnit, nextUnit),
+      previousWeight: s.previousWeight !== undefined ? convertWeight(s.previousWeight, currentUnit, nextUnit) : undefined,
+    }));
+    onUpdate({
+      ...exerciseItem,
+      weightUnit: nextUnit,
+      sets: updatedSets,
+    });
+  };
   const [show3DViewer, setShow3DViewer] = useState(false);
   const [viewerMode, setViewerMode] = useState<'dual' | '3d' | 'photos'>('dual');
   const [isCustomBrand, setIsCustomBrand] = useState(false);
@@ -254,6 +271,39 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               }`}
             >
               원암 (편측 L/R)
+            </button>
+          </div>
+        </div>
+
+        {/* 종목별 무게 단위 토글: kg vs lb (머신별 독립 설정) */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] text-gray-400 font-bold">단위:</span>
+          <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-[10px] font-bold">
+            <button
+              type="button"
+              onClick={() => {
+                if (currentUnit !== 'kg') handleToggleExerciseUnit();
+              }}
+              className={`px-2 py-0.5 rounded-lg transition font-black ${
+                currentUnit === 'kg'
+                  ? 'bg-white dark:bg-[#1C1C1E] text-[#007AFF] shadow-xs'
+                  : 'text-gray-500 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              kg
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (currentUnit !== 'lbs') handleToggleExerciseUnit();
+              }}
+              className={`px-2 py-0.5 rounded-lg transition font-black ${
+                currentUnit === 'lbs'
+                  ? 'bg-[#007AFF] text-white shadow-xs'
+                  : 'text-gray-500 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              lb (파운드)
             </button>
           </div>
         </div>
@@ -479,19 +529,15 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <div className="px-[18px] sm:px-5 pt-3 pb-1.5 flex items-center gap-2 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
         <span className="w-8 shrink-0 text-center">세트</span>
         <span className="w-16 shrink-0 text-center">이전 기록</span>
-        {onToggleWeightUnit ? (
-          <button
-            type="button"
-            onClick={onToggleWeightUnit}
-            className="flex-1 text-center font-bold text-[#007AFF] hover:opacity-80 transition flex items-center justify-center gap-1"
-            title="클릭하여 kg / lbs 단위 즉시 전환"
-          >
-            <span>무게 ({weightUnit})</span>
-            <span className="text-[9px] font-black px-1 rounded bg-[#007AFF]/10 text-[#007AFF]">전환</span>
-          </button>
-        ) : (
-          <span className="flex-1 text-center font-bold">무게 ({weightUnit})</span>
-        )}
+        <button
+          type="button"
+          onClick={handleToggleExerciseUnit}
+          className="flex-1 text-center font-bold text-[#007AFF] hover:opacity-80 transition flex items-center justify-center gap-1"
+          title="클릭하여 이 종목의 중량 단위(kg ⇋ lb) 즉시 전환"
+        >
+          <span>무게 ({currentUnit})</span>
+          <span className="text-[9px] font-black px-1 rounded bg-[#007AFF]/10 text-[#007AFF]">전환</span>
+        </button>
         <span className="flex-1 text-center font-bold">횟수</span>
         <span className="w-9 shrink-0 text-center">완료</span>
       </div>
@@ -504,7 +550,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             set={set}
             index={idx}
             executionMode={exerciseItem.executionMode || 'bilateral'}
-            weightUnit={weightUnit}
+            weightUnit={currentUnit}
             onUpdate={(updated) => handleUpdateSet(idx, updated)}
             onDelete={() => handleDeleteSet(idx)}
             onCompleteToggle={(_comp, setId, setNum) =>
@@ -530,11 +576,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <div className="px-4 py-2 bg-[#F2F2F7]/50 dark:bg-[#1F1F21] border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1.5 font-bold">
             <Trophy size={13} className="text-[#FF9500]" />
-            <span>최고 중량: {records.maxWeight}{weightUnit}</span>
+            <span>최고 중량: {records.maxWeight}{currentUnit}</span>
           </div>
           <div className="flex items-center gap-1 font-semibold text-[11px]">
             <span>추정 1RM:</span>
-            <span className="font-extrabold text-[#007AFF]">{records.max1RM}{weightUnit}</span>
+            <span className="font-extrabold text-[#007AFF]">{records.max1RM}{currentUnit}</span>
           </div>
         </div>
       )}

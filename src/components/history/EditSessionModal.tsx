@@ -293,20 +293,36 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                         </span>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteExercise(eIdx)}
-                        className="p-1 text-gray-400 hover:text-red-500 rounded-lg transition"
-                        title="종목 삭제"
-                      >
-                        <Trash2 size={15} />
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const current = exItem.weightUnit || 'kg';
+                            const next = current === 'kg' ? 'lbs' : 'kg';
+                            const newExs = [...exercises];
+                            newExs[eIdx] = { ...exItem, weightUnit: next };
+                            setExercises(newExs);
+                          }}
+                          className="px-2 py-0.5 rounded-lg bg-black/5 dark:bg-white/10 text-[10px] font-bold text-[#007AFF] hover:bg-[#007AFF]/10 transition"
+                          title="중량 단위 전환"
+                        >
+                          단위: {exItem.weightUnit || 'kg'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteExercise(eIdx)}
+                          className="p-1 text-gray-400 hover:text-red-500 rounded-lg transition"
+                          title="종목 삭제"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
                     </div>
 
                     {/* 세트 헤더 */}
                     <div className="grid grid-cols-12 gap-1.5 text-[10px] font-bold text-gray-400 px-1 text-center">
                       <span className="col-span-1">#</span>
-                      <span className="col-span-3">무게({session.weightUnit || 'kg'})</span>
+                      <span className="col-span-3">무게({exItem.weightUnit || 'kg'})</span>
                       <span className="col-span-3">횟수</span>
                       <span className="col-span-2">RPE</span>
                       <span className="col-span-2">휴식(s)</span>

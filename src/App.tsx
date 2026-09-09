@@ -55,30 +55,50 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // 전역 타이머 1: 총 운동 시간 타이머 (세션 지속시간 영구 추적)
+  // 전역 세션 및 단일 총 운동 시간 타이머
+  const [activeSession, setActiveSession] = useState(() => loadActiveSession());
   const [totalWorkoutSeconds, setTotalWorkoutSeconds] = useState<number>(() => {
     const saved = loadActiveSession();
     return saved ? saved.durationSeconds : 0;
   });
   const [isWorkoutTimerRunning, setIsWorkoutTimerRunning] = useState<boolean>(true);
 
+  // 세션 시작/취소/완료 이벤트 동기화
+  useEffect(() => {
+    const handleSessionChange = (e: any) => {
+      const current = e.detail;
+      setActiveSession(current);
+      if (current) {
+        setTotalWorkoutSeconds(current.durationSeconds || 0);
+        setIsWorkoutTimerRunning(true);
+      } else {
+        setTotalWorkoutSeconds(0);
+      }
+    };
+    window.addEventListener('iron_active_session_change', handleSessionChange);
+    return () => window.removeEventListener('iron_active_session_change', handleSessionChange);
+  }, []);
+
+  // 활성 운동 진행 중일 때만 1초마다 타이머 증가 및 저장
   useEffect(() => {
     let interval: any = null;
-    if (isWorkoutTimerRunning) {
+    if (activeSession && !activeSession.completed && isWorkoutTimerRunning) {
       interval = setInterval(() => {
         setTotalWorkoutSeconds((prev) => {
           const next = prev + 1;
           const active = loadActiveSession();
           if (active && !active.completed) {
             active.durationSeconds = next;
-            saveActiveSession(active);
+            try {
+              localStorage.setItem('iron_active_session_v1', JSON.stringify(active));
+            } catch {}
           }
           return next;
         });
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isWorkoutTimerRunning]);
+  }, [activeSession, isWorkoutTimerRunning]);
 
   const toggleWorkoutTimer = () => {
     setIsWorkoutTimerRunning((prev) => !prev);
@@ -112,14 +132,12 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] flex flex-col transition-colors duration-200">
-      {/* 상단 애플 스타일 헤더 & 듀얼 타이머(총 운동 시간) & kg/lb 토글 & 테마 스위처 */}
+      {/* 상단 애플 스타일 헤더 & 단일화된 총 운동 시간 시계 & 테마 스위처 */}
       <Header
         activeTab={activeTab}
         isDark={isDark}
         onToggleTheme={toggleTheme}
-        weightUnit={weightUnit}
-        onToggleWeightUnit={toggleWeightUnit}
-        totalWorkoutSeconds={totalWorkoutSeconds}
+        totalWorkoutSeconds={activeSession ? totalWorkoutSeconds : undefined}
         isWorkoutTimerRunning={isWorkoutTimerRunning}
         onToggleWorkoutTimer={toggleWorkoutTimer}
       />
@@ -130,8 +148,6 @@ export const App: React.FC = () => {
           <WorkoutLogger
             onWorkoutCompleted={() => setActiveTab('history')}
             isDark={isDark}
-            weightUnit={weightUnit}
-            onToggleWeightUnit={toggleWeightUnit}
           />
         )}
         {activeTab === 'history' && (

@@ -21,8 +21,6 @@ import { sanitizeSessionExercises } from '../../utils/exerciseResolver';
 interface WorkoutLoggerProps {
   onWorkoutCompleted?: () => void;
   isDark?: boolean;
-  weightUnit?: WeightUnit;
-  onToggleWeightUnit?: () => void;
 }
 
 const CONDITION_OPTIONS = [
@@ -36,41 +34,9 @@ const CONDITION_OPTIONS = [
 export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   onWorkoutCompleted,
   isDark = false,
-  weightUnit = 'kg',
-  onToggleWeightUnit,
 }) => {
   // 현재 진행 중인 세션 (없으면 null -> 대기 화면 표시)
   const [session, setSession] = useState<WorkoutSession | null>(() => loadActiveSession());
-  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(() => Boolean(loadActiveSession()));
-
-  // 현재 유효한 무게 단위 (세션에 저장된 단위 우선, 없으면 전역 weightUnit)
-  const currentWeightUnit: WeightUnit = session?.weightUnit || weightUnit;
-
-  // 단위 토글 및 현재 세션 내 운동 중량 자동 환산
-  const handleToggleUnitInternal = () => {
-    const nextUnit: WeightUnit = currentWeightUnit === 'kg' ? 'lbs' : 'kg';
-    if (onToggleWeightUnit) {
-      onToggleWeightUnit();
-    }
-    if (session) {
-      const fromUnit = currentWeightUnit;
-      const updatedExercises = session.exercises.map((ex) => ({
-        ...ex,
-        sets: ex.sets.map((s) => ({
-          ...s,
-          weight: convertWeight(s.weight, fromUnit, nextUnit),
-          previousWeight: s.previousWeight !== undefined ? convertWeight(s.previousWeight, fromUnit, nextUnit) : undefined,
-        })),
-      }));
-      const updated: WorkoutSession = {
-        ...session,
-        weightUnit: nextUnit,
-        exercises: updatedExercises,
-      };
-      setSession(updated);
-      saveActiveSession(updated);
-    }
-  };
 
   // 대기(Idle) 화면 상태
   const [selectedPartIds, setSelectedPartIds] = useState<string[]>(['chest']);
@@ -114,21 +80,17 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     }
   }, [session?.id]);
 
-  // 운동 진행 시간 타이머 (세션이 활성일 때만 가동)
+  // 전역 세션 변경 이벤트 수신 (헤더나 다른 곳에서 세션이 업데이트된 경우 동기화)
   useEffect(() => {
-    let interval: any = null;
-    if (session && isTimerRunning && !session.completed) {
-      interval = setInterval(() => {
-        setSession((prev) => {
-          if (!prev) return null;
-          const updated = { ...prev, durationSeconds: prev.durationSeconds + 1 };
-          saveActiveSession(updated);
-          return updated;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isTimerRunning, session?.completed, session?.id]);
+    const handleSessionChange = (e: any) => {
+      const updated = e.detail;
+      if (!updated && session) {
+        setSession(null);
+      }
+    };
+    window.addEventListener('iron_active_session_change', handleSessionChange);
+    return () => window.removeEventListener('iron_active_session_change', handleSessionChange);
+  }, [session]);
 
   // 선택 부위 기반 세션 타이틀 자동 추천
   const recommendedTitle = useMemo(() => {
@@ -177,7 +139,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       durationSeconds: 0,
       exercises: [],
       completed: false,
-      weightUnit: currentWeightUnit,
+      weightUnit: 'kg',
       conditionEmoji: idleCondition,
       isDeload: idleDeload,
       notes: '',
@@ -187,7 +149,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
     setSession(newSession);
     saveActiveSession(newSession);
-    setIsTimerRunning(true);
     // 운동 시작과 동시에 첫 종목 모달 자동 활성화
     setIsAddModalOpen(true);
   };
@@ -197,7 +158,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     if (window.confirm('현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.')) {
       saveActiveSession(null);
       setSession(null);
-      setIsTimerRunning(false);
     }
   };
 
@@ -242,6 +202,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       equipmentType,
       machineBrand: brand,
       sets: initialSets,
+      weightUnit: 'kg',
     };
 
     const updated = { ...session, exercises: [...session.exercises, newExerciseItem] };
@@ -373,23 +334,12 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     saveSessions([finalSession, ...history]);
     saveActiveSession(null);
     setSession(null);
-    setIsTimerRunning(false);
 
-    alert(`🎉 오늘 운동 완료!\n총 볼륨: ${calculateSessionVolume(finalSession).toLocaleString()}${finalSession.weightUnit || currentWeightUnit}\n총 횟수: ${calculateSessionReps(finalSession)}회\n기록이 성공적으로 저장되었습니다.`);
+    alert(`🎉 오늘 운동 완료!\n총 볼륨: ${calculateSessionVolume(finalSession).toLocaleString()}kg\n총 횟수: ${calculateSessionReps(finalSession)}회\n기록이 성공적으로 저장되었습니다.`);
 
     if (onWorkoutCompleted) {
       onWorkoutCompleted();
     }
-  };
-
-  const formatTimer = (totalSeconds: number) => {
-    const hrs = Math.floor(totalSeconds / 3600);
-    const mins = Math.floor((totalSeconds % 3600) / 60);
-    const secs = totalSeconds % 60;
-    if (hrs > 0) {
-      return `${hrs}:${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
   const savedCount = useMemo(() => loadSavedSessions().length, [session]);
@@ -505,42 +455,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             </div>
           </div>
 
-          {/* 중량 표기 단위 선택 (kg / lbs) */}
-          <div className="flex items-center justify-between pt-1 border-t border-black/5 dark:border-white/5">
-            <div>
-              <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">
-                중량 표기 단위 ({currentWeightUnit.toUpperCase()})
-              </span>
-              <span className="text-[11px] text-gray-400">
-                킬로그램(kg) 또는 파운드(lbs) 중 선택
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={handleToggleUnitInternal}
-              className="flex items-center p-1 rounded-xl bg-[#F2F2F7] dark:bg-[#252528] border border-black/5 dark:border-white/5 text-xs font-bold transition"
-            >
-              <span
-                className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all ${
-                  currentWeightUnit === 'kg'
-                    ? 'bg-white dark:bg-[#3A3A3C] text-[#007AFF] shadow-xs'
-                    : 'text-gray-400 dark:text-gray-500'
-                }`}
-              >
-                kg (킬로)
-              </span>
-              <span
-                className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all ${
-                  currentWeightUnit === 'lbs'
-                    ? 'bg-white dark:bg-[#3A3A3C] text-[#007AFF] shadow-xs'
-                    : 'text-gray-400 dark:text-gray-500'
-                }`}
-              >
-                lb (파운드)
-              </span>
-            </button>
-          </div>
-
           {/* 디로딩 토글 */}
           <div className="flex items-center justify-between pt-1 border-t border-black/5 dark:border-white/5">
             <div>
@@ -612,29 +526,37 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   return (
     <div className="pb-32 max-w-lg mx-auto px-4 space-y-4 animate-fade-in">
-      {/* 상단 애플 스타일 상태 바 */}
-      <div className="flex items-center justify-between pt-1">
-        {/* 타이머 & 일시정지 */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-white dark:bg-[#1C1C1E] px-3.5 py-1.5 rounded-full border border-black/5 dark:border-white/10 shadow-xs">
-            <Clock size={15} className="text-[#FF2D55] animate-pulse" />
-            <span className="text-sm font-black font-mono tracking-tight text-[#1D1D1F] dark:text-white">
-              {formatTimer(session.durationSeconds)}
+      {/* 상단 액션 바: 세션 정보 & 일지 & 취소 (타이머는 최상단 글로벌 헤더 시계로 일원화) */}
+      <div className="flex items-center justify-between pt-1 px-1">
+        <div>
+          <h3 className="text-base font-black text-[#1D1D1F] dark:text-white">
+            {session.title}
+          </h3>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-[11px] text-gray-400">
+              {session.date} 진행 중
             </span>
+            {session.targetPartIds && session.targetPartIds.length > 0 && (
+              <div className="flex items-center gap-1">
+                {session.targetPartIds.map((id) => {
+                  const opt = TARGET_BODY_PARTS.find((p) => p.id === id);
+                  if (!opt) return null;
+                  return (
+                    <span
+                      key={id}
+                      className="px-1.5 py-0.2 rounded bg-red-500/10 text-red-600 dark:text-red-400 text-[9px] font-bold"
+                    >
+                      {opt.label}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
           </div>
-
-          <button
-            type="button"
-            onClick={() => setIsTimerRunning(!isTimerRunning)}
-            className="p-2 bg-white dark:bg-[#1C1C1E] rounded-full border border-black/5 dark:border-white/10 text-gray-500 hover:text-black dark:hover:text-white transition shadow-xs"
-            title={isTimerRunning ? '일시 정지' : '계속 진행'}
-          >
-            {isTimerRunning ? <Pause size={14} /> : <Play size={14} />}
-          </button>
         </div>
 
         {/* 일지, 디로딩, 운동 취소 버튼 */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {session.isDeload && (
             <span className="px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-500 text-xs font-bold flex items-center gap-1">
               <Sparkles size={12} />
@@ -644,8 +566,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
           <button
             type="button"
-            onClick={() => setIsNotesModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-bold text-gray-700 dark:text-gray-200 transition shadow-xs"
+            onClick={() => {
+              clearFocusAndSelection();
+              setIsNotesModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-bold text-gray-700 dark:text-gray-200 transition shadow-xs active:scale-95"
           >
             <span className="text-base leading-none">{session.conditionEmoji || '💪'}</span>
             <span>{session.notes ? '일지 작성됨' : '일지'}</span>
@@ -654,40 +579,12 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           <button
             type="button"
             onClick={handleCancelWorkout}
-            className="p-1.5 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-bold text-gray-400 hover:text-red-500 transition shadow-xs"
+            className="p-1.5 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-bold text-gray-400 hover:text-red-500 transition shadow-xs active:scale-95"
             title="운동 취소"
           >
             <X size={15} />
           </button>
         </div>
-      </div>
-
-      {/* 세션 제목 및 타겟 부위 배지 */}
-      <div className="flex items-center justify-between px-1">
-        <div>
-          <h3 className="text-base font-black text-[#1D1D1F] dark:text-white">
-            {session.title}
-          </h3>
-          <p className="text-[11px] text-gray-400">
-            {session.date} 진행 중
-          </p>
-        </div>
-        {session.targetPartIds && session.targetPartIds.length > 0 && (
-          <div className="flex items-center gap-1">
-            {session.targetPartIds.map((id) => {
-              const opt = TARGET_BODY_PARTS.find((p) => p.id === id);
-              if (!opt) return null;
-              return (
-                <span
-                  key={id}
-                  className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 text-[10px] font-bold"
-                >
-                  {opt.label}
-                </span>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       {/* 세션 통계 카드 (애플 미니멀 룩) */}
@@ -696,7 +593,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           <div>
             <span className="text-[11px] text-gray-400 font-semibold block mb-0.5">총 볼륨</span>
             <span className="text-xl font-black tracking-tight text-[#1D1D1F] dark:text-white">
-              {totalVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{currentWeightUnit}</span>
+              {totalVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">kg</span>
             </span>
           </div>
           <div>
@@ -744,8 +641,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             <ExerciseCard
               key={item.id}
               exerciseItem={item}
-              weightUnit={currentWeightUnit}
-              onToggleWeightUnit={handleToggleUnitInternal}
+              weightUnit={item.weightUnit || 'kg'}
               onUpdate={(updated) => handleUpdateExercise(idx, updated)}
               onDelete={() => handleDeleteExercise(idx)}
               onTriggerRestTimer={(exName, setId, setNum) => handleTriggerRestTimer(exName, setId, setNum)}
