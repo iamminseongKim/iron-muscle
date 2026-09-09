@@ -8,9 +8,12 @@ interface AddExerciseModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (exercise: Exercise, equipmentType: EquipmentType, brand?: string) => void;
+  initialCategory?: Category;
+  targetCategories?: Category[];
+  targetPartIds?: string[];
 }
 
-const CATEGORIES: { id: Category | 'all'; label: string }[] = [
+const BASE_CATEGORIES: { id: Category | 'all'; label: string }[] = [
   { id: 'all', label: '전체' },
   { id: 'chest', label: '가슴' },
   { id: 'back', label: '등' },
@@ -29,12 +32,43 @@ const EQUIPMENTS: { id: EquipmentType | 'all'; label: string }[] = [
   { id: 'bodyweight', label: '맨몸' },
 ];
 
-export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onClose, onSelect }) => {
+export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onSelect,
+  initialCategory,
+  targetCategories,
+  targetPartIds,
+}) => {
+  const hasTargets = Boolean(targetCategories && targetCategories.length > 0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    initialCategory || (hasTargets ? 'targets' : 'all')
+  );
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
 
+  React.useEffect(() => {
+    if (isOpen) {
+      if (initialCategory) {
+        setSelectedCategory(initialCategory);
+      } else if (hasTargets) {
+        setSelectedCategory('targets');
+      } else {
+        setSelectedCategory('all');
+      }
+      setSearchQuery('');
+    }
+  }, [isOpen, initialCategory, hasTargets]);
+
   if (!isOpen) return null;
+
+  const getTargetLabels = () => {
+    if (!targetCategories) return '';
+    return targetCategories
+      .map((c) => BASE_CATEGORIES.find((b) => b.id === c)?.label)
+      .filter(Boolean)
+      .join(', ');
+  };
 
   const filteredExercises = EXERCISES_DATABASE.filter((ex) => {
     // 검색어 필터링
@@ -43,11 +77,33 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onCl
       ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ex.nameEn.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // 카테고리 필터링 (다중 부위 완벽 매핑: 하체 클릭 시에도 데드리프트 등장, 등 클릭 시에도 등장!)
-    const matchCat =
-      selectedCategory === 'all' ||
-      (ex.categories && ex.categories.includes(selectedCategory)) ||
-      ex.category === selectedCategory;
+    // 카테고리 필터링 (다중 부위 완벽 매핑 및 오늘 목표 부위 필터링)
+    let matchCat = false;
+    if (selectedCategory === 'all') {
+      matchCat = true;
+    } else if (selectedCategory === 'targets') {
+      if (targetCategories && targetCategories.length > 0) {
+        matchCat = targetCategories.some(
+          (tc) => (ex.categories && ex.categories.includes(tc)) || ex.category === tc
+        );
+        // 세부 부위 (이두 vs 삼두) 세분화 필터
+        if (matchCat && targetPartIds && targetPartIds.length > 0 && (ex.category === 'arms' || ex.categories?.includes('arms'))) {
+          const wantsBiceps = targetPartIds.includes('biceps');
+          const wantsTriceps = targetPartIds.includes('triceps');
+          if (wantsBiceps && !wantsTriceps) {
+            matchCat = ex.primaryMuscles.includes('biceps') || ex.secondaryMuscles.includes('biceps');
+          } else if (wantsTriceps && !wantsBiceps) {
+            matchCat = ex.primaryMuscles.includes('triceps') || ex.secondaryMuscles.includes('triceps');
+          }
+        }
+      } else {
+        matchCat = true;
+      }
+    } else {
+      matchCat =
+        (ex.categories && ex.categories.includes(selectedCategory as Category)) ||
+        ex.category === (selectedCategory as Category);
+    }
 
     // 장비 필터링
     const matchEquip = selectedEquipment === 'all' || ex.equipment === selectedEquipment;
@@ -97,9 +153,23 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ isOpen, onCl
             )}
           </div>
 
-          {/* 카테고리 칩 (다중 부위 완벽 매핑) */}
+          {/* 카테고리 칩 (오늘 목표 부위 우선 노출 및 다중 부위 완벽 매핑) */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
-            {CATEGORIES.map((c) => (
+            {hasTargets && (
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('targets')}
+                className={`px-3 py-1.5 rounded-full font-black whitespace-nowrap transition flex items-center gap-1 ${
+                  selectedCategory === 'targets'
+                    ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-sm'
+                    : 'bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20'
+                }`}
+              >
+                <span>🔥 오늘 목표</span>
+                <span className="text-[10px] opacity-90">({getTargetLabels()})</span>
+              </button>
+            )}
+            {BASE_CATEGORIES.map((c) => (
               <button
                 key={c.id}
                 type="button"

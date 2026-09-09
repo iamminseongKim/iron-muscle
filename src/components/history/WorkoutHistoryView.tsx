@@ -2,17 +2,22 @@ import React, { useState, useMemo } from 'react';
 import { 
   Calendar, ChevronLeft, ChevronRight, Download, Copy, Check, 
   Sparkles, Bot, Clock, Dumbbell, Flame, Zap, Trophy, MessageSquare, 
-  FileText, ArrowRight, Share2, Layers 
+  FileText, ArrowRight, Share2, Layers, Edit3, Trash2, RotateCcw 
 } from 'lucide-react';
 import { WorkoutSession, WorkoutExercise } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from '../../utils/calculations';
-import { loadSavedSessions } from '../../utils/storage';
+import { loadSavedSessions, saveSessions, clearAllSessions, loadSampleDataForDemo } from '../../utils/storage';
+import { EditSessionModal } from './EditSessionModal';
 
 export const WorkoutHistoryView: React.FC = () => {
-  const [sessions] = useState<WorkoutSession[]>(() => loadSavedSessions());
+  const [sessions, setSessions] = useState<WorkoutSession[]>(() => loadSavedSessions());
   const [viewScope, setViewScope] = useState<'daily' | 'monthly' | 'yearly'>('daily');
   
+  // Edit Modal State
+  const [editingSession, setEditingSession] = useState<WorkoutSession | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   // Date states
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -31,6 +36,42 @@ export const WorkoutHistoryView: React.FC = () => {
   const [isAiExportOpen, setIsAiExportOpen] = useState(false);
   const [exportScope, setExportScope] = useState<'selected' | 'month' | 'all'>('selected');
   const [copied, setCopied] = useState(false);
+
+  // 과거 운동 삭제 핸들러
+  const handleDeleteSession = (sessionId: string, sessionDate: string) => {
+    if (window.confirm(`${sessionDate}의 운동 기록을 정말 삭제하시겠습니까?`)) {
+      const updated = sessions.filter((s) => s.id !== sessionId);
+      setSessions(updated);
+      saveSessions(updated);
+    }
+  };
+
+  // 과거 운동 수정 모달 열기
+  const handleOpenEditSession = (session: WorkoutSession) => {
+    setEditingSession(session);
+    setIsEditModalOpen(true);
+  };
+
+  // 과거 운동 수정 저장
+  const handleSaveEditedSession = (updatedSession: WorkoutSession) => {
+    const updated = sessions.map((s) => (s.id === updatedSession.id ? updatedSession : s));
+    setSessions(updated);
+    saveSessions(updated);
+  };
+
+  // 샘플 데이터 불러오기 (데모용)
+  const handleLoadSampleData = () => {
+    const samples = loadSampleDataForDemo();
+    setSessions(samples);
+  };
+
+  // 전체 기록 초기화
+  const handleClearAllHistory = () => {
+    if (window.confirm('저장된 모든 운동 기록을 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      clearAllSessions();
+      setSessions([]);
+    }
+  };
 
   // Available dates that have workouts
   const workoutDates = useMemo(() => {
@@ -275,14 +316,29 @@ export const WorkoutHistoryView: React.FC = () => {
 
           {/* 해당 일자의 운동 목록 */}
           {dailySessions.length === 0 ? (
-            <div className="py-16 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-2">
+            <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-3">
               <Dumbbell size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
-              <p className="text-sm font-bold text-gray-600 dark:text-gray-400">
-                {selectedDate}에 기록된 운동이 없습니다.
-              </p>
-              <p className="text-xs text-gray-400">
-                상단 날짜를 이동하거나 [운동 기록] 탭에서 운동을 시작해 보세요.
-              </p>
+              <div>
+                <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                  {selectedDate}에 기록된 운동이 없습니다.
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  [운동 기록] 탭에서 오늘의 운동을 시작하거나 날짜를 변경해 보세요.
+                </p>
+              </div>
+
+              {sessions.length === 0 && (
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleLoadSampleData}
+                    className="px-3.5 py-1.5 rounded-xl bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-black/10 text-gray-600 dark:text-gray-300 text-xs font-bold transition inline-flex items-center gap-1.5"
+                  >
+                    <RotateCcw size={13} className="text-[#007AFF]" />
+                    <span>체험용 샘플 기록 불러오기</span>
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             dailySessions.map((session) => {
@@ -296,7 +352,7 @@ export const WorkoutHistoryView: React.FC = () => {
                   className="bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 p-4 shadow-sm space-y-3"
                 >
                   {/* 세션 헤더 */}
-                  <div className="flex items-start justify-between pb-3 border-b border-black/5 dark:border-white/5">
+                  <div className="flex items-start justify-between pb-3 border-b border-black/5 dark:border-white/5 flex-wrap gap-2">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-lg leading-none">{session.conditionEmoji || '💪'}</span>
@@ -314,11 +370,33 @@ export const WorkoutHistoryView: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="text-right">
-                      <span className="text-xs text-gray-400 block font-semibold">총 볼륨</span>
-                      <span className="text-sm font-black text-[#FF2D55]">
-                        {sessionVol.toLocaleString()} <span className="text-[10px] font-normal text-gray-400">kg</span>
-                      </span>
+                    <div className="flex items-center gap-2.5">
+                      <div className="text-right">
+                        <span className="text-xs text-gray-400 block font-semibold">총 볼륨</span>
+                        <span className="text-sm font-black text-[#FF2D55]">
+                          {sessionVol.toLocaleString()} <span className="text-[10px] font-normal text-gray-400">kg</span>
+                        </span>
+                      </div>
+
+                      {/* 수정 & 삭제 버튼 */}
+                      <div className="flex items-center gap-1 bg-[#F2F2F7] dark:bg-[#2C2C2E] p-0.5 rounded-xl border border-black/5 dark:border-white/5">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditSession(session)}
+                          className="p-1.5 rounded-lg hover:bg-black/10 text-gray-600 dark:text-gray-300 transition"
+                          title="이 운동 기록 수정"
+                        >
+                          <Edit3 size={14} className="text-[#007AFF]" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSession(session.id, session.date)}
+                          className="p-1.5 rounded-lg hover:bg-red-500/15 text-gray-400 hover:text-red-500 transition"
+                          title="이 운동 기록 삭제"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -533,8 +611,26 @@ export const WorkoutHistoryView: React.FC = () => {
                     <span className="text-[11px] text-gray-400">{s.date} · {s.exercises.length}개 종목</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-xs font-black text-[#FF2D55]">
-                  <span>{calculateSessionVolume(s).toLocaleString()}kg</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-[#FF2D55]">{calculateSessionVolume(s).toLocaleString()}kg</span>
+                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditSession(s)}
+                      className="p-1 rounded-lg hover:bg-black/10 text-gray-400 hover:text-[#007AFF] transition"
+                      title="수정"
+                    >
+                      <Edit3 size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteSession(s.id, s.date)}
+                      className="p-1 rounded-lg hover:bg-red-500/15 text-gray-400 hover:text-red-500 transition"
+                      title="삭제"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
                   <ChevronRight size={14} className="text-gray-400" />
                 </div>
               </div>
@@ -708,6 +804,14 @@ export const WorkoutHistoryView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 과거 운동 기록 수정 모달 */}
+      <EditSessionModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        session={editingSession}
+        onSave={handleSaveEditedSession}
+      />
     </div>
   );
 };

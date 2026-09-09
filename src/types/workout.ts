@@ -165,7 +165,29 @@ export interface WorkoutSession {
   overallRpe?: number;
   bodyWeight?: number;
   completed: boolean;
+  targetCategories?: Category[]; // 오늘 운동하기로 선택한 타겟 카테고리 목록
+  targetPartIds?: string[]; // 오늘 운동하기로 선택한 구체 부위 목록 (예: ['chest', 'triceps'])
 }
+
+export interface TargetBodyPartOption {
+  id: string;
+  label: string;
+  icon: string;
+  category: Category;
+  targetMuscle?: MuscleTarget; // 'biceps' | 'triceps' 등
+  subMuscles?: string;
+}
+
+export const TARGET_BODY_PARTS: TargetBodyPartOption[] = [
+  { id: 'chest', label: '가슴', icon: '🎯', category: 'chest', subMuscles: '대흉근, 윗가슴' },
+  { id: 'back', label: '등', icon: '🦅', category: 'back', subMuscles: '광배근, 승모근, 기립근' },
+  { id: 'legs', label: '하체', icon: '🦵', category: 'legs', subMuscles: '사두근, 햄스트링, 둔근' },
+  { id: 'shoulders', label: '어깨', icon: '🥥', category: 'shoulders', subMuscles: '전면, 측면, 후면' },
+  { id: 'biceps', label: '이두', icon: '💪', category: 'arms', targetMuscle: 'biceps', subMuscles: '상완이두근' },
+  { id: 'triceps', label: '삼두', icon: '⚡', category: 'arms', targetMuscle: 'triceps', subMuscles: '상완삼두근' },
+  { id: 'core', label: '복근', icon: '🍫', category: 'core', subMuscles: '복직근, 코어' },
+  { id: 'fullbody', label: '전신', icon: '🔥', category: 'fullbody', subMuscles: '전신 다관절' },
+];
 
 export interface MuscleInfo {
   id: MuscleTarget;

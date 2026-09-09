@@ -13,16 +13,29 @@ export function loadSavedSessions(): WorkoutSession[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.SESSIONS);
     if (!raw) {
-      const sanitizedInitial = INITIAL_SAMPLE_HISTORY.map(sanitizeSessionExercises);
-      saveSessions(sanitizedInitial);
-      return sanitizedInitial;
+      return []; // 기본 더미 데이터 없이 깨끗한 빈 상태로 시작!
     }
     const parsed: WorkoutSession[] = JSON.parse(raw);
     return parsed.map(sanitizeSessionExercises);
   } catch (e) {
     console.error('Failed to load sessions', e);
-    return INITIAL_SAMPLE_HISTORY.map(sanitizeSessionExercises);
+    return [];
   }
+}
+
+export function clearAllSessions(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEYS.SESSIONS);
+    localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
+  } catch (e) {
+    console.error('Failed to clear sessions', e);
+  }
+}
+
+export function loadSampleDataForDemo(): WorkoutSession[] {
+  const sanitized = INITIAL_SAMPLE_HISTORY.map(sanitizeSessionExercises);
+  saveSessions(sanitized);
+  return sanitized;
 }
 
 export function saveSessions(sessions: WorkoutSession[]): void {
