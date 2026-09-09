@@ -124,7 +124,8 @@ export const App: React.FC = () => {
       const current = e.detail;
       setActiveSession(current);
       if (current) {
-        setTotalWorkoutSeconds(current.durationSeconds || 0);
+        // 💡 세션 갱신 이벤트 발생 시에도 이미 진행 중인 초수가 0이나 이전 값으로 떨어지지 않도록 보존
+        setTotalWorkoutSeconds((prev) => Math.max(prev, current.durationSeconds || 0));
         setIsWorkoutTimerRunning(true);
       } else {
         setTotalWorkoutSeconds(0);

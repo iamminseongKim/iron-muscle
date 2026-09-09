@@ -54,6 +54,26 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+
+  /* 4. 안드로이드 웹뷰 네이티브 다이얼로그 및 OS 팝업에서 select option 텍스트 증발 방지 */
+  select {
+    color: #1D1D1F;
+    background-color: #FFFFFF;
+  }
+  .dark select {
+    color: #F5F5F7;
+    background-color: #2C2C2E;
+  }
+  select option {
+    color: #111111 !important;
+    background-color: #FFFFFF !important;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  .dark select option {
+    color: #FFFFFF !important;
+    background-color: #2C2C2E !important;
+  }
 }
 
 /* Safe Area support for Android and iOS notched devices */

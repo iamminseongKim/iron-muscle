@@ -6,6 +6,134 @@ import { Exercise } from '../types/workout';
  */
 export const EXERCISES_DATABASE: Exercise[] = [
   {
+    "id": "v_squat_machine",
+    "name": "V-스쿼트 (V-Squat)",
+    "nameEn": "V-Squat Machine",
+    "category": "legs",
+    "categories": [
+      "legs"
+    ],
+    "equipment": "machine",
+    "loadType": "plate-loaded",
+    "movementPlane": "squat-pattern",
+    "primaryMuscles": [
+      "quads",
+      "glutes"
+    ],
+    "secondaryMuscles": [
+      "hamstrings",
+      "erectors",
+      "calves"
+    ],
+    "description": "V-스쿼트 머신은 척추 부담을 최소화하면서 대퇴사두근과 둔근에 고중량 과부하를 안전하게 전달할 수 있는 대표적인 하체 머신 운동입니다.",
+    "instructions": [
+      "머신 패드에 등을 대거나(정방향) 패드를 마주보고 서서(역방향/리버스) 어깨를 패드 아래에 밀착합니다.",
+      "발을 어깨너비로 발판에 안정적으로 지지하고 안전 바를 해제합니다.",
+      "대퇴사두근과 둔근에 긴장을 유지하며 무릎과 고관절을 굽혀 깊게 내려앉습니다.",
+      "발바닥 전체로 발판을 밀어내며 시작 자세로 일어섭니다. 무릎 관절을 락아웃하지 않고 긴장을 유지합니다."
+    ],
+    "tips": [
+      "정방향(Facing Out)은 대퇴사두근 타겟, 역방향(Facing In/Reverse)은 둔근 및 햄스트링 타겟에 유리합니다.",
+      "요추가 말리지 않도록 복압을 단단히 잡고 풋플레이트 하단 또는 중간에 발을 배치하세요."
+    ],
+    "images": [],
+    "level": "intermediate",
+    "isPopular": true,
+    "aliases": [
+      "v스쿼트",
+      "브이스쿼트",
+      "vsquat",
+      "v-squat",
+      "해머v스쿼트",
+      "파워v스쿼트",
+      "싸이벡스v스쿼트",
+      "뉴텍v스쿼트"
+    ]
+  },
+  {
+    "id": "viking_press_machine",
+    "name": "바이킹 프레스 (Viking Press)",
+    "nameEn": "Viking Press Machine",
+    "category": "shoulders",
+    "categories": [
+      "shoulders"
+    ],
+    "equipment": "machine",
+    "loadType": "plate-loaded",
+    "movementPlane": "overhead-press",
+    "primaryMuscles": [
+      "deltoid_front",
+      "deltoid_side"
+    ],
+    "secondaryMuscles": [
+      "triceps",
+      "traps",
+      "chest_upper"
+    ],
+    "description": "스트롱맨 훈련에서 유래된 바이킹 프레스는 뉴트럴 그립 핸들로 어깨 충돌 없이 전면 및 측면 삼각근에 강력한 중량 부하를 가하는 숄더 머신입니다.",
+    "instructions": [
+      "어깨너비로 선 후 뉴트럴 그립 핸들을 잡고 어깨 높이에서 준비합니다.",
+      "코어와 둔근을 단단히 조여 척추를 고정합니다.",
+      "팔꿈치를 위로 수직으로 밀어 올리며 어깨 근육으로 중량을 프레스합니다.",
+      "팔꿈치가 완전히 펴지기 직전까지 밀고, 네거티브 구간에서 2~3초간 저항을 느끼며 귀 높이까지 천천히 내립니다."
+    ],
+    "tips": [
+      "허리가 과도하게 꺾이지 않도록 둔근과 복근을 단단히 수축하세요.",
+      "뉴트럴 그립은 회전근개와 관절에 부담이 적어 어깨 통증이 있는 분들에게도 훌륭한 대안입니다."
+    ],
+    "images": [],
+    "level": "intermediate",
+    "isPopular": true,
+    "aliases": [
+      "바이킹프레스",
+      "vikingpress",
+      "viking press",
+      "어깨프레스",
+      "숄더프레스머신"
+    ]
+  },
+  {
+    "id": "standing_lateral_raise_machine",
+    "name": "스탠딩 레터럴 레이즈 머신",
+    "nameEn": "Standing Lateral Raise Machine",
+    "category": "shoulders",
+    "categories": [
+      "shoulders"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "movementPlane": "lateral-raise",
+    "primaryMuscles": [
+      "deltoid_side"
+    ],
+    "secondaryMuscles": [
+      "traps",
+      "deltoid_rear"
+    ],
+    "description": "서서 수행하는 레터럴 레이즈 머신으로, 덤벨 사레레와 달리 시작 지점부터 최고 수축 지점까지 측면 삼각근에 지속적인 장력을 제공합니다.",
+    "instructions": [
+      "머신 중앙에 곧게 서서 패드를 팔꿈치 바깥쪽에 밀착시킵니다.",
+      "가슴을 펴고 어깨를 아래로 끌어내려 승모근의 개입을 줄입니다.",
+      "팔꿈치로 패드를 밀어올린다는 느낌으로 어깨 높이까지 측면으로 들어올립니다.",
+      "정점에서 1초간 측면 삼각근을 강하게 쥐어짠 후, 천천히 네거티브를 통제하며 내립니다."
+    ],
+    "tips": [
+      "손목으로 패드를 미는 것이 아니라 팔꿈치 외측으로 밀어올려야 측면 삼각근에 집중됩니다.",
+      "승모근이 으쓱 올라가지 않도록 견갑골을 안정화시킨 상태에서 수행하세요."
+    ],
+    "images": [],
+    "level": "beginner",
+    "isPopular": true,
+    "aliases": [
+      "스탠딩사레레",
+      "머신사레레",
+      "스탠딩레터럴레이즈",
+      "스탠딩사이드레터럴레이즈",
+      "사레레머신",
+      "standing lateral raise"
+    ]
+  },
+  {
     "id": "3_4_Sit-Up",
     "name": "3/4 싯업",
     "nameEn": "3/4 Sit-Up",

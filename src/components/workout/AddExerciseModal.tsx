@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { X, Search, Dumbbell, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Search, Dumbbell, ChevronRight, Plus, Sparkles } from 'lucide-react';
 import { Exercise, Category, EquipmentType } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
+import { loadCustomExercises } from '../../utils/storage';
+import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
 
 interface AddExerciseModalProps {
   isOpen: boolean;
@@ -70,10 +72,13 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     initialCategory || (hasTargets ? 'targets' : 'all')
   );
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
+  const [customExercises, setCustomExercises] = useState<Exercise[]>(() => loadCustomExercises());
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (isOpen) {
+      setCustomExercises(loadCustomExercises());
       if (initialCategory) {
         setSelectedCategory(initialCategory);
       } else if (hasTargets) {
@@ -84,6 +89,19 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
       setSearchQuery('');
     }
   }, [isOpen, initialCategory, hasTargets]);
+
+  // 커스텀 운동 변경 이벤트 리스너
+  React.useEffect(() => {
+    const handleCustomChange = (e: any) => {
+      if (e.detail) {
+        setCustomExercises(e.detail);
+      } else {
+        setCustomExercises(loadCustomExercises());
+      }
+    };
+    window.addEventListener('iron_custom_exercises_change', handleCustomChange);
+    return () => window.removeEventListener('iron_custom_exercises_change', handleCustomChange);
+  }, []);
 
   // iOS WKWebView는 모달 오픈 애니메이션/렌더 커밋과 동시에 autoFocus를 걸면
   // 캐럿만 보이고 소프트 키보드는 안 뜨는 경우가 있어, 약간의 지연 후 포커스
@@ -111,7 +129,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   const normQuery = normalizeSearch(cleanQuery);
   const chosungQuery = cleanQuery.replace(/\s+/g, '');
 
-  const filteredExercises = EXERCISES_DATABASE.filter((ex) => {
+  // 커스텀 운동을 상단에 결합
+  const allExercises = [...customExercises, ...EXERCISES_DATABASE];
+
+  const filteredExercises = allExercises.filter((ex) => {
     // 1. 스마트 검색어 매칭 (초성, 별칭, 은어, 띄어쓰기 무시, 영문)
     let matchQuery = true;
     if (cleanQuery !== '') {
@@ -216,14 +237,24 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               <Dumbbell size={18} className="text-[#FF2D55]" />
               운동 종목 선택
             </h3>
-            <p className="text-xs text-gray-400">총 {EXERCISES_DATABASE.length}종의 전문 운동 라이브러리</p>
+            <p className="text-xs text-gray-400">총 {allExercises.length}종의 전문 운동 라이브러리</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-          >
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center gap-1 px-3 py-1.5 bg-[#FF2D55]/10 hover:bg-[#FF2D55]/20 text-[#FF2D55] text-xs font-black rounded-xl transition"
+            >
+              <Plus size={14} strokeWidth={3} />
+              <span>직접 등록</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* 검색창 */}
@@ -302,8 +333,16 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         {/* 운동 목록 */}
         <div className="p-3 overflow-y-auto flex-1 space-y-2">
           {filteredExercises.length === 0 ? (
-            <div className="py-12 text-center text-gray-400 text-xs">
-              검색 결과가 없습니다. 다른 검색어나 필터를 선택해 보세요.
+            <div className="py-12 text-center text-gray-400 space-y-3">
+              <p className="text-xs">'{cleanQuery || '선택한 조건'}'에 맞는 운동을 찾지 못했습니다.</p>
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#FF2D55] text-white text-xs font-black rounded-2xl shadow-md hover:opacity-90 active:scale-98 transition"
+              >
+                <Plus size={16} strokeWidth={3} />
+                <span>'{cleanQuery || '새 종목'}' 직접 등록하기</span>
+              </button>
             </div>
           ) : (
             filteredExercises.slice(0, 100).map((ex) => (
@@ -341,7 +380,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
                       {ex.equipment === 'machine' ? '머신' : ex.equipment === 'barbell' ? '바벨' : ex.equipment === 'dumbbell' ? '덤벨' : ex.equipment === 'cable' ? '케이블' : '맨몸/소도구'}
                     </span>
-                    {ex.isPopular && (
+                    {ex.id.startsWith('custom_') ? (
+                      <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">
+                        ★커스텀
+                      </span>
+                    ) : ex.isPopular && (
                       <span className="px-1.5 py-0.2 rounded bg-red-500/10 text-[#FF2D55] text-[10px] font-bold">
                         ★인기
                       </span>
@@ -378,6 +421,18 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           )}
         </div>
       </div>
+
+      {/* 새 운동 직접 등록 모달 */}
+      <CreateCustomExerciseModal
+        isOpen={isCreateModalOpen}
+        initialName={cleanQuery}
+        initialCategory={selectedCategory !== 'all' && selectedCategory !== 'targets' ? (selectedCategory as Category) : (targetCategories?.[0] || 'legs')}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreated={(newEx) => {
+          onSelect(newEx, newEx.equipment, newEx.defaultBrand);
+          onClose();
+        }}
+      />
     </div>
   );
 };

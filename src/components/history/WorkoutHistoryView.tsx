@@ -221,17 +221,68 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
     }
   };
 
-  const handleDownloadMarkdown = () => {
-    const filename = `iron-workout-${exportScope === 'selected' ? selectedDate : exportScope === 'month' ? currentMonth : 'all'}.md`;
-    const blob = new Blob([currentMarkdown], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleDownloadMarkdown = async () => {
+    // 💡 사용자 요구사항: 파일명 포맷 _2026xxxx.md (예: _20260909.md)
+    const datePart = exportScope === 'selected'
+      ? selectedDate.replace(/-/g, '')
+      : exportScope === 'month'
+      ? currentMonth.replace(/-/g, '')
+      : `${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_all`;
+    const filename = `_${datePart}.md`;
+
+    // 1. 이중 안전장치: 클립보드에 자동 복사 병행
+    try {
+      await navigator.clipboard.writeText(currentMarkdown);
+    } catch {}
+
+    // 2. 모바일 Web Share API 우선 시도 (iOS '파일에 저장', 안드로이드 시스템 공유/다운로드 시트)
+    if (typeof navigator !== 'undefined' && navigator.canShare) {
+      try {
+        const file = new File([currentMarkdown], filename, { type: 'text/markdown;charset=utf-8' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: filename,
+            text: '아이언 머슬 운동 기록 마크다운 일지',
+          });
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+          return;
+        }
+      } catch (shareErr: any) {
+        // 사용자가 공유 창에서 취소를 누른 경우 제외하고 fallback 진행
+        if (shareErr.name === 'AbortError') return;
+        console.warn('Web share failed, trying blob download', shareErr);
+      }
+    }
+
+    // 3. 브라우저 표준 Blob / a[download] 다운로드 시도
+    try {
+      const blob = new Blob([currentMarkdown], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+      alert(`✅ [${filename}] 다운로드가 시작되었습니다!\n(동시에 클립보드에도 자동 복사되어 바로 붙여넣을 수 있습니다.)`);
+    } catch (blobErr) {
+      // 4. Data URI Fallback
+      const encodedUri = 'data:text/markdown;charset=utf-8,' + encodeURIComponent(currentMarkdown);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+      alert(`✅ [${filename}] 다운로드가 시작되었습니다!\n(동시에 클립보드에도 자동 복사되었습니다.)`);
+    }
   };
 
   return (

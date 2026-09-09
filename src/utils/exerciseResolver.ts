@@ -25,6 +25,16 @@ export function resolveExercise(exerciseId?: string | null): Exercise {
     return EXERCISES_DATABASE[0] || getEmergencyFallbackExercise();
   }
 
+  // 0. 사용자 정의 커스텀 운동 우선 검사
+  try {
+    const rawCustom = typeof window !== 'undefined' ? localStorage.getItem('iron_custom_exercises_v1') : null;
+    if (rawCustom) {
+      const customList: Exercise[] = JSON.parse(rawCustom);
+      const customMatch = customList.find((e) => e.id === exerciseId);
+      if (customMatch) return customMatch;
+    }
+  } catch {}
+
   // 1. 정확한 ID 일치 검사
   const exact = EXERCISES_DATABASE.find((e) => e.id === exerciseId);
   if (exact) return exact;

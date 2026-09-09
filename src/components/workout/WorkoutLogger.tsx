@@ -161,6 +161,15 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     }
   };
 
+  // 총 운동 시간 보존 헬퍼 (세트 수정 시 1분대에서 리셋되는 치명적 버그 방지)
+  const getLatestDuration = (): number => {
+    const fromStorage = loadActiveSession()?.durationSeconds;
+    const fromStart = session?.startTime
+      ? Math.max(0, Math.round((Date.now() - new Date(session.startTime).getTime()) / 1000))
+      : 0;
+    return Math.max(session?.durationSeconds || 0, fromStorage || 0, fromStart);
+  };
+
   // 과거 세트 기록 조회 (이전 중량/횟수 자동 복사)
   const findPreviousSets = (exerciseId: string, machineBrand?: string) => {
     const allHistory = loadSavedSessions();
@@ -205,7 +214,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       weightUnit: 'kg',
     };
 
-    const updated = { ...session, exercises: [...session.exercises, newExerciseItem] };
+    const updated = {
+      ...session,
+      durationSeconds: getLatestDuration(),
+      exercises: [...session.exercises, newExerciseItem],
+    };
     setSession(updated);
     saveActiveSession(updated);
   };
@@ -217,7 +230,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     newExercises[index] = updatedItem;
 
     // 슈퍼세트/컴파운드세트/자이언트세트로 묶인 종목: 세트 완료 상태를 그룹 내 모든 종목에 동기화
-    // (세트 개수가 바뀌는 추가/삭제와 헷갈리지 않도록 세트 개수가 동일할 때만 비교)
     if (
       updatedItem.groupId &&
       prevItem &&
@@ -240,7 +252,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       }
     }
 
-    const updated = { ...session, exercises: newExercises };
+    const updated = {
+      ...session,
+      durationSeconds: getLatestDuration(),
+      exercises: newExercises,
+    };
     setSession(updated);
     saveActiveSession(updated);
   };
@@ -248,7 +264,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const handleDeleteExercise = (index: number) => {
     if (!session) return;
     const newExercises = session.exercises.filter((_, i) => i !== index);
-    const updated = { ...session, exercises: newExercises };
+    const updated = {
+      ...session,
+      durationSeconds: getLatestDuration(),
+      exercises: newExercises,
+    };
     setSession(updated);
     saveActiveSession(updated);
   };
@@ -277,7 +297,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       return ex;
     });
 
-    const updated = { ...session, exercises: updatedExercises };
+    const updated = {
+      ...session,
+      durationSeconds: getLatestDuration(),
+      exercises: updatedExercises,
+    };
     setSession(updated);
     saveActiveSession(updated);
   };
@@ -298,7 +322,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       return ex;
     });
 
-    const updated = { ...session, exercises: updatedExercises };
+    const updated = {
+      ...session,
+      durationSeconds: getLatestDuration(),
+      exercises: updatedExercises,
+    };
     setSession(updated);
     saveActiveSession(updated);
   };
@@ -333,7 +361,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       }),
     }));
 
-    const updated = { ...session, exercises: updatedExercises };
+    const updated = {
+      ...session,
+      durationSeconds: getLatestDuration(),
+      exercises: updatedExercises,
+    };
     setSession(updated);
     saveActiveSession(updated);
 
@@ -349,8 +381,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     }
 
     soundManager.playSuccessSound();
+    const finalDuration = getLatestDuration();
+
     const finalSession: WorkoutSession = {
       ...session,
+      durationSeconds: finalDuration,
       completed: true,
       endTime: new Date().toISOString(),
       overallRpe: calculateAverageRPE(session) || undefined,
@@ -361,7 +396,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     saveActiveSession(null);
     setSession(null);
 
-    alert(`🎉 오늘 운동 완료!\n총 볼륨: ${calculateSessionVolume(finalSession).toLocaleString()}kg\n총 횟수: ${calculateSessionReps(finalSession)}회\n기록이 성공적으로 저장되었습니다.`);
+    const mins = Math.floor(finalDuration / 60);
+    const secs = finalDuration % 60;
+    const timeStr = `${mins > 0 ? `${mins}분 ` : ''}${secs}초`;
+
+    alert(`🎉 오늘 운동 완료!\n⏱️ 총 운동 시간: ${timeStr}\n총 볼륨: ${calculateSessionVolume(finalSession).toLocaleString()}kg\n총 횟수: ${calculateSessionReps(finalSession)}회\n기록이 성공적으로 저장되었습니다.`);
 
     if (onWorkoutCompleted) {
       onWorkoutCompleted();

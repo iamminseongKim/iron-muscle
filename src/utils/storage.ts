@@ -1,4 +1,4 @@
-import { WorkoutSession } from '../types/workout';
+import { WorkoutSession, Exercise } from '../types/workout';
 import { INITIAL_SAMPLE_HISTORY } from '../data/sampleHistory';
 import { sanitizeSessionExercises } from './exerciseResolver';
 
@@ -61,6 +61,18 @@ export function loadActiveSession(): WorkoutSession | null {
 export function saveActiveSession(session: WorkoutSession | null): void {
   try {
     if (session) {
+      // 💡 [치명적 버그 수정]: 1분대 타이머 리셋 방어
+      // 컴포넌트 렌더링 지연이나 세트 업데이트로 과거 durationSeconds가 전달되더라도
+      // 이미 로컬스토리지에 더 많이 누적된 실제 초가 있다면 0초나 과거 값으로 덮어쓰지 않고 보존한다.
+      const raw = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
+      if (raw) {
+        try {
+          const existing: WorkoutSession = JSON.parse(raw);
+          if (existing.id === session.id && (existing.durationSeconds ?? 0) > (session.durationSeconds ?? 0)) {
+            session.durationSeconds = existing.durationSeconds;
+          }
+        } catch {}
+      }
       localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, JSON.stringify(session));
     } else {
       localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
@@ -70,5 +82,53 @@ export function saveActiveSession(session: WorkoutSession | null): void {
     }
   } catch (e) {
     console.error('Failed to save active session', e);
+  }
+}
+
+// ----------------------------------------------------
+// 🌟 사용자 정의 커스텀 운동 종목 관리 (Custom Exercises)
+// ----------------------------------------------------
+
+export function loadCustomExercises(): Exercise[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.CUSTOM_EXERCISES);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error('Failed to load custom exercises', e);
+    return [];
+  }
+}
+
+export function saveCustomExercise(exercise: Exercise): void {
+  try {
+    const current = loadCustomExercises();
+    const existingIndex = current.findIndex((e) => e.id === exercise.id);
+    let updated: Exercise[];
+    if (existingIndex >= 0) {
+      updated = [...current];
+      updated[existingIndex] = exercise;
+    } else {
+      updated = [exercise, ...current];
+    }
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_EXERCISES, JSON.stringify(updated));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('iron_custom_exercises_change', { detail: updated }));
+    }
+  } catch (e) {
+    console.error('Failed to save custom exercise', e);
+  }
+}
+
+export function deleteCustomExercise(exerciseId: string): void {
+  try {
+    const current = loadCustomExercises();
+    const updated = current.filter((e) => e.id !== exerciseId);
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_EXERCISES, JSON.stringify(updated));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('iron_custom_exercises_change', { detail: updated }));
+    }
+  } catch (e) {
+    console.error('Failed to delete custom exercise', e);
   }
 }
