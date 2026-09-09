@@ -14,7 +14,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
   ] as const;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-xl border-t border-black/5 dark:border-white/10 pb-safe">
+    <nav data-bottom-navigation className="fixed bottom-0 left-0 right-0 z-30 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-xl border-t border-black/5 dark:border-white/10 pb-safe">
       <div className="max-w-lg mx-auto flex items-center justify-around py-2 px-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;

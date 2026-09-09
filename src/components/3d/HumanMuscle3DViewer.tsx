@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { MuscleTarget } from '../../types/workout';
 import { createHumanMuscleModel, MuscleMeshPart } from './MuscleGeometryFactory';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
+import { AnatomyDualViewer } from './AnatomyDualViewer';
 import { RotateCw, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface HumanMuscle3DViewerProps {
@@ -24,6 +25,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
   showControls = true,
   isDark = false,
 }) => {
+  const [renderUnavailable, setRenderUnavailable] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -45,7 +47,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
   // Three.js 씬 초기화
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || renderUnavailable) return;
 
     const width = container.clientWidth;
     const heightPx = container.clientHeight || 380;
@@ -64,7 +66,15 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     cameraRef.current = camera;
 
     // 3. Renderer (애플 스튜디오 룩)
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'default' });
+    } catch {
+      setRenderUnavailable(true);
+      return;
+    }
+    const onContextLost = (event: Event) => { event.preventDefault(); setRenderUnavailable(true); };
+    renderer.domElement.addEventListener('webglcontextlost', onContextLost);
     renderer.setSize(width, heightPx);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -259,10 +269,11 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
           materials.forEach(material => material.dispose());
         }
       });
+      renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [isDark]);
+  }, [isDark, renderUnavailable]);
 
   // 근육 색상 실시간 업데이트 (애플 레드 #FF2D55 / 앰버 #FF9500)
   useEffect(() => {
@@ -316,6 +327,13 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     if (!cameraRef.current) return;
     cameraRef.current.position.z = Math.max(3.8, Math.min(12, cameraRef.current.position.z + delta));
   };
+
+  if (renderUnavailable) return (
+    <div>
+      <p role="status" className="mb-2 text-xs text-gray-500">3D 표시를 사용할 수 없어 근육 해부도를 표시합니다.</p>
+      <AnatomyDualViewer primaryMuscles={primaryMuscles} secondaryMuscles={secondaryMuscles} selectedMuscle={activeMuscleFilter} onMuscleClick={onSelectMuscle} isDark={isDark} />
+    </div>
+  );
 
   return (
     <div

@@ -117,7 +117,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div className="keyboard-aware-modal fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
       <div className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
         {/* 헤더 */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">

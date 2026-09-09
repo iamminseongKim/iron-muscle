@@ -26,3 +26,12 @@ for (const [query,id] of [
  ['파나타 서큘러','circular-lat-pulldown-machine']
 ]) assert.ok(matchesExerciseSearch(db.find(e=>e.id===id),query),query);
 console.log('PASS: manufacturer, alias, spacing and initial-consonant search');
+
+// Catch assets that exist locally but would be absent from a clean CI checkout.
+const { readFileSync } = await import('node:fs');
+const { spawnSync } = await import('node:child_process');
+const atlasPath = 'public/anatomy/muscle-atlas.png';
+const atlasBytes = readFileSync(atlasPath);
+assert.equal(atlasBytes.subarray(1,4).toString(),'PNG');
+assert.equal(spawnSync('git',['check-ignore','--no-index','-q',atlasPath]).status,1,'Runtime atlas must not be ignored by Git');
+console.log('PASS: runtime atlas exists and is not excluded from Git');

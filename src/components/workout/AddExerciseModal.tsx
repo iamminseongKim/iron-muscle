@@ -96,11 +96,13 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     }
   }, [isOpen]);
 
+  const onCloseRef = React.useRef(onClose);
+  onCloseRef.current = onClose;
   useEffect(() => {
     if (!isOpen || isCreateModalOpen) return;
     const previousFocus = document.activeElement as HTMLElement | null;
     const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') { event.preventDefault(); onClose(); }
+      if (event.key === 'Escape') { event.preventDefault(); onCloseRef.current(); }
       if (event.key !== 'Tab') return;
       const dialog = document.getElementById('exercise-picker-title')?.closest('[role="dialog"]');
       const nodes = dialog?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])');
@@ -110,8 +112,8 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     };
     document.addEventListener('keydown', handleKey);
-    return () => { document.removeEventListener('keydown', handleKey); previousFocus?.focus(); };
-  }, [isOpen, isCreateModalOpen, onClose]);
+    return () => { document.removeEventListener('keydown', handleKey); previousFocus?.focus({ preventScroll: true }); };
+  }, [isOpen, isCreateModalOpen]);
 
   if (!isOpen) return null;
 
@@ -196,7 +198,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-md animate-fade-in">
+    <div className="keyboard-aware-modal fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-md animate-fade-in">
       <div role="dialog" aria-modal="true" aria-labelledby="exercise-picker-title" className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-lg max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">

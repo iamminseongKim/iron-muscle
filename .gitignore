@@ -29,3 +29,6 @@ android/local.properties
 # iOS
 ios/App/Pods/
 ios/App/App.xcworkspace/xcuserdata/
+
+# Runtime artwork must ship with the web/native app.
+!public/anatomy/*.png
