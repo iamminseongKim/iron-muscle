@@ -151,4 +151,20 @@ npx cap sync
 
 ## 📄 라이선스 (License)
 
-본 프로젝트는 개인 운동 기록 및 오픈소스 학습 목적으로 제작되었습니다. 자유롭게 포크 및 커스텀하여 사용하실 수 있습니다.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/iamminseongKim/iron-muscle/blob/main/LICENSE)
+
+본 프로젝트는 **MIT 라이선스** 하에 완전 오픈소스로 공개됩니다.
+
+- ✅ 상업적 사용 허용
+- ✅ 수정 및 재배포 허용
+- ✅ 개인/팀 프로젝트 자유 활용
+- ✅ 포크 및 커스텀 무제한
+
+자세한 내용은 [`LICENSE`](./LICENSE) 파일을 참고해 주세요.
+
+---
+
+## 🙌 기여 (Contributing)
+
+이슈, 버그 리포트, 기능 제안은 [GitHub Issues](https://github.com/iamminseongKim/iron-muscle/issues)를 이용해 주세요.
+Pull Request도 언제든지 환영합니다! 🎉

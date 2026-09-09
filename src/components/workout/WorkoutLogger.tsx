@@ -486,15 +486,15 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
         </div>
 
         {/* 3. 대형 운동 시작 CTA 버튼 */}
-        <div className="pt-2">
+        <div className="pt-2 pb-1">
           <button
             type="button"
             onClick={handleStartWorkout}
-            className="w-full py-4.5 bg-gradient-to-r from-[#FF2D55] to-[#FF375F] hover:opacity-95 text-white rounded-2xl text-base font-black flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 transition active:scale-98"
+            className="w-full py-5 bg-gradient-to-r from-[#FF2D55] to-[#FF375F] hover:opacity-95 text-white rounded-2xl text-[17px] font-black flex items-center justify-center gap-2.5 shadow-lg shadow-red-500/30 transition active:scale-98"
           >
-            <Flame size={20} className="fill-white" />
+            <Flame size={22} className="fill-white" />
             <span>새 운동 시작하기 ({recommendedTitle})</span>
-            <ArrowRight size={18} />
+            <ArrowRight size={20} />
           </button>
         </div>
 

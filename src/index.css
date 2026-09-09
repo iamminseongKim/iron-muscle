@@ -1,4 +1,4 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -8,6 +8,24 @@
     color: #F3F4F6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 안드로이드 터치 시 파란색 하이라이트/커서 제거 */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  /* 버튼/인터렉티브 요소 터치 커서 잔존 버그 방지 */
+  button, a, [role="button"], label {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* 숫자 입력 필드는 선택 허용 */
+  input, textarea, [contenteditable="true"] {
+    -webkit-tap-highlight-color: rgba(0, 122, 255, 0.1);
+    user-select: text;
+    -webkit-user-select: text;
   }
 }
 
