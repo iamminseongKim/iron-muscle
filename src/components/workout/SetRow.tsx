@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Check, X, MessageSquare, Clock, HelpCircle, Timer } from 'lucide-react';
 import { WorkoutSet, Tempo, ExecutionMode, WeightUnit } from '../../types/workout';
 import { soundManager } from '../../utils/audio';
@@ -32,6 +32,32 @@ export const SetRow: React.FC<SetRowProps> = ({
   // 안드로이드 네이티브 셀렉션 툴바(복사/잘라내기/번역) 및 물방울 핀 차단용 스마트 첫 입력 덮어쓰기 상태
   const [isWeightFresh, setIsWeightFresh] = useState(false);
   const [isRepsFresh, setIsRepsFresh] = useState(false);
+
+  // type="number"는 브라우저 selection API(setSelectionRange)를 지원하지 않아 캐럿 위치를
+  // 코드에서 직접 보정할 방법이 없다. 아래 ref들로 매 값 변경마다 캐럿을 끝으로 고정해
+  // 안드로이드 WebView가 물방울 핸들을 옛 위치에 그대로 남겨두는(잔존) 현상을 줄인다.
+  const weightInputRef = useRef<HTMLInputElement>(null);
+  const repsInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const el = weightInputRef.current;
+    if (el && document.activeElement === el) {
+      const len = el.value.length;
+      try {
+        el.setSelectionRange(len, len);
+      } catch {}
+    }
+  }, [set.weight]);
+
+  useEffect(() => {
+    const el = repsInputRef.current;
+    if (el && document.activeElement === el) {
+      const len = el.value.length;
+      try {
+        el.setSelectionRange(len, len);
+      } catch {}
+    }
+  }, [set.reps]);
 
   const handleWeightFocus = () => {
     setIsWeightFresh(true);
@@ -184,7 +210,9 @@ export const SetRow: React.FC<SetRowProps> = ({
           {/* 중량 (kg/lbs) 입력 */}
           <div className="flex-1 min-w-0 relative">
             <input
-              type="number"
+              ref={weightInputRef}
+              type="text"
+              pattern="[0-9]*[.]?[0-9]*"
               step={weightUnit === 'lbs' ? '1' : '0.5'}
               inputMode="decimal"
               value={set.weight || ''}
@@ -200,7 +228,7 @@ export const SetRow: React.FC<SetRowProps> = ({
                 }
               }}
               onChange={(e) => handleWeightChange(e.target.value)}
-              className={`w-full text-center rounded-xl py-2 px-1 pr-7 text-sm font-extrabold transition outline-none border ${
+              className={`numeric-set-input w-full text-center rounded-xl py-2 px-1 pr-7 text-sm font-extrabold transition outline-none border ${
                 isWeightFresh
                   ? 'bg-[#007AFF]/15 dark:bg-[#007AFF]/25 text-[#007AFF] border-[#007AFF] ring-2 ring-[#007AFF]/20'
                   : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E]'
@@ -214,7 +242,9 @@ export const SetRow: React.FC<SetRowProps> = ({
           {/* 횟수 (reps) 입력 */}
           <div className="flex-1 min-w-0 relative">
             <input
-              type="number"
+              ref={repsInputRef}
+              type="text"
+              pattern="[0-9]*"
               inputMode="numeric"
               value={set.reps || ''}
               placeholder="0"
@@ -229,7 +259,7 @@ export const SetRow: React.FC<SetRowProps> = ({
                 }
               }}
               onChange={(e) => handleRepsChange(e.target.value)}
-              className={`w-full text-center rounded-xl py-2 px-1 pr-5 text-sm font-extrabold transition outline-none border ${
+              className={`numeric-set-input w-full text-center rounded-xl py-2 px-1 pr-5 text-sm font-extrabold transition outline-none border ${
                 isRepsFresh
                   ? 'bg-[#007AFF]/15 dark:bg-[#007AFF]/25 text-[#007AFF] border-[#007AFF] ring-2 ring-[#007AFF]/20'
                   : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E]'

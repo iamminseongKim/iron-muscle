@@ -24,8 +24,9 @@
   }
 
   /* 2. 숫자 입력(무게/횟수)만 OS 콜아웃/돋보기 차단 및 텍스트 선택 핀(물방울 핸들) 방지 유지.
-     (SetRow의 포커스 후 첫 입력 덮어쓰기 로직이 네이티브 선택 UI가 없다는 전제로 동작함) */
-  input[type="number"] {
+     (.numeric-set-input은 SetRow의 무게/횟수 입력처럼 type="text"+inputMode로 바꾼 필드용 클래스 훅) */
+  input[type="number"],
+  .numeric-set-input {
     -webkit-touch-callout: none !important;
     -webkit-tap-highlight-color: transparent !important;
     user-select: none !important;
@@ -35,7 +36,7 @@
   /* 2-1. 메모/노트/커스텀 명칭 등 자유 텍스트 입력은 위 전역(*) 차단 규칙에서 제외하여
      복사/붙여넣기와 텍스트 선택이 정상 동작하도록 복원 */
   textarea,
-  input:not([type="number"]),
+  input:not([type="number"]):not(.numeric-set-input),
   select,
   [contenteditable="true"] {
     -webkit-touch-callout: default !important;
