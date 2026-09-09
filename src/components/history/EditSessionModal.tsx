@@ -345,34 +345,24 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             step="0.5"
                             inputMode="decimal"
                             value={set.weight}
-                            onFocus={(e) => {
-                              const t = e.currentTarget;
-                              t.select();
-                              setTimeout(() => t.select(), 30);
-                            }}
-                            onClick={(e) => e.currentTarget.select()}
+                            onFocus={() => window.getSelection()?.removeAllRanges()}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') e.currentTarget.blur();
                             }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'weight', parseFloat(e.target.value) || 0)}
-                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none"
+                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-[#007AFF]"
                           />
 
                           <input
                             type="number"
                             inputMode="numeric"
                             value={set.reps}
-                            onFocus={(e) => {
-                              const t = e.currentTarget;
-                              t.select();
-                              setTimeout(() => t.select(), 30);
-                            }}
-                            onClick={(e) => e.currentTarget.select()}
+                            onFocus={() => window.getSelection()?.removeAllRanges()}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') e.currentTarget.blur();
                             }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'reps', parseInt(e.target.value) || 0)}
-                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none"
+                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-[#007AFF]"
                           />
 
                           <input

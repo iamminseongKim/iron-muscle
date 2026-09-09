@@ -30,8 +30,18 @@ export const App: React.FC = () => {
     });
   };
 
-  // 1. 안드로이드 WebView 커서/물방울 핸들 잔존 버그 방지 전역 터치 리스너
+  // 1. 안드로이드 WebView 커서/물방울 핸들/시스템 복사 툴바 원천 차단 리스너
   useEffect(() => {
+    // 롱프레스 시 안드로이드 돋보기/복사/검색 팝업 차단
+    const handleContextMenu = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && target.tagName === 'INPUT' && (target as HTMLInputElement).type !== 'number') {
+        return;
+      }
+      e.preventDefault();
+      return false;
+    };
+
     const handleGlobalTouch = (e: TouchEvent | MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
@@ -49,9 +59,24 @@ export const App: React.FC = () => {
       }
     };
 
-    document.addEventListener('touchstart', handleGlobalTouch, { passive: true });
+    // 스크롤 시 커서 물방울 공중 잔존 방지
+    const handleScroll = () => {
+      if (document.activeElement && (document.activeElement as HTMLElement).blur) {
+        (document.activeElement as HTMLElement).blur();
+      }
+      window.getSelection()?.removeAllRanges();
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu, { capture: true });
+    document.addEventListener('touchstart', handleGlobalTouch, { passive: true, capture: true });
+    document.addEventListener('touchend', handleGlobalTouch, { passive: true, capture: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     return () => {
-      document.removeEventListener('touchstart', handleGlobalTouch);
+      document.removeEventListener('contextmenu', handleContextMenu, { capture: true });
+      document.removeEventListener('touchstart', handleGlobalTouch, { capture: true });
+      document.removeEventListener('touchend', handleGlobalTouch, { capture: true });
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 

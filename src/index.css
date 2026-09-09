@@ -3,30 +3,35 @@
 @tailwind utilities;
 
 @layer base {
+  /* 1. 앱 전체 모든 요소에서 텍스트 선택, 돋보기, 터치 핀(물방울) 원천 차단 */
+  *, *::before, *::after {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+
   body {
     background-color: #0B0C10;
     color: #F3F4F6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* 안드로이드 터치 시 파란색 하이라이트/커서 제거 */
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    overscroll-behavior-y: none;
   }
 
-  /* 버튼/인터렉티브 요소 터치 커서 잔존 버그 방지 */
-  button, a, [role="button"], label {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    user-select: none;
-    -webkit-user-select: none;
+  /* 2. 입력 필드 OS 콜아웃/돋보기 차단 및 텍스트 선택 핀 방지 */
+  input, textarea {
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
   }
 
-  /* 숫자 입력 필드는 선택 허용 및 스피너 제거 */
-  input, textarea, [contenteditable="true"] {
-    user-select: text;
-    -webkit-user-select: text;
-  }
-
+  /* 3. 숫자 입력 필드 스피너 제거 */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -35,11 +40,6 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
-}
-
-/* 모든 터치 인터랙션 잔상 방지 */
-* {
-  -webkit-tap-highlight-color: transparent !important;
 }
 
 /* Safe Area support for Android and iOS notched devices */

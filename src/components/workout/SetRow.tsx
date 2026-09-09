@@ -29,13 +29,72 @@ export const SetRow: React.FC<SetRowProps> = ({
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [isTempoModalOpen, setIsTempoModalOpen] = useState(false);
 
-  // 안드로이드/iOS 웹뷰에서 터치/클릭 시 기존 입력값 즉시 전체 선택 (원터치 덮어쓰기 지원)
-  const handleSelectAll = (e: React.FocusEvent<HTMLInputElement> | React.MouseEvent<HTMLInputElement>) => {
-    const target = e.currentTarget;
-    target.select();
-    // 모바일 브라우저 타이밍 이슈 오버라이드
-    requestAnimationFrame(() => target.select());
-    setTimeout(() => target.select(), 40);
+  // 안드로이드 네이티브 셀렉션 툴바(복사/잘라내기/번역) 및 물방울 핀 차단용 스마트 첫 입력 덮어쓰기 상태
+  const [isWeightFresh, setIsWeightFresh] = useState(false);
+  const [isRepsFresh, setIsRepsFresh] = useState(false);
+
+  const handleWeightFocus = () => {
+    setIsWeightFresh(true);
+    window.getSelection()?.removeAllRanges();
+  };
+
+  const handleWeightBlur = () => {
+    setIsWeightFresh(false);
+  };
+
+  const handleWeightChange = (rawVal: string) => {
+    if (isWeightFresh) {
+      setIsWeightFresh(false);
+      const prevStr = String(set.weight || '');
+      // 백스페이스로 길이가 줄어든 경우 전체 삭제
+      if (rawVal.length < prevStr.length) {
+        onUpdate({ ...set, weight: 0 });
+        return;
+      }
+      // 새로운 숫자 입력 시 기존 값을 덮어쓰고 새로 입력된 숫자만 채택
+      let newlyTyped = rawVal;
+      if (prevStr && rawVal.startsWith(prevStr)) {
+        newlyTyped = rawVal.slice(prevStr.length);
+      } else if (prevStr && rawVal.endsWith(prevStr)) {
+        newlyTyped = rawVal.slice(0, rawVal.length - prevStr.length);
+      }
+      const num = parseFloat(newlyTyped) || 0;
+      onUpdate({ ...set, weight: num });
+      return;
+    }
+    const num = parseFloat(rawVal) || 0;
+    onUpdate({ ...set, weight: num });
+  };
+
+  const handleRepsFocus = () => {
+    setIsRepsFresh(true);
+    window.getSelection()?.removeAllRanges();
+  };
+
+  const handleRepsBlur = () => {
+    setIsRepsFresh(false);
+  };
+
+  const handleRepsChange = (rawVal: string) => {
+    if (isRepsFresh) {
+      setIsRepsFresh(false);
+      const prevStr = String(set.reps || '');
+      if (rawVal.length < prevStr.length) {
+        onUpdate({ ...set, reps: 0 });
+        return;
+      }
+      let newlyTyped = rawVal;
+      if (prevStr && rawVal.startsWith(prevStr)) {
+        newlyTyped = rawVal.slice(prevStr.length);
+      } else if (prevStr && rawVal.endsWith(prevStr)) {
+        newlyTyped = rawVal.slice(0, rawVal.length - prevStr.length);
+      }
+      const num = parseInt(newlyTyped, 10) || 0;
+      onUpdate({ ...set, reps: num });
+      return;
+    }
+    const num = parseInt(rawVal, 10) || 0;
+    onUpdate({ ...set, reps: num });
   };
 
   const handleCycleSide = () => {
@@ -43,16 +102,6 @@ export const SetRow: React.FC<SetRowProps> = ({
     const nextSide: 'left' | 'right' | 'both' =
       current === 'both' ? 'left' : current === 'left' ? 'right' : 'both';
     onUpdate({ ...set, side: nextSide });
-  };
-
-  const handleWeightChange = (val: string) => {
-    const num = parseFloat(val) || 0;
-    onUpdate({ ...set, weight: num });
-  };
-
-  const handleRepsChange = (val: string) => {
-    const num = parseInt(val, 10) || 0;
-    onUpdate({ ...set, reps: num });
   };
 
   const handleRpeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -139,15 +188,19 @@ export const SetRow: React.FC<SetRowProps> = ({
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              onFocus={handleSelectAll}
-              onClick={handleSelectAll}
+              onFocus={handleWeightFocus}
+              onBlur={handleWeightBlur}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.currentTarget.blur();
                 }
               }}
               onChange={(e) => handleWeightChange(e.target.value)}
-              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-extrabold text-center rounded-xl py-2 px-1 pr-7 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
+              className={`w-full text-center rounded-xl py-2 px-1 pr-7 text-sm font-extrabold transition outline-none border ${
+                isWeightFresh
+                  ? 'bg-[#007AFF]/15 dark:bg-[#007AFF]/25 text-[#007AFF] border-[#007AFF] ring-2 ring-[#007AFF]/20'
+                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E]'
+              }`}
             />
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">
               {weightUnit}
@@ -164,15 +217,19 @@ export const SetRow: React.FC<SetRowProps> = ({
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              onFocus={handleSelectAll}
-              onClick={handleSelectAll}
+              onFocus={handleRepsFocus}
+              onBlur={handleRepsBlur}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.currentTarget.blur();
                 }
               }}
               onChange={(e) => handleRepsChange(e.target.value)}
-              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-extrabold text-center rounded-xl py-2 px-1 pr-5 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
+              className={`w-full text-center rounded-xl py-2 px-1 pr-5 text-sm font-extrabold transition outline-none border ${
+                isRepsFresh
+                  ? 'bg-[#007AFF]/15 dark:bg-[#007AFF]/25 text-[#007AFF] border-[#007AFF] ring-2 ring-[#007AFF]/20'
+                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E]'
+              }`}
             />
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">회</span>
           </div>
