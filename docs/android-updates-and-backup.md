@@ -17,10 +17,20 @@
 
 - `ANDROID_KEYSTORE_BASE64`: 키 파일을 Base64로 변환한 내용
 - `ANDROID_KEYSTORE_PASSWORD`: 키 저장소 비밀번호
-- `ANDROID_KEY_ALIAS`: 예시 명령에서는 `iron-muscle`
-- `ANDROID_KEY_PASSWORD`: 키 비밀번호 (PKCS12 기본 키 저장소는 보통 저장소 비밀번호와 동일)
+- `ANDROID_KEY_ALIAS`: `iron-muscle`
+- `ANDROID_KEY_PASSWORD`: 키 비밀번호
 
-키 파일은 별도 안전한 위치에 반드시 백업합니다. 이 환경은 GitHub CLI 로그인이 없어 Secrets를 등록하지 않았습니다. Secrets가 없으면 배포 빌드는 실패하도록 구성했습니다. 임시 서명 APK를 다시 배포하지 않습니다.
+### 다른 PC에서 키 연동 및 로컬 빌드
+GitHub Actions Secrets는 보안상 일방향(Write-only) 저장소이므로, 다른 PC에서 로컬 빌드 시에도 동일한 서명키를 안전하게 공유할 수 있도록 GitHub 비공개 저장소(`iron-muscle-keys`)를 생성하여 보관했습니다.
+
+다른 PC에서 아래 명령어로 키를 받아 로컬 빌드 환경을 1초 만에 구성할 수 있습니다:
+```bash
+# 다른 PC에서 1회 클론
+git clone https://github.com/iamminseongKim/iron-muscle-keys.git ~/.iron-muscle-keystore
+
+# 로컬 릴리즈 빌드 전 환경변수 로드
+source ~/.iron-muscle-keystore/setup-env.sh
+```
 
 CI 릴리즈는 `assembleRelease`, `versionCode=1000+github.run_number`를 사용합니다. 같은 워크플로를 유지하고 이전보다 낮은 versionCode로 배포하지 않습니다. PR의 디버그 APK는 확인용이며 릴리즈에 게시하지 않습니다. 로컬 릴리즈 빌드는 같은 키 환경 변수와 충분히 높은 `ANDROID_VERSION_CODE`를 사용해야 합니다.
 
