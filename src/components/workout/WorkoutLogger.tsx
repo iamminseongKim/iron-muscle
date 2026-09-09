@@ -212,8 +212,34 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   const handleUpdateExercise = (index: number, updatedItem: WorkoutExercise) => {
     if (!session) return;
-    const newExercises = [...session.exercises];
+    const prevItem = session.exercises[index];
+    let newExercises = [...session.exercises];
     newExercises[index] = updatedItem;
+
+    // 슈퍼세트/컴파운드세트/자이언트세트로 묶인 종목: 세트 완료 상태를 그룹 내 모든 종목에 동기화
+    // (세트 개수가 바뀌는 추가/삭제와 헷갈리지 않도록 세트 개수가 동일할 때만 비교)
+    if (
+      updatedItem.groupId &&
+      prevItem &&
+      prevItem.sets.length === updatedItem.sets.length
+    ) {
+      const changedSetIdx = updatedItem.sets.findIndex(
+        (s, i) => prevItem.sets[i] && prevItem.sets[i].completed !== s.completed
+      );
+
+      if (changedSetIdx !== -1) {
+        const newCompleted = updatedItem.sets[changedSetIdx].completed;
+        newExercises = newExercises.map((ex) => {
+          if (ex.id === updatedItem.id || ex.groupId !== updatedItem.groupId) return ex;
+          const targetSet = ex.sets[changedSetIdx];
+          if (!targetSet || targetSet.completed === newCompleted) return ex;
+          const newSets = [...ex.sets];
+          newSets[changedSetIdx] = { ...targetSet, completed: newCompleted };
+          return { ...ex, sets: newSets };
+        });
+      }
+    }
+
     const updated = { ...session, exercises: newExercises };
     setSession(updated);
     saveActiveSession(updated);
