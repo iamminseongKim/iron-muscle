@@ -58,6 +58,9 @@ npm run dev -- --host
 2. 최신 릴리즈의 Assets에서 **`IronMuscle-vX.X.X.apk`** 링크를 터치하여 다운로드합니다.
 3. 다운로드가 완료된 `.apk` 파일을 터치하여 **'출처를 알 수 없는 앱 설치 허용'** 후 설치를 완료합니다.
 
+> 💡 **v3.7.2+ 무중단 덮어쓰기 업데이트**:  
+> v3.7.2부터 일관된 영구 릴리즈 서명키가 적용되어, 향후 새 버전이 나오더라도 **앱을 삭제할 필요 없이 다운로드한 APK를 바로 설치하여 기존 운동 기록을 100% 보존한 채 덮어쓰기 업데이트**가 가능합니다.
+
 ---
 
 ## 🌟 핵심 기능 및 특장점
@@ -146,6 +149,20 @@ npm run build
 # 5. 모바일 동기화 (Capacitor Sync)
 npx cap sync
 ```
+
+### 🔐 다른 PC에서 개발 시 Android 릴리즈 서명키 동기화
+다른 PC에서 로컬 릴리즈 빌드를 진행할 경우, 비공개 키 저장소(`iron-muscle-keys`)를 1회 클론하여 환경변수를 로드합니다:
+```bash
+# 1. 키스토어 클론 (최초 1회)
+git clone https://github.com/iamminseongKim/iron-muscle-keys.git ~/.iron-muscle-keystore
+
+# 2. 서명 환경변수 로드
+source ~/.iron-muscle-keystore/setup-env.sh
+
+# 3. 릴리즈 APK 빌드
+cd android && ./gradlew assembleRelease
+```
+> ※ GitHub Actions를 통한 클라우드 릴리즈 빌드는 GitHub Secrets가 이미 등록되어 있어 다른 PC에서 별도 설정 없이 태그 푸시만으로 자동 서명 배포됩니다.
 
 ---
 

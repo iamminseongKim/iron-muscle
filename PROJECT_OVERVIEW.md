@@ -285,3 +285,42 @@ npx cap copy
 # 또는 전체 sync (Xcode/Android Studio 설치 시)
 npm run cap:sync
 ```
+
+---
+
+## 9. 다른 PC 개발 환경 세팅 & 서명키 동기화 (Multi-PC Setup)
+
+다른 PC(집/회사 등)에서 이 프로젝트를 새로 클론하여 개발을 이어갈 때의 가이드입니다.
+
+### 1. 코드베이스 클론 및 개발 환경 준비
+```bash
+git clone https://github.com/iamminseongKim/iron-muscle.git
+cd iron-muscle
+npm install
+npm test
+npm run build
+```
+
+### 2. Android 릴리즈 서명키 동기화 (Private Keystore 저장소)
+- GitHub Actions Secrets는 보안상 "쓰기 전용"이므로, 로컬 환경에서 동일한 서명키를 공유하기 위해 비공개 저장소(`iron-muscle-keys`)를 운영합니다.
+- 다른 PC에서 아래 명령어를 1회 실행하여 서명키를 동기화합니다:
+```bash
+# 본인 계정 전용 비공개 키스토어 저장소 클론
+git clone https://github.com/iamminseongKim/iron-muscle-keys.git ~/.iron-muscle-keystore
+
+# 로컬 릴리즈 빌드 전 환경변수 자동 로드
+source ~/.iron-muscle-keystore/setup-env.sh
+```
+
+### 3. 로컬 릴리즈 서명 APK 빌드
+```bash
+# 환경변수 적용 후 Android 릴리즈 빌드 실행
+cd android
+./gradlew assembleRelease
+# 결과물: android/app/build/outputs/apk/release/app-release.apk
+```
+
+### 4. GitHub Actions 클라우드 릴리즈 빌드
+- 저장소에 이미 `ANDROID_KEYSTORE_BASE64` 등 4종의 GitHub Secrets가 등록되어 있으므로,
+- 다른 PC에서는 코드 수정 후 `git push origin main` 및 `git tag vX.X.X && git push origin vX.X.X`만 수행하면 클라우드에서 자동으로 동일한 서명키로 서명된 APK가 빌드되어 GitHub Releases에 배포됩니다.
+
