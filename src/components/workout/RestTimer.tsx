@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Play, Pause, RotateCcw, X, Bell } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
 
@@ -66,11 +66,11 @@ export const RestTimer: React.FC<RestTimerProps> = ({
     <div className={`fixed bottom-20 left-4 right-4 z-40 transition-all transform ${
       isFlashing ? 'animate-bounce shadow-[0_0_25px_#FF334B]' : ''
     }`}>
-      <div className="bg-[#141721]/95 backdrop-blur-md border border-gray-700/80 rounded-2xl p-3 shadow-2xl flex flex-col gap-2">
+      <div className="bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-2xl p-3 shadow-2xl flex flex-col gap-2">
         {/* 프로그레스 바 */}
-        <div className="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
+        <div className="w-full bg-gray-200 dark:bg-[#2C2C2E] h-1.5 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-amber-500 to-[#FF334B] transition-all duration-300"
+            className="h-full bg-gradient-to-r from-amber-500 to-[#FF2D55] transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -79,14 +79,14 @@ export const RestTimer: React.FC<RestTimerProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-xl flex items-center justify-center ${
-              remainingSeconds === 0 ? 'bg-red-500/30 text-red-400' : 'bg-amber-500/20 text-amber-400'
+              remainingSeconds === 0 ? 'bg-red-500/20 text-red-500' : 'bg-[#FF9500]/15 text-[#FF9500]'
             }`}>
               <Bell size={18} className={isFlashing ? 'animate-spin' : ''} />
             </div>
             <div>
               <span className="text-[11px] text-gray-400 font-bold block">휴식 시간</span>
               <span className={`text-xl font-black font-mono tracking-tight ${
-                remainingSeconds === 0 ? 'text-red-400 animate-pulse' : 'text-white'
+                remainingSeconds === 0 ? 'text-red-500 animate-pulse' : 'text-[#1D1D1F] dark:text-white'
               }`}>
                 {remainingSeconds === 0 ? '휴식 완료!' : formatTime(remainingSeconds)}
               </span>
@@ -98,7 +98,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
             <button
               type="button"
               onClick={() => adjustTime(-10)}
-              className="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold rounded-lg transition"
+              className="px-2 py-1 bg-gray-100 dark:bg-[#2C2C2E] hover:opacity-80 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-lg transition"
               title="-10초"
             >
               -10
@@ -106,7 +106,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
             <button
               type="button"
               onClick={() => adjustTime(10)}
-              className="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold rounded-lg transition"
+              className="px-2 py-1 bg-gray-100 dark:bg-[#2C2C2E] hover:opacity-80 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-lg transition"
               title="+10초"
             >
               +10
@@ -115,7 +115,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
               type="button"
               onClick={togglePlay}
               className={`p-2 rounded-xl font-bold transition ${
-                isActive ? 'bg-gray-700 text-amber-300' : 'bg-amber-500 text-white shadow-md'
+                isActive ? 'bg-gray-200 dark:bg-[#2C2C2E] text-amber-500' : 'bg-[#FF9500] text-white shadow-md'
               }`}
             >
               {isActive ? <Pause size={16} /> : <Play size={16} />}
@@ -123,7 +123,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
             <button
               type="button"
               onClick={resetTimer}
-              className="p-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition"
+              className="p-2 bg-gray-100 dark:bg-[#2C2C2E] hover:opacity-80 text-gray-500 dark:text-gray-400 rounded-xl transition"
               title="리셋"
             >
               <RotateCcw size={16} />
@@ -131,7 +131,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 text-gray-400 hover:text-white rounded-lg transition"
+              className="p-1.5 text-gray-400 hover:text-black dark:hover:text-white rounded-lg transition"
               title="닫기"
             >
               <X size={16} />

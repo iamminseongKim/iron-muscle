@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { X, Clock, Zap, Info } from 'lucide-react';
 import { Tempo } from '../../types/workout';
 
@@ -42,20 +42,23 @@ export const TempoModal: React.FC<TempoModalProps> = ({
   const totalSecPerRep = eccentric + pause + concentric;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#141721] border border-gray-700/80 rounded-2xl w-full max-w-sm overflow-hidden flex flex-col shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-sm overflow-hidden flex flex-col shadow-2xl">
         {/* Modal Header */}
-        <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-gradient-to-r from-gray-900 to-[#141721]">
+        <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+            <div className="p-1.5 rounded-xl bg-[#FF9500]/15 text-[#FF9500]">
               <Clock size={18} />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">수축·이완 템포 (TUT)</h3>
+              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">수축·이완 템포 (TUT)</h3>
               <p className="text-xs text-gray-400">근육 긴장 지속시간을 통한 점진적 과부하</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition">
+          <button 
+            onClick={onClose} 
+            className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition"
+          >
             <X size={18} />
           </button>
         </div>
@@ -64,63 +67,69 @@ export const TempoModal: React.FC<TempoModalProps> = ({
         <div className="p-4 space-y-4">
           {/* 템포 입력 박스 3개 */}
           <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="p-3 bg-[#1A1E2C] rounded-xl border border-gray-800">
-              <span className="text-[11px] text-gray-400 font-semibold block mb-1">이완 (내릴때)</span>
-              <div className="flex items-center justify-center gap-1.5">
+            <div className="p-2.5 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-2xl border border-black/5 dark:border-white/5">
+              <span className="text-[11px] text-gray-500 dark:text-gray-400 font-bold block mb-1.5 whitespace-nowrap">이완 (내릴때)</span>
+              <div className="flex items-center justify-center gap-1">
                 <button
                   type="button"
                   onClick={() => setEccentric(Math.max(1, eccentric - 1))}
-                  className="w-6 h-6 rounded bg-gray-800 text-gray-300 font-bold hover:bg-gray-700"
+                  className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   -
                 </button>
-                <span className="text-lg font-black text-amber-400">{eccentric}초</span>
+                <span className="text-sm font-black text-[#FF9500] font-mono whitespace-nowrap shrink-0 min-w-[28px] text-center">
+                  {eccentric}초
+                </span>
                 <button
                   type="button"
                   onClick={() => setEccentric(Math.min(8, eccentric + 1))}
-                  className="w-6 h-6 rounded bg-gray-800 text-gray-300 font-bold hover:bg-gray-700"
+                  className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            <div className="p-3 bg-[#1A1E2C] rounded-xl border border-gray-800">
-              <span className="text-[11px] text-gray-400 font-semibold block mb-1">정지 (바닥에서)</span>
-              <div className="flex items-center justify-center gap-1.5">
+            <div className="p-2.5 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-2xl border border-black/5 dark:border-white/5">
+              <span className="text-[11px] text-gray-500 dark:text-gray-400 font-bold block mb-1.5 whitespace-nowrap">정지 (바닥)</span>
+              <div className="flex items-center justify-center gap-1">
                 <button
                   type="button"
                   onClick={() => setPause(Math.max(0, pause - 1))}
-                  className="w-6 h-6 rounded bg-gray-800 text-gray-300 font-bold hover:bg-gray-700"
+                  className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   -
                 </button>
-                <span className="text-lg font-black text-blue-400">{pause}초</span>
+                <span className="text-sm font-black text-[#007AFF] font-mono whitespace-nowrap shrink-0 min-w-[28px] text-center">
+                  {pause}초
+                </span>
                 <button
                   type="button"
                   onClick={() => setPause(Math.min(5, pause + 1))}
-                  className="w-6 h-6 rounded bg-gray-800 text-gray-300 font-bold hover:bg-gray-700"
+                  className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            <div className="p-3 bg-[#1A1E2C] rounded-xl border border-gray-800">
-              <span className="text-[11px] text-gray-400 font-semibold block mb-1">수축 (밀때)</span>
-              <div className="flex items-center justify-center gap-1.5">
+            <div className="p-2.5 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-2xl border border-black/5 dark:border-white/5">
+              <span className="text-[11px] text-gray-500 dark:text-gray-400 font-bold block mb-1.5 whitespace-nowrap">수축 (밀때)</span>
+              <div className="flex items-center justify-center gap-1">
                 <button
                   type="button"
                   onClick={() => setConcentric(Math.max(1, concentric - 1))}
-                  className="w-6 h-6 rounded bg-gray-800 text-gray-300 font-bold hover:bg-gray-700"
+                  className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   -
                 </button>
-                <span className="text-lg font-black text-red-400">{concentric}초</span>
+                <span className="text-sm font-black text-[#FF2D55] font-mono whitespace-nowrap shrink-0 min-w-[28px] text-center">
+                  {concentric}초
+                </span>
                 <button
                   type="button"
                   onClick={() => setConcentric(Math.min(5, concentric + 1))}
-                  className="w-6 h-6 rounded bg-gray-800 text-gray-300 font-bold hover:bg-gray-700"
+                  className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   +
                 </button>
@@ -128,10 +137,10 @@ export const TempoModal: React.FC<TempoModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-between px-3 py-2 bg-gray-900/60 rounded-xl border border-gray-800 text-xs">
-            <span className="text-gray-400 font-medium">1회 반복당 긴장 시간:</span>
-            <span className="font-extrabold text-white text-sm">
-              총 <span className="text-amber-400">{totalSecPerRep}초</span> (10회 시 {totalSecPerRep * 10}초 지속)
+          <div className="flex items-center justify-between px-3 py-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-2xl text-xs font-semibold">
+            <span className="text-gray-500 dark:text-gray-400">1회 반복당 긴장 시간:</span>
+            <span className="font-extrabold text-[#1D1D1F] dark:text-white text-sm">
+              총 <span className="text-[#FF9500] font-black">{totalSecPerRep}초</span> (10회 시 {totalSecPerRep * 10}초 지속)
             </span>
           </div>
 
@@ -143,36 +152,36 @@ export const TempoModal: React.FC<TempoModalProps> = ({
                 key={idx}
                 type="button"
                 onClick={() => applyPreset(p.tempo)}
-                className="w-full text-left p-2.5 bg-[#1A1E2C] hover:bg-gray-800 rounded-xl border border-gray-800/80 transition flex items-center justify-between"
+                className="w-full text-left p-2.5 bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-gray-200 dark:hover:bg-[#3A3A3C] rounded-2xl border border-black/5 dark:border-white/5 transition flex items-center justify-between"
               >
                 <div>
-                  <span className="text-xs font-bold text-gray-200 block">{p.label}</span>
-                  <span className="text-[11px] text-gray-500">{p.sub}</span>
+                  <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">{p.label}</span>
+                  <span className="text-[11px] text-gray-400">{p.sub}</span>
                 </div>
-                <Zap size={14} className="text-amber-400 opacity-60" />
+                <Zap size={14} className="text-[#FF9500] shrink-0" />
               </button>
             ))}
           </div>
 
-          <div className="flex items-start gap-2 p-2.5 bg-blue-950/30 rounded-xl border border-blue-900/40 text-[11px] text-blue-300 leading-relaxed">
+          <div className="flex items-start gap-2 p-2.5 bg-blue-500/10 dark:bg-blue-950/30 rounded-2xl border border-blue-500/20 text-[11px] text-blue-700 dark:text-blue-300 leading-relaxed">
             <Info size={14} className="shrink-0 mt-0.5" />
             <span>무게가 늘지 않더라도, 이완(네거티브) 속도를 1초 늘리면 근육에 실질적인 과부하가 발생합니다!</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-gray-800 bg-[#10131B] flex gap-2">
+        <div className="p-3.5 border-t border-black/5 dark:border-white/10 bg-[#F9F9FB] dark:bg-[#161618] flex gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 bg-gray-800 hover:text-white transition"
+            className="flex-1 py-3 rounded-2xl text-xs font-bold text-gray-600 dark:text-gray-300 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-[#3A3A3C] transition shadow-xs"
           >
             취소
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 py-2 rounded-xl text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 transition shadow-lg shadow-amber-900/30"
+            className="flex-1 py-3 rounded-2xl text-xs font-black text-white bg-[#FF9500] hover:bg-amber-600 transition shadow-md shadow-amber-500/20 active:scale-98"
           >
             템포 적용하기
           </button>

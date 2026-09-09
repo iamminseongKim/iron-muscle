@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { X, MessageSquare, Tag, Check } from 'lucide-react';
 
 interface SetCommentModalProps {
@@ -41,20 +41,23 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#141721] border border-gray-700/80 rounded-2xl w-full max-w-sm overflow-hidden flex flex-col shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-sm overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
-        <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-gradient-to-r from-gray-900 to-[#141721]">
+        <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400">
+            <div className="p-1.5 rounded-xl bg-[#007AFF]/15 text-[#007AFF]">
               <MessageSquare size={18} />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">{setNumber}세트 세부 코멘트</h3>
+              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">{setNumber}세트 세부 코멘트</h3>
               <p className="text-xs text-gray-400">세트별 특이사항 및 태그 달기</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition">
+          <button 
+            onClick={onClose} 
+            className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition"
+          >
             <X size={18} />
           </button>
         </div>
@@ -63,8 +66,8 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
         <div className="p-4 space-y-4">
           {/* 빠른 태그 선택 */}
           <div>
-            <span className="text-xs font-bold text-gray-400 block mb-2 flex items-center gap-1.5">
-              <Tag size={13} />
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2 flex items-center gap-1.5">
+              <Tag size={13} className="text-[#007AFF]" />
               빠른 세트 태그
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -75,13 +78,13 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
                     key={tag}
                     type="button"
                     onClick={() => toggleTag(tag)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 ${
+                    className={`px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
                       isSelected
-                        ? 'bg-blue-500 text-white shadow-md'
-                        : 'bg-[#1E2333] text-gray-400 hover:text-gray-200 border border-gray-800'
+                        ? 'bg-[#007AFF] text-white shadow-xs'
+                        : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
                     }`}
                   >
-                    {isSelected && <Check size={11} />}
+                    {isSelected && <Check size={12} strokeWidth={3} />}
                     {tag}
                   </button>
                 );
@@ -91,30 +94,30 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
 
           {/* 메모 텍스트 입력창 */}
           <div>
-            <span className="text-xs font-bold text-gray-400 block mb-1.5">세트 메모 (선택사항)</span>
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-1.5">세트 메모 (선택사항)</span>
             <textarea
               rows={3}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="예: 3회차 때 허리 긴장 풀림, 다음엔 스트랩 챙길 것"
-              className="w-full bg-[#1A1E2C] border border-gray-800 rounded-xl p-3 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition resize-none"
+              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition resize-none font-medium"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-3.5 border-t border-gray-800 bg-[#10131B] flex gap-2">
+        <div className="p-3.5 border-t border-black/5 dark:border-white/10 bg-[#F9F9FB] dark:bg-[#161618] flex gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 bg-gray-800 hover:text-white transition"
+            className="flex-1 py-3 rounded-2xl text-xs font-bold text-gray-600 dark:text-gray-300 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-[#3A3A3C] transition shadow-xs"
           >
             취소
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 transition shadow-lg shadow-blue-900/30"
+            className="flex-1 py-3 rounded-2xl text-xs font-black text-white bg-[#007AFF] hover:bg-blue-600 transition shadow-md shadow-blue-500/20 active:scale-98"
           >
             저장
           </button>

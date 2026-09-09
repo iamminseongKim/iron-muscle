@@ -30,12 +30,12 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-30 bg-[#F2F2F7]/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/5 dark:border-white/10 px-4 py-2.5">
       <div className="max-w-lg mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-[#FF2D55] to-[#FF9500] flex items-center justify-center shadow-xs">
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="w-7 h-7 shrink-0 rounded-xl bg-gradient-to-tr from-[#FF2D55] to-[#FF9500] flex items-center justify-center shadow-xs">
             <Flame size={15} className="text-white" />
           </div>
           <div>
-            <h1 className="font-black text-sm tracking-tight text-[#1D1D1F] dark:text-white flex items-center gap-1">
+            <h1 className="font-black text-sm tracking-tight text-[#1D1D1F] dark:text-white flex items-center gap-1 whitespace-nowrap">
               IRON <span className="text-[#FF2D55]">MUSCLE</span>
             </h1>
           </div>

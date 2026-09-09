@@ -416,16 +416,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Set Header */}
-      <div className="px-4 pt-3 pb-1 flex items-center justify-between text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
-        <div className="flex items-center gap-2.5">
-          <span className="w-8 text-center">세트</span>
-          <span className="w-16 text-center">이전 기록</span>
-          <span className="flex-1 min-w-[62px] text-center">무게(kg)</span>
-          <span className="flex-1 min-w-[54px] text-center">횟수</span>
-          <span className="w-16 text-center">강도(RPE)</span>
-          <span className="w-16 text-center">템포/메모</span>
-          <span className="w-8 text-center">완료</span>
-        </div>
+      <div className="px-[18px] sm:px-5 pt-3 pb-1.5 flex items-center gap-2 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
+        <span className="w-8 shrink-0 text-center">세트</span>
+        <span className="w-16 shrink-0 text-center">이전 기록</span>
+        <span className="flex-1 text-center font-bold">무게 (kg)</span>
+        <span className="flex-1 text-center font-bold">횟수</span>
+        <span className="w-9 shrink-0 text-center">완료</span>
       </div>
 
       {/* Sets List */}

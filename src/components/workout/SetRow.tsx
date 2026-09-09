@@ -72,20 +72,21 @@ export const SetRow: React.FC<SetRowProps> = ({
 
   return (
     <>
-      <div className={`p-3 rounded-2xl transition-all border ${
+      <div className={`p-2.5 sm:p-3 rounded-2xl transition-all border ${
         set.completed
-          ? 'bg-white dark:bg-[#1C1C1E] border-[#34C759]/40 shadow-sm'
+          ? 'bg-[#34C759]/5 dark:bg-[#34C759]/10 border-[#34C759]/40 shadow-xs'
           : 'bg-white dark:bg-[#1C1C1E] border-black/5 dark:border-white/5 hover:border-black/10'
       }`}>
-        <div className="flex items-center gap-2.5">
+        {/* Line 1: Core Inputs (Set #, Previous Record, Weight, Reps, Complete Check) */}
+        <div className="flex items-center gap-2">
           {/* 세트 번호 및 편측(L/R) 선택 */}
-          <div className="flex flex-col items-center justify-center min-w-[30px]">
-            <span className="text-xs font-black text-gray-400">#{index + 1}</span>
+          <div className="w-8 shrink-0 flex flex-col items-center justify-center">
+            <span className="text-xs font-black text-gray-500 dark:text-gray-400">#{index + 1}</span>
             {executionMode === 'unilateral' && (
               <button
                 type="button"
                 onClick={handleCycleSide}
-                className={`mt-0.5 px-1.5 py-0.5 text-[9px] font-black rounded-md transition ${
+                className={`mt-0.5 px-1 py-0.2 text-[9px] font-black rounded-md transition ${
                   set.side === 'left'
                     ? 'bg-[#007AFF] text-white shadow-xs'
                     : set.side === 'right'
@@ -94,139 +95,148 @@ export const SetRow: React.FC<SetRowProps> = ({
                 }`}
                 title="클릭하여 좌(L) / 우(R) / 양쪽 전환"
               >
-                {set.side === 'left' ? '좌(L)' : set.side === 'right' ? '우(R)' : '양쪽'}
+                {set.side === 'left' ? '좌' : set.side === 'right' ? '우' : '양'}
               </button>
             )}
           </div>
 
           {/* 지난번 기록 대조 */}
-          <div className="w-16 text-center">
+          <div className="w-16 shrink-0 text-center">
             {set.previousWeight !== undefined && set.previousReps !== undefined ? (
-              <span className="text-[11px] font-semibold text-gray-400">
+              <span className="text-[11px] font-mono font-bold text-gray-400 whitespace-nowrap block">
                 {set.previousWeight}k × {set.previousReps}
               </span>
             ) : (
-              <span className="text-[11px] text-gray-300 dark:text-gray-600">-</span>
+              <span className="text-[11px] text-gray-300 dark:text-gray-600 block">-</span>
             )}
           </div>
 
           {/* 중량 (kg) 입력 */}
-          <div className="flex-1 min-w-[62px]">
-            <div className="relative flex items-center">
-              <input
-                type="number"
-                step="0.5"
-                value={set.weight || ''}
-                placeholder="0"
-                onChange={(e) => handleWeightChange(e.target.value)}
-                className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-bold text-center rounded-xl py-2 px-1 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
-              />
-              <span className="absolute right-1.5 text-[10px] text-gray-400 font-semibold pointer-events-none">kg</span>
-            </div>
+          <div className="flex-1 min-w-0 relative">
+            <input
+              type="number"
+              step="0.5"
+              value={set.weight || ''}
+              placeholder="0"
+              onChange={(e) => handleWeightChange(e.target.value)}
+              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-extrabold text-center rounded-xl py-2 px-1 pr-6 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
+            />
+            <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">kg</span>
           </div>
 
           {/* 횟수 (reps) 입력 */}
-          <div className="flex-1 min-w-[54px]">
-            <div className="relative flex items-center">
-              <input
-                type="number"
-                value={set.reps || ''}
-                placeholder="0"
-                onChange={(e) => handleRepsChange(e.target.value)}
-                className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-bold text-center rounded-xl py-2 px-1 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
-              />
-              <span className="absolute right-1.5 text-[10px] text-gray-400 font-semibold pointer-events-none">회</span>
-            </div>
-          </div>
-
-          {/* RPE 선택 드롭다운 */}
-          <div className="w-16">
-            <select
-              value={set.rpe !== undefined ? set.rpe : ''}
-              onChange={handleRpeChange}
-              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-amber-500 dark:text-amber-400 font-bold text-center rounded-xl py-2 px-1 text-xs border border-transparent focus:border-amber-400 outline-none cursor-pointer"
-            >
-              <option value="" className="text-gray-400">RPE</option>
-              <option value="10">10 (한계)</option>
-              <option value="9.5">9.5</option>
-              <option value="9">9 (RIR 1)</option>
-              <option value="8.5">8.5</option>
-              <option value="8">8 (RIR 2)</option>
-              <option value="7.5">7.5</option>
-              <option value="7">7 (RIR 3)</option>
-              <option value="6.5">6.5</option>
-              <option value="6">6 (웜업)</option>
-            </select>
-          </div>
-
-          {/* 템포 & 메모 버튼 */}
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setIsTempoModalOpen(true)}
-              className={`p-2 rounded-xl transition ${
-                hasTempo
-                  ? 'bg-amber-500/15 text-[#FF9500]'
-                  : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5'
-              }`}
-              title="수축/이완 템포(TUT)"
-            >
-              <Clock size={16} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsCommentModalOpen(true)}
-              className={`p-2 rounded-xl transition ${
-                hasCommentOrTags
-                  ? 'bg-blue-500/15 text-[#007AFF]'
-                  : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-black/5 dark:hover:bg-white/5'
-              }`}
-              title="세트별 메모"
-            >
-              <MessageSquare size={16} />
-            </button>
+          <div className="flex-1 min-w-0 relative">
+            <input
+              type="number"
+              value={set.reps || ''}
+              placeholder="0"
+              onChange={(e) => handleRepsChange(e.target.value)}
+              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-extrabold text-center rounded-xl py-2 px-1 pr-5 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
+            />
+            <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">회</span>
           </div>
 
           {/* 세트 완료 체크 버튼 (애플 스타일 라운드 체크) */}
           <button
             type="button"
             onClick={handleToggleComplete}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+            className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center transition-all ${
               set.completed
-                ? 'bg-[#34C759] text-white shadow-sm scale-105'
-                : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+                ? 'bg-[#34C759] text-white shadow-sm scale-105 active:scale-95'
+                : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 active:scale-95'
             }`}
           >
             <Check size={18} strokeWidth={2.5} />
           </button>
+        </div>
 
-          {/* 삭제 */}
+        {/* Line 2: Set Options & Micro-actions */}
+        <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between gap-1 text-xs">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* RPE 드롭다운 칩 */}
+            <div className="relative inline-flex items-center">
+              <select
+                value={set.rpe !== undefined ? set.rpe : ''}
+                onChange={handleRpeChange}
+                className={`appearance-none font-bold text-[11px] rounded-lg pl-2 pr-5 py-1 outline-none cursor-pointer transition border ${
+                  set.rpe !== undefined
+                    ? 'bg-amber-500/15 text-[#FF9500] border-amber-500/30'
+                    : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 dark:text-gray-400 border-transparent hover:border-black/10'
+                }`}
+              >
+                <option value="" className="text-gray-400">RPE 선택</option>
+                <option value="10">RPE 10 (한계)</option>
+                <option value="9.5">RPE 9.5</option>
+                <option value="9">RPE 9 (RIR 1)</option>
+                <option value="8.5">RPE 8.5</option>
+                <option value="8">RPE 8 (RIR 2)</option>
+                <option value="7.5">RPE 7.5</option>
+                <option value="7">RPE 7 (RIR 3)</option>
+                <option value="6.5">RPE 6.5</option>
+                <option value="6">RPE 6 (웜업)</option>
+              </select>
+              <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[8px] text-gray-400 pointer-events-none">▼</span>
+            </div>
+
+            {/* 템포 버튼 */}
+            <button
+              type="button"
+              onClick={() => setIsTempoModalOpen(true)}
+              className={`px-2 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 transition ${
+                hasTempo
+                  ? 'bg-amber-500/15 text-[#FF9500]'
+                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
+              }`}
+              title="수축/이완 템포"
+            >
+              <Clock size={12} />
+              <span className="whitespace-nowrap">
+                {hasTempo ? `${set.tempo?.eccentric}-${set.tempo?.pause}-${set.tempo?.concentric}s` : '템포'}
+              </span>
+            </button>
+
+            {/* 메모 버튼 */}
+            <button
+              type="button"
+              onClick={() => setIsCommentModalOpen(true)}
+              className={`px-2 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 transition ${
+                hasCommentOrTags
+                  ? 'bg-blue-500/15 text-[#007AFF]'
+                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
+              }`}
+              title="세트별 메모/태그"
+            >
+              <MessageSquare size={12} />
+              <span className="whitespace-nowrap">
+                {hasCommentOrTags ? '메모' : '메모'}
+              </span>
+            </button>
+
+            {/* 실제 휴식 시간 표시 */}
+            {hasRestTime && (
+              <span className="px-2 py-1 rounded-lg bg-[#34C759]/10 text-[#34C759] text-[11px] font-bold flex items-center gap-1 whitespace-nowrap">
+                <Timer size={12} />
+                {set.restSeconds}초 휴식
+              </span>
+            )}
+          </div>
+
+          {/* 삭제 버튼 */}
           <button
             type="button"
             onClick={onDelete}
-            className="p-1 text-gray-300 dark:text-gray-600 hover:text-red-500 transition"
+            className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition shrink-0 ml-auto"
+            title="세트 삭제"
           >
             <X size={15} />
           </button>
         </div>
 
-        {/* 세부 배지 (실제 휴식 시간, 템포, 태그, 코멘트) */}
-        {(hasCommentOrTags || hasTempo || hasRestTime) && (
-          <div className="mt-2.5 pt-2 border-t border-black/5 dark:border-white/5 flex flex-wrap items-center gap-1.5 text-[11px]">
-            {/* 사용자가 요청한 세트별 실제 쉰 시간 배지 */}
-            {hasRestTime && (
-              <span className="px-2 py-0.5 rounded-md bg-green-500/10 text-[#34C759] font-bold flex items-center gap-1">
-                <Timer size={11} />
-                {set.restSeconds}초 휴식
-              </span>
-            )}
-            {hasTempo && (
-              <span className="px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] font-mono font-semibold">
-                템포 {set.tempo?.eccentric}-{set.tempo?.pause}-{set.tempo?.concentric}s
-              </span>
-            )}
+        {/* 메모 내용이나 태그가 있을 때 추가 프리뷰 노출 */}
+        {hasCommentOrTags && (
+          <div className="mt-1.5 pt-1.5 border-t border-black/5 dark:border-white/5 flex flex-wrap items-center gap-1 text-[11px]">
             {set.tags?.map((t) => (
-              <span key={t} className="px-2 py-0.5 rounded-md bg-blue-500/10 text-[#007AFF] font-semibold">
+              <span key={t} className="px-1.5 py-0.5 rounded-md bg-[#007AFF]/10 text-[#007AFF] font-semibold">
                 #{t}
               </span>
             ))}
