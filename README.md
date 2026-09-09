@@ -1,61 +1,62 @@
 # 🏋️‍♂️ 아이언 머슬 트래커 (IRON MUSCLE TRACKER)
-### Apple 스타일 프리미엄 크로스 플랫폼 피트니스 & 운동 기록 애플리케이션
-**[ iPhone · iPad · Android · Web 완벽 지원 ]**
+### 100% 로컬 독립형 Apple 스타일 피트니스 & 운동 기록 어플리케이션
+**[ iPhone · iPad · Android 로컬 전용 완벽 지원 ]**
 
 [![Mobile Build](https://github.com/iamminseongKim/iron-muscle/actions/workflows/build-mobile.yml/badge.svg)](https://github.com/iamminseongKim/iron-muscle/actions/workflows/build-mobile.yml)
 [![Release](https://img.shields.io/github/v/release/iamminseongKim/iron-muscle?color=FF2D55&logo=github)](https://github.com/iamminseongKim/iron-muscle/releases)
 ![iOS](https://img.shields.io/badge/iOS-iPhone%20%26%20iPad-000000?style=flat&logo=apple&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-APK%20Direct-3DDC84?style=flat&logo=android&logoColor=white)
-![PWA](https://img.shields.io/badge/PWA-Safari%20Standalone-5A0FC8?style=flat&logo=pwa&logoColor=white)
+![Offline](https://img.shields.io/badge/Storage-100%25%20Local%20Offline-green?style=flat)
+
+> **🔒 100% 로컬 프라이버시 보장**:  
+> 외부 서버나 클라우드 DB를 일절 사용하지 않으며, 모든 운동 데이터와 설정은 오직 사용자의 기기 내부(로컬)에만 저장됩니다.
 
 ---
 
-## 📱 기기별 설치 및 사용 가이드
-
-아이언 머슬 트래커는 **아이폰(iPhone)**, **아이패드(iPad)**, **안드로이드(Android)** 기기 모두에서 최적의 네이티브 경험으로 사용할 수 있습니다.
+## 📱 기기별 로컬 설치 및 사용 가이드
 
 ### 🍎 1. 아이폰 & 아이패드 (iPhone / iPad)
 
-아이폰과 아이패드에서는 사용자의 환경에 따라 가장 편한 방식을 선택하실 수 있습니다:
+#### 💻 [방법 1] Mac Xcode 실기기 직접 빌드 (가장 추천)
+개인 무료 Apple ID만 있으면 본인의 iPhone 또는 iPad에 영구적으로 네이티브 앱을 설치할 수 있습니다.
 
-#### ⚡ [방법 1] Safari '홈 화면에 추가' (가장 추천 - 10초 완료, 무설치!)
-별도의 맥북이나 개발자 계정, 사이드로딩 툴 없이 **모든 iOS 기기에서 즉시 네이티브 앱**으로 동작합니다.
-
-1. iPhone 또는 iPad의 **Safari 브라우저**를 열고 아래 웹 주소로 접속합니다:
-   > 👉 **[https://iamminseongKim.github.io/iron-muscle/](https://iamminseongKim.github.io/iron-muscle/)**
-2. 브라우저 하단(아이폰) 또는 상단(아이패드)의 **[공유 버튼 (네모에 위 화살표 􀈂)]**을 터치합니다.
-3. 메뉴를 아래로 내려 **[홈 화면에 추가 (Add to Home Screen)]**를 선택합니다.
-4. 우측 상단의 **[추가]**를 누르면 홈 화면에 예쁜 **아이언 머슬 앱 아이콘**이 생성됩니다.
-5. **실행 효과**:
-   - Safari 브라우저 상단 주소창 및 하단 탭바가 완전히 사라진 **100% 네이티브 풀스크린(Full Screen)**으로 구동됩니다.
-   - 오프라인에서도 동작하며, 기록된 모든 운동 일지는 기기 내부에 안전하게 보존됩니다.
-   - 아이패드 분할 화면(Split View) 및 가로/세로 회전 모드를 완벽하게 지원합니다.
-
-#### 📥 [방법 2] iOS `.ipa` 사이드로딩 (AltStore / Sideloadly / TrollStore)
-네이티브 iOS 바이너리로 직접 기기에 설치하고자 할 때 사용합니다.
-
-1. [GitHub Releases](https://github.com/iamminseongKim/iron-muscle/releases) 페이지에서 최신 **`IronMuscle-iOS.ipa`** 파일을 다운로드합니다.
-2. PC/Mac에서 **AltStore**, **Sideloadly**, 또는 기기의 **TrollStore / Scarlet**을 실행합니다.
-3. 다운로드한 `.ipa` 파일을 선택하고 본인의 무료 Apple ID로 사이드로딩 설치를 진행합니다.
-
-#### 💻 [방법 3] Mac Xcode 실기기 직접 빌드 (개발자용)
 ```bash
+# 1. 저장소 복제 및 의존성 설치
 git clone https://github.com/iamminseongKim/iron-muscle.git
 cd iron-muscle
 npm install
 npm run build
+
+# 2. iOS Xcode 프로젝트 열기
 npx cap open ios
 ```
-Xcode가 열리면 본인의 개인 무료 Apple ID(Personal Team)를 Signing에 등록한 후, USB로 연결된 iPhone/iPad를 선택하여 `Cmd + R`로 빌드 및 실행합니다.
+1. Xcode의 `App` 타겟 ➔ `Signing & Capabilities` 탭에서 본인의 **개인 무료 Apple ID (Personal Team)**를 선택합니다.
+2. Mac에 케이블 또는 동일 Wi-Fi로 연결된 본인의 iPhone이나 iPad를 빌드 타겟으로 지정합니다.
+3. 상단의 **▶ 실행 (Run, `Cmd + R`)** 버튼을 누르면 기기에 바로 설치됩니다.
+4. 아이폰/아이패드의 [설정] ➔ [일반] ➔ [VPN 및 기기 관리]에서 본인의 개발자 계정을 '신뢰'로 승인하면 끝납니다.
+
+#### 📥 [방법 2] iOS `.ipa` 로컬 사이드로딩 (AltStore / Sideloadly)
+맥북이 없거나 PC(Windows) 환경에서 설치하고자 할 때 사용합니다.
+
+1. [GitHub Releases](https://github.com/iamminseongKim/iron-muscle/releases) 페이지에서 최신 **`IronMuscle-iOS.ipa`** 파일을 다운로드합니다.
+2. PC에 설치된 **AltStore** 또는 **Sideloadly** 프로그램을 실행합니다.
+3. 다운로드한 `.ipa` 파일을 선택하고 본인의 Apple ID로 기기에 직접 사이드로딩 설치합니다.
+
+#### 🌐 [방법 3] 가정 내 로컬 Wi-Fi 접속 (무설치 로컬 모드)
+컴퓨터에서 로컬 개발 서버를 켜두고 동일한 공유기(Wi-Fi)에 연결된 아이폰/아이패드로 접속하는 방법입니다.
+
+```bash
+npm run dev -- --host
+```
+터미널에 출력되는 로컬 IP 주소(예: `http://192.168.0.15:3000`)를 아이폰/아이패드 브라우저에 입력하여 즉시 사용합니다.
 
 ---
 
 ### 🤖 2. 안드로이드 (Android) 스마트폰 및 태블릿
 
-1. 스마트폰 웹 브라우저에서 [GitHub Releases](https://github.com/iamminseongKim/iron-muscle/releases)로 접속합니다.
+1. 스마트폰 브라우저에서 [GitHub Releases](https://github.com/iamminseongKim/iron-muscle/releases) 페이지로 접속합니다.
 2. 최신 릴리즈의 Assets에서 **`IronMuscle-vX.X.X.apk`** 링크를 터치하여 다운로드합니다.
-3. 다운로드가 완료되면 알림창이나 '내 파일(다운로드 폴더)'에서 `.apk` 파일을 터치합니다.
-4. **'출처를 알 수 없는 앱 설치 허용'** 또는 **'무시하고 설치'**를 활성화하고 설치를 완료합니다.
+3. 다운로드가 완료된 `.apk` 파일을 터치하여 **'출처를 알 수 없는 앱 설치 허용'** 후 설치를 완료합니다.
 
 ---
 
@@ -116,12 +117,12 @@ Xcode가 열리면 본인의 개인 무료 Apple ID(Personal Team)를 Signing에
 | 레이어 | 기술 |
 | :--- | :--- |
 | **Frontend Framework** | React 18 (TypeScript) |
-| **Build & Bundler** | Vite 4.5 (PWA Ready, Optimized Chunks) |
+| **Build & Bundler** | Vite 4.5 (Optimized Chunks) |
 | **Styling & Design System** | Tailwind CSS 3.4 (Apple SF Pro Style, Dark/Light Mode) |
 | **Mobile Runtime** | Capacitor 5 (iOS & Android Native Bridge) |
 | **3D Engine** | Three.js (WebGL 60fps Anatomy Visualizer) |
 | **Iconography** | Lucide React |
-| **CI / CD** | GitHub Actions (Android APK, iOS IPA, GitHub Pages PWA) |
+| **CI / CD** | GitHub Actions (Android APK & iOS IPA 산출물 빌드) |
 
 ---
 
