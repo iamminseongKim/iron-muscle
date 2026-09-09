@@ -8,6 +8,7 @@ import { WorkoutSession, WorkoutExercise, WeightUnit } from '../../types/workout
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from '../../utils/calculations';
 import { loadSavedSessions, saveSessions, clearAllSessions, loadSampleDataForDemo } from '../../utils/storage';
+import { BackupPanel } from './BackupPanel';
 import { EditSessionModal } from './EditSessionModal';
 
 interface WorkoutHistoryViewProps {
@@ -307,6 +308,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           <span>AI 분석 추출</span>
         </button>
       </div>
+
+      <BackupPanel onRestored={(restored,date) => {setSessions(restored);if(date){setSelectedDate(date);setCurrentMonth(date.slice(0,7));setCurrentYear(Number(date.slice(0,4)));setViewScope('daily');}}} />
 
       {/* 뷰 모드 스위처 (일간 / 월간 / 연간) */}
       <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-1 rounded-2xl text-xs font-bold">
