@@ -306,7 +306,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                     {/* 세트 헤더 */}
                     <div className="grid grid-cols-12 gap-1.5 text-[10px] font-bold text-gray-400 px-1 text-center">
                       <span className="col-span-1">#</span>
-                      <span className="col-span-3">무게(kg)</span>
+                      <span className="col-span-3">무게({session.weightUnit || 'kg'})</span>
                       <span className="col-span-3">횟수</span>
                       <span className="col-span-2">RPE</span>
                       <span className="col-span-2">휴식(s)</span>
@@ -327,14 +327,34 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                           <input
                             type="number"
                             step="0.5"
+                            inputMode="decimal"
                             value={set.weight}
+                            onFocus={(e) => {
+                              const t = e.currentTarget;
+                              t.select();
+                              setTimeout(() => t.select(), 30);
+                            }}
+                            onClick={(e) => e.currentTarget.select()}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') e.currentTarget.blur();
+                            }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'weight', parseFloat(e.target.value) || 0)}
                             className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none"
                           />
 
                           <input
                             type="number"
+                            inputMode="numeric"
                             value={set.reps}
+                            onFocus={(e) => {
+                              const t = e.currentTarget;
+                              t.select();
+                              setTimeout(() => t.select(), 30);
+                            }}
+                            onClick={(e) => e.currentTarget.select()}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') e.currentTarget.blur();
+                            }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'reps', parseInt(e.target.value) || 0)}
                             className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none"
                           />
@@ -346,6 +366,15 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             max="10"
                             placeholder="RPE"
                             value={set.rpe || ''}
+                            onFocus={(e) => {
+                              const t = e.currentTarget;
+                              t.select();
+                              setTimeout(() => t.select(), 30);
+                            }}
+                            onClick={(e) => e.currentTarget.select()}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') e.currentTarget.blur();
+                            }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'rpe', parseFloat(e.target.value) || undefined)}
                             className="col-span-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-1 py-1 rounded-lg text-center font-bold text-amber-500 outline-none"
                           />

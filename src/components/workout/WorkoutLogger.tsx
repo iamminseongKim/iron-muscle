@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { 
   WorkoutSession, WorkoutExercise, Exercise, EquipmentType, ExerciseGroupType, Category,
-  TARGET_BODY_PARTS
+  TARGET_BODY_PARTS, WeightUnit
 } from '../../types/workout';
 import { ExerciseCard } from './ExerciseCard';
 import { AddExerciseModal } from './AddExerciseModal';
@@ -13,7 +13,7 @@ import { SessionNotesModal } from './SessionNotesModal';
 import { RpeGuideModal } from './RpeGuideModal';
 import { RestTimerModal } from './RestTimerModal';
 import { ExerciseGroupModal } from './ExerciseGroupModal';
-import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from '../../utils/calculations';
+import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, convertWeight } from '../../utils/calculations';
 import { saveActiveSession, loadActiveSession, saveSessions, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { soundManager } from '../../utils/audio';
 import { sanitizeSessionExercises } from '../../utils/exerciseResolver';
@@ -21,6 +21,8 @@ import { sanitizeSessionExercises } from '../../utils/exerciseResolver';
 interface WorkoutLoggerProps {
   onWorkoutCompleted?: () => void;
   isDark?: boolean;
+  weightUnit?: WeightUnit;
+  onToggleWeightUnit?: () => void;
 }
 
 const CONDITION_OPTIONS = [
@@ -31,10 +33,44 @@ const CONDITION_OPTIONS = [
   { emoji: '🩹', label: '가볍게 회복' },
 ];
 
-export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted, isDark = false }) => {
+export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
+  onWorkoutCompleted,
+  isDark = false,
+  weightUnit = 'kg',
+  onToggleWeightUnit,
+}) => {
   // 현재 진행 중인 세션 (없으면 null -> 대기 화면 표시)
   const [session, setSession] = useState<WorkoutSession | null>(() => loadActiveSession());
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(() => Boolean(loadActiveSession()));
+
+  // 현재 유효한 무게 단위 (세션에 저장된 단위 우선, 없으면 전역 weightUnit)
+  const currentWeightUnit: WeightUnit = session?.weightUnit || weightUnit;
+
+  // 단위 토글 및 현재 세션 내 운동 중량 자동 환산
+  const handleToggleUnitInternal = () => {
+    const nextUnit: WeightUnit = currentWeightUnit === 'kg' ? 'lbs' : 'kg';
+    if (onToggleWeightUnit) {
+      onToggleWeightUnit();
+    }
+    if (session) {
+      const fromUnit = currentWeightUnit;
+      const updatedExercises = session.exercises.map((ex) => ({
+        ...ex,
+        sets: ex.sets.map((s) => ({
+          ...s,
+          weight: convertWeight(s.weight, fromUnit, nextUnit),
+          previousWeight: s.previousWeight !== undefined ? convertWeight(s.previousWeight, fromUnit, nextUnit) : undefined,
+        })),
+      }));
+      const updated: WorkoutSession = {
+        ...session,
+        weightUnit: nextUnit,
+        exercises: updatedExercises,
+      };
+      setSession(updated);
+      saveActiveSession(updated);
+    }
+  };
 
   // 대기(Idle) 화면 상태
   const [selectedPartIds, setSelectedPartIds] = useState<string[]>(['chest']);
@@ -118,8 +154,17 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
     });
   };
 
+  // 인풋 포커스 및 셀렉션 강제 해제 헬퍼 (안드로이드 물방울 커서 잔존 방지)
+  const clearFocusAndSelection = () => {
+    if (document.activeElement && (document.activeElement as HTMLElement).blur) {
+      (document.activeElement as HTMLElement).blur();
+    }
+    window.getSelection()?.removeAllRanges();
+  };
+
   // [운동 시작하기] 버튼 클릭 시 세션 생성 및 첫 종목 모달 오픈
   const handleStartWorkout = () => {
+    clearFocusAndSelection();
     const selectedOptions = TARGET_BODY_PARTS.filter((p) => selectedPartIds.includes(p.id));
     const targetCategories = Array.from(new Set(selectedOptions.map((p) => p.category))) as Category[];
 
@@ -132,6 +177,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
       durationSeconds: 0,
       exercises: [],
       completed: false,
+      weightUnit: currentWeightUnit,
       conditionEmoji: idleCondition,
       isDeload: idleDeload,
       notes: '',
@@ -329,7 +375,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
     setSession(null);
     setIsTimerRunning(false);
 
-    alert(`🎉 오늘 운동 완료!\n총 볼륨: ${calculateSessionVolume(finalSession).toLocaleString()}kg\n총 횟수: ${calculateSessionReps(finalSession)}회\n기록이 성공적으로 저장되었습니다.`);
+    alert(`🎉 오늘 운동 완료!\n총 볼륨: ${calculateSessionVolume(finalSession).toLocaleString()}${finalSession.weightUnit || currentWeightUnit}\n총 횟수: ${calculateSessionReps(finalSession)}회\n기록이 성공적으로 저장되었습니다.`);
 
     if (onWorkoutCompleted) {
       onWorkoutCompleted();
@@ -457,6 +503,42 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* 중량 표기 단위 선택 (kg / lbs) */}
+          <div className="flex items-center justify-between pt-1 border-t border-black/5 dark:border-white/5">
+            <div>
+              <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">
+                중량 표기 단위 ({currentWeightUnit.toUpperCase()})
+              </span>
+              <span className="text-[11px] text-gray-400">
+                킬로그램(kg) 또는 파운드(lbs) 중 선택
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleToggleUnitInternal}
+              className="flex items-center p-1 rounded-xl bg-[#F2F2F7] dark:bg-[#252528] border border-black/5 dark:border-white/5 text-xs font-bold transition"
+            >
+              <span
+                className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all ${
+                  currentWeightUnit === 'kg'
+                    ? 'bg-white dark:bg-[#3A3A3C] text-[#007AFF] shadow-xs'
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}
+              >
+                kg (킬로)
+              </span>
+              <span
+                className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all ${
+                  currentWeightUnit === 'lbs'
+                    ? 'bg-white dark:bg-[#3A3A3C] text-[#007AFF] shadow-xs'
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}
+              >
+                lb (파운드)
+              </span>
+            </button>
           </div>
 
           {/* 디로딩 토글 */}
@@ -614,7 +696,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
           <div>
             <span className="text-[11px] text-gray-400 font-semibold block mb-0.5">총 볼륨</span>
             <span className="text-xl font-black tracking-tight text-[#1D1D1F] dark:text-white">
-              {totalVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">kg</span>
+              {totalVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{currentWeightUnit}</span>
             </span>
           </div>
           <div>
@@ -647,7 +729,10 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
             </div>
             <button
               type="button"
-              onClick={() => setIsAddModalOpen(true)}
+              onClick={() => {
+                clearFocusAndSelection();
+                setIsAddModalOpen(true);
+              }}
               className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#007AFF] text-white rounded-xl text-xs font-bold shadow-xs active:scale-95 transition"
             >
               <Plus size={15} />
@@ -659,6 +744,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
             <ExerciseCard
               key={item.id}
               exerciseItem={item}
+              weightUnit={currentWeightUnit}
+              onToggleWeightUnit={handleToggleUnitInternal}
               onUpdate={(updated) => handleUpdateExercise(idx, updated)}
               onDelete={() => handleDeleteExercise(idx)}
               onTriggerRestTimer={(exName, setId, setNum) => handleTriggerRestTimer(exName, setId, setNum)}

@@ -5,9 +5,55 @@ import { WorkoutLogger } from './components/workout/WorkoutLogger';
 import { WorkoutHistoryView } from './components/history/WorkoutHistoryView';
 import { HistoryDashboard } from './components/history/HistoryDashboard';
 import { loadActiveSession, saveActiveSession } from './utils/storage';
+import { WeightUnit } from './types/workout';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics'>('workout');
+
+  // 무게 단위 상태 (기본값 kg, 영구 저장)
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>(() => {
+    try {
+      const saved = localStorage.getItem('iron_weight_unit');
+      return (saved === 'lbs' || saved === 'kg') ? saved : 'kg';
+    } catch {
+      return 'kg';
+    }
+  });
+
+  const toggleWeightUnit = () => {
+    setWeightUnit((prev) => {
+      const next: WeightUnit = prev === 'kg' ? 'lbs' : 'kg';
+      try {
+        localStorage.setItem('iron_weight_unit', next);
+      } catch {}
+      return next;
+    });
+  };
+
+  // 1. 안드로이드 WebView 커서/물방울 핸들 잔존 버그 방지 전역 터치 리스너
+  useEffect(() => {
+    const handleGlobalTouch = (e: TouchEvent | MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      // 터치 대상이 입력창이 아닐 경우 activeElement 포커스를 blur하고 selection 해제
+      if (
+        target.tagName !== 'INPUT' &&
+        target.tagName !== 'TEXTAREA' &&
+        target.tagName !== 'SELECT' &&
+        !target.isContentEditable
+      ) {
+        if (document.activeElement && (document.activeElement as HTMLElement).blur) {
+          (document.activeElement as HTMLElement).blur();
+        }
+        window.getSelection()?.removeAllRanges();
+      }
+    };
+
+    document.addEventListener('touchstart', handleGlobalTouch, { passive: true });
+    return () => {
+      document.removeEventListener('touchstart', handleGlobalTouch);
+    };
+  }, []);
 
   // 전역 타이머 1: 총 운동 시간 타이머 (세션 지속시간 영구 추적)
   const [totalWorkoutSeconds, setTotalWorkoutSeconds] = useState<number>(() => {
@@ -66,11 +112,13 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] flex flex-col transition-colors duration-200">
-      {/* 상단 애플 스타일 헤더 & 듀얼 타이머(총 운동 시간) & 테마 스위처 */}
+      {/* 상단 애플 스타일 헤더 & 듀얼 타이머(총 운동 시간) & kg/lb 토글 & 테마 스위처 */}
       <Header
         activeTab={activeTab}
         isDark={isDark}
         onToggleTheme={toggleTheme}
+        weightUnit={weightUnit}
+        onToggleWeightUnit={toggleWeightUnit}
         totalWorkoutSeconds={totalWorkoutSeconds}
         isWorkoutTimerRunning={isWorkoutTimerRunning}
         onToggleWorkoutTimer={toggleWorkoutTimer}
@@ -79,13 +127,18 @@ export const App: React.FC = () => {
       {/* 메인 컨텐츠 */}
       <main className="flex-1 w-full pt-2">
         {activeTab === 'workout' && (
-          <WorkoutLogger onWorkoutCompleted={() => setActiveTab('history')} isDark={isDark} />
+          <WorkoutLogger
+            onWorkoutCompleted={() => setActiveTab('history')}
+            isDark={isDark}
+            weightUnit={weightUnit}
+            onToggleWeightUnit={toggleWeightUnit}
+          />
         )}
         {activeTab === 'history' && (
-          <WorkoutHistoryView />
+          <WorkoutHistoryView weightUnit={weightUnit} />
         )}
         {activeTab === 'analytics' && (
-          <HistoryDashboard />
+          <HistoryDashboard weightUnit={weightUnit} />
         )}
       </main>
 

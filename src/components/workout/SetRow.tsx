@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Check, X, MessageSquare, Clock, HelpCircle, Timer } from 'lucide-react';
-import { WorkoutSet, Tempo, ExecutionMode } from '../../types/workout';
+import { WorkoutSet, Tempo, ExecutionMode, WeightUnit } from '../../types/workout';
 import { soundManager } from '../../utils/audio';
 import { SetCommentModal } from './SetCommentModal';
 import { TempoModal } from './TempoModal';
@@ -9,6 +9,7 @@ interface SetRowProps {
   set: WorkoutSet;
   index: number;
   executionMode?: ExecutionMode;
+  weightUnit?: WeightUnit;
   onUpdate: (updated: WorkoutSet) => void;
   onDelete: () => void;
   onCompleteToggle: (completed: boolean, setId: string, setNumber: number) => void;
@@ -19,6 +20,7 @@ export const SetRow: React.FC<SetRowProps> = ({
   set,
   index,
   executionMode = 'bilateral',
+  weightUnit = 'kg',
   onUpdate,
   onDelete,
   onCompleteToggle,
@@ -26,6 +28,15 @@ export const SetRow: React.FC<SetRowProps> = ({
 }) => {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [isTempoModalOpen, setIsTempoModalOpen] = useState(false);
+
+  // 안드로이드/iOS 웹뷰에서 터치/클릭 시 기존 입력값 즉시 전체 선택 (원터치 덮어쓰기 지원)
+  const handleSelectAll = (e: React.FocusEvent<HTMLInputElement> | React.MouseEvent<HTMLInputElement>) => {
+    const target = e.currentTarget;
+    target.select();
+    // 모바일 브라우저 타이밍 이슈 오버라이드
+    requestAnimationFrame(() => target.select());
+    setTimeout(() => target.select(), 40);
+  };
 
   const handleCycleSide = () => {
     const current = set.side || 'both';
@@ -50,6 +61,12 @@ export const SetRow: React.FC<SetRowProps> = ({
   };
 
   const handleToggleComplete = () => {
+    // 안드로이드 커서/핸들 잔존 버그 방지: 인풋 포커스 즉시 해제 및 셀렉션 클리어
+    if (document.activeElement && (document.activeElement as HTMLElement).blur) {
+      (document.activeElement as HTMLElement).blur();
+    }
+    window.getSelection()?.removeAllRanges();
+
     const nextCompleted = !set.completed;
     onUpdate({ ...set, completed: nextCompleted });
     if (nextCompleted) {
@@ -111,25 +128,49 @@ export const SetRow: React.FC<SetRowProps> = ({
             )}
           </div>
 
-          {/* 중량 (kg) 입력 */}
+          {/* 중량 (kg/lbs) 입력 */}
           <div className="flex-1 min-w-0 relative">
             <input
               type="number"
-              step="0.5"
+              step={weightUnit === 'lbs' ? '1' : '0.5'}
+              inputMode="decimal"
               value={set.weight || ''}
               placeholder="0"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
+              onFocus={handleSelectAll}
+              onClick={handleSelectAll}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.currentTarget.blur();
+                }
+              }}
               onChange={(e) => handleWeightChange(e.target.value)}
-              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-extrabold text-center rounded-xl py-2 px-1 pr-6 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
+              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-extrabold text-center rounded-xl py-2 px-1 pr-7 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
             />
-            <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">kg</span>
+            <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">
+              {weightUnit}
+            </span>
           </div>
 
           {/* 횟수 (reps) 입력 */}
           <div className="flex-1 min-w-0 relative">
             <input
               type="number"
+              inputMode="numeric"
               value={set.reps || ''}
               placeholder="0"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
+              onFocus={handleSelectAll}
+              onClick={handleSelectAll}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.currentTarget.blur();
+                }
+              }}
               onChange={(e) => handleRepsChange(e.target.value)}
               className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-extrabold text-center rounded-xl py-2 px-1 pr-5 text-sm border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition outline-none"
             />

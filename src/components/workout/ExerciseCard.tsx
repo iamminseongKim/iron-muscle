@@ -3,7 +3,7 @@ import {
   Trash2, Plus, Dumbbell, Shield, HelpCircle, 
   Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame 
 } from 'lucide-react';
-import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType } from '../../types/workout';
+import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { SetRow } from './SetRow';
 import { getExerciseRecords } from '../../utils/calculations';
@@ -14,6 +14,8 @@ import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 
 interface ExerciseCardProps {
   exerciseItem: WorkoutExercise;
+  weightUnit?: WeightUnit;
+  onToggleWeightUnit?: () => void;
   onUpdate: (updated: WorkoutExercise) => void;
   onDelete: () => void;
   onTriggerRestTimer: (exerciseName: string, setId: string, setNumber: number) => void;
@@ -25,6 +27,8 @@ interface ExerciseCardProps {
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   exerciseItem,
+  weightUnit = 'kg',
+  onToggleWeightUnit,
   onUpdate,
   onDelete,
   onTriggerRestTimer,
@@ -475,7 +479,19 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <div className="px-[18px] sm:px-5 pt-3 pb-1.5 flex items-center gap-2 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
         <span className="w-8 shrink-0 text-center">세트</span>
         <span className="w-16 shrink-0 text-center">이전 기록</span>
-        <span className="flex-1 text-center font-bold">무게 (kg)</span>
+        {onToggleWeightUnit ? (
+          <button
+            type="button"
+            onClick={onToggleWeightUnit}
+            className="flex-1 text-center font-bold text-[#007AFF] hover:opacity-80 transition flex items-center justify-center gap-1"
+            title="클릭하여 kg / lbs 단위 즉시 전환"
+          >
+            <span>무게 ({weightUnit})</span>
+            <span className="text-[9px] font-black px-1 rounded bg-[#007AFF]/10 text-[#007AFF]">전환</span>
+          </button>
+        ) : (
+          <span className="flex-1 text-center font-bold">무게 ({weightUnit})</span>
+        )}
         <span className="flex-1 text-center font-bold">횟수</span>
         <span className="w-9 shrink-0 text-center">완료</span>
       </div>
@@ -488,6 +504,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             set={set}
             index={idx}
             executionMode={exerciseItem.executionMode || 'bilateral'}
+            weightUnit={weightUnit}
             onUpdate={(updated) => handleUpdateSet(idx, updated)}
             onDelete={() => handleDeleteSet(idx)}
             onCompleteToggle={(_comp, setId, setNum) =>
@@ -513,11 +530,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <div className="px-4 py-2 bg-[#F2F2F7]/50 dark:bg-[#1F1F21] border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1.5 font-bold">
             <Trophy size={13} className="text-[#FF9500]" />
-            <span>최고 중량: {records.maxWeight}kg</span>
+            <span>최고 중량: {records.maxWeight}{weightUnit}</span>
           </div>
           <div className="flex items-center gap-1 font-semibold text-[11px]">
             <span>추정 1RM:</span>
-            <span className="font-extrabold text-[#007AFF]">{records.max1RM}kg</span>
+            <span className="font-extrabold text-[#007AFF]">{records.max1RM}{weightUnit}</span>
           </div>
         </div>
       )}

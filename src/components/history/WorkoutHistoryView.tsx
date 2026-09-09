@@ -4,13 +4,17 @@ import {
   Sparkles, Bot, Clock, Dumbbell, Flame, Zap, Trophy, MessageSquare, 
   FileText, ArrowRight, Share2, Layers, Edit3, Trash2, RotateCcw 
 } from 'lucide-react';
-import { WorkoutSession, WorkoutExercise } from '../../types/workout';
+import { WorkoutSession, WorkoutExercise, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from '../../utils/calculations';
 import { loadSavedSessions, saveSessions, clearAllSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { EditSessionModal } from './EditSessionModal';
 
-export const WorkoutHistoryView: React.FC = () => {
+interface WorkoutHistoryViewProps {
+  weightUnit?: WeightUnit;
+}
+
+export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUnit = 'kg' }) => {
   const [sessions, setSessions] = useState<WorkoutSession[]>(() => loadSavedSessions());
   const [viewScope, setViewScope] = useState<'daily' | 'monthly' | 'yearly'>('daily');
   

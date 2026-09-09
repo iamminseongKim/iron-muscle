@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Calendar, TrendingUp, Trophy, Sparkles, Clock, ChevronRight, BarChart2, Dumbbell 
 } from 'lucide-react';
-import { WorkoutSession } from '../../types/workout';
+import { WorkoutSession, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { 
   calculateSessionVolume, calculateSessionReps, calculateAverageRPE, 
@@ -10,7 +10,11 @@ import {
 } from '../../utils/calculations';
 import { loadSavedSessions } from '../../utils/storage';
 
-export const HistoryDashboard: React.FC = () => {
+interface HistoryDashboardProps {
+  weightUnit?: WeightUnit;
+}
+
+export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit = 'kg' }) => {
   const [history] = useState<WorkoutSession[]>(() => loadSavedSessions());
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>('conventional-deadlift');
 
@@ -41,7 +45,7 @@ export const HistoryDashboard: React.FC = () => {
 
           <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
             <span className="text-[10px] text-gray-400 font-bold block">누적 볼륨</span>
-            <span className="text-xl font-black text-[#FF2D55]">{cumulativeVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">kg</span></span>
+            <span className="text-xl font-black text-[#FF2D55]">{cumulativeVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{weightUnit}</span></span>
           </div>
 
           <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">

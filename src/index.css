@@ -21,12 +21,25 @@
     -webkit-user-select: none;
   }
 
-  /* 숫자 입력 필드는 선택 허용 */
+  /* 숫자 입력 필드는 선택 허용 및 스피너 제거 */
   input, textarea, [contenteditable="true"] {
-    -webkit-tap-highlight-color: rgba(0, 122, 255, 0.1);
     user-select: text;
     -webkit-user-select: text;
   }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+/* 모든 터치 인터랙션 잔상 방지 */
+* {
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 /* Safe Area support for Android and iOS notched devices */

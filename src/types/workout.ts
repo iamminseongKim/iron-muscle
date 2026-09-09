@@ -69,6 +69,8 @@ export const EXECUTION_MODE_LABELS: Record<ExecutionMode, string> = {
 
 export type ExerciseGroupType = 'single' | 'superset' | 'compound' | 'giant';
 
+export type WeightUnit = 'kg' | 'lbs';
+
 export type LoadType = 'plate-loaded' | 'pin-loaded' | 'barbell' | 'dumbbell' | 'cable' | 'bodyweight' | 'other';
 
 export type MovementPlane =
@@ -169,6 +171,7 @@ export interface WorkoutSession {
   overallRpe?: number;
   bodyWeight?: number;
   completed: boolean;
+  weightUnit?: WeightUnit; // 'kg' | 'lbs' (기본값 'kg')
   targetCategories?: Category[]; // 오늘 운동하기로 선택한 타겟 카테고리 목록
   targetPartIds?: string[]; // 오늘 운동하기로 선택한 구체 부위 목록 (예: ['chest', 'triceps'])
 }

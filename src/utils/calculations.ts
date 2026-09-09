@@ -1,4 +1,20 @@
-﻿import { WorkoutSet, WorkoutSession, Tempo } from '../types/workout';
+import { WorkoutSet, WorkoutSession, Tempo, WeightUnit } from '../types/workout';
+
+export const KG_TO_LBS = 2.20462;
+
+// kg <-> lbs 변환 함수 (0.5 단위 깔끔 반올림)
+export function convertWeight(weight: number, from: WeightUnit, to: WeightUnit): number {
+  if (!weight || from === to) return weight;
+  if (from === 'kg' && to === 'lbs') {
+    const raw = weight * KG_TO_LBS;
+    return Math.round(raw * 2) / 2;
+  }
+  if (from === 'lbs' && to === 'kg') {
+    const raw = weight / KG_TO_LBS;
+    return Math.round(raw * 2) / 2;
+  }
+  return weight;
+}
 
 // 1. 추정 1RM 계산 (Brzycki 공식 및 RPE 반영)
 export function calculate1RM(weight: number, reps: number, rpe?: number): number {

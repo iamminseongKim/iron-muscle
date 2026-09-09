@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Play, Pause, RotateCcw, Plus, Minus, X, Check, Bell, Minimize2 } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
 
@@ -27,6 +27,12 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      // 안드로이드/iOS 웹뷰 커서 및 물방울 핸들 잔존 버그 방지: 모달 오픈 시 활성 인풋 강제 blur & 셀렉션 클리어
+      if (document.activeElement && (document.activeElement as HTMLElement).blur) {
+        (document.activeElement as HTMLElement).blur();
+      }
+      window.getSelection()?.removeAllRanges();
+
       setTargetSeconds(initialSeconds);
       setRemainingSeconds(initialSeconds);
       setElapsedSeconds(0);
