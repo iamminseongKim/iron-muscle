@@ -1,5 +1,6 @@
-﻿import { WorkoutSession } from '../types/workout';
+import { WorkoutSession } from '../types/workout';
 import { INITIAL_SAMPLE_HISTORY } from '../data/sampleHistory';
+import { sanitizeSessionExercises } from './exerciseResolver';
 
 const STORAGE_KEYS = {
   SESSIONS: 'iron_workout_sessions_v1',
@@ -12,13 +13,15 @@ export function loadSavedSessions(): WorkoutSession[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.SESSIONS);
     if (!raw) {
-      saveSessions(INITIAL_SAMPLE_HISTORY);
-      return INITIAL_SAMPLE_HISTORY;
+      const sanitizedInitial = INITIAL_SAMPLE_HISTORY.map(sanitizeSessionExercises);
+      saveSessions(sanitizedInitial);
+      return sanitizedInitial;
     }
-    return JSON.parse(raw);
+    const parsed: WorkoutSession[] = JSON.parse(raw);
+    return parsed.map(sanitizeSessionExercises);
   } catch (e) {
     console.error('Failed to load sessions', e);
-    return INITIAL_SAMPLE_HISTORY;
+    return INITIAL_SAMPLE_HISTORY.map(sanitizeSessionExercises);
   }
 }
 
@@ -33,7 +36,9 @@ export function saveSessions(sessions: WorkoutSession[]): void {
 export function loadActiveSession(): WorkoutSession | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed: WorkoutSession = JSON.parse(raw);
+    return sanitizeSessionExercises(parsed);
   } catch (e) {
     console.error('Failed to load active session', e);
     return null;

@@ -1,4 +1,4 @@
-﻿# Logs
+# Logs
 logs
 *.log
 
@@ -13,9 +13,13 @@ dist-ssr
 .idea
 .DS_Store
 
-# Testing
-apple_*.png
+# Testing & Screenshots
+*.png
 test_*.cjs
+test_*.js
+*.txt
+__pycache__/
+*.pyc
 
 # Android
 android/app/build/

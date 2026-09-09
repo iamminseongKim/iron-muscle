@@ -1,6 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Check, X, MessageSquare, Clock, HelpCircle, Timer } from 'lucide-react';
-import { WorkoutSet, Tempo } from '../../types/workout';
+import { WorkoutSet, Tempo, ExecutionMode } from '../../types/workout';
 import { soundManager } from '../../utils/audio';
 import { SetCommentModal } from './SetCommentModal';
 import { TempoModal } from './TempoModal';
@@ -8,6 +8,7 @@ import { TempoModal } from './TempoModal';
 interface SetRowProps {
   set: WorkoutSet;
   index: number;
+  executionMode?: ExecutionMode;
   onUpdate: (updated: WorkoutSet) => void;
   onDelete: () => void;
   onCompleteToggle: (completed: boolean, setId: string, setNumber: number) => void;
@@ -17,6 +18,7 @@ interface SetRowProps {
 export const SetRow: React.FC<SetRowProps> = ({
   set,
   index,
+  executionMode = 'bilateral',
   onUpdate,
   onDelete,
   onCompleteToggle,
@@ -24,6 +26,13 @@ export const SetRow: React.FC<SetRowProps> = ({
 }) => {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [isTempoModalOpen, setIsTempoModalOpen] = useState(false);
+
+  const handleCycleSide = () => {
+    const current = set.side || 'both';
+    const nextSide: 'left' | 'right' | 'both' =
+      current === 'both' ? 'left' : current === 'left' ? 'right' : 'both';
+    onUpdate({ ...set, side: nextSide });
+  };
 
   const handleWeightChange = (val: string) => {
     const num = parseFloat(val) || 0;
@@ -69,9 +78,25 @@ export const SetRow: React.FC<SetRowProps> = ({
           : 'bg-white dark:bg-[#1C1C1E] border-black/5 dark:border-white/5 hover:border-black/10'
       }`}>
         <div className="flex items-center gap-2.5">
-          {/* 세트 번호 */}
-          <div className="w-6 text-center">
+          {/* 세트 번호 및 편측(L/R) 선택 */}
+          <div className="flex flex-col items-center justify-center min-w-[30px]">
             <span className="text-xs font-black text-gray-400">#{index + 1}</span>
+            {executionMode === 'unilateral' && (
+              <button
+                type="button"
+                onClick={handleCycleSide}
+                className={`mt-0.5 px-1.5 py-0.5 text-[9px] font-black rounded-md transition ${
+                  set.side === 'left'
+                    ? 'bg-[#007AFF] text-white shadow-xs'
+                    : set.side === 'right'
+                    ? 'bg-[#FF2D55] text-white shadow-xs'
+                    : 'bg-gray-200 dark:bg-[#3A3A3C] text-gray-600 dark:text-gray-300'
+                }`}
+                title="클릭하여 좌(L) / 우(R) / 양쪽 전환"
+              >
+                {set.side === 'left' ? '좌(L)' : set.side === 'right' ? '우(R)' : '양쪽'}
+              </button>
+            )}
           </div>
 
           {/* 지난번 기록 대조 */}

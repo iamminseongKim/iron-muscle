@@ -1,4 +1,4 @@
-﻿import { WorkoutSession } from '../types/workout';
+import { WorkoutSession } from '../types/workout';
 
 export const INITIAL_SAMPLE_HISTORY: WorkoutSession[] = [
   {
@@ -16,7 +16,7 @@ export const INITIAL_SAMPLE_HISTORY: WorkoutSession[] = [
     exercises: [
       {
         id: 'ex-1',
-        exerciseId: 'deadlift-sumo',
+        exerciseId: 'conventional-deadlift',
         equipmentType: 'barbell',
         sets: [
           { id: 's1', setNumber: 1, weight: 60, reps: 10, completed: true, rpe: 7.0, tags: ['웜업'], comment: '가볍게 워밍업' },

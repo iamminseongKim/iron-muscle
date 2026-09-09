@@ -1,16 +1,18 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Play, Pause, Plus, CheckCircle2, Clock, FileText, Dumbbell, Sparkles 
 } from 'lucide-react';
-import { WorkoutSession, WorkoutExercise, Exercise, EquipmentType } from '../../types/workout';
+import { WorkoutSession, WorkoutExercise, Exercise, EquipmentType, ExerciseGroupType } from '../../types/workout';
 import { ExerciseCard } from './ExerciseCard';
 import { AddExerciseModal } from './AddExerciseModal';
 import { SessionNotesModal } from './SessionNotesModal';
 import { RpeGuideModal } from './RpeGuideModal';
 import { RestTimerModal } from './RestTimerModal';
+import { ExerciseGroupModal } from './ExerciseGroupModal';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from '../../utils/calculations';
 import { saveActiveSession, loadActiveSession, saveSessions, loadSavedSessions } from '../../utils/storage';
 import { soundManager } from '../../utils/audio';
+import { sanitizeSessionExercises } from '../../utils/exerciseResolver';
 
 interface WorkoutLoggerProps {
   onWorkoutCompleted?: () => void;
@@ -32,7 +34,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
       exercises: [
         {
           id: 'item-1',
-          exerciseId: 'deadlift-sumo',
+          exerciseId: 'conventional-deadlift',
           equipmentType: 'barbell',
           sets: [
             { id: 's1', setNumber: 1, weight: 60, reps: 10, completed: true, rpe: 7.0, previousWeight: 60, previousReps: 10, restSeconds: 60 },
@@ -52,6 +54,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isNotesModalOpen, setIsNotesModalOpen] = useState<boolean>(false);
   const [isRpeGuideOpen, setIsRpeGuideOpen] = useState<boolean>(false);
+  const [groupModalTarget, setGroupModalTarget] = useState<WorkoutExercise | null>(null);
 
   // 대형 원형 타이머 상태
   const [restTimerState, setRestTimerState] = useState<{
@@ -65,6 +68,22 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
     setId: '',
     setNumber: 1,
   });
+
+  // 구버전 로컬 스토리지 운동 ID 자동 치유 및 복구
+  useEffect(() => {
+    const sanitized = sanitizeSessionExercises(session);
+    let needsUpdate = false;
+    for (let i = 0; i < session.exercises.length; i++) {
+      if (session.exercises[i].exerciseId !== sanitized.exercises[i]?.exerciseId) {
+        needsUpdate = true;
+        break;
+      }
+    }
+    if (needsUpdate) {
+      setSession(sanitized);
+      saveActiveSession(sanitized);
+    }
+  }, []);
 
   // 운동 시간 타이머
   useEffect(() => {
@@ -137,6 +156,57 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
   const handleDeleteExercise = (index: number) => {
     const newExercises = session.exercises.filter((_, i) => i !== index);
     const updated = { ...session, exercises: newExercises };
+    setSession(updated);
+    saveActiveSession(updated);
+  };
+
+  // 슈퍼세트 / 컴파운드세트 종목 묶기
+  const handleLinkExercises = (exerciseIds: string[], groupType: ExerciseGroupType) => {
+    const groupId = 'group-' + Date.now();
+    const groupName = groupType === 'superset' ? '슈퍼세트' : groupType === 'compound' ? '컴파운드세트' : '자이언트세트';
+    const groupColor = groupType === 'superset' ? '#007AFF' : '#FF9500';
+
+    // Generate letter (A, B, C...) based on existing groups
+    const existingGroupIds = new Set(session.exercises.map((e) => e.groupId).filter(Boolean));
+    const groupLetter = String.fromCharCode(65 + existingGroupIds.size);
+
+    const updatedExercises = session.exercises.map((ex) => {
+      const matchIdx = exerciseIds.indexOf(ex.id);
+      if (matchIdx !== -1) {
+        return {
+          ...ex,
+          groupId,
+          groupType,
+          groupLabel: `${groupName} ${groupLetter}-${matchIdx + 1}`,
+          groupColor,
+        };
+      }
+      return ex;
+    });
+
+    const updated = { ...session, exercises: updatedExercises };
+    setSession(updated);
+    saveActiveSession(updated);
+  };
+
+  // 종목 묶음 해제
+  const handleUnlinkExercise = (exerciseId: string) => {
+    const target = session.exercises.find((e) => e.id === exerciseId);
+    if (!target || !target.groupId) return;
+    const gId = target.groupId;
+
+    const remaining = session.exercises.filter((e) => e.groupId === gId && e.id !== exerciseId);
+
+    const updatedExercises = session.exercises.map((ex) => {
+      // If only 1 or 0 remain in group, unlink all
+      if (ex.id === exerciseId || remaining.length <= 1) {
+        const { groupId, groupType, groupLabel, groupColor, ...rest } = ex;
+        return rest;
+      }
+      return ex;
+    });
+
+    const updated = { ...session, exercises: updatedExercises };
     setSession(updated);
     saveActiveSession(updated);
   };
@@ -292,6 +362,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
               onDelete={() => handleDeleteExercise(idx)}
               onTriggerRestTimer={(exName, setId, setNum) => handleTriggerRestTimer(exName, setId, setNum)}
               onOpenRpeGuide={() => setIsRpeGuideOpen(true)}
+              onOpenGroupModal={() => setGroupModalTarget(item)}
+              onUnlinkGroup={() => handleUnlinkExercise(item.id)}
               isDark={isDark}
             />
           ))
@@ -352,6 +424,17 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
         isOpen={isRpeGuideOpen}
         onClose={() => setIsRpeGuideOpen(false)}
       />
+
+      {groupModalTarget && (
+        <ExerciseGroupModal
+          isOpen={Boolean(groupModalTarget)}
+          currentExercise={groupModalTarget}
+          allSessionExercises={session.exercises}
+          onClose={() => setGroupModalTarget(null)}
+          onLinkExercises={handleLinkExercises}
+          onUnlinkExercise={handleUnlinkExercise}
+        />
+      )}
     </div>
   );
 };

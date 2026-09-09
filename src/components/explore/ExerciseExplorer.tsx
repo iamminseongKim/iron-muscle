@@ -1,11 +1,12 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Search, Sparkles, ChevronRight, RotateCcw, BookOpen 
 } from 'lucide-react';
-import { Exercise, MuscleTarget, Category } from '../../types/workout';
+import { Exercise, MuscleTarget, Category, LoadType, LOAD_TYPE_LABELS, MOVEMENT_PLANE_LABELS } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
+import { AnatomyDualViewer } from '../3d/AnatomyDualViewer';
 
 interface ExerciseExplorerProps {
   onSelectForWorkout?: (exercise: Exercise) => void;
@@ -14,24 +15,34 @@ interface ExerciseExplorerProps {
 
 export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForWorkout, isDark = false }) => {
   const [selectedExercise, setSelectedExercise] = useState<Exercise>(EXERCISES_DATABASE[0]);
+  const [viewMode, setViewMode] = useState<'duo' | '3d'>('duo');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
+  const [selectedLoadType, setSelectedLoadType] = useState<LoadType | 'all'>('all');
   const [activeMuscleFilter, setActiveMuscleFilter] = useState<MuscleTarget | null>(null);
 
   const filteredExercises = EXERCISES_DATABASE.filter((ex) => {
+    const query = searchQuery.trim().toLowerCase();
     const matchSearch =
-      searchQuery.trim() === '' ||
-      ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.nameEn.toLowerCase().includes(searchQuery.toLowerCase());
+      query === '' ||
+      ex.name.toLowerCase().includes(query) ||
+      ex.nameEn.toLowerCase().includes(query) ||
+      (ex.defaultBrand && ex.defaultBrand.toLowerCase().includes(query));
 
-    const matchCat = selectedCategory === 'all' || ex.category === selectedCategory;
+    // 다중 부위(categories) 완벽 대응: 하체 선택 시에도 데드리프트 노출, 등 선택 시에도 노출!
+    const matchCat =
+      selectedCategory === 'all' ||
+      (ex.categories && ex.categories.includes(selectedCategory)) ||
+      ex.category === selectedCategory;
+
+    const matchLoad = selectedLoadType === 'all' || ex.loadType === selectedLoadType;
 
     const matchMuscle =
       !activeMuscleFilter ||
       ex.primaryMuscles.includes(activeMuscleFilter) ||
       ex.secondaryMuscles.includes(activeMuscleFilter);
 
-    return matchSearch && matchCat && matchMuscle;
+    return matchSearch && matchCat && matchLoad && matchMuscle;
   });
 
   const handleMuscleClickOn3D = (muscle: MuscleTarget) => {
@@ -45,6 +56,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
+    setSelectedLoadType('all');
     setActiveMuscleFilter(null);
   };
 
@@ -56,38 +68,74 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
           <div>
             <h2 className="text-base font-extrabold text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
               <Sparkles size={16} className="text-[#FF2D55]" />
-              3D 해부학 근육 뷰어
+              해부학 근육 시각화
             </h2>
             <p className="text-xs text-gray-400">
               {selectedExercise ? `${selectedExercise.name}의 주동근·협응근` : '인체를 터치하여 운동 찾기'}
             </p>
           </div>
 
-          {activeMuscleFilter && (
+          {/* 뷰 모드 토글: [정밀 해부도 (기본)] vs [3D 회전 뷰] */}
+          <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setViewMode('duo')}
+              className={`px-2.5 py-1 rounded-lg transition-all ${
+                viewMode === 'duo'
+                  ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
+                  : 'text-gray-500 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              🩻 정밀 해부도
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('3d')}
+              className={`px-2.5 py-1 rounded-lg transition-all ${
+                viewMode === '3d'
+                  ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
+                  : 'text-gray-500 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              🔬 3D 회전 뷰
+            </button>
+          </div>
+        </div>
+
+        {activeMuscleFilter && (
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs text-blue-500 font-bold">
+              선택된 근육: {MUSCLE_INFO_MAP[activeMuscleFilter]?.nameKo}
+            </span>
             <button
               onClick={() => setActiveMuscleFilter(null)}
-              className="px-3 py-1 rounded-full bg-blue-500/10 text-[#007AFF] text-xs font-bold flex items-center gap-1"
+              className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-[#007AFF] text-[11px] font-bold flex items-center gap-1"
             >
-              <span>{MUSCLE_INFO_MAP[activeMuscleFilter]?.nameKo.split(' ')[0]} 해제</span>
-              <RotateCcw size={11} />
+              <span>필터 해제</span>
+              <RotateCcw size={10} />
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* 3D 뷰어 컴포넌트 */}
-        <HumanMuscle3DViewer
-          primaryMuscles={selectedExercise?.primaryMuscles || []}
-          secondaryMuscles={selectedExercise?.secondaryMuscles || []}
-          activeMuscleFilter={activeMuscleFilter}
-          onSelectMuscle={handleMuscleClickOn3D}
-          height="340px"
-          isDark={isDark}
-        />
-
-        <div className="px-3 py-2 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 shadow-xs">
-          <span>💡 3D 모델의 근육을 터치하면 해당 운동만 필터링됩니다.</span>
-          <span className="text-[11px] text-gray-400 font-semibold">360° 회전</span>
-        </div>
+        {/* 뷰어 컴포넌트 렌더링 */}
+        {viewMode === 'duo' ? (
+          <AnatomyDualViewer
+            primaryMuscles={selectedExercise?.primaryMuscles || []}
+            secondaryMuscles={selectedExercise?.secondaryMuscles || []}
+            selectedMuscle={activeMuscleFilter}
+            onMuscleClick={handleMuscleClickOn3D}
+            showFatigueSlider={true}
+          />
+        ) : (
+          <HumanMuscle3DViewer
+            primaryMuscles={selectedExercise?.primaryMuscles || []}
+            secondaryMuscles={selectedExercise?.secondaryMuscles || []}
+            activeMuscleFilter={activeMuscleFilter}
+            onSelectMuscle={handleMuscleClickOn3D}
+            height="340px"
+            isDark={isDark}
+          />
+        )}
       </div>
 
       {/* 선택된 운동 상세 카드 */}
@@ -204,6 +252,25 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               }`}
             >
               {cat === 'all' ? '전체' : cat === 'chest' ? '가슴' : cat === 'back' ? '등' : cat === 'legs' ? '하체' : cat === 'shoulders' ? '어깨' : cat === 'arms' ? '팔' : '복근'}
+            </button>
+          ))}
+        </div>
+
+        {/* 장비 부하 방식 필터 (원판머신, 핀머신, 바벨, 덤벨, 케이블 등) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]">
+          <span className="text-gray-400 font-semibold shrink-0">장비:</span>
+          {(['all', 'plate-loaded', 'pin-loaded', 'barbell', 'dumbbell', 'cable', 'bodyweight'] as const).map((load) => (
+            <button
+              key={load}
+              type="button"
+              onClick={() => setSelectedLoadType(load)}
+              className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap transition-all ${
+                selectedLoadType === load
+                  ? 'bg-[#007AFF] text-white shadow-xs'
+                  : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5'
+              }`}
+            >
+              {load === 'all' ? '전체' : load === 'plate-loaded' ? '플레이트(원판)' : load === 'pin-loaded' ? '핀머신' : load === 'barbell' ? '바벨' : load === 'dumbbell' ? '덤벨' : load === 'cable' ? '케이블' : '맨몸'}
             </button>
           ))}
         </div>

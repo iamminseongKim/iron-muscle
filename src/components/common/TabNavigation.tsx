@@ -1,16 +1,16 @@
-﻿import React from 'react';
-import { Dumbbell, Eye, BarChart2 } from 'lucide-react';
+import React from 'react';
+import { Dumbbell, Calendar, BarChart2 } from 'lucide-react';
 
 interface TabNavigationProps {
-  activeTab: 'workout' | 'explore' | 'history';
-  onTabChange: (tab: 'workout' | 'explore' | 'history') => void;
+  activeTab: 'workout' | 'history' | 'analytics';
+  onTabChange: (tab: 'workout' | 'history' | 'analytics') => void;
 }
 
 export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'workout', label: '운동 기록', icon: Dumbbell },
-    { id: 'explore', label: '3D & 탐색', icon: Eye },
-    { id: 'history', label: '통계 & 성장', icon: BarChart2 },
+    { id: 'history', label: '기록 조회', icon: Calendar },
+    { id: 'analytics', label: '통계 & 성장', icon: BarChart2 },
   ] as const;
 
   return (

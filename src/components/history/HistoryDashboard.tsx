@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Calendar, TrendingUp, Trophy, Sparkles, Clock, ChevronRight, BarChart2, Dumbbell 
 } from 'lucide-react';
@@ -12,7 +12,7 @@ import { loadSavedSessions } from '../../utils/storage';
 
 export const HistoryDashboard: React.FC = () => {
   const [history] = useState<WorkoutSession[]>(() => loadSavedSessions());
-  const [selectedExerciseId, setSelectedExerciseId] = useState<string>('deadlift-sumo');
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string>('conventional-deadlift');
 
   const deloadAnalysis = checkDeloadRecommendation(history);
   const progression = calculateProgression(selectedExerciseId, history);
