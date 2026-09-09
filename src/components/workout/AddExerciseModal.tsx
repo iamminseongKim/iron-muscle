@@ -79,7 +79,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
     // 카테고리 필터링 (다중 부위 완벽 매핑 및 오늘 목표 부위 필터링)
     let matchCat = false;
-    if (selectedCategory === 'all') {
+    // 검색어가 입력된 경우, 오늘 목표 탭('targets')에 있더라도 전역 검색이 가능하도록 유연하게 매칭
+    if (searchQuery.trim() !== '' && selectedCategory === 'targets') {
+      matchCat = true;
+    } else if (selectedCategory === 'all') {
       matchCat = true;
     } else if (selectedCategory === 'targets') {
       if (targetCategories && targetCategories.length > 0) {
@@ -211,7 +214,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               검색 결과가 없습니다. 다른 검색어나 필터를 선택해 보세요.
             </div>
           ) : (
-            filteredExercises.map((ex) => (
+            filteredExercises.slice(0, 100).map((ex) => (
               <button
                 key={ex.id}
                 type="button"
@@ -219,40 +222,67 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                   onSelect(ex, ex.equipment, ex.defaultBrand);
                   onClose();
                 }}
-                className="w-full text-left p-3.5 rounded-2xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#FF2D55]/50 transition flex items-center justify-between group"
+                className="w-full text-left p-2.5 sm:p-3 rounded-2xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#FF2D55]/40 transition flex items-center gap-3 group"
               >
-                <div className="flex-1 pr-3">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white group-hover:text-[#FF2D55] transition">
+                {/* 실물 운동 사진 썸네일 (CDN 지연 로딩) */}
+                {ex.images && ex.images.length > 0 ? (
+                  <img
+                    src={ex.images[0]}
+                    alt={ex.name}
+                    loading="lazy"
+                    className="w-12 h-12 rounded-xl object-cover bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 shrink-0"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-[#1C1C1E] flex items-center justify-center text-gray-400 shrink-0 border border-black/5 dark:border-white/5">
+                    <Dumbbell size={18} />
+                  </div>
+                )}
+
+                <div className="flex-1 min-w-0 pr-1">
+                  <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                    <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white group-hover:text-[#FF2D55] transition truncate">
                       {ex.name}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
-                      {ex.equipment === 'machine' ? '머신' : ex.equipment === 'barbell' ? '바벨' : ex.equipment === 'dumbbell' ? '덤벨' : '맨몸/케이블'}
+                    <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
+                      {ex.equipment === 'machine' ? '머신' : ex.equipment === 'barbell' ? '바벨' : ex.equipment === 'dumbbell' ? '덤벨' : ex.equipment === 'cable' ? '케이블' : '맨몸/소도구'}
                     </span>
-                    {ex.defaultBrand && (
-                      <span className="px-1.5 py-0.5 rounded bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-semibold">
-                        {ex.defaultBrand.split(' ')[0]}
+                    {ex.isPopular && (
+                      <span className="px-1.5 py-0.2 rounded bg-red-500/10 text-[#FF2D55] text-[10px] font-bold">
+                        ★인기
                       </span>
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-1 text-[11px] text-gray-400">
-                    <span className="text-[#FF2D55] font-semibold">
-                      주동: {ex.primaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m).join(', ')}
+                  {/* 영문 원본 명칭 */}
+                  <p className="text-[11px] text-gray-400 truncate mb-1">
+                    {ex.nameEn}
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-1 text-[11px]">
+                    <span className="text-[#FF2D55] font-semibold text-[11px]">
+                      {ex.primaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m).join(', ')}
                     </span>
                     {ex.secondaryMuscles.length > 0 && (
-                      <span className="text-gray-400">
-                        | 협응: {ex.secondaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m).join(', ')}
+                      <span className="text-gray-400 text-[10px]">
+                        (협응: {ex.secondaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m).join(', ')})
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="p-2 rounded-xl bg-white dark:bg-[#1C1C1E] group-hover:bg-[#FF2D55]/10 text-gray-400 group-hover:text-[#FF2D55] transition shadow-2xs">
+                <div className="p-2 rounded-xl bg-white dark:bg-[#1C1C1E] group-hover:bg-[#FF2D55]/10 text-gray-400 group-hover:text-[#FF2D55] transition shadow-2xs shrink-0">
                   <ChevronRight size={16} />
                 </div>
               </button>
             ))
+          )}
+          {filteredExercises.length > 100 && (
+            <div className="p-3 text-center text-xs text-gray-400">
+              총 {filteredExercises.length}개 중 상위 100개 표시 중입니다. 더 구체적인 이름으로 검색해 보세요.
+            </div>
           )}
         </div>
       </div>

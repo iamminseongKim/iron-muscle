@@ -131,6 +131,8 @@ export interface Exercise {
   tips: string[];
   defaultBrand?: string;
   isPopular?: boolean;
+  images?: string[];
+  level?: 'beginner' | 'intermediate' | 'expert';
 }
 
 export interface WorkoutExercise {

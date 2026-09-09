@@ -679,7 +679,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ onWorkoutCompleted
           className="w-full py-4 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] border border-black/5 dark:border-white/5 rounded-2xl text-sm font-bold text-[#007AFF] flex items-center justify-center gap-2 shadow-sm transition active:scale-98"
         >
           <Plus size={18} />
-          운동 종목 추가하기 (80+ 라이브러리)
+          운동 종목 추가하기 (870+ 글로벌 라이브러리)
         </button>
 
         <button

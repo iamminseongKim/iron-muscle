@@ -1,10 +1,4 @@
-import { Exercise } from '../types/workout';
-
-/**
- * EXERCISES_DATABASE
- * Powered by free-exercise-db (876 exercises) with Korean translations & CDN images
- */
-export const EXERCISES_DATABASE: Exercise[] = [
+[
   {
     "id": "ab-roller",
     "name": "AB 롤러 (복근 휠)",
@@ -31378,4 +31372,4 @@ export const EXERCISES_DATABASE: Exercise[] = [
     "level": "expert",
     "isPopular": false
   }
-];
+]

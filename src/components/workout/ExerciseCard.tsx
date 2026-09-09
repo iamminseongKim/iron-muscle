@@ -34,7 +34,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   isDark = false,
 }) => {
   const [show3DViewer, setShow3DViewer] = useState(false);
-  const [viewerMode, setViewerMode] = useState<'dual' | '3d'>('dual');
+  const [viewerMode, setViewerMode] = useState<'dual' | '3d' | 'photos'>('dual');
   const [isCustomBrand, setIsCustomBrand] = useState(false);
   const [showMachineSetting, setShowMachineSetting] = useState(false);
 
@@ -351,7 +351,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <button
                 type="button"
                 onClick={() => setViewerMode('dual')}
-                className={`px-2.5 py-1 rounded-lg transition-all ${
+                className={`px-2 py-1 rounded-lg transition-all ${
                   viewerMode === 'dual'
                     ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
@@ -362,14 +362,27 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <button
                 type="button"
                 onClick={() => setViewerMode('3d')}
-                className={`px-2.5 py-1 rounded-lg transition-all ${
+                className={`px-2 py-1 rounded-lg transition-all ${
                   viewerMode === '3d'
                     ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
               >
-                🔬 3D 회전 모델
+                🔬 3D 모델
               </button>
+              {baseExercise.images && baseExercise.images.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setViewerMode('photos')}
+                  className={`px-2 py-1 rounded-lg transition-all ${
+                    viewerMode === 'photos'
+                      ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
+                      : 'text-gray-500 hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  📸 실물 사진
+                </button>
+              )}
             </div>
           </div>
 
@@ -381,7 +394,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               showFatigueSlider={false}
               isDark={isDark}
             />
-          ) : (
+          ) : viewerMode === '3d' ? (
             <div className="rounded-3xl overflow-hidden shadow-lg border border-black/5 dark:border-white/10">
               <HumanMuscle3DViewer
                 primaryMuscles={baseExercise.primaryMuscles || []}
@@ -390,6 +403,37 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 showControls={true}
                 isDark={isDark}
               />
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              <div className="grid grid-cols-2 gap-2">
+                {baseExercise.images?.slice(0, 2).map((imgUrl, i) => (
+                  <div key={i} className="relative rounded-2xl overflow-hidden bg-black/5 dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 aspect-square flex items-center justify-center">
+                    <img
+                      src={imgUrl}
+                      alt={`${exerciseName} 동작 ${i + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <span className="absolute bottom-1.5 left-2 px-2 py-0.5 rounded-md bg-black/70 text-white text-[10px] font-bold">
+                      {i === 0 ? '1. 시작 자세' : '2. 정점 수축'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {baseExercise.instructions && baseExercise.instructions.length > 0 && (
+                <div className="p-3 rounded-2xl bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/5 text-xs space-y-1.5">
+                  <span className="font-bold text-gray-700 dark:text-gray-300 block">📋 올바른 운동 순서</span>
+                  {baseExercise.instructions.slice(0, 4).map((step, idx) => (
+                    <p key={idx} className="text-gray-600 dark:text-gray-400 text-[11px] leading-relaxed flex items-start gap-1.5">
+                      <span className="w-4 h-4 rounded-full bg-red-500/15 text-[#FF2D55] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                        {idx + 1}
+                      </span>
+                      <span>{step}</span>
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
