@@ -1,16 +1,21 @@
-﻿name: Build Mobile Apps (Android APK & iOS)
+name: Build & Release Mobile Apps (Android APK & iOS)
 
 on:
   push:
     branches: [ "main", "master" ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  # 1. 안드로이드 APK 자동 빌드 (스마트폰에 직접 설치 가능한 APK 산출물 생성)
+  # 1. 안드로이드 APK 자동 빌드 및 GitHub Releases 배포
   build-android:
-    name: Build Android APK
+    name: Build & Release Android APK
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +43,7 @@ jobs:
       - name: Build Web Application
         run: npm run build
 
-      - name: Add Capacitor Android Platform (if not present)
+      - name: Sync Capacitor Android
         run: |
           npx cap add android || true
           npx cap sync android
@@ -51,12 +56,59 @@ jobs:
           cd android
           ./gradlew assembleDebug --stacktrace
 
+      - name: Prepare APK for Release
+        run: |
+          mkdir -p release-apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/IronMuscle-v3.0.0.apk
+          echo "APK prepared: release-apk/IronMuscle-v3.0.0.apk"
+          ls -lh release-apk/
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: IronMuscle-Android-Debug-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: IronMuscle-Android-APK
+          path: release-apk/IronMuscle-v3.0.0.apk
           retention-days: 30
+
+      - name: Determine Release Tag
+        id: release_tag
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=v3.0.0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release and Upload APK
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: "Iron Muscle Tracker ${{ steps.release_tag.outputs.tag }} (Android APK)"
+          body: |
+            ## 🏋️‍♂️ Iron Muscle Tracker ${{ steps.release_tag.outputs.tag }} 배포판
+
+            안드로이드 스마트폰에 직접 설치할 수 있는 APK 설치 파일입니다.
+
+            ### 📥 다운로드 및 설치 안내
+            1. 아래 **Assets** 섹션의 **`IronMuscle-v3.0.0.apk`** 링크를 클릭하여 다운로드합니다.
+            2. 스마트폰에서 다운로드된 `.apk` 파일을 열고, **'출처를 알 수 없는 앱 설치 허용'** 또는 **'무시하고 설치'**를 터치하여 설치를 완료합니다.
+
+            ---
+
+            ### 🌟 V3.0 핵심 업데이트 내역
+            - **🏷️ 순수 생체역학 명칭 표준화 (106+종)**: 특정 제조사 브랜드명 및 불필요 수식어 분리 완료
+            - **🦾 편측성 & 부하방식 퀵 토글**: `[투암 (양측)]` ⇋ `[원암 (편측 L/R)]` & `[플레이트]` ⇋ `[핀머신]` 원터치 전환, 세트별 좌(L)/우(R) 개별 기록
+            - **🔗 다중 종목 묶기**: `⚡ 슈퍼세트`, `🔥 컴파운드세트`, `💥 자이언트세트` 결합 브래킷 및 네온 배지 지원
+            - **📅 [기록 조회] 탭 신설**: 일간 상세 피드, 깃허브 스타일 **월간 잔디 출석 캘린더**, 연간 볼륨 통계
+            - **🤖 AI 분석용 Markdown (.md) 추출**: ChatGPT/Claude 코칭 프롬프트 최적화 서식 및 원클릭 복사/다운로드
+            - **🩻 타겟 근육 듀얼 모드**: 전·후면 네온 발광 **정밀 해부도** & Three.js 기반 360도 **3D 회전 모델**
+            - **⏱️ 애플 룩앤필 듀얼 타이머**: 상단 상시 총 운동 타이머 + 세트별 대형 원형 휴식 타이머(실제 쉰 시간 자동 기록)
+          files: release-apk/IronMuscle-v3.0.0.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # 2. iOS 빌드 및 컴파일 검증 (클라우드 Mac에서 빌드)
   build-ios:
@@ -79,7 +131,7 @@ jobs:
       - name: Build Web Application
         run: npm run build
 
-      - name: Add Capacitor iOS Platform (if not present)
+      - name: Sync Capacitor iOS
         run: |
           npx cap add ios || true
           npx cap sync ios
