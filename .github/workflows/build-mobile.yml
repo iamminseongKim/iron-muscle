@@ -1,0 +1,90 @@
+﻿name: Build Mobile Apps (Android APK & iOS)
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  # 1. 안드로이드 APK 자동 빌드 (스마트폰에 직접 설치 가능한 APK 산출물 생성)
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Add Capacitor Android Platform (if not present)
+        run: |
+          npx cap add android || true
+          npx cap sync android
+
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK with Gradle
+        run: |
+          cd android
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: IronMuscle-Android-Debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+  # 2. iOS 빌드 및 컴파일 검증 (클라우드 Mac에서 빌드)
+  build-ios:
+    name: Build iOS Project (Cloud Mac)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Add Capacitor iOS Platform (if not present)
+        run: |
+          npx cap add ios || true
+          npx cap sync ios
+
+      - name: Compile iOS Project with Xcode CLI
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -destination 'generic/platform=iOS' clean build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO

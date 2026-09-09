@@ -1,0 +1,27 @@
+﻿# Logs
+logs
+*.log
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Testing
+apple_*.png
+test_*.cjs
+
+# Android
+android/app/build/
+android/.gradle/
+android/local.properties
+
+# iOS
+ios/App/Pods/
+ios/App/App.xcworkspace/xcuserdata/

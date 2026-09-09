@@ -1,0 +1,17 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0B0C10;
+    color: #F3F4F6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Safe Area support for Android and iOS notched devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
