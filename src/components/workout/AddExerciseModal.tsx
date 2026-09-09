@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Search, Dumbbell, ChevronRight, Plus, Sparkles } from 'lucide-react';
 import { Exercise, Category, EquipmentType } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
+import { matchesExerciseSearch, normalizeSearch } from '../../utils/exerciseSearch';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 import { loadCustomExercises } from '../../utils/storage';
 import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
@@ -23,6 +24,7 @@ const BASE_CATEGORIES: { id: Category | 'all'; label: string }[] = [
   { id: 'shoulders', label: '어깨' },
   { id: 'arms', label: '팔' },
   { id: 'core', label: '복근/코어' },
+  { id: 'fullbody', label: '전신' },
 ];
 
 const EQUIPMENTS: { id: EquipmentType | 'all'; label: string }[] = [
@@ -32,31 +34,8 @@ const EQUIPMENTS: { id: EquipmentType | 'all'; label: string }[] = [
   { id: 'machine', label: '머신' },
   { id: 'cable', label: '케이블' },
   { id: 'bodyweight', label: '맨몸' },
+  { id: 'other', label: '기타' },
 ];
-
-// 한글 초성 추출 유틸리티 (Hangul Chosung Extraction)
-const CHOSUNG_LIST = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-
-function extractChosung(text: string): string {
-  let result = '';
-  for (let i = 0; i < text.length; i++) {
-    const code = text.charCodeAt(i) - 0xac00;
-    if (code >= 0 && code <= 11171) {
-      result += CHOSUNG_LIST[Math.floor(code / 588)];
-    } else {
-      result += text[i];
-    }
-  }
-  return result;
-}
-
-function isChosungQuery(query: string): boolean {
-  return /^[ㄱ-ㅎ\s]+$/.test(query.trim());
-}
-
-function normalizeSearch(text: string): string {
-  return text.toLowerCase().replace(/[\s\-_/()·,]/g, '');
-}
 
 export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ 
   isOpen, 
@@ -74,6 +53,8 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
   const [customExercises, setCustomExercises] = useState<Exercise[]>(() => loadCustomExercises());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(50);
+  useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, isOpen]);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -87,6 +68,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         setSelectedCategory('all');
       }
       setSearchQuery('');
+      setSelectedEquipment('all');
     }
   }, [isOpen, initialCategory, hasTargets]);
 
@@ -114,6 +96,23 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen || isCreateModalOpen) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { event.preventDefault(); onClose(); }
+      if (event.key !== 'Tab') return;
+      const dialog = document.getElementById('exercise-picker-title')?.closest('[role="dialog"]');
+      const nodes = dialog?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])');
+      if (!nodes?.length) return;
+      const first = nodes[0], last = nodes[nodes.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => { document.removeEventListener('keydown', handleKey); previousFocus?.focus(); };
+  }, [isOpen, isCreateModalOpen, onClose]);
+
   if (!isOpen) return null;
 
   const getTargetLabels = () => {
@@ -125,49 +124,18 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   };
 
   const cleanQuery = searchQuery.trim();
-  const isChosung = isChosungQuery(cleanQuery);
   const normQuery = normalizeSearch(cleanQuery);
-  const chosungQuery = cleanQuery.replace(/\s+/g, '');
 
   // 커스텀 운동을 상단에 결합
   const allExercises = [...customExercises, ...EXERCISES_DATABASE];
 
   const filteredExercises = allExercises.filter((ex) => {
-    // 1. 스마트 검색어 매칭 (초성, 별칭, 은어, 띄어쓰기 무시, 영문)
-    let matchQuery = true;
-    if (cleanQuery !== '') {
-      if (isChosung) {
-        // 초성 검색 모드: 이름의 초성 또는 별칭들의 초성에 포함되는지 확인
-        const nameChosung = extractChosung(ex.name).replace(/\s+/g, '');
-        const matchNameChosung = nameChosung.includes(chosungQuery);
-
-        const matchAliasChosung = (ex.aliases || []).some((alias) => {
-          const aliasChosung = extractChosung(alias).replace(/\s+/g, '');
-          return aliasChosung.includes(chosungQuery) || alias.includes(chosungQuery);
-        });
-
-        matchQuery = matchNameChosung || matchAliasChosung;
-      } else {
-        // 일반 텍스트 검색:
-        // A. 한국어 이름 매칭 (띄어쓰기 무시)
-        const matchName = normalizeSearch(ex.name).includes(normQuery);
-
-        // B. 영문 이름 매칭 (대소문자 및 띄어쓰기 무시)
-        const matchNameEn = normalizeSearch(ex.nameEn).includes(normQuery);
-
-        // C. 별칭/은어 매칭 (예: '불스스', '사레레', '라트익', '스스', '인클')
-        const matchAlias = (ex.aliases || []).some((alias) => {
-          return normalizeSearch(alias).includes(normQuery);
-        });
-
-        matchQuery = matchName || matchNameEn || matchAlias;
-      }
-    }
+    const matchQuery = matchesExerciseSearch(ex, cleanQuery);
 
     // 2. 카테고리 필터링 (다중 부위 완벽 매핑 및 오늘 목표 부위 필터링)
     let matchCat = false;
     // 검색어가 입력된 경우, 오늘 목표 탭('targets')에 있더라도 전역 검색이 가능하도록 유연하게 매칭
-    if (cleanQuery !== '' && selectedCategory === 'targets') {
+    if (cleanQuery !== '') {
       matchCat = true;
     } else if (selectedCategory === 'all') {
       matchCat = true;
@@ -229,11 +197,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-md animate-fade-in">
-      <div className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="exercise-picker-title" className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-lg max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div>
-            <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
+            <h3 id="exercise-picker-title" className="font-extrabold text-base text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
               <Dumbbell size={18} className="text-[#FF2D55]" />
               운동 종목 선택
             </h3>
@@ -250,6 +218,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
             </button>
             <button
               onClick={onClose}
+              aria-label="운동 선택 닫기"
               className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             >
               <X size={18} />
@@ -264,10 +233,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
             <input
               ref={searchInputRef}
               type="text"
+              aria-label="운동 검색"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="운동명·은어·초성 검색 (예: 불스스, ㅂㅅㅅ, 사레레, 벤치...)"
-              className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-4 py-2 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#007AFF] shadow-xs transition"
+              placeholder="운동명·브랜드·초성 검색"
+              className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-16 py-2 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#007AFF] shadow-xs transition"
             />
             {searchQuery && (
               <button
@@ -317,6 +287,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               <button
                 key={eq.id}
                 type="button"
+                aria-pressed={selectedEquipment === eq.id}
                 onClick={() => setSelectedEquipment(eq.id)}
                 className={`px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap transition border ${
                   selectedEquipment === eq.id
@@ -330,6 +301,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           </div>
         </div>
 
+        <div className="px-4 py-2 flex items-center justify-between text-xs border-b border-black/5 dark:border-white/10">
+          <span role="status" className="text-gray-500">{cleanQuery ? '전체 부위 검색' : '검색 결과'} {filteredExercises.length}개</span>
+          <button type="button" className="min-h-[36px] text-[#007AFF] font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); }}>필터 초기화</button>
+        </div>
         {/* 운동 목록 */}
         <div className="p-3 overflow-y-auto flex-1 space-y-2">
           {filteredExercises.length === 0 ? (
@@ -345,7 +320,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               </button>
             </div>
           ) : (
-            filteredExercises.slice(0, 100).map((ex) => (
+            filteredExercises.slice(0, visibleCount).map((ex) => (
               <button
                 key={ex.id}
                 type="button"
@@ -353,7 +328,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                   onSelect(ex, ex.equipment, ex.defaultBrand);
                   onClose();
                 }}
-                className="w-full text-left p-2.5 sm:p-3 rounded-2xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#FF2D55]/40 transition flex items-center gap-3 group"
+                className="w-full text-left px-2.5 py-2 rounded-xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#FF2D55]/40 transition flex items-center gap-3 group"
               >
                 {/* 실물 운동 사진 썸네일 (CDN 지연 로딩) */}
                 {ex.images && ex.images.length > 0 ? (
@@ -361,13 +336,13 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     src={ex.images[0]}
                     alt={ex.name}
                     loading="lazy"
-                    className="w-12 h-12 rounded-xl object-cover bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 shrink-0"
+                    className="w-10 h-10 rounded-xl object-cover bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 shrink-0"
                     onError={(e) => {
                       (e.target as HTMLElement).style.display = 'none';
                     }}
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-[#1C1C1E] flex items-center justify-center text-gray-400 shrink-0 border border-black/5 dark:border-white/5">
+                  <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-[#1C1C1E] flex items-center justify-center text-gray-400 shrink-0 border border-black/5 dark:border-white/5">
                     <Dumbbell size={18} />
                   </div>
                 )}
@@ -400,11 +375,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     <span className="text-[#FF2D55] font-semibold text-[11px]">
                       {ex.primaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m).join(', ')}
                     </span>
-                    {ex.secondaryMuscles.length > 0 && (
-                      <span className="text-gray-400 text-[10px]">
-                        (협응: {ex.secondaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m).join(', ')})
-                      </span>
-                    )}
+
                   </div>
                 </div>
 
@@ -414,10 +385,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               </button>
             ))
           )}
-          {filteredExercises.length > 100 && (
-            <div className="p-3 text-center text-xs text-gray-400">
-              총 {filteredExercises.length}개 중 상위 100개 표시 중입니다. 더 구체적인 이름으로 검색해 보세요.
-            </div>
+          {filteredExercises.length > visibleCount && (
+            <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full p-3 rounded-xl bg-blue-500/10 text-[#007AFF] text-sm font-bold">
+              더 보기 ({Math.min(visibleCount, filteredExercises.length)} / {filteredExercises.length})
+            </button>
           )}
         </div>
       </div>

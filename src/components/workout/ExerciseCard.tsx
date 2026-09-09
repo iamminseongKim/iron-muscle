@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Trash2, Plus, Dumbbell, Shield, HelpCircle, 
+  ChevronDown, ChevronRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
   Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame 
 } from 'lucide-react';
 import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
@@ -23,6 +23,8 @@ interface ExerciseCardProps {
   onOpenGroupModal?: () => void;
   onUnlinkGroup?: () => void;
   isDark?: boolean;
+  collapsed?: boolean;
+  onToggleCollapsed?: () => void;
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
@@ -36,6 +38,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onOpenGroupModal,
   onUnlinkGroup,
   isDark = false,
+  collapsed = false,
+  onToggleCollapsed,
 }) => {
   // 이 종목 고유의 단위 (없으면 기본값 'kg')
   const currentUnit: WeightUnit = exerciseItem.weightUnit || fallbackUnit;
@@ -61,6 +65,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
   const baseExercise: Exercise = resolveExercise(exerciseItem.exerciseId);
+  const currentLoadType = exerciseItem.loadType || baseExercise.loadType || 'plate-loaded';
   const exerciseName = baseExercise.name;
   const exerciseNameEn = baseExercise.nameEn || '';
 
@@ -117,8 +122,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onUpdate({
       ...exerciseItem,
       equipmentType: eq,
-      machineBrand: eq === 'machine' ? (exerciseItem.machineBrand || baseExercise?.defaultBrand || 'Hammer Strength (해머 스트렝스)') : undefined,
-      loadType: eq === 'machine' ? (exerciseItem.loadType || 'plate-loaded') : undefined,
+      machineBrand: eq === 'machine' ? (exerciseItem.machineBrand || baseExercise?.defaultBrand || '') : undefined,
+      loadType: eq === 'machine' ? currentLoadType : undefined,
     });
   };
 
@@ -135,7 +140,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const isGrouped = Boolean(exerciseItem.groupId);
 
   return (
-    <div className={`bg-white dark:bg-[#1C1C1E] rounded-3xl border shadow-sm overflow-hidden transition-all ${
+    <div className={`bg-white dark:bg-[#1C1C1E] rounded-2xl border shadow-sm overflow-hidden transition-all ${
       isGrouped
         ? exerciseItem.groupType === 'superset'
           ? 'border-l-4 border-l-[#007AFF] border-black/5 dark:border-white/5'
@@ -165,10 +170,79 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Main Header */}
-      <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h3 className="text-base font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">{exerciseName}</h3>
+      <div className="px-3 py-2 border-b border-black/5 dark:border-white/5 flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <h3 className="w-full text-base font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
+              <button type="button" onClick={onToggleCollapsed} aria-expanded={!collapsed} className="w-full text-left flex items-center gap-1 min-h-[28px]">
+                {collapsed ? <ChevronRight size={14} className="shrink-0 text-gray-400" /> : <ChevronDown size={14} className="shrink-0 text-gray-400" />}
+                <span>{exerciseName}</span>
+              </button>
+            </h3>
+
+          </div>
+          <div className="flex items-center gap-2 flex-wrap mt-0.5">
+            <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}세트 완료{records.maxWeight > 0 ? ` · 최고 ${records.maxWeight}${currentUnit}` : ''}</span>
+            {(!collapsed && (exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes('덤벨') || exerciseNameEn.toLowerCase().includes('dumbbell'))) && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
+                💡 덤벨: 한쪽(편측) 무게 기준
+              </span>
+            )}
+            {(!collapsed && (exerciseItem.equipmentType === 'machine' || baseExercise.equipment === 'machine') && (exerciseName.includes('스미스') || exerciseNameEn.toLowerCase().includes('smith'))) && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#007AFF]/10 text-[#007AFF] dark:bg-[#007AFF]/20 text-[10px] font-bold tracking-tight">
+                💡 스미스머신: 봉 무게 제외 (원판 무게만 기록)
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* 액션 버튼: 묶기, 3D 해부도, 삭제 */}
+        <div className="flex items-center gap-0.5 shrink-0">
+          {onOpenGroupModal && !isGrouped && (
+            <button
+              type="button"
+              onClick={onOpenGroupModal}
+              className="min-w-[36px] min-h-[36px] justify-center px-2 rounded-xl text-xs font-bold transition flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5"
+              title="다른 종목과 슈퍼세트/컴파운드세트로 묶기"
+            >
+              <Link2 size={13} className="text-gray-400" />
+              <span className="sr-only">묶기</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => { if (collapsed) onToggleCollapsed?.(); setShow3DViewer(!show3DViewer); }}
+            className={`min-w-[36px] min-h-[36px] justify-center px-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+              show3DViewer
+                ? 'bg-[#FF2D55]/15 text-[#FF2D55] ring-1 ring-[#FF2D55]/30'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'
+            }`}
+            title="타겟 근육 근육 해부도 및 3D 회전 모델 보기"
+          >
+            <Eye size={13} className={show3DViewer ? 'text-[#FF2D55]' : 'text-gray-400'} />
+            <span className="sr-only">근육 보기</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label={`${exerciseName} 삭제`}
+            className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 rounded-xl transition"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div hidden={collapsed}>
+      <details className="border-b border-black/5 dark:border-white/5">
+        <summary className="px-3 py-2 cursor-pointer text-xs text-gray-500 dark:text-gray-400 marker:text-gray-400">
+          <span className="font-bold text-gray-500 dark:text-gray-400">운동 설정</span>
+          <span className="ml-2">{exerciseItem.executionMode === 'unilateral' ? '편측' : '양측'} · {currentUnit}{exerciseItem.equipmentType === 'machine' ? ` · ${currentLoadType === 'pin-loaded' ? '핀머신' : '원판'} · ${exerciseItem.machineBrand?.split(' (')[0] || '브랜드 미지정'}` : ''}</span>
+        </summary>
+        <p className="px-3 text-xs text-gray-400">{exerciseNameEn}</p>
+        <div className="px-3 py-1 flex items-center gap-2"><span className="text-xs text-gray-500">장비</span>
             {/* 세련된 애플 세그먼트 컨트롤 (프리 vs 머신) */}
             <div className="flex items-center bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-xl p-0.5 text-[11px] font-bold">
               <button
@@ -190,60 +264,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 머신
               </button>
             </div>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap mt-0.5">
-            <span className="text-xs text-gray-400">{exerciseNameEn}</span>
-            {(exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes('덤벨') || exerciseNameEn.toLowerCase().includes('dumbbell')) && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
-                💡 덤벨: 한쪽(편측) 무게 기준
-              </span>
-            )}
-            {((exerciseItem.equipmentType === 'machine' || baseExercise.equipment === 'machine') && (exerciseName.includes('스미스') || exerciseNameEn.toLowerCase().includes('smith'))) && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#007AFF]/10 text-[#007AFF] dark:bg-[#007AFF]/20 text-[10px] font-bold tracking-tight">
-                💡 스미스머신: 봉 무게 제외 (원판 무게만 기록)
-              </span>
-            )}
-          </div>
         </div>
-
-        {/* 액션 버튼: 묶기, 3D 해부도, 삭제 */}
-        <div className="flex items-center gap-1.5">
-          {onOpenGroupModal && !isGrouped && (
-            <button
-              type="button"
-              onClick={onOpenGroupModal}
-              className="px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 hover:bg-black/10"
-              title="다른 종목과 슈퍼세트/컴파운드세트로 묶기"
-            >
-              <Link2 size={13} className="text-[#007AFF]" />
-              <span>묶기</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setShow3DViewer(!show3DViewer)}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-              show3DViewer
-                ? 'bg-[#FF2D55]/15 text-[#FF2D55] ring-1 ring-[#FF2D55]/30'
-                : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-300 hover:bg-black/10'
-            }`}
-            title="타겟 근육 정밀 해부도 및 3D 회전 모델 보기"
-          >
-            <Eye size={13} className={show3DViewer ? 'text-[#FF2D55]' : 'text-gray-400'} />
-            <span>해부도 & 3D</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={onDelete}
-            className="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 rounded-xl transition"
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
-      </div>
-
       {/* 🚀 퀵 듀얼 토글 바: [편측성: 투암 ⇋ 원암] & [부하방식: 플레이트 ⇋ 핀로드] */}
       <div className="px-4 py-2 bg-[#F9F9FB] dark:bg-[#18181A] border-b border-black/5 dark:border-white/5 flex flex-wrap items-center justify-between gap-2 text-xs">
         {/* 편측성 토글: 투암 vs 원암 */}
@@ -317,7 +338,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 type="button"
                 onClick={() => onUpdate({ ...exerciseItem, loadType: 'plate-loaded' })}
                 className={`px-2 py-0.5 rounded-lg transition ${
-                  (exerciseItem.loadType || 'plate-loaded') === 'plate-loaded'
+                  currentLoadType === 'plate-loaded'
                     ? 'bg-[#FF9500] text-white shadow-xs'
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
@@ -328,7 +349,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 type="button"
                 onClick={() => onUpdate({ ...exerciseItem, loadType: 'pin-loaded' })}
                 className={`px-2 py-0.5 rounded-lg transition ${
-                  exerciseItem.loadType === 'pin-loaded'
+                  currentLoadType === 'pin-loaded'
                     ? 'bg-[#34C759] text-white shadow-xs'
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
@@ -350,10 +371,13 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
           {!isCustomBrand ? (
             <select
+              aria-label="머신 브랜드"
               value={exerciseItem.machineBrand || ''}
               onChange={(e) => handleBrandSelect(e.target.value)}
               className="bg-white dark:bg-[#2C2C2E] text-[#FF9500] font-bold rounded-xl px-2.5 py-1 text-xs border border-black/10 dark:border-white/10 outline-none cursor-pointer"
             >
+              <option value="">브랜드 선택</option>
+              {exerciseItem.machineBrand && !POPULAR_MACHINE_BRANDS.some(b => b === exerciseItem.machineBrand) && <option value={exerciseItem.machineBrand}>{exerciseItem.machineBrand}</option>}
               {POPULAR_MACHINE_BRANDS.map((b) => (
                 <option key={b} value={b}>
                   {b}
@@ -401,19 +425,21 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </div>
       )}
 
+      </details>
+
       {/* 해부학 & 3D 모델 인라인 펼침 */}
       {show3DViewer && (
         <div className="p-3 bg-[#F2F2F7] dark:bg-[#151516] border-b border-black/5 dark:border-white/5 space-y-3">
-          {/* 상단 뷰어 스위처: [🩻 정밀 해부도] ⇋ [🔬 3D 회전 모델] */}
-          <div className="flex items-center justify-between flex-wrap gap-2">
+          {/* 상단 뷰어 스위처: [🩻 근육 해부도] ⇋ [🔬 3D 회전 모델] */}
+          <div className="flex items-center justify-between flex-wrap gap-2 min-w-0">
             <div className="flex items-center gap-1.5">
               <Sparkles size={13} className="text-[#FF2D55]" />
               <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
                 {exerciseName} 자극 부위
               </span>
             </div>
-            
-            <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-[11px] font-bold">
+
+            <div className="flex flex-wrap bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-[11px] font-bold">
               <button
                 type="button"
                 onClick={() => setViewerMode('dual')}
@@ -423,7 +449,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
               >
-                🩻 정밀 해부도
+                🩻 근육 해부도
               </button>
               <button
                 type="button"
@@ -526,24 +552,25 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Set Header */}
-      <div className="px-[18px] sm:px-5 pt-3 pb-1.5 flex items-center gap-2 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
-        <span className="w-8 shrink-0 text-center">세트</span>
-        <span className="w-16 shrink-0 text-center">이전 기록</span>
+      <div className="px-[15px] py-1 flex items-center gap-1.5 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
+        <span className="w-6 shrink-0 text-center">세트</span>
+        <span className="w-12 shrink-0 text-center">이전</span>
         <button
           type="button"
           onClick={handleToggleExerciseUnit}
-          className="flex-1 text-center font-bold text-[#007AFF] hover:opacity-80 transition flex items-center justify-center gap-1"
+          className="flex-1 text-center font-bold text-gray-500 dark:text-gray-400 hover:opacity-80 transition flex items-center justify-center gap-1"
           title="클릭하여 이 종목의 중량 단위(kg ⇋ lb) 즉시 전환"
         >
           <span>무게 ({currentUnit})</span>
-          <span className="text-[9px] font-black px-1 rounded bg-[#007AFF]/10 text-[#007AFF]">전환</span>
+
         </button>
         <span className="flex-1 text-center font-bold">횟수</span>
         <span className="w-9 shrink-0 text-center">완료</span>
+        <span className="w-7 shrink-0 text-center">옵션</span>
       </div>
 
       {/* Sets List */}
-      <div className="p-2 space-y-1.5 bg-[#F9F9FB]/50 dark:bg-[#161618]">
+      <div className="px-1.5 pb-1 bg-white dark:bg-[#1C1C1E]">
         {exerciseItem.sets.map((set, idx) => (
           <SetRow
             key={set.id}
@@ -564,7 +591,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <button
           type="button"
           onClick={handleAddSet}
-          className="w-full py-2.5 mt-1 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] text-xs font-bold text-[#007AFF] rounded-xl flex items-center justify-center gap-1 transition border border-dashed border-black/10 dark:border-white/10 active:scale-98"
+          className="w-full py-1.5 mt-0.5 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] text-xs font-bold text-[#FF2D55] rounded-lg flex items-center justify-center gap-1 transition active:scale-98"
         >
           <Plus size={14} />
           <span>세트 추가</span>
@@ -584,6 +611,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

@@ -126,14 +126,14 @@ export const App: React.FC = () => {
       if (current) {
         // 💡 세션 갱신 이벤트 발생 시에도 이미 진행 중인 초수가 0이나 이전 값으로 떨어지지 않도록 보존
         setTotalWorkoutSeconds((prev) => Math.max(prev, current.durationSeconds || 0));
-        setIsWorkoutTimerRunning(true);
+        if (!activeSession || activeSession.id !== current.id) setIsWorkoutTimerRunning(true);
       } else {
         setTotalWorkoutSeconds(0);
       }
     };
     window.addEventListener('iron_active_session_change', handleSessionChange);
     return () => window.removeEventListener('iron_active_session_change', handleSessionChange);
-  }, []);
+  }, [activeSession?.id]);
 
   // 활성 운동 진행 중일 때만 1초마다 타이머 증가 및 저장
   useEffect(() => {

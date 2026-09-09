@@ -46,25 +46,14 @@ export function resolveExercise(exerciseId?: string | null): Exercise {
     if (mapped) return mapped;
   }
 
-  // 3. 부분 키워드 일치 검사 (예: 'deadlift', 'squat', 'bench', 'lat-pulldown')
-  const cleanId = exerciseId.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const fuzzy = EXERCISES_DATABASE.find((e) => {
-    const targetClean = e.id.toLowerCase().replace(/[^a-z0-9]/g, '');
-    return targetClean.includes(cleanId) || cleanId.includes(targetClean);
-  });
-  if (fuzzy) return fuzzy;
-
-  // 4. 이름(한글/영문) 기반 검색
-  const nameMatch = EXERCISES_DATABASE.find(
-    (e) =>
-      e.name.toLowerCase().includes(exerciseId.toLowerCase()) ||
-      (e.nameEn && e.nameEn.toLowerCase().includes(exerciseId.toLowerCase()))
-  );
-  if (nameMatch) return nameMatch;
-
-  // 5. 기본 데드리프트 또는 첫 번째 운동 반환 (절대 빈 운동 반환 안 함)
-  const defaultExercise = EXERCISES_DATABASE.find((e) => e.id === 'conventional-deadlift');
-  return defaultExercise || EXERCISES_DATABASE[0] || getEmergencyFallbackExercise();
+  // 알 수 없는 ID는 보존한다. 추측으로 다른 운동의 기록을 만들지 않는다.
+  return {
+    id: exerciseId, name: `미등록 운동 (${exerciseId})`, nameEn: exerciseId,
+    category: 'fullbody', categories: ['fullbody'], equipment: 'other',
+    primaryMuscles: [], secondaryMuscles: [],
+    description: '이 운동의 상세 정보를 찾을 수 없습니다. 기존 기록은 보존됩니다.',
+    instructions: [], tips: [],
+  };
 }
 
 /**

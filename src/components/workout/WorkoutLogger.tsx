@@ -36,6 +36,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   isDark = false,
 }) => {
   // 현재 진행 중인 세션 (없으면 null -> 대기 화면 표시)
+  const [showSessionStats, setShowSessionStats] = useState(false);
+  const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<Set<string>>(new Set());
   const [session, setSession] = useState<WorkoutSession | null>(() => loadActiveSession());
 
   // 대기(Idle) 화면 상태
@@ -209,6 +211,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       id: 'ex-item-' + Date.now(),
       exerciseId: exercise.id,
       equipmentType,
+      loadType: exercise.loadType,
       machineBrand: brand,
       sets: initialSets,
       weightUnit: 'kg',
@@ -588,6 +591,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const totalVolume = calculateSessionVolume(session);
   const totalReps = calculateSessionReps(session);
   const avgRpe = calculateAverageRPE(session);
+  const sessionSets = session.exercises.flatMap(exercise => exercise.sets);
+  const completedSetCount = sessionSets.filter(set => set.completed).length;
 
   return (
     <div className="pb-32 max-w-lg mx-auto px-4 space-y-4 animate-fade-in">
@@ -652,32 +657,30 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         </div>
       </div>
 
-      {/* 세션 통계 카드 (애플 미니멀 룩) */}
-      <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div>
-            <span className="text-[11px] text-gray-400 font-semibold block mb-0.5">총 볼륨</span>
-            <span className="text-xl font-black tracking-tight text-[#1D1D1F] dark:text-white">
-              {totalVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">kg</span>
-            </span>
-          </div>
-          <div>
-            <span className="text-[11px] text-gray-400 font-semibold block mb-0.5">총 횟수</span>
-            <span className="text-xl font-black tracking-tight text-[#1D1D1F] dark:text-white">
-              {totalReps} <span className="text-xs font-normal text-gray-400">회</span>
-            </span>
-          </div>
-          <div>
-            <span className="text-[11px] text-gray-400 font-semibold block mb-0.5">평균 RPE</span>
-            <span className="text-xl font-black tracking-tight text-[#FF9500]">
-              {avgRpe ? `${avgRpe}` : '-'} <span className="text-xs font-normal text-gray-400">점</span>
-            </span>
-          </div>
+      {/* 한 줄 진행 요약. 세부 통계는 필요한 때만 펼친다. */}
+      <div className="rounded-xl bg-white dark:bg-[#1C1C1E] overflow-hidden">
+        <button type="button" aria-label="운동 통계 상세" aria-expanded={showSessionStats} onClick={() => setShowSessionStats(!showSessionStats)} className="w-full px-3 min-h-[40px] flex items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
+          <span><strong className="text-[#1D1D1F] dark:text-white">{session.exercises.length}</strong> 종목</span>
+          <span><strong className="text-[#FF2D55]">{completedSetCount}/{sessionSets.length}</strong> 세트 완료</span>
+          <span className="flex items-center gap-1"><strong className="text-[#1D1D1F] dark:text-white">{totalVolume.toLocaleString()}</strong> kg <span aria-hidden="true">{showSessionStats ? '⌃' : '⌄'}</span></span>
+        </button>
+        {showSessionStats && <div className="px-3 py-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"><span>총 횟수 <strong>{totalReps}회</strong></span><span>평균 RPE <strong>{avgRpe || '-'}</strong></span></div>}
+        <div role="progressbar" aria-label="세트 완료율" aria-valuemin={0} aria-valuemax={sessionSets.length || 1} aria-valuenow={completedSetCount} className="h-0.5 bg-black/5 dark:bg-white/5">
+          <div className="h-full bg-[#34C759] transition-[width] duration-300" style={{width: `${sessionSets.length ? completedSetCount / sessionSets.length * 100 : 0}%`}} />
         </div>
       </div>
 
       {/* 운동 종목 리스트 */}
-      <div className="space-y-4">
+      {session.exercises.length > 0 && (
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-bold text-gray-500">운동 {session.exercises.length}종목</span>
+          <div className="flex gap-3 text-gray-500 dark:text-gray-400 font-semibold">
+            <button type="button" className="min-h-[32px]" onClick={() => setCollapsedExerciseIds(new Set(session.exercises.map(item => item.id)))}>모두 접기</button>
+            <button type="button" className="min-h-[32px]" onClick={() => setCollapsedExerciseIds(new Set())}>모두 펼치기</button>
+          </div>
+        </div>
+      )}
+      <div className="space-y-2">
         {session.exercises.length === 0 ? (
           <div className="py-14 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-3">
             <Dumbbell size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
@@ -706,6 +709,12 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             <ExerciseCard
               key={item.id}
               exerciseItem={item}
+              collapsed={collapsedExerciseIds.has(item.id)}
+              onToggleCollapsed={() => setCollapsedExerciseIds(previous => {
+                const next = new Set(previous);
+                if (next.has(item.id)) next.delete(item.id); else next.add(item.id);
+                return next;
+              })}
               weightUnit={item.weightUnit || 'kg'}
               onUpdate={(updated) => handleUpdateExercise(idx, updated)}
               onDelete={() => handleDeleteExercise(idx)}
@@ -724,16 +733,16 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="w-full py-4 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] border border-black/5 dark:border-white/5 rounded-2xl text-sm font-bold text-[#007AFF] flex items-center justify-center gap-2 shadow-sm transition active:scale-98"
+          className="w-full min-h-[44px] text-sm font-bold text-[#FF2D55] hover:bg-[#FF2D55]/5 rounded-xl flex items-center justify-center gap-2 transition active:scale-98"
         >
           <Plus size={18} />
-          운동 종목 추가하기 (870+ 글로벌 라이브러리)
+          운동 종목 추가하기
         </button>
 
         <button
           type="button"
           onClick={handleCompleteWorkout}
-          className="w-full py-4 bg-[#FF2D55] hover:opacity-95 text-white rounded-2xl text-sm font-black flex items-center justify-center gap-2 shadow-md shadow-red-500/20 transition active:scale-98"
+          className="w-full mt-3 py-3 bg-[#FF2D55] hover:opacity-95 text-white rounded-2xl text-sm font-black flex items-center justify-center gap-2 shadow-md shadow-red-500/20 transition active:scale-98"
         >
           <CheckCircle2 size={18} />
           오늘 운동 완료 & 기록 저장

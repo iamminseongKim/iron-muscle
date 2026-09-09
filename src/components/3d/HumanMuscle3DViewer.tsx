@@ -36,6 +36,12 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
   const [hoveredMuscle, setHoveredMuscle] = useState<MuscleTarget | null>(null);
   const [viewAngle, setViewAngle] = useState<'front' | 'back' | 'free'>('front');
 
+  const rotationRef = useRef({x: 0, y: 0});
+  const autoRotateRef = useRef(false);
+  const onSelectRef = useRef(onSelectMuscle);
+  useEffect(() => { autoRotateRef.current = isAutoRotate; }, [isAutoRotate]);
+  useEffect(() => { onSelectRef.current = onSelectMuscle; }, [onSelectMuscle]);
+
   // Three.js 씬 초기화
   useEffect(() => {
     const container = containerRef.current;
@@ -47,12 +53,14 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     // 1. Scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    const bgColor = isDark ? 0x1C1C1E : 0xF5F5F7;
+    const bgColor = isDark ? 0x171c25 : 0xF3F5F8;
     scene.background = new THREE.Color(bgColor);
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(40, width / heightPx, 0.1, 100);
-    camera.position.set(0, 1.75, 6.2);
+    const fitDistance = () => Math.max(5.15 / (2 * Math.tan(THREE.MathUtils.degToRad(20))), 2.65 / (2 * Math.tan(THREE.MathUtils.degToRad(20)) * camera.aspect));
+    camera.position.set(0, 0, fitDistance());
+    camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
     // 3. Renderer (애플 스튜디오 룩)
@@ -69,11 +77,11 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     container.appendChild(renderer.domElement);
 
     // 4. Studio Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.95 : 1.2);
+    const ambientLight = new THREE.HemisphereLight(0xe5efff, 0x566070, 1.8);
     scene.add(ambientLight);
 
-    const dirLightFront = new THREE.DirectionalLight(0xffffff, isDark ? 1.5 : 1.8);
-    dirLightFront.position.set(2, 6, 5);
+    const dirLightFront = new THREE.DirectionalLight(0xffffff, 2.5);
+    dirLightFront.position.set(-3, 5, 5);
     scene.add(dirLightFront);
 
     const dirLightBack = new THREE.DirectionalLight(isDark ? 0x88aaff : 0xdde5ed, 1.2);
@@ -82,16 +90,19 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
 
     // 5. Human Model Group
     const { group, parts } = createHumanMuscleModel(isDark);
+    group.rotation.set(rotationRef.current.x, rotationRef.current.y, 0);
     groupRef.current = group;
     partsRef.current = parts;
     scene.add(group);
 
     // 6. Interaction
     let isDragging = false;
+    let dragDistance = 0;
     let previousMousePosition = { x: 0, y: 0 };
 
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
+      dragDistance = 0;
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
@@ -117,6 +128,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       const deltaX = e.clientX - previousMousePosition.x;
       const deltaY = e.clientY - previousMousePosition.y;
 
+      dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
       groupRef.current.rotation.y += deltaX * 0.009;
       groupRef.current.rotation.x = Math.max(-0.35, Math.min(0.35, groupRef.current.rotation.x + deltaY * 0.005));
       previousMousePosition = { x: e.clientX, y: e.clientY };
@@ -130,7 +142,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       if (!cameraRef.current) return;
-      cameraRef.current.position.z = Math.max(3.8, Math.min(8.2, cameraRef.current.position.z + e.deltaY * 0.003));
+      cameraRef.current.position.z = Math.max(3.8, Math.min(12, cameraRef.current.position.z + e.deltaY * 0.003));
     };
 
     // Mobile Touch
@@ -138,6 +150,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
         isDragging = true;
+        dragDistance = 0;
         previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       } else if (e.touches.length === 2) {
         const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -154,6 +167,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       if (e.touches.length === 1 && isDragging && groupRef.current) {
         const deltaX = e.touches[0].clientX - previousMousePosition.x;
         const deltaY = e.touches[0].clientY - previousMousePosition.y;
+        dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
         groupRef.current.rotation.y += deltaX * 0.012;
         groupRef.current.rotation.x = Math.max(-0.35, Math.min(0.35, groupRef.current.rotation.x + deltaY * 0.006));
         previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -163,7 +177,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         const dist = Math.sqrt(dx * dx + dy * dy);
         const diff = (dist - touchStartDist) * 0.01;
-        cameraRef.current.position.z = Math.max(3.8, Math.min(8.2, cameraRef.current.position.z - diff));
+        cameraRef.current.position.z = Math.max(3.8, Math.min(12, cameraRef.current.position.z - diff));
         touchStartDist = dist;
       }
     };
@@ -174,7 +188,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     };
 
     const onClick = (e: MouseEvent) => {
-      if (!cameraRef.current || !onSelectMuscle) return;
+      if (!cameraRef.current || !onSelectRef.current || dragDistance > 5) return;
       const rect = container.getBoundingClientRect();
       const mouse = new THREE.Vector2(
         ((e.clientX - rect.left) / container.clientWidth) * 2 - 1,
@@ -185,7 +199,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       const intersects = raycaster.intersectObjects(group.children, true);
       const targetPart = parts.find((p) => intersects.length > 0 && intersects[0].object === p.mesh);
       if (targetPart && targetPart.targetKey) {
-        onSelectMuscle(targetPart.targetKey);
+        onSelectRef.current(targetPart.targetKey);
       }
     };
 
@@ -205,8 +219,11 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       const h = container.clientHeight || 380;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      camera.position.z = fitDistance();
       renderer.setSize(w, h);
     };
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
     window.addEventListener('resize', handleResize);
 
     // Loop
@@ -214,7 +231,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     const animate = () => {
       frameIdRef.current = requestAnimationFrame(animate);
       const delta = clock.getDelta();
-      if (groupRef.current && isAutoRotate) {
+      if (groupRef.current && autoRotateRef.current) {
         groupRef.current.rotation.y += delta * 0.45;
       }
       renderer.render(scene, camera);
@@ -222,6 +239,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     animate();
 
     return () => {
+      rotationRef.current = { x: group.rotation.x, y: group.rotation.y };
       cancelAnimationFrame(frameIdRef.current);
       window.removeEventListener('resize', handleResize);
       container.removeEventListener('mousedown', onMouseDown);
@@ -233,9 +251,18 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       container.removeEventListener('touchmove', onTouchMove);
       container.removeEventListener('touchend', onTouchEnd);
       container.removeEventListener('touchcancel', onTouchEnd);
+      resizeObserver.disconnect();
+      group.traverse(object => {
+        if (object instanceof THREE.Mesh) {
+          object.geometry.dispose();
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          materials.forEach(material => material.dispose());
+        }
+      });
       renderer.dispose();
+      renderer.domElement.remove();
     };
-  }, [isAutoRotate, onSelectMuscle, isDark]);
+  }, [isDark]);
 
   // 근육 색상 실시간 업데이트 (애플 레드 #FF2D55 / 앰버 #FF9500)
   useEffect(() => {
@@ -253,14 +280,14 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
         // 애플 시그니처 레드
         mat.color.setHex(0xFF2D55);
         mat.emissive.setHex(0x770D1E);
-        mat.emissiveIntensity = 0.35;
-        mat.roughness = 0.25;
+        mat.emissiveIntensity = 0.08;
+        mat.roughness = 0.75;
       } else if (isSecondary) {
         // 애플 오렌지
         mat.color.setHex(0xFF9500);
         mat.emissive.setHex(0x663300);
-        mat.emissiveIntensity = 0.25;
-        mat.roughness = 0.3;
+        mat.emissiveIntensity = 0.05;
+        mat.roughness = 0.75;
       } else if (isHovered) {
         // 애플 시스템 블루
         mat.color.setHex(0x007AFF);
@@ -268,10 +295,10 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
         mat.emissiveIntensity = 0.3;
       } else {
         // 비타겟 (라이트 모드는 우아한 실버 그레이, 다크 모드는 세련된 티타늄 차콜)
-        mat.color.setHex(isDark ? 0x2C2C2E : 0xD1D5DB);
+        mat.color.setHex(isDark ? 0x8793a3 : 0xb9c3ce);
         mat.emissive.setHex(0x000000);
         mat.emissiveIntensity = 0;
-        mat.roughness = 0.45;
+        mat.roughness = 0.8;
       }
       mat.needsUpdate = true;
     });
@@ -287,16 +314,16 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
 
   const adjustZoom = (delta: number) => {
     if (!cameraRef.current) return;
-    cameraRef.current.position.z = Math.max(3.8, Math.min(8.2, cameraRef.current.position.z + delta));
+    cameraRef.current.position.z = Math.max(3.8, Math.min(12, cameraRef.current.position.z + delta));
   };
 
   return (
     <div
-      className="relative w-full rounded-3xl overflow-hidden bg-[#F5F5F7] dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 shadow-sm"
+      className="relative w-full rounded-2xl overflow-hidden bg-[#F3F5F8] dark:bg-[#171c25] border border-black/5 dark:border-white/10 shadow-sm"
       style={{ height }}
     >
       {/* 3D WebGL Canvas */}
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-none" />
+      <div ref={containerRef} role="img" aria-label="회전 가능한 인체 근육 모델" className="absolute inset-x-0 top-10 cursor-grab active:cursor-grabbing touch-none" style={{ bottom: showControls ? 52 : 8 }} />
 
       {/* 상단 범례 & 툴팁 */}
       <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-none">
@@ -325,6 +352,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
           {/* 전면/후면 스냅 */}
           <div className="flex items-center gap-1 bg-white/80 dark:bg-black/60 backdrop-blur-md p-1 rounded-2xl border border-black/5 dark:border-white/10 shadow-sm">
             <button
+              aria-pressed={viewAngle === 'front'}
               onClick={() => setCameraView('front')}
               className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
                 viewAngle === 'front'
@@ -332,9 +360,10 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
                   : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
               }`}
             >
-              전면 (Front)
+              전면
             </button>
             <button
+              aria-pressed={viewAngle === 'back'}
               onClick={() => setCameraView('back')}
               className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
                 viewAngle === 'back'
@@ -342,7 +371,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
                   : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
               }`}
             >
-              후면 (Back)
+              후면
             </button>
           </div>
 
@@ -369,6 +398,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
                   ? 'bg-[#FF9500]/15 text-[#FF9500]'
                   : 'text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10'
               }`}
+              aria-pressed={isAutoRotate}
               title="360도 회전"
             >
               <RotateCw size={16} className={isAutoRotate ? 'animate-spin' : ''} />

@@ -1,3 +1,4 @@
+import { ADDITIONAL_MACHINES } from './additionalMachines';
 import { Exercise } from '../types/workout';
 
 /**
@@ -5,6 +6,7 @@ import { Exercise } from '../types/workout';
  * Powered by free-exercise-db (876 exercises) with 100% Korean translations, aliases & CDN images
  */
 export const EXERCISES_DATABASE: Exercise[] = [
+  ...ADDITIONAL_MACHINES,
   {
     "id": "v_squat_machine",
     "name": "V-스쿼트 (V-Squat)",
@@ -70,7 +72,7 @@ export const EXERCISES_DATABASE: Exercise[] = [
       "traps",
       "chest_upper"
     ],
-    "description": "스트롱맨 훈련에서 유래된 바이킹 프레스는 뉴트럴 그립 핸들로 어깨 충돌 없이 전면 및 측면 삼각근에 강력한 중량 부하를 가하는 숄더 머신입니다.",
+    "description": "서서 손잡이를 위로 미는 어깨 프레스입니다. 기구에 따라 손잡이 높이와 그립을 조절할 수 있습니다.",
     "instructions": [
       "어깨너비로 선 후 뉴트럴 그립 핸들을 잡고 어깨 높이에서 준비합니다.",
       "코어와 둔근을 단단히 조여 척추를 고정합니다.",
@@ -79,13 +81,14 @@ export const EXERCISES_DATABASE: Exercise[] = [
     ],
     "tips": [
       "허리가 과도하게 꺾이지 않도록 둔근과 복근을 단단히 수축하세요.",
-      "뉴트럴 그립은 회전근개와 관절에 부담이 적어 어깨 통증이 있는 분들에게도 훌륭한 대안입니다."
+      "자신에게 편안한 그립과 동작 범위를 선택하고 반동 없이 수행하세요."
     ],
     "images": [],
     "level": "intermediate",
     "isPopular": true,
     "aliases": [
       "바이킹프레스",
+      "바이킹", "짐레코 바이킹", "gymleco viking", "바이킹프레스머신",
       "vikingpress",
       "viking press",
       "어깨프레스",
@@ -126,6 +129,7 @@ export const EXERCISES_DATABASE: Exercise[] = [
     "isPopular": true,
     "aliases": [
       "스탠딩사레레",
+      "스탠딩 래터럴 레이즈", "아스널 스탠딩 레터럴", "아스날 스탠딩 사레레", "arsenal standing lateral raise",
       "머신사레레",
       "스탠딩레터럴레이즈",
       "스탠딩사이드레터럴레이즈",

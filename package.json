@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "node scripts/test-regressions.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "cap:sync": "cap sync",
