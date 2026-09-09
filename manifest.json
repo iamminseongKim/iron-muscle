@@ -1,0 +1,21 @@
+{
+  "short_name": "아이언머슬",
+  "name": "아이언 머슬 트래커 (Iron Muscle Tracker)",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./",
+  "background_color": "#000000",
+  "theme_color": "#FF2D55",
+  "display": "standalone",
+  "orientation": "portrait"
+}
