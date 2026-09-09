@@ -70,6 +70,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     initialCategory || (hasTargets ? 'targets' : 'all')
   );
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -83,6 +84,17 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
       setSearchQuery('');
     }
   }, [isOpen, initialCategory, hasTargets]);
+
+  // iOS WKWebView는 모달 오픈 애니메이션/렌더 커밋과 동시에 autoFocus를 걸면
+  // 캐럿만 보이고 소프트 키보드는 안 뜨는 경우가 있어, 약간의 지연 후 포커스
+  React.useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 80);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -219,12 +231,12 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           <div className="relative">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
+              ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="운동명·은어·초성 검색 (예: 불스스, ㅂㅅㅅ, 사레레, 벤치...)"
               className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-4 py-2 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#007AFF] shadow-xs transition"
-              autoFocus
             />
             {searchQuery && (
               <button

@@ -58,7 +58,10 @@ export const SetRow: React.FC<SetRowProps> = ({
       } else if (prevStr && rawVal.endsWith(prevStr)) {
         newlyTyped = rawVal.slice(0, rawVal.length - prevStr.length);
       }
-      const num = parseFloat(newlyTyped) || 0;
+      // "." 등 아직 숫자로 완성되지 않은 입력이면 값을 0으로 날리지 않고 기존 값을 유지
+      // (예: 100 -> "." 입력 시 100.5로 이어서 입력할 수 있도록)
+      const parsedWeight = parseFloat(newlyTyped);
+      const num = Number.isNaN(parsedWeight) ? (set.weight || 0) : parsedWeight;
       onUpdate({ ...set, weight: num });
       return;
     }
@@ -89,7 +92,8 @@ export const SetRow: React.FC<SetRowProps> = ({
       } else if (prevStr && rawVal.endsWith(prevStr)) {
         newlyTyped = rawVal.slice(0, rawVal.length - prevStr.length);
       }
-      const num = parseInt(newlyTyped, 10) || 0;
+      const parsedReps = parseInt(newlyTyped, 10);
+      const num = Number.isNaN(parsedReps) ? (set.reps || 0) : parsedReps;
       onUpdate({ ...set, reps: num });
       return;
     }

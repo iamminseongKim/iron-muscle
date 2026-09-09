@@ -44,14 +44,19 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   useEffect(() => {
     let interval: any = null;
     if (isOpen && isActive) {
+      // 백그라운드 전환으로 setInterval이 지연/일시정지돼도 실제 경과 시간만큼 정확히 반영
+      let lastTick = Date.now();
       interval = setInterval(() => {
-        setElapsedSeconds((prev) => prev + 1);
+        const now = Date.now();
+        const deltaSec = Math.max(1, Math.round((now - lastTick) / 1000));
+        lastTick = now;
+        setElapsedSeconds((prev) => prev + deltaSec);
         setRemainingSeconds((prev) => {
-          if (prev <= 1) {
+          if (prev - deltaSec <= 0) {
             soundManager.playTimerComplete();
             return 0;
           }
-          return prev - 1;
+          return prev - deltaSec;
         });
       }, 1000);
     }

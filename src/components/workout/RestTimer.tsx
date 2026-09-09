@@ -23,9 +23,14 @@ export const RestTimer: React.FC<RestTimerProps> = ({
   useEffect(() => {
     let interval: any = null;
     if (isActive && remainingSeconds > 0) {
+      // 백그라운드 전환으로 setInterval이 지연/일시정지돼도 실제 경과 시간만큼 정확히 차감
+      let lastTick = Date.now();
       interval = setInterval(() => {
+        const now = Date.now();
+        const deltaSec = Math.max(1, Math.round((now - lastTick) / 1000));
+        lastTick = now;
         setRemainingSeconds((prev) => {
-          if (prev <= 1) {
+          if (prev - deltaSec <= 0) {
             clearInterval(interval);
             setIsActive(false);
             setIsFlashing(true);
@@ -34,7 +39,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
             setTimeout(() => setIsFlashing(false), 3000);
             return 0;
           }
-          return prev - 1;
+          return prev - deltaSec;
         });
       }, 1000);
     }

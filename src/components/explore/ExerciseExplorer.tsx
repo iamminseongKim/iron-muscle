@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Search, Sparkles, ChevronRight, RotateCcw, BookOpen 
 } from 'lucide-react';
@@ -45,13 +45,11 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
     return matchSearch && matchCat && matchLoad && matchMuscle;
   });
 
-  const handleMuscleClickOn3D = (muscle: MuscleTarget) => {
-    if (activeMuscleFilter === muscle) {
-      setActiveMuscleFilter(null);
-    } else {
-      setActiveMuscleFilter(muscle);
-    }
-  };
+  // useCallback으로 참조를 고정: 검색어/필터 변경 등 무관한 리렌더 때마다
+  // HumanMuscle3DViewer의 Three.js 씬이 통째로 재생성(카메라 리셋)되는 것을 방지
+  const handleMuscleClickOn3D = useCallback((muscle: MuscleTarget) => {
+    setActiveMuscleFilter((prev) => (prev === muscle ? null : muscle));
+  }, []);
 
   const clearFilters = () => {
     setSearchQuery('');

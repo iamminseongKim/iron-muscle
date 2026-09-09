@@ -108,9 +108,15 @@ export const App: React.FC = () => {
   useEffect(() => {
     let interval: any = null;
     if (activeSession && !activeSession.completed && isWorkoutTimerRunning) {
+      // 안드로이드/iOS 백그라운드 전환 시 setInterval이 지연/일시정지되는 문제 보정:
+      // 틱 횟수가 아니라 실제 경과 시간(Date.now() 차이)만큼 더한다.
+      let lastTick = Date.now();
       interval = setInterval(() => {
+        const now = Date.now();
+        const deltaSec = Math.max(1, Math.round((now - lastTick) / 1000));
+        lastTick = now;
         setTotalWorkoutSeconds((prev) => {
-          const next = prev + 1;
+          const next = prev + deltaSec;
           const active = loadActiveSession();
           if (active && !active.completed) {
             active.durationSeconds = next;

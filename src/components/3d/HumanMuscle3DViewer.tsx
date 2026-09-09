@@ -147,6 +147,10 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     };
 
     const onTouchMove = (e: TouchEvent) => {
+      // 페이지 스크롤/핀치줌과 제스처가 겹치지 않도록, 우리가 직접 처리하는 동안은 브라우저 기본 동작을 막는다
+      if (e.touches.length === 1 || e.touches.length === 2) {
+        e.preventDefault();
+      }
       if (e.touches.length === 1 && isDragging && groupRef.current) {
         const deltaX = e.touches[0].clientX - previousMousePosition.x;
         const deltaY = e.touches[0].clientY - previousMousePosition.y;
@@ -166,6 +170,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
 
     const onTouchEnd = () => {
       isDragging = false;
+      touchStartDist = 0;
     };
 
     const onClick = (e: MouseEvent) => {
@@ -190,8 +195,9 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     container.addEventListener('wheel', onWheel, { passive: false });
     container.addEventListener('click', onClick);
     container.addEventListener('touchstart', onTouchStart, { passive: true });
-    container.addEventListener('touchmove', onTouchMove, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: false });
     container.addEventListener('touchend', onTouchEnd);
+    container.addEventListener('touchcancel', onTouchEnd);
 
     const handleResize = () => {
       if (!container || !renderer || !camera) return;
@@ -226,6 +232,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       container.removeEventListener('touchstart', onTouchStart);
       container.removeEventListener('touchmove', onTouchMove);
       container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('touchcancel', onTouchEnd);
       renderer.dispose();
     };
   }, [isAutoRotate, onSelectMuscle, isDark]);
@@ -289,7 +296,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       style={{ height }}
     >
       {/* 3D WebGL Canvas */}
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-none" />
 
       {/* 상단 범례 & 툴팁 */}
       <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-none">
