@@ -32,6 +32,30 @@ const EQUIPMENTS: { id: EquipmentType | 'all'; label: string }[] = [
   { id: 'bodyweight', label: '맨몸' },
 ];
 
+// 한글 초성 추출 유틸리티 (Hangul Chosung Extraction)
+const CHOSUNG_LIST = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+
+function extractChosung(text: string): string {
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i) - 0xac00;
+    if (code >= 0 && code <= 11171) {
+      result += CHOSUNG_LIST[Math.floor(code / 588)];
+    } else {
+      result += text[i];
+    }
+  }
+  return result;
+}
+
+function isChosungQuery(query: string): boolean {
+  return /^[ㄱ-ㅎ\s]+$/.test(query.trim());
+}
+
+function normalizeSearch(text: string): string {
+  return text.toLowerCase().replace(/[\s\-_/()·,]/g, '');
+}
+
 export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ 
   isOpen, 
   onClose, 
@@ -70,17 +94,47 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
       .join(', ');
   };
 
-  const filteredExercises = EXERCISES_DATABASE.filter((ex) => {
-    // 검색어 필터링
-    const matchQuery =
-      searchQuery.trim() === '' ||
-      ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.nameEn.toLowerCase().includes(searchQuery.toLowerCase());
+  const cleanQuery = searchQuery.trim();
+  const isChosung = isChosungQuery(cleanQuery);
+  const normQuery = normalizeSearch(cleanQuery);
+  const chosungQuery = cleanQuery.replace(/\s+/g, '');
 
-    // 카테고리 필터링 (다중 부위 완벽 매핑 및 오늘 목표 부위 필터링)
+  const filteredExercises = EXERCISES_DATABASE.filter((ex) => {
+    // 1. 스마트 검색어 매칭 (초성, 별칭, 은어, 띄어쓰기 무시, 영문)
+    let matchQuery = true;
+    if (cleanQuery !== '') {
+      if (isChosung) {
+        // 초성 검색 모드: 이름의 초성 또는 별칭들의 초성에 포함되는지 확인
+        const nameChosung = extractChosung(ex.name).replace(/\s+/g, '');
+        const matchNameChosung = nameChosung.includes(chosungQuery);
+
+        const matchAliasChosung = (ex.aliases || []).some((alias) => {
+          const aliasChosung = extractChosung(alias).replace(/\s+/g, '');
+          return aliasChosung.includes(chosungQuery) || alias.includes(chosungQuery);
+        });
+
+        matchQuery = matchNameChosung || matchAliasChosung;
+      } else {
+        // 일반 텍스트 검색:
+        // A. 한국어 이름 매칭 (띄어쓰기 무시)
+        const matchName = normalizeSearch(ex.name).includes(normQuery);
+
+        // B. 영문 이름 매칭 (대소문자 및 띄어쓰기 무시)
+        const matchNameEn = normalizeSearch(ex.nameEn).includes(normQuery);
+
+        // C. 별칭/은어 매칭 (예: '불스스', '사레레', '라트익', '스스', '인클')
+        const matchAlias = (ex.aliases || []).some((alias) => {
+          return normalizeSearch(alias).includes(normQuery);
+        });
+
+        matchQuery = matchName || matchNameEn || matchAlias;
+      }
+    }
+
+    // 2. 카테고리 필터링 (다중 부위 완벽 매핑 및 오늘 목표 부위 필터링)
     let matchCat = false;
     // 검색어가 입력된 경우, 오늘 목표 탭('targets')에 있더라도 전역 검색이 가능하도록 유연하게 매칭
-    if (searchQuery.trim() !== '' && selectedCategory === 'targets') {
+    if (cleanQuery !== '' && selectedCategory === 'targets') {
       matchCat = true;
     } else if (selectedCategory === 'all') {
       matchCat = true;
@@ -108,11 +162,37 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         ex.category === (selectedCategory as Category);
     }
 
-    // 장비 필터링
+    // 3. 장비 필터링
     const matchEquip = selectedEquipment === 'all' || ex.equipment === selectedEquipment;
 
     return matchQuery && matchCat && matchEquip;
   });
+
+  // 검색 시 연관도 높은 종목(정확한 별칭 일치, 인기 종목 등) 우선 정렬
+  if (cleanQuery !== '') {
+    filteredExercises.sort((a, b) => {
+      const aAliases = a.aliases || [];
+      const bAliases = b.aliases || [];
+
+      // A. 별칭이나 이름에 정확히 일치하는 단어가 있는 경우 1순위 (예: '불스스' -> '덤벨 스플릿 스쿼트')
+      const aExact = aAliases.some(al => normalizeSearch(al) === normQuery) || normalizeSearch(a.name) === normQuery;
+      const bExact = bAliases.some(al => normalizeSearch(al) === normQuery) || normalizeSearch(b.name) === normQuery;
+      if (aExact && !bExact) return -1;
+      if (!aExact && bExact) return 1;
+
+      // B. 이름 시작 일치
+      const aStart = normalizeSearch(a.name).startsWith(normQuery);
+      const bStart = normalizeSearch(b.name).startsWith(normQuery);
+      if (aStart && !bStart) return -1;
+      if (!aStart && bStart) return 1;
+
+      // C. 인기 종목 우선
+      if (a.isPopular && !b.isPopular) return -1;
+      if (!a.isPopular && b.isPopular) return 1;
+
+      return 0;
+    });
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-md animate-fade-in">
@@ -142,7 +222,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="운동명 검색 (예: 데드리프트, 벤치, 하이로우...)"
+              placeholder="운동명·은어·초성 검색 (예: 불스스, ㅂㅅㅅ, 사레레, 벤치...)"
               className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-4 py-2 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#007AFF] shadow-xs transition"
               autoFocus
             />

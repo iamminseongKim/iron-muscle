@@ -170,7 +170,19 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               </button>
             </div>
           </div>
-          <span className="text-xs text-gray-400">{exerciseNameEn}</span>
+          <div className="flex items-center gap-2 flex-wrap mt-0.5">
+            <span className="text-xs text-gray-400">{exerciseNameEn}</span>
+            {(exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes('덤벨') || exerciseNameEn.toLowerCase().includes('dumbbell')) && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
+                💡 덤벨: 한쪽(편측) 무게 기준
+              </span>
+            )}
+            {((exerciseItem.equipmentType === 'machine' || baseExercise.equipment === 'machine') && (exerciseName.includes('스미스') || exerciseNameEn.toLowerCase().includes('smith'))) && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#007AFF]/10 text-[#007AFF] dark:bg-[#007AFF]/20 text-[10px] font-bold tracking-tight">
+                💡 스미스머신: 봉 무게 제외 (원판 무게만 기록)
+              </span>
+            )}
+          </div>
         </div>
 
         {/* 액션 버튼: 묶기, 3D 해부도, 삭제 */}

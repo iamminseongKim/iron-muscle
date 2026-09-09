@@ -69,7 +69,7 @@ export const EXECUTION_MODE_LABELS: Record<ExecutionMode, string> = {
 
 export type ExerciseGroupType = 'single' | 'superset' | 'compound' | 'giant';
 
-export type LoadType = 'plate-loaded' | 'pin-loaded' | 'barbell' | 'dumbbell' | 'cable' | 'bodyweight';
+export type LoadType = 'plate-loaded' | 'pin-loaded' | 'barbell' | 'dumbbell' | 'cable' | 'bodyweight' | 'other';
 
 export type MovementPlane =
   | 'vertical-pull'   // 수직 당기기 (하이로우, 랫풀다운 등)
@@ -113,6 +113,7 @@ export const LOAD_TYPE_LABELS: Record<LoadType, string> = {
   'dumbbell': '덤벨',
   'cable': '케이블',
   'bodyweight': '맨몸/소도구',
+  'other': '기타/소도구',
 };
 
 export interface Exercise {
@@ -133,6 +134,7 @@ export interface Exercise {
   isPopular?: boolean;
   images?: string[];
   level?: 'beginner' | 'intermediate' | 'expert';
+  aliases?: string[]; // 검색용 별칭, 은어 및 줄임말 (예: ['불스스', '스스', '사레레', '라트익'])
 }
 
 export interface WorkoutExercise {

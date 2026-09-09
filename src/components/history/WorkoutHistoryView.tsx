@@ -130,6 +130,9 @@ export const WorkoutHistoryView: React.FC = () => {
     let md = `# 🏋️‍♂️ [Iron Muscle Tracker] 전문 운동 일지 분석 요청서\n\n`;
     md += `> **분석 기간**: ${startDate} ~ ${endDate} (총 ${targetSessions.length}회 세션)\n`;
     md += `> **총 누적 볼륨**: ${totalVol.toLocaleString()} kg | **총 반복수**: ${totalReps.toLocaleString()} 회\n\n`;
+    md += `### ⚠️ 중량 기록 및 장비별 측정 원칙 (AI 코치 필수 준수 사항)\n`;
+    md += `1. **덤벨(Dumbbell) 운동**: 기록된 중량은 **모두 한쪽(편측, Single-Arm/Per-Hand) 무게**입니다. (예: 덤벨 벤치프레스 20kg은 한 손에 20kg씩 양손 총 40kg의 중량을 다룬 것이므로, 볼륨 계산 및 부하 분석 시 편측 기준 특성을 정확히 반영해야 합니다).\n`;
+    md += `2. **스미스머신(Smith Machine) 운동**: 머신 자체의 기본 봉 무게를 **완전 제외한 순수 원판(Plate) 무게만 기록**된 값입니다. (예: 스미스 60kg는 봉 무게를 가산하지 않은 순수 추가 원판 무게 기준입니다).\n\n`;
     md += `---\n\n`;
 
     targetSessions.forEach((s, sIdx) => {
@@ -151,7 +154,11 @@ export const WorkoutHistoryView: React.FC = () => {
         const modeLabel = ex.executionMode === 'unilateral' ? '원암(편측)' : '투암(양측)';
         const groupLabel = ex.groupLabel ? ` [${ex.groupLabel}]` : '';
 
-        md += `### ${eIdx + 1}. ${name}${groupLabel} (${loadLabel} / ${modeLabel})\n`;
+        const isDumbbell = ex.equipmentType === 'dumbbell' || base?.equipment === 'dumbbell' || name.includes('덤벨');
+        const isSmith = (ex.equipmentType === 'machine' || base?.equipment === 'machine') && (name.includes('스미스') || base?.nameEn.toLowerCase().includes('smith'));
+        const weightStandardNote = isDumbbell ? ' [💡 한쪽 무게 기준]' : isSmith ? ' [💡 봉 제외 원판만 기록]' : '';
+
+        md += `### ${eIdx + 1}. ${name}${groupLabel}${weightStandardNote} (${loadLabel} / ${modeLabel})\n`;
         if (ex.machineBrand) md += `- **기구 브랜드**: ${ex.machineBrand}${ex.machineSetting ? ` (세팅: ${ex.machineSetting})` : ''}\n`;
 
         md += `| 세트 | 중량(kg) | 횟수 | 1RM 추정 | RPE | 템포 | 휴식시간 | 편측 | 메모/태그 |\n`;
@@ -173,10 +180,10 @@ export const WorkoutHistoryView: React.FC = () => {
 
     md += `## 🤖 AI 코치 분석 및 피드백 요청 (프롬프트 가이드)\n`;
     md += `위의 운동 일지를 바탕으로 다음 4가지 핵심 질문에 대해 전문 스트렝스/보디빌딩 코치 관점에서 정밀하게 답변해 주세요:\n\n`;
-    md += `1. **점진적 과부하(Progressive Overload) 달성도**: 주요 종목들의 세트별 중량 및 반복수 추이가 상승 곡선을 그리고 있는가?\n`;
+    md += `1. **점진적 과부하(Progressive Overload) 달성도**: 덤벨(한쪽 무게 기준) 및 스미스머신(봉 제외 원판 무게만 기준)의 특성을 감안하여, 주요 종목들의 세트별 실질 부하와 반복수 추이가 상승 곡선을 그리고 있는가?\n`;
     md += `2. **RPE 및 휴식 시간 기반 신경계 피로도(CNS Fatigue)**: 세트 후반 RPE 9.0~10.0 빈도와 세트 간 실제 쉰 시간, 템포(이완/수축)를 볼 때 피로 누적이 과도한가, 혹은 디로딩(Deload)이 필요한 시점인가?\n`;
-    md += `3. **편측성(원암/투암) 및 슈퍼/컴파운드세트 평가**: 원암 운동 시 좌/우 중량 및 횟수 밸런스, 그리고 슈퍼세트/컴파운드세트 종목 배치가 목표 근육 펌핑과 회복에 효율적인가?\n`;
-    md += `4. **다음 주차 운동 처방 가이드**: 각 종목별로 다음 세션에 시도해야 할 권장 목표 중량(kg)과 타겟 횟수(Reps)를 구체적으로 처방해 주세요.\n`;
+    md += `3. **편측성(원암/투암) 및 슈퍼/컴파운드세트 평가**: 덤벨 및 원암 운동 시 좌/우 중량 및 횟수 밸런스, 그리고 슈퍼세트/컴파운드세트 종목 배치가 목표 근육 펌핑과 회복에 효율적인가?\n`;
+    md += `4. **다음 주차 운동 처방 가이드**: 각 종목별로 다음 세션에 시도해야 할 권장 목표 중량(kg, 덤벨은 한쪽 기준)과 타겟 횟수(Reps)를 구체적으로 처방해 주세요.\n`;
 
     return md;
   };
