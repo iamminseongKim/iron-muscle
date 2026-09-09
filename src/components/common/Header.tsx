@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame, Sun, Moon } from 'lucide-react';
+import { Flame, Sun, Moon, Play, Pause } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'workout' | 'history' | 'analytics';
@@ -41,26 +41,41 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* 타이머 1: 총 운동 시간 상시 표시 위젯 (어느 탭에서도 유지) */}
+        {/* 타이머 1: 총 운동 시간 상시 표시 위젯 (어느 탭에서도 유지, 터치 시 즉시 일시정지/재개) */}
         {totalWorkoutSeconds !== undefined && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 shadow-xs">
-            <button
-              type="button"
-              onClick={onToggleWorkoutTimer}
-              className="text-gray-500 hover:text-black dark:hover:text-white transition"
-              title={isWorkoutTimerRunning ? '운동 시간 일시정지' : '운동 시간 재개'}
-            >
-              {isWorkoutTimerRunning ? (
+          <button
+            type="button"
+            onClick={onToggleWorkoutTimer}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-xs transition-all duration-150 active:scale-95 cursor-pointer ${
+              isWorkoutTimerRunning
+                ? 'bg-white dark:bg-[#1C1C1E] border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white hover:border-[#34C759]/50'
+                : 'bg-[#FF9500]/15 dark:bg-[#FF9500]/25 border-[#FF9500]/50 text-[#FF9500] ring-2 ring-[#FF9500]/20'
+            }`}
+            title={isWorkoutTimerRunning ? '터치하여 운동 시간 일시정지 (전화/화장실 등)' : '터치하여 운동 시간 재개'}
+          >
+            {isWorkoutTimerRunning ? (
+              <span className="flex items-center gap-1 shrink-0">
                 <span className="w-2 h-2 rounded-full bg-[#34C759] animate-pulse inline-block" />
-              ) : (
+                <Pause size={10} className="text-gray-400 dark:text-gray-500" />
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 shrink-0">
                 <span className="w-2 h-2 rounded-full bg-[#FF9500] inline-block" />
-              )}
-            </button>
-            <span className="text-[11px] font-semibold text-gray-400">총 운동</span>
-            <span className="font-mono font-extrabold text-xs text-[#1D1D1F] dark:text-white tracking-tight">
+                <Play size={10} className="fill-[#FF9500] text-[#FF9500]" />
+              </span>
+            )}
+            <span className={`text-[11px] font-bold ${isWorkoutTimerRunning ? 'text-gray-400' : 'text-[#FF9500]'}`}>
+              {isWorkoutTimerRunning ? '총운동' : '일시정지'}
+            </span>
+            <span className={`font-mono font-extrabold text-xs tracking-tight ${isWorkoutTimerRunning ? 'text-[#1D1D1F] dark:text-white' : 'text-[#FF9500]'}`}>
               {formatDuration(totalWorkoutSeconds)}
             </span>
-          </div>
+            {!isWorkoutTimerRunning && (
+              <span className="text-[10px] font-black px-1.5 py-0.2 bg-[#FF9500] text-white rounded-md animate-pulse">
+                재개
+              </span>
+            )}
+          </button>
         )}
 
         <div className="flex items-center gap-1.5 shrink-0">
