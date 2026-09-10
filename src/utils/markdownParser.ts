@@ -277,6 +277,7 @@ export function parseMarkdownWorkout(raw: string): WorkoutBackup {
       exercises.push({
         id: `ex-${date}-${sIdx + 1}-${eIdx + 1}`,
         exerciseId: finalExerciseId,
+        exerciseName: cleanName,
         equipmentType: finalEquip,
         loadType: finalLoadType,
         executionMode: parsedExecutionMode,

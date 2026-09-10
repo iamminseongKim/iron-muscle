@@ -4,7 +4,7 @@ import {
   Sparkles, Check, Flame, MessageSquare, AlertCircle 
 } from 'lucide-react';
 import { WorkoutSession, WorkoutExercise, WorkoutSet, Category, EquipmentType } from '../../types/workout';
-import { EXERCISES_DATABASE } from '../../data/exercises';
+import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { AddExerciseModal } from '../workout/AddExerciseModal';
 
 interface EditSessionModalProps {
@@ -90,6 +90,8 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
     const newExItem: WorkoutExercise = {
       id: 'ex-' + Date.now(),
       exerciseId: exercise.id,
+      exerciseName: exercise.name,
+      loadType: exercise.loadType,
       equipmentType,
       machineBrand: brand,
       sets: [
@@ -271,8 +273,8 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
               </div>
             ) : (
               exercises.map((exItem, eIdx) => {
-                const base = EXERCISES_DATABASE.find((e) => e.id === exItem.exerciseId);
-                const exName = base?.name || '운동 종목';
+                const base = resolveRecordedExercise(exItem);
+                const exName = base.name;
 
                 return (
                   <div

@@ -812,5 +812,790 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
       "반동 없이 편안한 범위에서 움직이고 기구 설정을 기록하세요."
     ],
     "images": []
-  }
+  },
+{
+  "id": "independent-arm-curl",
+  "name": "독립암 암컬 머신",
+  "nameEn": "Independent Arm Curl",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "biceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "좌우 레버를 각각 움직이며 팔꿈치를 굽히는 이두 운동입니다.",
+  "instructions": [
+    "상완을 패드에 대고 좌석을 조절합니다.",
+    "상완을 고정하고 양쪽 손잡이를 각각 당긴 뒤 천천히 폅니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "이두 바이셉 컬 교대 컬"
+  ],
+  "images": []
+},
+{
+  "id": "spider-arm-curl",
+  "name": "스파이더 암컬 머신",
+  "nameEn": "Spider Arm Curl",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "biceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "가슴을 지지하고 팔을 아래로 내려 수행하는 암컬입니다.",
+  "instructions": [
+    "가슴 패드와 좌석을 조절하고 손잡이를 잡습니다.",
+    "어깨를 움직이지 않고 팔꿈치를 굽혔다가 천천히 폅니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "이두 엎드린 컬 체스트 서포티드 컬"
+  ],
+  "images": []
+},
+{
+  "id": "high-arm-curl-120",
+  "name": "하이 암컬 머신 (120도)",
+  "nameEn": "High Arm Curl 120",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "biceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "상완을 높게 지지하는 구조의 암컬입니다.",
+  "instructions": [
+    "상완을 높은 패드에 올리고 회전축에 팔꿈치를 맞춥니다.",
+    "상완을 패드에 둔 채 손잡이를 당기고 천천히 되돌립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "이두 하이컬 바이셉 컬"
+  ],
+  "images": []
+},
+{
+  "id": "incline-arm-curl-machine",
+  "name": "인클라인 암컬 머신",
+  "nameEn": "Incline Arm Curl Machine",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "biceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "팔이 몸통 뒤쪽에 위치하는 구조의 암컬입니다.",
+  "instructions": [
+    "등받이에 몸을 지지하고 뒤쪽 손잡이를 잡습니다.",
+    "어깨 위치를 유지하면서 팔꿈치를 굽혔다가 천천히 폅니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "이두 마이너스45 컬 스트레치 컬"
+  ],
+  "images": []
+},
+{
+  "id": "supinating-curl-machine",
+  "name": "회외 암컬 머신",
+  "nameEn": "Supinating Biceps Curl",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "biceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "팔을 굽히면서 손바닥 방향도 회전시키는 암컬입니다.",
+  "instructions": [
+    "좌석과 등받이를 조절하고 회전 손잡이를 잡습니다.",
+    "팔꿈치를 굽히며 손바닥을 위로 돌린 뒤 천천히 되돌립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "이두 수피네이팅 바이셉 컬"
+  ],
+  "images": []
+},
+{
+  "id": "multi-angle-biceps-machine",
+  "name": "다각도 암컬 머신",
+  "nameEn": "Multi Angle Biceps Curl",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "biceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "상완 지지 각도를 바꾸어 사용하는 암컬 머신입니다.",
+  "instructions": [
+    "무게를 내린 상태에서 지지대 각도와 좌석을 고정합니다.",
+    "팔꿈치를 축에 맞춘 뒤 상완을 고정하고 컬을 수행합니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "이두 멀티 앵글 바이셉 컬"
+  ],
+  "images": []
+},
+{
+  "id": "french-press-machine",
+  "name": "프렌치 프레스 머신",
+  "nameEn": "French Press Machine",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "triceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "상완을 위로 둔 상태에서 팔꿈치를 펴는 삼두 운동입니다.",
+  "instructions": [
+    "등을 지지하고 머리 위 손잡이를 잡습니다.",
+    "상완을 고정한 채 팔꿈치를 폈다가 천천히 굽힙니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "삼두 오버헤드 익스텐션"
+  ],
+  "images": []
+},
+{
+  "id": "arm-extension-90-machine",
+  "name": "암 익스텐션 머신 (90도)",
+  "nameEn": "Arm Extension 90",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "triceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "상완을 앞으로 지지하고 팔꿈치를 펴는 삼두 머신입니다.",
+  "instructions": [
+    "좌석을 조절하고 상완을 지지대에 올립니다.",
+    "어깨가 들리지 않게 손잡이를 밀어 팔꿈치를 펴고 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "삼두 90도 익스텐션"
+  ],
+  "images": []
+},
+{
+  "id": "multi-angle-triceps-machine",
+  "name": "다각도 삼두 익스텐션 머신",
+  "nameEn": "Multi Angle Triceps",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "triceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "상완 지지 각도를 조절할 수 있는 삼두 머신입니다.",
+  "instructions": [
+    "저항을 내린 상태에서 지지대 각도를 고정합니다.",
+    "상완을 지지하고 팔꿈치를 폈다가 천천히 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "삼두 멀티 앵글 트라이셉"
+  ],
+  "images": []
+},
+{
+  "id": "pronating-triceps-machine",
+  "name": "회내 삼두 익스텐션 머신",
+  "nameEn": "Pronating Triceps",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "triceps"
+  ],
+  "secondaryMuscles": [],
+  "description": "팔꿈치 신전과 손잡이 회전을 함께 수행하는 머신입니다.",
+  "instructions": [
+    "상완을 패드에 고정하고 회전 손잡이를 잡습니다.",
+    "팔꿈치를 펴며 손잡이 회전 경로를 따라 움직인 뒤 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "삼두 프로네이팅 트라이셉"
+  ],
+  "images": []
+},
+{
+  "id": "wrist-curl-machine",
+  "name": "전완 리스트 컬 머신",
+  "nameEn": "Forearm Wrist Curl",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "forearms"
+  ],
+  "secondaryMuscles": [],
+  "description": "전완을 지지하고 손목을 굽히는 머신 운동입니다.",
+  "instructions": [
+    "전완을 지지대에 놓고 손잡이를 잡습니다.",
+    "팔을 고정한 채 손목을 굽혔다가 천천히 되돌립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "전완 손목 컬"
+  ],
+  "images": []
+},
+{
+  "id": "forearm-rotation-machine",
+  "name": "전완 회전 머신",
+  "nameEn": "Forearm Rotation",
+  "category": "arms",
+  "categories": [
+    "arms"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "arm-isolation",
+  "primaryMuscles": [
+    "forearms"
+  ],
+  "secondaryMuscles": [],
+  "description": "손잡이에 저항을 걸고 전완을 회전시키는 운동입니다.",
+  "instructions": [
+    "기구 안내에 맞춰 손잡이와 팔의 위치를 조절합니다.",
+    "몸통 반동 없이 손잡이를 회전시키고 천천히 되돌립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "전완 손목 회전"
+  ],
+  "images": []
+},
+{
+  "id": "circular-row-machine",
+  "name": "서큘러 로우 머신",
+  "nameEn": "Circular Row",
+  "category": "back",
+  "categories": [
+    "back"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "horizontal-row",
+  "primaryMuscles": [
+    "lats",
+    "traps"
+  ],
+  "secondaryMuscles": [],
+  "description": "원호 경로의 레버를 당기는 로우 머신입니다.",
+  "instructions": [
+    "가슴 지지대와 좌석을 조절하고 손잡이를 잡습니다.",
+    "가슴을 지지한 채 팔꿈치를 뒤로 당기고 천천히 뻗습니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "등 원형 로우"
+  ],
+  "images": []
+},
+{
+  "id": "front-dorsy-bar-machine",
+  "name": "스탠딩 티바 로우 머신",
+  "nameEn": "Standing T Bar Row",
+  "category": "back",
+  "categories": [
+    "back"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "horizontal-row",
+  "primaryMuscles": [
+    "lats",
+    "traps"
+  ],
+  "secondaryMuscles": [],
+  "description": "서서 몸을 숙인 자세로 레버 바를 당기는 로우입니다.",
+  "instructions": [
+    "발판 위에서 안정적으로 서고 손잡이를 잡습니다.",
+    "몸통 각도를 유지하며 손잡이를 몸 쪽으로 당겼다가 내립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "등 프론트 도르시 바"
+  ],
+  "images": []
+},
+{
+  "id": "shoulder-front-press-machine",
+  "name": "숄더 프런트 프레스 머신",
+  "nameEn": "Shoulder Front Press",
+  "category": "shoulders",
+  "categories": [
+    "shoulders"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "overhead-press",
+  "primaryMuscles": [
+    "deltoid_front"
+  ],
+  "secondaryMuscles": [],
+  "description": "몸 앞쪽의 손잡이를 위로 미는 어깨 머신입니다.",
+  "instructions": [
+    "등받이에 기대고 좌석 높이를 손잡이에 맞춥니다.",
+    "몸통을 고정하고 손잡이를 위로 밀었다가 천천히 내립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "어깨 전면 프론트 프레스"
+  ],
+  "images": []
+},
+{
+  "id": "lower-chest-fly-machine",
+  "name": "하부 체스트 플라이 머신",
+  "nameEn": "Lower Chest Fly",
+  "category": "chest",
+  "categories": [
+    "chest"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "fly",
+  "primaryMuscles": [
+    "chest"
+  ],
+  "secondaryMuscles": [],
+  "description": "손잡이를 아래쪽으로 모으는 경로의 가슴 플라이입니다.",
+  "instructions": [
+    "등을 패드에 대고 좌석 높이를 조절합니다.",
+    "팔꿈치 각도를 유지하며 손잡이를 아래로 모으고 되돌립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "가슴 하부 펙 플라이"
+  ],
+  "images": []
+},
+{
+  "id": "supine-bench-press-machine",
+  "name": "라잉 벤치 프레스 머신",
+  "nameEn": "Horizontal Bench Press Machine",
+  "category": "chest",
+  "categories": [
+    "chest"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "flat-press",
+  "primaryMuscles": [
+    "chest"
+  ],
+  "secondaryMuscles": [],
+  "description": "벤치에 누워 독립 레버를 밀어 올리는 머신입니다.",
+  "instructions": [
+    "벤치에 눕고 손잡이 시작 위치와 안전장치를 조절합니다.",
+    "등을 지지한 채 손잡이를 위로 밀고 천천히 내립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "가슴 누워서 수평 벤치프레스"
+  ],
+  "images": []
+},
+{
+  "id": "squat-lunge-machine",
+  "name": "스쿼트 런지 머신",
+  "nameEn": "Squat Lunge Machine",
+  "category": "legs",
+  "categories": [
+    "legs"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "squat-pattern",
+  "primaryMuscles": [
+    "quads",
+    "glutes"
+  ],
+  "secondaryMuscles": [],
+  "description": "몸 옆의 레버 손잡이를 들고 런지를 수행하는 머신입니다.",
+  "instructions": [
+    "안정적으로 엇갈려 서고 몸 옆 손잡이를 잡습니다.",
+    "무릎과 고관절을 굽혔다가 앞발로 밀어 올라옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "하체 런지 레버"
+  ],
+  "images": []
+},
+{
+  "id": "independent-45-leg-press-machine",
+  "name": "독립 발판 45도 레그 프레스 머신",
+  "nameEn": "Independent 45 Degree Leg Press",
+  "category": "legs",
+  "categories": [
+    "legs"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "squat-pattern",
+  "primaryMuscles": [
+    "quads",
+    "glutes"
+  ],
+  "secondaryMuscles": [],
+  "description": "좌우 발판을 각각 움직일 수 있는 경사 레그 프레스입니다.",
+  "instructions": [
+    "등받이를 조절하고 양쪽 발판에 발을 놓습니다.",
+    "안전장치를 풀고 각 발판을 통제하며 밀었다가 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "하체 원레그 독립 레그프레스"
+  ],
+  "images": []
+},
+{
+  "id": "calf-hack-machine",
+  "name": "카프 핵 머신",
+  "nameEn": "Calf Hack Machine",
+  "category": "legs",
+  "categories": [
+    "legs"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "squat-pattern",
+  "primaryMuscles": [
+    "calves"
+  ],
+  "secondaryMuscles": [],
+  "description": "경사진 슬라이드에 몸을 지지하는 카프 레이즈입니다.",
+  "instructions": [
+    "몸을 패드에 지지하고 앞꿈치를 발판에 놓습니다.",
+    "무릎 각도를 유지하며 뒤꿈치를 올렸다가 천천히 내립니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "하체 종아리 핵 카프"
+  ],
+  "images": []
+},
+{
+  "id": "leg-press-bridge-machine",
+  "name": "레버 브리지 레그 프레스 머신",
+  "nameEn": "Leg Press Bridge",
+  "category": "legs",
+  "categories": [
+    "legs"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "squat-pattern",
+  "primaryMuscles": [
+    "quads",
+    "glutes"
+  ],
+  "secondaryMuscles": [],
+  "description": "회전 레버 구조를 사용하는 레그 프레스 머신입니다.",
+  "instructions": [
+    "등받이와 좌석을 조절하고 발판에 양발을 놓습니다.",
+    "허리를 패드에 지지한 채 발판을 밀고 천천히 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "하체 레그프레스 브릿지"
+  ],
+  "images": []
+},
+{
+  "id": "three-dimensional-hip-abduction-machine",
+  "name": "입체 궤적 힙 어브덕션 머신",
+  "nameEn": "3D Hip Abduction",
+  "category": "legs",
+  "categories": [
+    "legs"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "hip-hinge",
+  "primaryMuscles": [
+    "glutes"
+  ],
+  "secondaryMuscles": [],
+  "description": "다리를 벌리면서 뒤쪽으로도 움직이는 궤적의 힙 머신입니다.",
+  "instructions": [
+    "좌석과 등받이 위치를 조절하고 다리를 패드 안쪽에 놓습니다.",
+    "골반을 고정하고 패드 궤적을 따라 다리를 벌린 뒤 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "힙 엉덩이 3D 어브덕터 외전"
+  ],
+  "images": []
+},
+{
+  "id": "multihip-abduction-machine",
+  "name": "멀티 힙 외전 머신",
+  "nameEn": "Multi Hip Abduction",
+  "category": "legs",
+  "categories": [
+    "legs"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "hip-hinge",
+  "primaryMuscles": [
+    "glutes"
+  ],
+  "secondaryMuscles": [],
+  "description": "서서 한쪽 다리의 바깥 면으로 롤러를 밀어내는 운동입니다.",
+  "instructions": [
+    "회전축과 골반 높이를 맞추고 허벅지 바깥쪽에 롤러를 댑니다.",
+    "손잡이를 잡고 몸통을 고정한 채 다리를 옆으로 벌렸다가 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "힙 엉덩이 멀티힙 어브덕션"
+  ],
+  "images": []
+},
+{
+  "id": "kneeling-torso-rotation-machine",
+  "name": "니링 토르소 회전 머신",
+  "nameEn": "Kneeling Torso Rotation",
+  "category": "core",
+  "categories": [
+    "core"
+  ],
+  "equipment": "machine",
+  "loadType": "pin-loaded",
+  "movementPlane": "core",
+  "primaryMuscles": [
+    "obliques"
+  ],
+  "secondaryMuscles": [],
+  "description": "무릎을 지지하고 하체를 회전시키는 코어 머신입니다.",
+  "instructions": [
+    "무릎과 허벅지를 지지대에 놓고 상체 손잡이를 잡습니다.",
+    "상체를 안정시킨 상태에서 하체 지지대를 천천히 회전시키고 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "코어 복사근 무릎 몸통 회전"
+  ],
+  "images": []
+},
+{
+  "id": "total-core-crunch-machine",
+  "name": "토탈 코어 크런치 머신",
+  "nameEn": "Total Core Crunch",
+  "category": "core",
+  "categories": [
+    "core"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "core",
+  "primaryMuscles": [
+    "abs"
+  ],
+  "secondaryMuscles": [],
+  "description": "상체와 골반 쪽 레버를 함께 움직여 몸통을 접는 머신입니다.",
+  "instructions": [
+    "등과 다리를 지지하고 손잡이를 잡습니다.",
+    "몸통을 접으며 상하체 지지대를 가까이 모았다가 천천히 폅니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "코어 복근 더블 크런치"
+  ],
+  "images": []
+},
+{
+  "id": "reverse-crunch-machine",
+  "name": "리버스 크런치 머신",
+  "nameEn": "Reverse Crunch Machine",
+  "category": "core",
+  "categories": [
+    "core"
+  ],
+  "equipment": "machine",
+  "loadType": "plate-loaded",
+  "movementPlane": "core",
+  "primaryMuscles": [
+    "abs"
+  ],
+  "secondaryMuscles": [],
+  "description": "코어 머신의 하체 레버로 골반을 말아 올리는 운동입니다.",
+  "instructions": [
+    "상체를 지지하고 다리를 하체 지지대에 놓습니다.",
+    "반동 없이 골반을 말아 올린 뒤 천천히 시작 위치로 돌아옵니다.",
+    "세트를 마치면 저항을 내려놓고 안전장치를 확인합니다."
+  ],
+  "tips": [
+    "기구에 표시된 사용법에 따라 시작 위치를 조절하세요.",
+    "기구와 설정이 다르면 기록에서 구분하세요."
+  ],
+  "aliases": [
+    "코어 복근 역 크런치"
+  ],
+  "images": []
+}
 ];

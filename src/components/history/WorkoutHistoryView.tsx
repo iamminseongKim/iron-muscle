@@ -5,7 +5,7 @@ import {
   FileText, ArrowRight, Share2, Layers, Edit3, Trash2, RotateCcw 
 } from 'lucide-react';
 import { WorkoutSession, WorkoutExercise, WeightUnit } from '../../types/workout';
-import { EXERCISES_DATABASE } from '../../data/exercises';
+import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from '../../utils/calculations';
 import { loadSavedSessions, saveSessions, clearAllSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { BackupPanel } from './BackupPanel';
@@ -153,8 +153,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
       md += `\n`;
 
       s.exercises.forEach((ex, eIdx) => {
-        const base = EXERCISES_DATABASE.find((b) => b.id === ex.exerciseId);
-        const name = base?.name || '운동 종목';
+        const base = resolveRecordedExercise(ex);
+        const name = base.name;
         const loadLabel = ex.loadType === 'plate-loaded' ? '플레이트(원판)' : ex.loadType === 'pin-loaded' ? '핀머신' : ex.equipmentType;
         const modeLabel = ex.executionMode === 'unilateral' ? '원암(편측)' : '투암(양측)';
         const groupLabel = ex.groupLabel ? ` [${ex.groupLabel}]` : '';
@@ -477,8 +477,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                   {/* 세션 내 운동 종목 카드들 */}
                   <div className="space-y-3 pt-1">
                     {session.exercises.map((exItem, eIdx) => {
-                      const base = EXERCISES_DATABASE.find((b) => b.id === exItem.exerciseId);
-                      const exName = base?.name || '운동 종목';
+                      const base = resolveRecordedExercise(exItem);
+                      const exName = base.name;
                       const isGrouped = Boolean(exItem.groupId);
 
                       return (

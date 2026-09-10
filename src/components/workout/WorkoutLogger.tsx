@@ -210,6 +210,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     const newExerciseItem: WorkoutExercise = {
       id: 'ex-item-' + Date.now(),
       exerciseId: exercise.id,
+      exerciseName: exercise.name,
       equipmentType,
       loadType: exercise.loadType,
       machineBrand: brand,

@@ -45,3 +45,37 @@
 장비 필터만 선택해도 초기화가 가능하고, 빈 결과 안내와 근육 필터 해제 버튼을 제공합니다.
 
 하단 메뉴에 운동 탐색을 연결했습니다. 기존 `Torso_Rotation`은 원본 동작이 공을 들고 하는 회전이므로 이름을 '볼 몸통 회전'으로 바로잡고 코어로 분류했습니다. 새 머신 종목과 구별하며 기존 ID는 보존합니다.
+
+
+## v3.10.0 머신 확장
+
+제조사 카탈로그의 동작과 기구 구조를 확인하고 브랜드를 제외한 이름으로 수록했습니다. 같은 기구의 다른 운동(토탈/리버스 크런치)은 별도 동작입니다. 기존 ID는 유지합니다.
+
+| 종목 | 제조사 자료 |
+|---|---|
+| 독립암 암컬 머신 | [제품/카탈로그](https://www.panattasport.com/it/monolith/alternate-arm-curl-2/) |
+| 스파이더 암컬 머신 | [제품/카탈로그](https://www.panattasport.nl/wp-content/uploads/2023/04/ALTERNATE-PREACHER-CURL-MACHINE.pdf) |
+| 하이 암컬 머신 (120도) | [제품/카탈로그](https://www.panattasport.com/it/fit-evo/alternate-arm-curl-120/) |
+| 인클라인 암컬 머신 | [제품/카탈로그](https://www.panattasport.nl/wp-content/uploads/2023/04/ALTERNATE-ARM-CURL-45.pdf) |
+| 회외 암컬 머신 | [제품/카탈로그](https://www.panattasport.com/fr/prodotto/alternate-supinating-biceps/) |
+| 다각도 암컬 머신 | [제품/카탈로그](https://www.panattasport.com/en/the-original/) |
+| 프렌치 프레스 머신 | [제품/카탈로그](https://www.panattasport.com/en/the-original/) |
+| 암 익스텐션 머신 (90도) | [제품/카탈로그](https://www.panattasport.com/download/panatta-general-catalogue.pdf) |
+| 다각도 삼두 익스텐션 머신 | [제품/카탈로그](https://www.panattasport.com/en/the-original/) |
+| 회내 삼두 익스텐션 머신 | [제품/카탈로그](https://www.panattasport.com/en/categoria-prodotto/the-first-and-the-original-en/) |
+| 전완 리스트 컬 머신 | [제품/카탈로그](https://gymleco.com/products/357-forearm-curl) |
+| 전완 회전 머신 | [제품/카탈로그](https://gymleco.com/products/356-forearm-machine-3-exercises) |
+| 서큘러 로우 머신 | [제품/카탈로그](https://www.panattasport.com/en/the-original/) |
+| 스탠딩 티바 로우 머신 | [제품/카탈로그](https://www.panattasport.com/en/the-original/) |
+| 숄더 프런트 프레스 머신 | [제품/카탈로그](https://gymleco.com/products/336-shoulder-front-press) |
+| 하부 체스트 플라이 머신 | [제품/카탈로그](https://www.panattasport.com/en/the-original/) |
+| 라잉 벤치 프레스 머신 | [제품/카탈로그](https://www.panattasport.com/en/free-weight-special/super-horizontal-bench-press/) |
+| 스쿼트 런지 머신 | [제품/카탈로그](https://www.panattasport.nl/wp-content/uploads/2017/03/3_Panatta-Sport_-Free-Weight-HP.pdf) |
+| 독립 발판 45도 레그 프레스 머신 | [제품/카탈로그](https://www.panattasport.com/en/catalog/page/18/) |
+| 카프 핵 머신 | [제품/카탈로그](https://www.panattasport.nl/wp-content/uploads/2022/08/SUPER-CALF-HACK.pdf) |
+| 레버 브리지 레그 프레스 머신 | [제품/카탈로그](https://www.panattasport.com/en/free-weight-special/super-leg-press-bridge/) |
+| 입체 궤적 힙 어브덕션 머신 | [제품/카탈로그](https://www.panattasport.com/en/3d-abductor-panatta-a-new-standard-in-glute-training/) |
+| 멀티 힙 외전 머신 | [제품/카탈로그](https://gymleco.com/products/369-multihip-machine) |
+| 니링 토르소 회전 머신 | [제품/카탈로그](https://gymleco.com/products/376-knee-standing-abdominal) |
+| 토탈 코어 크런치 머신 | [제품/카탈로그](https://www.panattasport.com/en/insight-total-core-crunch-machine/) |
+| 리버스 크런치 머신 | [제품/카탈로그](https://www.panattasport.com/en/insight-total-core-crunch-machine/) |

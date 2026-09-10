@@ -8,7 +8,7 @@ import { EXERCISES_DATABASE } from '../../data/exercises';
 import { SetRow } from './SetRow';
 import { getExerciseRecords, convertWeight } from '../../utils/calculations';
 import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
-import { resolveExercise } from '../../utils/exerciseResolver';
+import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 
 interface ExerciseCardProps {
@@ -63,7 +63,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const [showMachineSetting, setShowMachineSetting] = useState(false);
 
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
-  const baseExercise: Exercise = resolveExercise(exerciseItem.exerciseId);
+  const baseExercise: Exercise = resolveRecordedExercise(exerciseItem);
   const currentLoadType = exerciseItem.loadType || baseExercise.loadType || 'plate-loaded';
   const exerciseName = baseExercise.name;
   const exerciseNameEn = baseExercise.nameEn || '';

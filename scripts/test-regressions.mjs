@@ -36,8 +36,8 @@ assert.equal(atlasBytes.subarray(1,4).toString(),'PNG');
 assert.equal(spawnSync('git',['check-ignore','--no-index','-q',atlasPath]).status,1,'Runtime atlas must not be ignored by Git');
 console.log('PASS: runtime atlas exists and is not excluded from Git');
 
-assert.equal(db.length, 903);
-assert.equal(db.filter(e => e.equipment === 'machine').length, 95);
+assert.equal(db.length, 929);
+assert.equal(db.filter(e => e.equipment === 'machine').length, 121);
 assert.ok(db.every(e => !e.defaultBrand), 'Built-in exercises must not assign a brand');
 for (const [query, id] of [
  ['수직레그프레스', 'vertical-leg-press-machine'],
@@ -92,3 +92,11 @@ assert.equal(muscleTargetForName('long_head_of_right_biceps_femoris'),'hamstring
 assert.equal(muscleTargetForName('left_inferior_oblique'),undefined,'Eye muscles are not abdominal obliques');
 assert.ok(readFileSync('public/anatomy/NOTICE.html','utf8').includes('ShareAlike'));
 console.log('PASS: bundled real anatomy, 17 target groups, no external textures and attribution');
+
+for (const query of ['암컬', '암 컬 머신', '머신 암컬', '이두 컬 머신', 'arm curl', '머신 바이셉 컬']) {
+ assert.ok(matchesExerciseSearch(db.find(e=>e.id==='Machine_Bicep_Curl'),query), query);
+}
+for (const muscle of ['biceps','triceps','lats','deltoid_front','chest','quads','glutes','abs','obliques']) {
+ assert.ok(db.some(e=>e.equipment==='machine' && e.primaryMuscles.includes(muscle)), muscle);
+}
+console.log('PASS: 121 machines, arm curl aliases and all requested muscle groups');

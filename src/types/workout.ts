@@ -142,6 +142,7 @@ export interface Exercise {
 export interface WorkoutExercise {
   id: string;
   exerciseId: string;
+  exerciseName?: string; // Name snapshot, preserved if a custom catalog entry is removed.
   equipmentType: EquipmentType;
   loadType?: LoadType; // 'plate-loaded' | 'pin-loaded' (머신 시 플레이트 vs 핀머신 실시간 토글)
   executionMode?: ExecutionMode; // 'bilateral' | 'unilateral' (투암 vs 원암 실시간 토글)

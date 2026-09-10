@@ -111,7 +111,10 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
       aliases: [cleanName.replace(/\s+/g, '')],
     };
 
-    saveCustomExercise(newEx);
+    if (!saveCustomExercise(newEx)) {
+      alert('종목을 저장하지 못했습니다. 저장 공간이나 브라우저 저장 권한을 확인한 뒤 다시 시도해 주세요.');
+      return;
+    }
     onCreated(newEx);
     onClose();
   };

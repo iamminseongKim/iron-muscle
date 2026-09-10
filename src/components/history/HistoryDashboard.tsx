@@ -4,13 +4,13 @@ import {
 } from 'lucide-react';
 import { WorkoutSession, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
+import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { 
   calculateSessionVolume, calculateSessionReps, calculateAverageRPE, 
   calculateProgression, checkDeloadRecommendation 
 } from '../../utils/calculations';
 import { GrowthExercisePicker } from './GrowthExercisePicker';
 import { buildGrowthExerciseOptions } from '../../utils/growthExercises';
-import { resolveExercise } from '../../utils/exerciseResolver';
 import { loadCustomExercises, loadSavedSessions } from '../../utils/storage';
 
 interface HistoryDashboardProps {
@@ -24,7 +24,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
     const catalog = new Map(EXERCISES_DATABASE.map(ex => [ex.id, ex]));
     customExercises.forEach(ex => catalog.set(ex.id, ex));
     history.forEach(session => session.exercises.forEach(ex => {
-      if (!catalog.has(ex.exerciseId)) catalog.set(ex.exerciseId, resolveExercise(ex.exerciseId));
+      if (!catalog.has(ex.exerciseId)) catalog.set(ex.exerciseId, resolveRecordedExercise(ex));
     }));
     return buildGrowthExerciseOptions([...catalog.values()], history);
   }, [history, customExercises]);
@@ -204,12 +204,12 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
 
               <div className="space-y-1">
                 {completedExercises.map((ex, i) => {
-                  const base = EXERCISES_DATABASE.find((e) => e.id === ex.exerciseId);
+                  const base = resolveRecordedExercise(ex);
                   const completedSets = ex.sets.filter((s) => s.completed);
                   return (
                     <div key={i} className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-xl bg-[#F9F9FB] dark:bg-[#222225]">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-gray-800 dark:text-gray-200">{base?.name || ex.exerciseId}</span>
+                        <span className="font-bold text-gray-800 dark:text-gray-200">{base.name}</span>
                         {ex.machineBrand && (
                           <span className="text-[10px] text-[#FF9500]">[{ex.machineBrand.split(' ')[0]}]</span>
                         )}

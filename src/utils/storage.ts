@@ -40,7 +40,7 @@ export function loadSampleDataForDemo(): WorkoutSession[] {
 
 export function saveSessions(sessions: WorkoutSession[]): void {
   try {
-    localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(sessions));
+    localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(sessions.map(sanitizeSessionExercises)));
   } catch (e) {
     console.error('Failed to save sessions', e);
   }
@@ -73,7 +73,7 @@ export function saveActiveSession(session: WorkoutSession | null): void {
           }
         } catch {}
       }
-      localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, JSON.stringify(session));
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, JSON.stringify(sanitizeSessionExercises(session)));
     } else {
       localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
     }
@@ -100,7 +100,7 @@ export function loadCustomExercises(): Exercise[] {
   }
 }
 
-export function saveCustomExercise(exercise: Exercise): void {
+export function saveCustomExercise(exercise: Exercise): boolean {
   try {
     const current = loadCustomExercises();
     const existingIndex = current.findIndex((e) => e.id === exercise.id);
@@ -115,8 +115,10 @@ export function saveCustomExercise(exercise: Exercise): void {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('iron_custom_exercises_change', { detail: updated }));
     }
+    return true;
   } catch (e) {
     console.error('Failed to save custom exercise', e);
+    return false;
   }
 }
 

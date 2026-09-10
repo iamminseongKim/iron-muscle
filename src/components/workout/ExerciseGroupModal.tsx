@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Zap, Flame, X, Check, Link2, Unlink } from 'lucide-react';
 import { WorkoutExercise, ExerciseGroupType } from '../../types/workout';
-import { EXERCISES_DATABASE } from '../../data/exercises';
+import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 
 interface ExerciseGroupModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
 
   if (!isOpen) return null;
 
-  const currentBase = EXERCISES_DATABASE.find((e) => e.id === currentExercise.exerciseId);
+  const currentBase = resolveRecordedExercise(currentExercise);
   const currentName = currentBase?.name || '현재 종목';
 
   // Other exercises that can be linked
@@ -157,7 +157,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
               ) : (
                 <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
                   {otherExercises.map((target) => {
-                    const base = EXERCISES_DATABASE.find((e) => e.id === target.exerciseId);
+                    const base = resolveRecordedExercise(target);
                     const isChecked = selectedTargetIds.includes(target.id);
                     return (
                       <button

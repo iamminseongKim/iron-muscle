@@ -1,4 +1,4 @@
-import { Exercise, WorkoutSession } from '../types/workout';
+import { Exercise, WorkoutSession, WorkoutExercise } from '../types/workout';
 import { EXERCISES_DATABASE } from '../data/exercises';
 
 // 레거시 또는 오타 ID에 대한 스마트 매핑 사전
@@ -56,6 +56,15 @@ export function resolveExercise(exerciseId?: string | null): Exercise {
   };
 }
 
+/** Resolve names consistently in records, exports and workout cards. */
+export function resolveRecordedExercise(item: WorkoutExercise): Exercise {
+  const resolved = resolveExercise(item.exerciseId);
+  if (item.exerciseName?.trim() && resolved.name === `미등록 운동 (${item.exerciseId})`) {
+    return { ...resolved, name: item.exerciseName.trim(), nameEn: item.exerciseName.trim(), equipment: item.equipmentType, loadType: item.loadType };
+  }
+  return resolved;
+}
+
 /**
  * 세션 내 모든 운동 종목의 ID를 최신 표준 ID로 자동 보정 및 정제
  */
@@ -66,7 +75,9 @@ export function sanitizeSessionExercises(session: WorkoutSession): WorkoutSessio
     const resolved = resolveExercise(ex.exerciseId);
     return {
       ...ex,
-      exerciseId: resolved.id, // 유효한 ID로 자동 치환
+      exerciseId: resolved.id, // 기존 기록의 알려진 레거시 ID만 정규화
+      ...(!ex.exerciseName && resolved.name !== `미등록 운동 (${ex.exerciseId})`
+        ? { exerciseName: resolved.name } : {}),
     };
   });
 

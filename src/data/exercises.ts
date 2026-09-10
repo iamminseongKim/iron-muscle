@@ -18546,7 +18546,7 @@ export const EXERCISES_DATABASE: Exercise[] = [
   },
   {
     "id": "Machine_Bicep_Curl",
-    "name": "머신 바이셉 컬",
+    "name": "암컬 머신 (바이셉 컬)",
     "nameEn": "Machine Bicep Curl",
     "category": "arms",
     "categories": [
@@ -18559,26 +18559,25 @@ export const EXERCISES_DATABASE: Exercise[] = [
       "biceps"
     ],
     "secondaryMuscles": [],
-    "description": "머신 바이셉 컬은(는) 목표 부위의 근비대와 스트렝스 향상을 이끌어내는 전문 웨이트 트레이닝 운동입니다.",
+    "description": "상완을 패드에 지지하고 팔꿈치를 굽히는 이두 운동입니다.",
     "instructions": [
-      "Adjust the seat to the appropriate height and make your weight selection. Place your upper arms against the pads and grasp the handles. This will be your starting position.",
-      "Perform the movement by flexing the elbow, pulling your lower arm towards your upper arm.",
-      "Pause at the top of the movement, and then slowly return the weight to the starting position.",
-      "Avoid returning the weight all the way to the stops until the set is complete to keep tension on the muscles being worked."
+      "좌석 높이와 중량을 조절하고 팔꿈치를 기구의 회전축에 맞춥니다.",
+      "상완을 패드에 고정한 채 손잡이를 당겨 팔꿈치를 굽힙니다.",
+      "어깨나 몸통을 흔들지 않고 천천히 시작 위치로 돌아옵니다."
     ],
     "tips": [
-      "동작 내내 척추 중립과 복압을 단단히 유지하세요.",
-      "네거티브(이완) 구간에서 무게를 통제하며 2~3초간 천천히 내리세요."
+      "팔꿈치가 패드에서 들리지 않도록 조절하세요.",
+      "내릴 때도 무게를 통제하고 팔꿈치를 강하게 잠그지 마세요."
     ],
     "images": [
       "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Machine_Bicep_Curl/0.jpg",
       "https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/Machine_Bicep_Curl/1.jpg"
     ],
     "level": "beginner",
-    "isPopular": false,
+    "isPopular": true,
     "aliases": [
-      "머신바이셉컬",
-      "MachineBicepCurl"
+      "머신바이셉컬", "머신 바이셉 컬",
+      "MachineBicepCurl", "암컬", "암 컬 머신", "머신 암컬", "이두 컬 머신", "바이셉스 컬", "Arm Curl", "Biceps Curl"
     ]
   },
   {
