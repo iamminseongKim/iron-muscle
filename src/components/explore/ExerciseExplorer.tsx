@@ -7,7 +7,6 @@ import { matchesExerciseSearch } from '../../utils/exerciseSearch';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
-import { AnatomyDualViewer } from '../3d/AnatomyDualViewer';
 
 interface ExerciseExplorerProps {
   onSelectForWorkout?: (exercise: Exercise) => void;
@@ -18,7 +17,6 @@ const EQUIPMENT_LABELS = { machine: '머신', barbell: '바벨', dumbbell: '덤�
 
 export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForWorkout, isDark = false }) => {
   const [selectedExercise, setSelectedExercise] = useState<Exercise>(EXERCISES_DATABASE[0]);
-  const [viewMode, setViewMode] = useState<'duo' | '3d'>('duo');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [selectedLoadType, setSelectedLoadType] = useState<LoadType | 'all'>('all');
@@ -73,32 +71,6 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               {selectedExercise ? `${selectedExercise.name}의 주동근·협응근` : '인체를 터치하여 운동 찾기'}
             </p>
           </div>
-
-          {/* 뷰 모드 토글: [정밀 해부도 (기본)] vs [3D 회전 뷰] */}
-          <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => setViewMode('duo')}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
-                viewMode === 'duo'
-                  ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
-                  : 'text-gray-500 hover:text-black dark:hover:text-white'
-              }`}
-            >
-              🩻 정밀 해부도
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('3d')}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
-                viewMode === '3d'
-                  ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
-                  : 'text-gray-500 hover:text-black dark:hover:text-white'
-              }`}
-            >
-              🔬 3D 회전 뷰
-            </button>
-          </div>
         </div>
 
         {activeMuscleFilter && (
@@ -117,24 +89,14 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
         )}
 
         {/* 뷰어 컴포넌트 렌더링 */}
-        {viewMode === 'duo' ? (
-          <AnatomyDualViewer
-            primaryMuscles={selectedExercise?.primaryMuscles || []}
-            secondaryMuscles={selectedExercise?.secondaryMuscles || []}
-            selectedMuscle={activeMuscleFilter}
-            onMuscleClick={handleMuscleClickOn3D}
-            showFatigueSlider={true}
-          />
-        ) : (
-          <HumanMuscle3DViewer
-            primaryMuscles={selectedExercise?.primaryMuscles || []}
-            secondaryMuscles={selectedExercise?.secondaryMuscles || []}
-            activeMuscleFilter={activeMuscleFilter}
-            onSelectMuscle={handleMuscleClickOn3D}
-            height="340px"
-            isDark={isDark}
-          />
-        )}
+        <HumanMuscle3DViewer
+          primaryMuscles={selectedExercise?.primaryMuscles || []}
+          secondaryMuscles={selectedExercise?.secondaryMuscles || []}
+          activeMuscleFilter={activeMuscleFilter}
+          onSelectMuscle={handleMuscleClickOn3D}
+          height="440px"
+          isDark={isDark}
+        />
       </div>
 
       {/* 선택된 운동 상세 카드 */}

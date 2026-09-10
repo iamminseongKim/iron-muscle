@@ -64,3 +64,31 @@ assert.equal(growthOptions[1].exercise.id,fixtureCatalog[1].id);
 assert.equal(growthOptions.filter(o=>o.recordCount>0).length,2,'Incomplete and zero-weight sets must not claim growth data');
 assert.ok(buildGrowthExerciseOptions(fixtureCatalog,[]).every(o=>o.recordCount===0));
 console.log('PASS: growth picker prioritizes usable records, recency and empty history');
+
+// Real anatomy assets must ship in clean checkouts and retain their provenance.
+const glbJson = path => {
+ const bytes=readFileSync(path);
+ assert.equal(bytes.subarray(0,4).toString(),'glTF');
+ assert.equal(bytes.readUInt32LE(4),2);
+ assert.equal(bytes.readUInt32LE(8),bytes.length);
+ assert.equal(spawnSync('git',['check-ignore','--no-index','-q',path]).status,1);
+ return JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
+};
+const anatomy=glbJson('public/anatomy/anatomy.glb');
+const skeleton=glbJson('public/anatomy/skeleton.glb');
+assert.equal(anatomy.meshes.length,467);
+assert.equal(skeleton.meshes.length,201);
+for(const model of [anatomy,skeleton]) {
+ assert.ok(model.buffers.every(buffer=>!buffer.uri),'GLB must not require external buffers');
+ assert.ok(!model.images?.length,'No remote textures required');
+}
+const modelBuild=await build({entryPoints:['src/components/3d/anatomyModel.ts'],bundle:true,write:false,platform:'node',format:'esm',define:{'import.meta.env.BASE_URL':'"/"'}});
+const {muscleTargetForName}=await import(`data:text/javascript;base64,${Buffer.from(modelBuild.outputFiles[0].text).toString('base64')}`);
+const mapped=new Set(anatomy.meshes.map(mesh=>muscleTargetForName(mesh.name)).filter(Boolean));
+assert.equal(mapped.size,17,'All exercise muscle groups need actual geometry');
+assert.equal(muscleTargetForName('clavicular_part_of_left_pectoralis_major'),'chest_upper');
+assert.equal(muscleTargetForName('spinal_part_of_right_deltoid'),'deltoid_rear');
+assert.equal(muscleTargetForName('long_head_of_right_biceps_femoris'),'hamstrings');
+assert.equal(muscleTargetForName('left_inferior_oblique'),undefined,'Eye muscles are not abdominal obliques');
+assert.ok(readFileSync('public/anatomy/NOTICE.html','utf8').includes('ShareAlike'));
+console.log('PASS: bundled real anatomy, 17 target groups, no external textures and attribution');

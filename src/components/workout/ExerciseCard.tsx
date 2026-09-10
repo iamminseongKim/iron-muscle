@@ -7,7 +7,6 @@ import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, Equipmen
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { SetRow } from './SetRow';
 import { getExerciseRecords, convertWeight } from '../../utils/calculations';
-import { AnatomyDualViewer } from '../3d/AnatomyDualViewer';
 import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
 import { resolveExercise } from '../../utils/exerciseResolver';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
@@ -59,7 +58,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     });
   };
   const [show3DViewer, setShow3DViewer] = useState(false);
-  const [viewerMode, setViewerMode] = useState<'dual' | '3d' | 'photos'>('dual');
+  const [viewerMode, setViewerMode] = useState<'3d' | 'photos'>('3d');
   const [isCustomBrand, setIsCustomBrand] = useState(false);
   const [showMachineSetting, setShowMachineSetting] = useState(false);
 
@@ -430,7 +429,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       {/* 해부학 & 3D 모델 인라인 펼침 */}
       {show3DViewer && (
         <div className="p-3 bg-[#F2F2F7] dark:bg-[#151516] border-b border-black/5 dark:border-white/5 space-y-3">
-          {/* 상단 뷰어 스위처: [🩻 근육 해부도] ⇋ [🔬 3D 회전 모델] */}
+          {/* 통합 해부도와 운동 동작 사진 */}
           <div className="flex items-center justify-between flex-wrap gap-2 min-w-0">
             <div className="flex items-center gap-1.5">
               <Sparkles size={13} className="text-[#FF2D55]" />
@@ -442,17 +441,6 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             <div className="flex flex-wrap bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-[11px] font-bold">
               <button
                 type="button"
-                onClick={() => setViewerMode('dual')}
-                className={`px-2 py-1 rounded-lg transition-all ${
-                  viewerMode === 'dual'
-                    ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
-                    : 'text-gray-500 hover:text-black dark:hover:text-white'
-                }`}
-              >
-                🩻 근육 해부도
-              </button>
-              <button
-                type="button"
                 onClick={() => setViewerMode('3d')}
                 className={`px-2 py-1 rounded-lg transition-all ${
                   viewerMode === '3d'
@@ -460,7 +448,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
               >
-                🔬 3D 모델
+                근육 해부도
               </button>
               {baseExercise.images && baseExercise.images.length > 0 && (
                 <button
@@ -479,19 +467,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
 
           {/* 뷰어 컴포넌트 렌더링 */}
-          {viewerMode === 'dual' ? (
-            <AnatomyDualViewer
-              primaryMuscles={baseExercise.primaryMuscles || []}
-              secondaryMuscles={baseExercise.secondaryMuscles || []}
-              showFatigueSlider={false}
-              isDark={isDark}
-            />
-          ) : viewerMode === '3d' ? (
+          {viewerMode === '3d' ? (
             <div className="rounded-3xl overflow-hidden shadow-lg border border-black/5 dark:border-white/10">
               <HumanMuscle3DViewer
                 primaryMuscles={baseExercise.primaryMuscles || []}
                 secondaryMuscles={baseExercise.secondaryMuscles || []}
-                height="320px"
+                height="380px"
                 showControls={true}
                 isDark={isDark}
               />

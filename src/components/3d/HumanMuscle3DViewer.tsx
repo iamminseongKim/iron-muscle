@@ -1,10 +1,10 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MuscleTarget } from '../../types/workout';
-import { createHumanMuscleModel, MuscleMeshPart } from './MuscleGeometryFactory';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
-import { AnatomyDualViewer } from './AnatomyDualViewer';
-import { RotateCw, ZoomIn, ZoomOut } from 'lucide-react';
+import { loadAnatomyModel, disposeAnatomy, AnatomyPart } from './anatomyModel';
+import { RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface HumanMuscle3DViewerProps {
   primaryMuscles?: MuscleTarget[];
@@ -15,415 +15,184 @@ interface HumanMuscle3DViewerProps {
   showControls?: boolean;
   isDark?: boolean;
 }
-
+type View = 'front' | 'back' | 'both';
 export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
-  primaryMuscles = [],
-  secondaryMuscles = [],
-  activeMuscleFilter = null,
-  onSelectMuscle,
-  height = '380px',
-  showControls = true,
-  isDark = false,
+  primaryMuscles = [], secondaryMuscles = [], activeMuscleFilter = null,
+  onSelectMuscle, height = '480px', showControls = true, isDark = false,
 }) => {
-  const [renderUnavailable, setRenderUnavailable] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const groupRef = useRef<THREE.Group | null>(null);
-  const partsRef = useRef<MuscleMeshPart[]>([]);
-  const frameIdRef = useRef<number>(0);
+  const apiRef = useRef<{ view: (view: View) => void; zoom: (scale: number) => void; reset: () => void; clearSelection: () => void; paint: () => void }>();
+  const propsRef = useRef({ primaryMuscles, secondaryMuscles, activeMuscleFilter, onSelectMuscle, isDark });
+  propsRef.current = { primaryMuscles, secondaryMuscles, activeMuscleFilter, onSelectMuscle, isDark };
+  const [view, setView] = useState<View>('both');
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [attempt, setAttempt] = useState(0);
+  const [selected, setSelected] = useState<MuscleTarget | null>(null);
 
-  const [isAutoRotate, setIsAutoRotate] = useState<boolean>(false);
-  const [hoveredMuscle, setHoveredMuscle] = useState<MuscleTarget | null>(null);
-  const [viewAngle, setViewAngle] = useState<'front' | 'back' | 'free'>('front');
-
-  const rotationRef = useRef({x: 0, y: 0});
-  const autoRotateRef = useRef(false);
-  const onSelectRef = useRef(onSelectMuscle);
-  useEffect(() => { autoRotateRef.current = isAutoRotate; }, [isAutoRotate]);
-  useEffect(() => { onSelectRef.current = onSelectMuscle; }, [onSelectMuscle]);
-
-  // Three.js 씬 초기화
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container || renderUnavailable) return;
-
-    const width = container.clientWidth;
-    const heightPx = container.clientHeight || 380;
-
-    // 1. Scene
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-    const bgColor = isDark ? 0x171c25 : 0xF3F5F8;
-    scene.background = new THREE.Color(bgColor);
-
-    // 2. Camera
-    const camera = new THREE.PerspectiveCamera(40, width / heightPx, 0.1, 100);
-    const fitDistance = () => Math.max(5.15 / (2 * Math.tan(THREE.MathUtils.degToRad(20))), 2.65 / (2 * Math.tan(THREE.MathUtils.degToRad(20)) * camera.aspect));
-    camera.position.set(0, 0, fitDistance());
-    camera.lookAt(0, 0, 0);
-    cameraRef.current = camera;
-
-    // 3. Renderer (애플 스튜디오 룩)
+    const container = containerRef.current!;
+    let disposed = false;
+    let group: THREE.Group | undefined;
+    let parts: AnatomyPart[] = [];
+    let frame = 0;
+    let currentView: View = 'both';
+    let selectedTarget: MuscleTarget | null = null;
+    let visible = true;
+    let dirty = true;
+    let contextLost = false;
+    setStatus('loading'); setView('both'); setSelected(null);
     let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'default' });
-    } catch {
-      setRenderUnavailable(true);
-      return;
-    }
-    const onContextLost = (event: Event) => { event.preventDefault(); setRenderUnavailable(true); };
-    renderer.domElement.addEventListener('webglcontextlost', onContextLost);
-    renderer.setSize(width, heightPx);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    try { renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' }); }
+    catch { setStatus('error'); return; }
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.setScissorTest(true);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = isDark ? 1.15 : 1.05;
-    rendererRef.current = renderer;
-
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
     container.appendChild(renderer.domElement);
-
-    // 4. Studio Lighting
-    const ambientLight = new THREE.HemisphereLight(0xe5efff, 0x566070, 1.8);
-    scene.add(ambientLight);
-
-    const dirLightFront = new THREE.DirectionalLight(0xffffff, 2.5);
-    dirLightFront.position.set(-3, 5, 5);
-    scene.add(dirLightFront);
-
-    const dirLightBack = new THREE.DirectionalLight(isDark ? 0x88aaff : 0xdde5ed, 1.2);
-    dirLightBack.position.set(-2, 4, -5);
-    scene.add(dirLightBack);
-
-    // 5. Human Model Group
-    const { group, parts } = createHumanMuscleModel(isDark);
-    group.rotation.set(rotationRef.current.x, rotationRef.current.y, 0);
-    groupRef.current = group;
-    partsRef.current = parts;
-    scene.add(group);
-
-    // 6. Interaction
-    let isDragging = false;
-    let dragDistance = 0;
-    let previousMousePosition = { x: 0, y: 0 };
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      dragDistance = 0;
-      previousMousePosition = { x: e.clientX, y: e.clientY };
+    const scene = new THREE.Scene();
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x666677, 2));
+    const light = new THREE.DirectionalLight(0xffffff, 2.5); light.position.set(3, 5, 7); scene.add(light);
+    const rearLight = new THREE.DirectionalLight(0xffffff, 1.7); rearLight.position.set(-3, 2, -5); scene.add(rearLight);
+    const camera = new THREE.PerspectiveCamera(35, 1, .1, 100);
+    const front = camera.clone(), back = camera.clone();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.enablePan = false;
+    controls.minDistance = 3; controls.maxDistance = 20;
+    controls.minPolarAngle = Math.PI * .25; controls.maxPolarAngle = Math.PI * .75;
+    let width = 1, h = 1;
+    const fit = (aspect: number) => Math.max(5.6, 2.8 / aspect) / (2 * Math.tan(THREE.MathUtils.degToRad(17.5)));
+    const reset = () => {
+      dirty = true;
+      controls.target.set(0, 0, 0);
+      camera.position.set(0, 0, (currentView === 'back' ? -1 : 1) * fit(width / h));
+      camera.lookAt(0, 0, 0); controls.update();
+      front.position.set(0, 0, fit(width / 2 / h)); front.lookAt(0, 0, 0);
+      back.position.set(0, 0, -fit(width / 2 / h)); back.lookAt(0, 0, 0);
     };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (cameraRef.current && sceneRef.current) {
-        const rect = container.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-          ((e.clientX - rect.left) / container.clientWidth) * 2 - 1,
-          -((e.clientY - rect.top) / container.clientHeight) * 2 + 1
-        );
-        const raycaster = new THREE.Raycaster();
-        raycaster.setFromCamera(mouse, cameraRef.current);
-        const intersects = raycaster.intersectObjects(group.children, true);
-        const targetPart = parts.find((p) => intersects.length > 0 && intersects[0].object === p.mesh);
-        if (targetPart && targetPart.targetKey) {
-          setHoveredMuscle(targetPart.targetKey);
-        } else {
-          setHoveredMuscle(null);
-        }
-      }
-
-      if (!isDragging || !groupRef.current) return;
-      const deltaX = e.clientX - previousMousePosition.x;
-      const deltaY = e.clientY - previousMousePosition.y;
-
-      dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
-      groupRef.current.rotation.y += deltaX * 0.009;
-      groupRef.current.rotation.x = Math.max(-0.35, Math.min(0.35, groupRef.current.rotation.x + deltaY * 0.005));
-      previousMousePosition = { x: e.clientX, y: e.clientY };
-      setViewAngle('free');
+    const resize = () => {
+      width = Math.max(1, container.clientWidth); h = Math.max(1, container.clientHeight);
+      renderer.setSize(width, h);
+      camera.aspect = width / h; camera.updateProjectionMatrix();
+      [front, back].forEach(cam => { cam.aspect = width / 2 / h; cam.updateProjectionMatrix(); });
+      reset();
     };
-
-    const onMouseUp = () => {
-      isDragging = false;
+    const paint = () => {
+      dirty = true;
+      const p = propsRef.current;
+      scene.background = new THREE.Color(p.isDark ? 0x151519 : 0xf3f5f8);
+      parts.forEach(({ mesh, target, neutral }) => {
+        const chosen = target && (p.onSelectMuscle ? p.activeMuscleFilter === target : selectedTarget === target);
+        const primary = target && (p.primaryMuscles.includes(target) || target === 'chest_upper' && p.primaryMuscles.includes('chest'));
+        const secondary = target && p.secondaryMuscles.includes(target);
+        mesh.material.color.setHex(chosen ? 0x328bff : primary ? 0xff2d55 : secondary ? 0xff9500 : neutral);
+        mesh.material.emissive.setHex(chosen ? 0x092040 : 0x000000);
+        mesh.userData.highlight = chosen ? 'selected' : primary ? 'primary' : secondary ? 'secondary' : 'none';
+      });
     };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      if (!cameraRef.current) return;
-      cameraRef.current.position.z = Math.max(3.8, Math.min(12, cameraRef.current.position.z + e.deltaY * 0.003));
+    apiRef.current = {
+      view: mode => { currentView = mode; controls.enabled = mode !== 'both'; reset(); },
+      zoom: factor => {
+        dirty = true;
+        const cams = currentView === 'both' ? [front, back] : [camera];
+        cams.forEach(cam => cam.position.multiplyScalar(THREE.MathUtils.clamp(cam.position.length() * factor, 3, 25) / cam.position.length()));
+        controls.update();
+      }, reset, paint, clearSelection: () => { selectedTarget = null; setSelected(null); paint(); },
     };
-
-    // Mobile Touch
-    let touchStartDist = 0;
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        isDragging = true;
-        dragDistance = 0;
-        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      } else if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        touchStartDist = Math.sqrt(dx * dx + dy * dy);
+    controls.enabled = false;
+    let pointer: { x: number; y: number } | null = null;
+    let multiTouch = false;
+    const pointers = new Set<number>();
+    const down = (event: PointerEvent) => {
+      pointers.add(event.pointerId);
+      if (pointers.size > 1) multiTouch = true;
+      else { multiTouch = false; pointer = { x: event.clientX, y: event.clientY }; }
+    };
+    const up = (event: PointerEvent) => {
+      pointers.delete(event.pointerId);
+      if (!pointer || multiTouch || Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 5 || !group) return;
+      pointer = null;
+      const rect = renderer.domElement.getBoundingClientRect();
+      let x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      let cam = camera; let viewportWidth = width;
+      if (currentView === 'both') { viewportWidth = width / 2; cam = x < viewportWidth ? front : back; x %= viewportWidth; }
+      const ray = new THREE.Raycaster();
+      ray.setFromCamera(new THREE.Vector2(x / viewportWidth * 2 - 1, -y / h * 2 + 1), cam);
+      const hit = ray.intersectObject(group, true)[0];
+      const target = hit?.object.userData.muscleTarget as MuscleTarget | undefined;
+      if (target) {
+        selectedTarget = selectedTarget === target ? null : target;
+        setSelected(selectedTarget); propsRef.current.onSelectMuscle?.(target); paint();
       }
     };
-
-    const onTouchMove = (e: TouchEvent) => {
-      // 페이지 스크롤/핀치줌과 제스처가 겹치지 않도록, 우리가 직접 처리하는 동안은 브라우저 기본 동작을 막는다
-      if (e.touches.length === 1 || e.touches.length === 2) {
-        e.preventDefault();
-      }
-      if (e.touches.length === 1 && isDragging && groupRef.current) {
-        const deltaX = e.touches[0].clientX - previousMousePosition.x;
-        const deltaY = e.touches[0].clientY - previousMousePosition.y;
-        dragDistance += Math.abs(deltaX) + Math.abs(deltaY);
-        groupRef.current.rotation.y += deltaX * 0.012;
-        groupRef.current.rotation.x = Math.max(-0.35, Math.min(0.35, groupRef.current.rotation.x + deltaY * 0.006));
-        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        setViewAngle('free');
-      } else if (e.touches.length === 2 && cameraRef.current) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const diff = (dist - touchStartDist) * 0.01;
-        cameraRef.current.position.z = Math.max(3.8, Math.min(12, cameraRef.current.position.z - diff));
-        touchStartDist = dist;
-      }
-    };
-
-    const onTouchEnd = () => {
-      isDragging = false;
-      touchStartDist = 0;
-    };
-
-    const onClick = (e: MouseEvent) => {
-      if (!cameraRef.current || !onSelectRef.current || dragDistance > 5) return;
-      const rect = container.getBoundingClientRect();
-      const mouse = new THREE.Vector2(
-        ((e.clientX - rect.left) / container.clientWidth) * 2 - 1,
-        -((e.clientY - rect.top) / container.clientHeight) * 2 + 1
-      );
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(mouse, cameraRef.current);
-      const intersects = raycaster.intersectObjects(group.children, true);
-      const targetPart = parts.find((p) => intersects.length > 0 && intersects[0].object === p.mesh);
-      if (targetPart && targetPart.targetKey) {
-        onSelectRef.current(targetPart.targetKey);
-      }
-    };
-
-    container.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-    container.addEventListener('wheel', onWheel, { passive: false });
-    container.addEventListener('click', onClick);
-    container.addEventListener('touchstart', onTouchStart, { passive: true });
-    container.addEventListener('touchmove', onTouchMove, { passive: false });
-    container.addEventListener('touchend', onTouchEnd);
-    container.addEventListener('touchcancel', onTouchEnd);
-
-    const handleResize = () => {
-      if (!container || !renderer || !camera) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight || 380;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      camera.position.z = fitDistance();
-      renderer.setSize(w, h);
-    };
-    const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(container);
-    window.addEventListener('resize', handleResize);
-
-    // Loop
-    let clock = new THREE.Clock();
+    const cancel = () => { pointers.clear(); pointer = null; multiTouch = false; };
+    const lost = (event: Event) => { event.preventDefault(); contextLost = true; setStatus('error'); };
+    const changed = () => { dirty = true; };
+    controls.addEventListener('change', changed);
+    renderer.domElement.addEventListener('pointerdown', down);
+    renderer.domElement.addEventListener('pointerup', up);
+    renderer.domElement.addEventListener('pointercancel', cancel);
+    renderer.domElement.addEventListener('webglcontextlost', lost);
+    const observer = new ResizeObserver(resize); observer.observe(container); resize(); paint();
+    const intersection = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; dirty = true; }); intersection.observe(container);
     const animate = () => {
-      frameIdRef.current = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      if (groupRef.current && autoRotateRef.current) {
-        groupRef.current.rotation.y += delta * 0.45;
-      }
-      renderer.render(scene, camera);
+      frame = requestAnimationFrame(animate);
+      if (!visible || document.hidden || contextLost) return;
+      controls.update();
+      if (!dirty) return;
+      dirty = false;
+      if (currentView === 'both') {
+        const half = Math.floor(width / 2);
+        renderer.setViewport(0, 0, half, h); renderer.setScissor(0, 0, half, h); renderer.render(scene, front);
+        renderer.setViewport(half, 0, width - half, h); renderer.setScissor(half, 0, width - half, h); renderer.render(scene, back);
+      } else { renderer.setViewport(0, 0, width, h); renderer.setScissor(0, 0, width, h); renderer.render(scene, camera); }
     };
     animate();
-
+    loadAnatomyModel().then(model => {
+      if (disposed) { disposeAnatomy(model.group); return; }
+      group = model.group; parts = model.parts; scene.add(group); paint(); if (!contextLost) setStatus('ready');
+      container.dataset.model = 'bodyparts3d-z-anatomy';
+      container.dataset.targetCount = String(parts.filter(part => part.target).length);
+    }).catch(() => { if (!disposed) setStatus('error'); });
     return () => {
-      rotationRef.current = { x: group.rotation.x, y: group.rotation.y };
-      cancelAnimationFrame(frameIdRef.current);
-      window.removeEventListener('resize', handleResize);
-      container.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-      container.removeEventListener('wheel', onWheel);
-      container.removeEventListener('click', onClick);
-      container.removeEventListener('touchstart', onTouchStart);
-      container.removeEventListener('touchmove', onTouchMove);
-      container.removeEventListener('touchend', onTouchEnd);
-      container.removeEventListener('touchcancel', onTouchEnd);
-      resizeObserver.disconnect();
-      group.traverse(object => {
-        if (object instanceof THREE.Mesh) {
-          object.geometry.dispose();
-          const materials = Array.isArray(object.material) ? object.material : [object.material];
-          materials.forEach(material => material.dispose());
-        }
-      });
-      renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
-      renderer.dispose();
-      renderer.domElement.remove();
+      disposed = true; cancelAnimationFrame(frame); observer.disconnect(); intersection.disconnect(); controls.removeEventListener('change', changed); controls.dispose();
+      renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointerup', up);
+      renderer.domElement.removeEventListener('pointercancel', cancel); renderer.domElement.removeEventListener('webglcontextlost', lost);
+      if (group) disposeAnatomy(group);
+      renderer.dispose(); renderer.domElement.remove(); apiRef.current = undefined;
     };
-  }, [isDark, renderUnavailable]);
+  }, [attempt]);
 
-  // 근육 색상 실시간 업데이트 (애플 레드 #FF2D55 / 앰버 #FF9500)
-  useEffect(() => {
-    partsRef.current.forEach((part) => {
-      if (!part.isTargetable || !part.targetKey) return;
-      const mat = part.mesh.material as THREE.MeshStandardMaterial;
-      if (!mat) return;
-
-      const isFilterActive = activeMuscleFilter === part.targetKey;
-      const isPrimary = primaryMuscles.includes(part.targetKey);
-      const isSecondary = secondaryMuscles.includes(part.targetKey);
-      const isHovered = hoveredMuscle === part.targetKey;
-
-      if (isFilterActive || isPrimary) {
-        // 애플 시그니처 레드
-        mat.color.setHex(0xFF2D55);
-        mat.emissive.setHex(0x770D1E);
-        mat.emissiveIntensity = 0.08;
-        mat.roughness = 0.75;
-      } else if (isSecondary) {
-        // 애플 오렌지
-        mat.color.setHex(0xFF9500);
-        mat.emissive.setHex(0x663300);
-        mat.emissiveIntensity = 0.05;
-        mat.roughness = 0.75;
-      } else if (isHovered) {
-        // 애플 시스템 블루
-        mat.color.setHex(0x007AFF);
-        mat.emissive.setHex(0x003366);
-        mat.emissiveIntensity = 0.3;
-      } else {
-        // 비타겟 (라이트 모드는 우아한 실버 그레이, 다크 모드는 세련된 티타늄 차콜)
-        mat.color.setHex(isDark ? 0x8793a3 : 0xb9c3ce);
-        mat.emissive.setHex(0x000000);
-        mat.emissiveIntensity = 0;
-        mat.roughness = 0.8;
-      }
-      mat.needsUpdate = true;
-    });
-  }, [primaryMuscles, secondaryMuscles, activeMuscleFilter, hoveredMuscle, isDark]);
-
-  const setCameraView = (angle: 'front' | 'back') => {
-    if (!groupRef.current) return;
-    setIsAutoRotate(false);
-    setViewAngle(angle);
-    groupRef.current.rotation.x = 0;
-    groupRef.current.rotation.y = angle === 'front' ? 0 : Math.PI;
-  };
-
-  const adjustZoom = (delta: number) => {
-    if (!cameraRef.current) return;
-    cameraRef.current.position.z = Math.max(3.8, Math.min(12, cameraRef.current.position.z + delta));
-  };
-
-  if (renderUnavailable) return (
-    <div>
-      <p role="status" className="mb-2 text-xs text-gray-500">3D 표시를 사용할 수 없어 근육 해부도를 표시합니다.</p>
-      <AnatomyDualViewer primaryMuscles={primaryMuscles} secondaryMuscles={secondaryMuscles} selectedMuscle={activeMuscleFilter} onMuscleClick={onSelectMuscle} isDark={isDark} />
-    </div>
-  );
-
+  const muscleSignature = `${primaryMuscles.join(',')}|${secondaryMuscles.join(',')}`;
+  useEffect(() => { apiRef.current?.clearSelection(); }, [muscleSignature]);
+  useEffect(() => { apiRef.current?.paint(); }, [primaryMuscles, secondaryMuscles, activeMuscleFilter, isDark]);
+  const displayedTarget = onSelectMuscle ? activeMuscleFilter : selected;
+  const chooseView = (mode: View) => { setView(mode); apiRef.current?.view(mode); };
   return (
-    <div
-      className="relative w-full rounded-2xl overflow-hidden bg-[#F3F5F8] dark:bg-[#171c25] border border-black/5 dark:border-white/10 shadow-sm"
-      style={{ height }}
-    >
-      {/* 3D WebGL Canvas */}
-      <div ref={containerRef} role="img" aria-label="회전 가능한 인체 근육 모델" className="absolute inset-x-0 top-10 cursor-grab active:cursor-grabbing touch-none" style={{ bottom: showControls ? 52 : 8 }} />
-
-      {/* 상단 범례 & 툴팁 */}
-      <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 bg-white/80 dark:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5 dark:border-white/10 text-xs shadow-sm">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FF2D55] shadow-sm" />
-            <span className="font-semibold text-gray-800 dark:text-gray-200 text-[11px]">주동근</span>
-          </div>
-          <span className="text-gray-300 dark:text-gray-600">|</span>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#FF9500] shadow-sm" />
-            <span className="font-semibold text-gray-700 dark:text-gray-300 text-[11px]">협응근</span>
-          </div>
-        </div>
-
-        {hoveredMuscle && (
-          <div className="bg-white/90 dark:bg-black/75 backdrop-blur-md border border-[#007AFF]/40 px-3.5 py-1.5 rounded-full text-xs text-[#007AFF] font-bold shadow-md animate-fade-in pointer-events-auto">
-            {MUSCLE_INFO_MAP[hoveredMuscle]?.nameKo || hoveredMuscle}
-          </div>
-        )}
+    <section aria-label="통합 3D 근육 해부도" className="rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-[#F3F5F8] dark:bg-[#151519]">
+      <div className="px-3 pt-3 flex flex-wrap gap-3 text-xs text-gray-600 dark:text-gray-300">
+        <span><span className="text-[#FF2D55]">●</span> 주동근</span><span><span className="text-[#FF9500]">●</span> 협응근</span><span><span className="text-[#328bff]">●</span> 선택 근육</span>
       </div>
-
-      {/* 하단 컨트롤 패널 (애플 글래스모피즘) */}
-      {showControls && (
-        <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-auto">
-          {/* 전면/후면 스냅 */}
-          <div className="flex items-center gap-1 bg-white/80 dark:bg-black/60 backdrop-blur-md p-1 rounded-2xl border border-black/5 dark:border-white/10 shadow-sm">
-            <button
-              aria-pressed={viewAngle === 'front'}
-              onClick={() => setCameraView('front')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
-                viewAngle === 'front'
-                  ? 'bg-white dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-              }`}
-            >
-              전면
-            </button>
-            <button
-              aria-pressed={viewAngle === 'back'}
-              onClick={() => setCameraView('back')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
-                viewAngle === 'back'
-                  ? 'bg-white dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-              }`}
-            >
-              후면
-            </button>
+      <div className="relative" style={{ height }}>
+        <div ref={containerRef} role="img" aria-label={view === 'both' ? '동일한 3D 인체의 전면과 후면' : '드래그로 회전하고 두 손가락으로 확대하는 인체'} className="absolute inset-0 touch-none" />
+        {status !== 'ready' && <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#F3F5F8] dark:bg-[#151519] p-5 text-center text-sm text-gray-500" role="status">
+          <p>{status === 'loading' ? '3D 해부학 모델을 불러오는 중…' : '3D 모델을 표시하지 못했어요.'}</p>
+          {status === 'error' && <button type="button" onClick={() => setAttempt(value => value + 1)} className="text-[#007AFF] font-bold">다시 불러오기</button>}
+        </div>}
+      </div>
+      {showControls && <div className="px-3 pb-3 space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex rounded-xl bg-black/5 dark:bg-white/5 p-1">
+            {(['both', 'front', 'back'] as const).map(mode => <button type="button" key={mode} disabled={status !== 'ready'} aria-pressed={view === mode} onClick={() => chooseView(mode)} className={`px-3 py-2 text-xs rounded-lg font-bold ${view === mode ? 'bg-white dark:bg-[#333338] shadow-sm' : 'text-gray-500'}`}>{mode === 'both' ? '앞뒤 함께' : mode === 'front' ? '전면·회전' : '후면·회전'}</button>)}
           </div>
-
-          {/* 줌 & 회전 */}
-          <div className="flex items-center gap-1 bg-white/80 dark:bg-black/60 backdrop-blur-md p-1 rounded-2xl border border-black/5 dark:border-white/10 shadow-sm">
-            <button
-              onClick={() => adjustZoom(-0.6)}
-              className="p-1.5 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition"
-              title="확대"
-            >
-              <ZoomIn size={16} />
-            </button>
-            <button
-              onClick={() => adjustZoom(0.6)}
-              className="p-1.5 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition"
-              title="축소"
-            >
-              <ZoomOut size={16} />
-            </button>
-            <button
-              onClick={() => setIsAutoRotate(!isAutoRotate)}
-              className={`p-1.5 rounded-xl transition ${
-                isAutoRotate
-                  ? 'bg-[#FF9500]/15 text-[#FF9500]'
-                  : 'text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10'
-              }`}
-              aria-pressed={isAutoRotate}
-              title="360도 회전"
-            >
-              <RotateCw size={16} className={isAutoRotate ? 'animate-spin' : ''} />
-            </button>
+          <div className="flex gap-1">
+            <button type="button" aria-label="인체 확대" onClick={() => apiRef.current?.zoom(.85)} className="p-2"><ZoomIn size={18} /></button>
+            <button type="button" aria-label="인체 축소" onClick={() => apiRef.current?.zoom(1.15)} className="p-2"><ZoomOut size={18} /></button>
+            <button type="button" aria-label="시점 초기화" onClick={() => apiRef.current?.reset()} className="p-2"><RotateCcw size={18} /></button>
           </div>
         </div>
-      )}
-    </div>
+        <p className="text-xs text-gray-500 dark:text-gray-400" role="status">{displayedTarget ? MUSCLE_INFO_MAP[displayedTarget].nameKo : view === 'both' ? '앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.' : '드래그하여 회전 · 두 손가락으로 확대 · 근육을 눌러 이름 확인'}</p>
+      </div>}
+      <div className="px-3 pb-3 text-[10px] text-gray-500"><a href={`${import.meta.env.BASE_URL}anatomy/NOTICE.html`} target="_blank" rel="noreferrer" className="underline">3D 모델 출처 · BodyParts3D / Z-Anatomy · CC BY-SA</a></div>
+    </section>
   );
 };

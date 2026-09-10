@@ -37,15 +37,17 @@
 iron-muscle/
 ├── android/                    # Capacitor Android 네이티브 프로젝트 (Gradle, Java)
 ├── ios/                        # Capacitor iOS 네이티브 프로젝트 (Xcode, Swift)
-├── public/                     # 정적 웹 에셋 (favicon, 아이콘 등)
+├── public/                     # 정적 웹 에셋 (favicon, 아이콘, 3D 해부학 GLB 모델 등)
+│   └── anatomy/                # BodyParts3D/Z-Anatomy CC BY-SA 3D 해부학 에셋 (anatomy.glb, skeleton.glb)
 ├── scripts/                    # 운동 DB 추출 및 데이터 가공 파이썬 스크립트
 │   ├── build_db.py             # free-exercise-db 기반 번역 및 한국어 매핑 스크립트
 │   └── add_more_machines.py    # 한국 헬스장 인기 머신 데이터 추가 스크립트
 ├── src/
 │   ├── components/
-│   │   ├── 3d/                 # Three.js 3D 인체/근육 뷰어
-│   │   │   ├── HumanMuscle3DViewer.tsx
-│   │   │   └── AnatomyDualViewer.tsx
+│   │   ├── 3d/                 # Three.js 통합 3D 인체/근육 해부도
+│   │   │   ├── HumanMuscle3DViewer.tsx  # 통합 3D 뷰어 (전면/후면/동시 뷰포트, 회전/선택 인터랙션)
+│   │   │   ├── anatomyModel.ts          # GLB 로더, 좌표 정규화, 지오메트리 병합 및 타깃 매핑
+│   │   │   └── AnatomyDualViewer.tsx    # 레거시 2D 아틀라스 해부도 컴포넌트
 │   │   ├── common/             # 공통 UI 컴포넌트
 │   │   │   ├── Header.tsx      # 총 운동시간 시계, 다크모드 스위처, 탭 헤더
 │   │   │   └── TabNavigation.tsx # 하단 3단 탭 네비게이션
