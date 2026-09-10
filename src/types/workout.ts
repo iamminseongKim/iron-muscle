@@ -130,8 +130,11 @@ export interface Exercise {
   primaryMuscles: MuscleTarget[];
   secondaryMuscles: MuscleTarget[];
   description: string;
+  descriptionEn?: string;
   instructions: string[];
+  instructionsEn?: string[];
   tips: string[];
+  tipsEn?: string[];
   defaultBrand?: string;
   isPopular?: boolean;
   images?: string[];
