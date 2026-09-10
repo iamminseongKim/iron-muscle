@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dumbbell, Calendar, BarChart2, Search } from 'lucide-react';
+import packageJson from '../../../package.json';
 
 interface TabNavigationProps {
   activeTab: 'workout' | 'history' | 'analytics' | 'explore';
@@ -44,6 +45,9 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
             </button>
           );
         })}
+      </div>
+      <div className="text-center pb-1 text-[9px] text-gray-400/60 dark:text-gray-600 font-medium">
+        v{packageJson.version} - minseongkimim@gmail.com
       </div>
     </nav>
   );

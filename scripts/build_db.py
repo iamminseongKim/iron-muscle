@@ -137,8 +137,8 @@ chest = [
   },
   {
     'id': 'hammer-iso-chest-press',
-    'name': '해머스트렝스 플레이트 아이소 체스트 프레스',
-    'nameEn': 'Hammer Strength Iso-Lateral Chest Press',
+    'name': '플레이트 아이소 체스트 프레스',
+    'nameEn': 'Iso-Lateral Chest Press',
     'category': 'chest',
     'categories': ['chest'],
     'equipment': 'machine',
@@ -149,13 +149,12 @@ chest = [
     'description': '해머스트렝스 고유의 수렴 궤적으로 가슴 전체에 강렬한 수축을 제공합니다.',
     'instructions': ['시트 높이를 조절하고 호를 그리며 밀어냅니다.'],
     'tips': ['좌우 독립 암으로 비대칭을 교정합니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)',
     'isPopular': True
   },
   {
     'id': 'hammer-iso-incline-press',
-    'name': '해머스트렝스 플레이트 아이소 인클라인 프레스',
-    'nameEn': 'Hammer Strength Iso-Lateral Incline Press',
+    'name': '플레이트 아이소 인클라인 프레스',
+    'nameEn': 'Iso-Lateral Incline Press',
     'category': 'chest',
     'categories': ['chest'],
     'equipment': 'machine',
@@ -166,13 +165,12 @@ chest = [
     'description': '독보적인 인클라인 수렴 궤적으로 쇄골 윗가슴을 저격하는 명기입니다.',
     'instructions': ['윗가슴 방향 사선 위로 자연스럽게 밀어 올립니다.'],
     'tips': ['등받이에 등을 단단히 밀착하세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)',
     'isPopular': True
   },
   {
     'id': 'hammer-iso-decline-press',
-    'name': '해머스트렝스 플레이트 아이소 디클라인 프레스',
-    'nameEn': 'Hammer Strength Iso-Lateral Decline Press',
+    'name': '플레이트 아이소 디클라인 프레스',
+    'nameEn': 'Iso-Lateral Decline Press',
     'category': 'chest',
     'categories': ['chest'],
     'equipment': 'machine',
@@ -183,12 +181,11 @@ chest = [
     'description': '아랫가슴 라인을 완벽하게 고립시켜주는 플레이트로디드 머신입니다.',
     'instructions': ['팔꿈치를 가슴 아래 방향으로 호를 그리며 수축합니다.'],
     'tips': ['어깨 부담이 적어 고중량 훈련에 좋습니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-iso-wide-chest',
-    'name': '해머스트렝스 플레이트 와이드 체스트 프레스',
-    'nameEn': 'Hammer Strength Iso-Lateral Wide Chest',
+    'name': '플레이트 와이드 체스트 프레스',
+    'nameEn': 'Iso-Lateral Wide Chest',
     'category': 'chest',
     'categories': ['chest'],
     'equipment': 'machine',
@@ -199,12 +196,11 @@ chest = [
     'description': '넓은 그립 출발 지점에서 가슴 안쪽까지 깊게 모아주는 광폭 궤적 프레스입니다.',
     'instructions': ['가슴을 활짝 열고 팔꿈치가 안쪽으로 모이도록 강하게 수축합니다.'],
     'tips': ['수축 정점에서 1초간 쥐어짜세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-super-incline-press',
-    'name': '해머스트렝스 플레이트 슈퍼 인클라인 프레스',
-    'nameEn': 'Hammer Strength Super Incline Press',
+    'name': '플레이트 슈퍼 인클라인 프레스',
+    'nameEn': 'Super Incline Press',
     'category': 'chest',
     'categories': ['chest', 'shoulders'],
     'equipment': 'machine',
@@ -215,12 +211,11 @@ chest = [
     'description': '최상부 쇄골두와 전면 삼각근 경계선을 완벽히 채워주는 급경사 프레스입니다.',
     'instructions': ['수직에 가깝게 위로 밀어올려 윗가슴 정점을 자극합니다.'],
     'tips': ['고중량보다는 수축 감각에 집중하세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-select-chest-press',
-    'name': '해머스트렝스 핀로드 실렉트 체스트 프레스',
-    'nameEn': 'Hammer Strength Select Chest Press (Pin)',
+    'name': '핀로드 실렉트 체스트 프레스',
+    'nameEn': 'Select Chest Press (Pin)',
     'category': 'chest',
     'categories': ['chest'],
     'equipment': 'machine',
@@ -231,12 +226,11 @@ chest = [
     'description': '핀 셀렉터 방식으로 빠르고 안전하게 무게를 조절하며 가슴을 훈련합니다.',
     'instructions': ['핀을 꽂고 부드럽게 밀어냅니다.'],
     'tips': ['드롭세트 진행에 최적입니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'cybex-chest-press',
-    'name': '싸이벡스 이글 체스트 프레스',
-    'nameEn': 'Cybex Eagle Chest Press',
+    'name': '이글 체스트 프레스',
+    'nameEn': 'Eagle Chest Press',
     'category:': 'chest',
     'category': 'chest',
     'categories': ['chest'],
@@ -248,12 +242,11 @@ chest = [
     'description': '인체 관절 회전축에 최적화된 부드러운 장력의 싸이벡스 대표 핀머신입니다.',
     'instructions': ['듀얼 축 핸들을 잡고 자연스러운 각도로 가슴을 모아줍니다.'],
     'tips': ['끝까지 유지되는 텐션을 느껴보세요.'],
-    'defaultBrand': 'Cybex (싸이벡스)'
   },
   {
     'id': 'panatta-super-incline',
-    'name': '파나타 슈퍼 인클라인 체스트 프레스',
-    'nameEn': 'Panatta Super Incline Chest Press',
+    'name': '슈퍼 인클라인 체스트 프레스',
+    'nameEn': 'Super Incline Chest Press',
     'category': 'chest',
     'categories': ['chest'],
     'equipment': 'machine',
@@ -264,7 +257,6 @@ chest = [
     'description': '이탈리아 명품 파나타의 극강 윗가슴 타겟 플레이트로디드 머신입니다.',
     'instructions': ['윗가슴 궤적을 따라 유려하게 밀어냅니다.'],
     'tips': ['네거티브 저항이 탁월합니다.'],
-    'defaultBrand': 'Panatta (파나타)'
   },
   {
     'id': 'pec-deck-fly',
@@ -512,8 +504,8 @@ back = [
   },
   {
     'id': 'hammer-iso-high-row',
-    'name': '해머스트렝스 플레이트 아이소 하이 로우',
-    'nameEn': 'Hammer Strength Iso-Lateral High Row',
+    'name': '플레이트 아이소 하이 로우',
+    'nameEn': 'Iso-Lateral High Row',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -524,13 +516,12 @@ back = [
     'description': '위에서 사선 아래로 당겨오는 황금 궤적으로 광배근 하부와 등 중앙을 털어주는 명기입니다.',
     'instructions': ['팔꿈치를 옆구리 뒤쪽으로 찍어 누르듯 사선 아래로 당깁니다.'],
     'tips': ['원암으로 진행하면 광배근 수축감을 극대화할 수 있습니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)',
     'isPopular': True
   },
   {
     'id': 'hammer-iso-front-pulldown',
-    'name': '해머스트렝스 플레이트 프론트 랫 풀다운',
-    'nameEn': 'Hammer Strength Iso-Lateral Front Lat Pulldown',
+    'name': '플레이트 프론트 랫 풀다운',
+    'nameEn': 'Iso-Lateral Front Lat Pulldown',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -541,13 +532,12 @@ back = [
     'description': '몸 앞쪽에서 호를 그리며 쇄골 쪽으로 당겨지는 최고의 수직 당기기 머신입니다.',
     'instructions': ['팔꿈치를 수직으로 내리며 광배근을 짭니다.'],
     'tips': ['견갑을 먼저 하강시킨 후 팔을 당기세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)',
     'isPopular': True
   },
   {
     'id': 'hammer-iso-low-row',
-    'name': '해머스트렝스 플레이트 아이소 로우 로우',
-    'nameEn': 'Hammer Strength Iso-Lateral Low Row',
+    'name': '플레이트 아이소 로우 로우',
+    'nameEn': 'Iso-Lateral Low Row',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -558,13 +548,12 @@ back = [
     'description': '아래에서 위로 당겨 올려 광배근 중하부와 능형근의 두께감을 극대화합니다.',
     'instructions': ['패드에 기대고 핸들을 잡아 팔꿈치를 골반 쪽으로 깊게 당깁니다.'],
     'tips': ['광배근이 걸리는 지점까지만 당기세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)',
     'isPopular': True
   },
   {
     'id': 'hammer-dy-row',
-    'name': '해머스트렝스 플레이트 D.Y. 로우 (도리안 예이츠)',
-    'nameEn': 'Hammer Strength Iso-Lateral D.Y. Row',
+    'name': '플레이트 D.Y. 로우 (도리안 예이츠)',
+    'nameEn': 'Iso-Lateral D.Y. Row',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -575,12 +564,11 @@ back = [
     'description': '도리안 예이츠의 광배근 철학이 담긴 언더그립 최적화 로우 머신입니다.',
     'instructions': ['역그립으로 잡고 팔꿈치를 골반 쪽으로 강하게 당깁니다.'],
     'tips': ['광배근 하부 부착점까지 꽉 차는 수축감을 제공합니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-iso-mid-row',
-    'name': '해머스트렝스 플레이트 아이소 미드 로우',
-    'nameEn': 'Hammer Strength Iso-Lateral Mid Row',
+    'name': '플레이트 아이소 미드 로우',
+    'nameEn': 'Iso-Lateral Mid Row',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -591,12 +579,11 @@ back = [
     'description': '수평으로 정직하게 당겨 승모근 중하부와 능형근의 완벽한 수축을 이끌어냅니다.',
     'instructions': ['가슴 패드를 대고 핸들을 몸쪽으로 수평 견인합니다.'],
     'tips': ['견갑골을 강하게 뒤로 모아주세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-iso-bench-row',
-    'name': '해머스트렝스 호리존탈 벤치 로우',
-    'nameEn': 'Hammer Strength Horizontal Bench Row',
+    'name': '호리존탈 벤치 로우',
+    'nameEn': 'Horizontal Bench Row',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -607,12 +594,11 @@ back = [
     'description': '플랫 벤치에 엎드린 상태로 진행하여 허리 부담을 없애고 등만 고립합니다.',
     'instructions': ['패드에 엎드려 핸들을 잡고 팔꿈치를 들어 올립니다.'],
     'tips': ['허리 디스크가 있는 분들에게 최고의 등 두께감 운동입니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-iso-super-lat',
-    'name': '해머스트렝스 플레이트 아이소 슈퍼 랫 풀다운',
-    'nameEn': 'Hammer Strength Iso-Lateral Super Lat Pulldown',
+    'name': '플레이트 아이소 슈퍼 랫 풀다운',
+    'nameEn': 'Iso-Lateral Super Lat Pulldown',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -623,12 +609,11 @@ back = [
     'description': '넓은 그립 출발 지점에서 수직 수렴하는 극강의 광배근 상부 머신입니다.',
     'instructions': ['팔꿈치를 넓게 벌리며 아래로 찍어 내립니다.'],
     'tips': ['광배근 외측 프레임 형성에 탁월합니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-underhand-pulldown',
-    'name': '해머스트렝스 언더핸드 풀다운',
-    'nameEn': 'Hammer Strength Plate-Loaded Underhand Pulldown',
+    'name': '언더핸드 풀다운',
+    'nameEn': 'Plate-Loaded Underhand Pulldown',
     'category': 'back',
     'categories': ['back', 'arms'],
     'equipment': 'machine',
@@ -639,12 +624,11 @@ back = [
     'description': '역그립으로 광배근 하부와 이두근을 동시에 공략합니다.',
     'instructions': ['손바닥이 몸을 보게 쥐고 가슴 하단으로 당깁니다.'],
     'tips': ['수축 시 가슴을 살짝 내밀어주세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-select-lat-pulldown',
-    'name': '해머스트렝스 핀로드 실렉트 랫 풀다운',
-    'nameEn': 'Hammer Strength Select Lat Pulldown (Pin)',
+    'name': '핀로드 실렉트 랫 풀다운',
+    'nameEn': 'Select Lat Pulldown (Pin)',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -655,12 +639,11 @@ back = [
     'description': '핀 셀렉터 방식으로 부드러운 도르래 저항을 통해 광배근 상부를 넓혀줍니다.',
     'instructions': ['와이드 바를 잡고 쇄골 쪽으로 당깁니다.'],
     'tips': ['상체를 과도하게 뒤로 눕히지 마세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-select-seated-row',
-    'name': '해머스트렝스 핀로드 실렉트 시티드 로우',
-    'nameEn': 'Hammer Strength Select Seated Row (Pin)',
+    'name': '핀로드 실렉트 시티드 로우',
+    'nameEn': 'Select Seated Row (Pin)',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -671,12 +654,11 @@ back = [
     'description': '다양한 핸들 각도와 핀 조절로 손쉽게 등 안쪽을 고립시키는 핀머신입니다.',
     'instructions': ['핸들을 가슴 쪽으로 당겨 견갑을 모읍니다.'],
     'tips': ['이완 시 광배근이 길게 늘어나는 것을 충분히 느끼세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-select-assist-chin',
-    'name': '해머스트렝스 핀로드 어시스트 풀업 머신',
-    'nameEn': 'Hammer Strength Select Assisted Chin',
+    'name': '핀로드 어시스트 풀업 머신',
+    'nameEn': 'Select Assisted Chin',
     'category': 'back',
     'categories': ['back', 'arms'],
     'equipment': 'machine',
@@ -687,12 +669,11 @@ back = [
     'description': '원하는 무게만큼 보조를 받아 완벽한 자세로 턱걸이를 수행합니다.',
     'instructions': ['패드에 무릎을 올리고 가슴을 바에 닿게 당깁니다.'],
     'tips': ['반동 없이 수행하세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-select-back-extension',
-    'name': '해머스트렝스 핀로드 백 익스텐션 머신',
-    'nameEn': 'Hammer Strength Select Back Extension',
+    'name': '핀로드 백 익스텐션 머신',
+    'nameEn': 'Select Back Extension',
     'category': 'back',
     'categories': ['back', 'legs'],
     'equipment': 'machine',
@@ -703,12 +684,11 @@ back = [
     'description': '앉아서 안전하게 척추기립근에 핀 부하를 걸어 요통을 예방하고 기둥을 세웁니다.',
     'instructions': ['패드를 등에 대고 뒤로 밀어 기립근을 수축합니다.'],
     'tips': ['복압을 팽팽하게 유지하세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-mts-high-row',
-    'name': '해머스트렝스 MTS 듀얼 핀 아이소 하이 로우',
-    'nameEn': 'Hammer Strength MTS Iso-Lateral High Row',
+    'name': 'MTS 듀얼 핀 아이소 하이 로우',
+    'nameEn': 'MTS Iso-Lateral High Row',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -719,12 +699,11 @@ back = [
     'description': '양쪽 핀 타워가 독립되어 플레이트 머신의 궤적과 핀머신의 편리함을 합쳤습니다.',
     'instructions': ['각 손을 독립적으로 아래 사선으로 당깁니다.'],
     'tips': ['MTS 특유의 초경량 관성 저항을 느껴보세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'hammer-mts-row',
-    'name': '해머스트렝스 MTS 듀얼 핀 아이소 로우',
-    'nameEn': 'Hammer Strength MTS Iso-Lateral Row',
+    'name': 'MTS 듀얼 핀 아이소 로우',
+    'nameEn': 'MTS Iso-Lateral Row',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -735,12 +714,11 @@ back = [
     'description': '독립 핀 스택으로 좌우 균형 있게 등 중앙부를 타격합니다.',
     'instructions': ['패드에 기대어 수평으로 당겨옵니다.'],
     'tips': ['좌우 한 팔씩 번갈아 원암 로우로도 최적입니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'cybex-eagle-seated-row',
-    'name': '싸이벡스 이글 시티드 로우',
-    'nameEn': 'Cybex Eagle Seated Row',
+    'name': '이글 시티드 로우',
+    'nameEn': 'Eagle Seated Row',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -751,12 +729,11 @@ back = [
     'description': '회전 핸들 축으로 손목 무리 없이 등 깊은 곳까지 텐션을 전달합니다.',
     'instructions': ['손잡이가 몸 안쪽으로 회전하며 당겨지도록 당깁니다.'],
     'tips': ['싸이벡스 특유의 쫀쫀한 텐션을 유지하세요.'],
-    'defaultBrand': 'Cybex (싸이벡스)'
   },
   {
     'id': 'panatta-super-lat-pulldown',
-    'name': '파나타 슈퍼 랫 풀다운',
-    'nameEn': 'Panatta Super Lat Pulldown Circular',
+    'name': '슈퍼 랫 풀다운',
+    'nameEn': 'Super Lat Pulldown Circular',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -767,12 +744,11 @@ back = [
     'description': '원형 궤적을 따라 광배근 결대로 접히는 명품 머신입니다.',
     'instructions': ['팔꿈치가 광배근 안쪽으로 빨려 들어가듯 당깁니다.'],
     'tips': ['이완 시 광배근이 극한으로 스트레칭됩니다.'],
-    'defaultBrand': 'Panatta (파나타)'
   },
   {
     'id': 'newtech-torque-lat-pulldown',
-    'name': '뉴텍 토크 와이드 랫 풀다운',
-    'nameEn': 'NewTech Torque Wide Lat Pulldown',
+    'name': '토크 와이드 랫 풀다운',
+    'nameEn': 'Torque Wide Lat Pulldown',
     'category': 'back',
     'categories': ['back'],
     'equipment': 'machine',
@@ -783,7 +759,6 @@ back = [
     'description': '한국인 체형에 최적화된 프레임 각도로 광배근 바깥쪽을 넓혀줍니다.',
     'instructions': ['가슴을 들고 쇄골 쪽으로 찍어 내립니다.'],
     'tips': ['양손을 독립적으로 움직여 밸런스를 맞추세요.'],
-    'defaultBrand': 'NewTech (뉴텍)'
   },
   {
     'id': 'lat-pulldown-wide',
@@ -1057,8 +1032,8 @@ legs = [
   },
   {
     'id': 'hammer-linear-hack-squat',
-    'name': '해머스트렝스 리니어 핵스쿼트',
-    'nameEn': 'Hammer Strength Linear Hack Squat',
+    'name': '리니어 핵스쿼트',
+    'nameEn': 'Linear Hack Squat',
     'category': 'legs',
     'categories': ['legs'],
     'equipment': 'machine',
@@ -1069,13 +1044,12 @@ legs = [
     'description': '등받이에 상체를 고정하고 대퇴사두근 외측광근을 찢어버리는 전설의 핵스쿼트입니다.',
     'instructions': ['어깨 패드를 대고 발을 발판 아래쪽에 두어 대퇴사두의 깊은 이완을 유도하며 앉습니다.'],
     'tips': ['발뒤꿈치가 뜨지 않도록 주의하세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)',
     'isPopular': True
   },
   {
     'id': 'hammer-v-squat',
-    'name': '해머스트렝스 V-스쿼트',
-    'nameEn': 'Hammer Strength V-Squat',
+    'name': 'V-스쿼트',
+    'nameEn': 'V-Squat',
     'category': 'legs',
     'categories': ['legs'],
     'equipment': 'machine',
@@ -1086,12 +1060,11 @@ legs = [
     'description': '원호 궤적을 그리며 둔근과 대퇴사두를 모두 폭발적으로 키웁니다.',
     'instructions': ['정면을 보고 앉거나 뒤돌아서 리버스 V스쿼트로도 훈련합니다.'],
     'tips': ['리버스로 진행 시 둔근에 자극이 집중됩니다.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'panatta-pendulum-squat',
-    'name': '파나타 펜듈럼 스쿼트',
-    'nameEn': 'Panatta Pendulum Squat',
+    'name': '펜듈럼 스쿼트',
+    'nameEn': 'Pendulum Squat',
     'category': 'legs',
     'categories': ['legs'],
     'equipment': 'machine',
@@ -1102,7 +1075,6 @@ legs = [
     'description': '추 원리로 앉을수록 저항이 최적화되어 대퇴사두 빗살무늬를 조각하는 끝판왕 머신입니다.',
     'instructions': ['발판에 발을 디디고 깊이 앉아 무릎을 앞으로 밀어내며 대퇴직근을 폭격합니다.'],
     'tips': ['허리 부담이 0에 수렴합니다.'],
-    'defaultBrand': 'Panatta (파나타)'
   },
   {
     'id': 'belt-squat-machine',
@@ -1137,8 +1109,8 @@ legs = [
   },
   {
     'id': 'hammer-plate-leg-extension',
-    'name': '해머스트렝스 플레이트 레그 익스텐션',
-    'nameEn': 'Hammer Strength Plate-Loaded Leg Extension',
+    'name': '플레이트 레그 익스텐션',
+    'nameEn': 'Plate-Loaded Leg Extension',
     'category': 'legs',
     'categories': ['legs'],
     'equipment': 'machine',
@@ -1149,7 +1121,6 @@ legs = [
     'description': '원판의 묵직한 중량감을 대퇴사두 끝까지 전달합니다.',
     'instructions': ['등받이에 등을 붙이고 핸들을 당기며 발을 차올립니다.'],
     'tips': ['엉덩이가 뜨지 않도록 고정하세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'seated-leg-curl',
@@ -1359,8 +1330,8 @@ sac = [
   },
   {
     'id': 'hammer-iso-shoulder-press',
-    'name': '해머스트렝스 플레이트 아이소 숄더 프레스',
-    'nameEn': 'Hammer Strength Iso-Lateral Shoulder Press',
+    'name': '플레이트 아이소 숄더 프레스',
+    'nameEn': 'Iso-Lateral Shoulder Press',
     'category': 'shoulders',
     'categories': ['shoulders'],
     'equipment': 'machine',
@@ -1371,13 +1342,12 @@ sac = [
     'description': '수렴하는 프레스 궤적으로 어깨 관절 부담 없이 대포알 전면 삼각근을 만듭니다.',
     'instructions': ['손잡이를 잡고 머리 위로 힘차게 밀어 올립니다.'],
     'tips': ['승모근을 하강 고정하세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)',
     'isPopular': True
   },
   {
     'id': 'hammer-select-shoulder-press',
-    'name': '해머스트렝스 핀로드 실렉트 숄더 프레스',
-    'nameEn': 'Hammer Strength Select Shoulder Press',
+    'name': '핀로드 실렉트 숄더 프레스',
+    'nameEn': 'Select Shoulder Press',
     'category': 'shoulders',
     'categories': ['shoulders'],
     'equipment': 'machine',
@@ -1388,7 +1358,6 @@ sac = [
     'description': '핀 셀렉터 방식으로 빠르고 안전하게 드롭세트와 텐션을 유지합니다.',
     'instructions': ['그립을 선택하여 부드럽게 위로 밀어냅니다.'],
     'tips': ['다양한 각도로 자극을 유도하세요.'],
-    'defaultBrand': 'Hammer Strength (해머 스트렝스)'
   },
   {
     'id': 'dumbbell-lateral-raise',
