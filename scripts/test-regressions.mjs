@@ -48,3 +48,19 @@ for (const [query, id] of [
  ['독립암 삼두', 'iso-lateral-triceps-machine'],
 ]) assert.ok(matchesExerciseSearch(db.find(e => e.id === id), query), query);
 console.log('PASS: new machine search and brand-neutral catalog');
+
+const growthBuild = await build({entryPoints:['src/utils/growthExercises.ts'],bundle:true,write:false,platform:'node',format:'esm'});
+const {buildGrowthExerciseOptions} = await import(`data:text/javascript;base64,${Buffer.from(growthBuild.outputFiles[0].text).toString('base64')}`);
+const fixtureCatalog = db.slice(0, 4);
+const session = (date, id, weight, completed = true) => ({date, exercises:[{exerciseId:id, sets:[{weight,reps:10,completed}]}]});
+const growthOptions = buildGrowthExerciseOptions(fixtureCatalog, [
+ session('2026-09-01',fixtureCatalog[1].id,50),
+ session('2026-09-09',fixtureCatalog[2].id,60),
+ session('2026-09-10',fixtureCatalog[0].id,80,false),
+ session('2026-09-10',fixtureCatalog[3].id,0),
+]);
+assert.equal(growthOptions[0].exercise.id,fixtureCatalog[2].id,'Most recent usable record comes first');
+assert.equal(growthOptions[1].exercise.id,fixtureCatalog[1].id);
+assert.equal(growthOptions.filter(o=>o.recordCount>0).length,2,'Incomplete and zero-weight sets must not claim growth data');
+assert.ok(buildGrowthExerciseOptions(fixtureCatalog,[]).every(o=>o.recordCount===0));
+console.log('PASS: growth picker prioritizes usable records, recency and empty history');

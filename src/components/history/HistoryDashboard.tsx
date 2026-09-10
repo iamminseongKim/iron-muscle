@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
-  Calendar, TrendingUp, Trophy, Sparkles, Clock, ChevronRight, BarChart2, Dumbbell 
+  Search, Calendar, TrendingUp, Sparkles
 } from 'lucide-react';
 import { WorkoutSession, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
@@ -8,7 +8,10 @@ import {
   calculateSessionVolume, calculateSessionReps, calculateAverageRPE, 
   calculateProgression, checkDeloadRecommendation 
 } from '../../utils/calculations';
-import { loadSavedSessions } from '../../utils/storage';
+import { GrowthExercisePicker } from './GrowthExercisePicker';
+import { buildGrowthExerciseOptions } from '../../utils/growthExercises';
+import { resolveExercise } from '../../utils/exerciseResolver';
+import { loadCustomExercises, loadSavedSessions } from '../../utils/storage';
 
 interface HistoryDashboardProps {
   weightUnit?: WeightUnit;
@@ -16,11 +19,21 @@ interface HistoryDashboardProps {
 
 export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit = 'kg' }) => {
   const [history] = useState<WorkoutSession[]>(() => loadSavedSessions());
-  const [selectedExerciseId, setSelectedExerciseId] = useState<string>('conventional-deadlift');
+  const [customExercises] = useState(() => loadCustomExercises());
+  const exerciseOptions = useMemo(() => {
+    const catalog = new Map(EXERCISES_DATABASE.map(ex => [ex.id, ex]));
+    customExercises.forEach(ex => catalog.set(ex.id, ex));
+    history.forEach(session => session.exercises.forEach(ex => {
+      if (!catalog.has(ex.exerciseId)) catalog.set(ex.exerciseId, resolveExercise(ex.exerciseId));
+    }));
+    return buildGrowthExerciseOptions([...catalog.values()], history);
+  }, [history, customExercises]);
+  const [selectedExerciseId, setSelectedExerciseId] = useState(() => exerciseOptions.find(option => option.recordCount > 0)?.exercise.id || '');
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const deloadAnalysis = checkDeloadRecommendation(history);
   const progression = calculateProgression(selectedExerciseId, history);
-  const targetExercise = EXERCISES_DATABASE.find((e) => e.id === selectedExerciseId);
+  const targetExercise = exerciseOptions.find(option => option.exercise.id === selectedExerciseId)?.exercise;
 
   const totalWorkouts = history.length;
   const cumulativeVolume = history.reduce((sum, s) => sum + calculateSessionVolume(s), 0);
@@ -102,22 +115,17 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
         </div>
 
         <div>
-          <select
-            value={selectedExerciseId}
-            onChange={(e) => setSelectedExerciseId(e.target.value)}
-            className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white font-bold rounded-2xl p-2.5 text-xs border border-transparent outline-none cursor-pointer"
-          >
-            {EXERCISES_DATABASE.map((ex) => (
-              <option key={ex.id} value={ex.id}>
-                {ex.name} ({ex.category})
-              </option>
-            ))}
-          </select>
+          <button type="button" aria-haspopup="dialog" onClick={() => setIsPickerOpen(true)}
+            className="w-full flex items-center gap-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white rounded-2xl p-3 text-sm text-left">
+            <Search size={18} className="shrink-0 text-[#007AFF]" />
+            <span className="flex-1 font-bold">{targetExercise?.name || '성장을 확인할 종목 검색'}</span>
+            <span className="text-xs text-[#007AFF] shrink-0">종목 변경</span>
+          </button>
         </div>
 
         <div className="bg-[#F9F9FB] dark:bg-[#252528] p-3.5 rounded-2xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{targetExercise?.name} 성장률</span>
+            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{targetExercise ? `${targetExercise.name} 성장률` : '종목별 성장 기록'}</span>
             <span className={`text-sm font-black ${
               progression.growthRate > 0 ? 'text-[#34C759]' : 'text-gray-400'
             }`}>
@@ -127,7 +135,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
 
           {progression.records.length === 0 ? (
             <div className="py-3 text-center text-xs text-gray-400">
-              해당 종목의 과거 데이터가 아직 없습니다.
+              {selectedExerciseId ? '해당 종목은 완료한 세트의 1RM 데이터가 아직 없습니다.' : '운동을 기록하면 데이터가 있는 종목을 먼저 보여드려요.'}
             </div>
           ) : (
             <div className="space-y-1.5 pt-1">
@@ -152,6 +160,8 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
         </div>
       </div>
 
+      {isPickerOpen && <GrowthExercisePicker options={exerciseOptions} selectedId={selectedExerciseId}
+        onClose={() => setIsPickerOpen(false)} onSelect={id => { setSelectedExerciseId(id); setIsPickerOpen(false); }} />}
       {/* 과거 운동 히스토리 목록 */}
       <div className="space-y-2.5">
         <h3 className="text-sm font-extrabold text-[#1D1D1F] dark:text-white px-1 flex items-center gap-1.5">
