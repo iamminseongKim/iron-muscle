@@ -32,6 +32,7 @@ ios/App/App.xcworkspace/xcuserdata/
 
 # Runtime artwork must ship with the web/native app.
 !public/anatomy/*.png
+!public/screenshots/*.png
 
 # Never commit signing keys or personal recovery exports.
 *.jks
