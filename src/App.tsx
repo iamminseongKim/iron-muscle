@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useKeyboardViewport } from './hooks/useKeyboardViewport';
 import { Header } from './components/common/Header';
 import { TabNavigation } from './components/common/TabNavigation';
+import { ExerciseExplorer } from './components/explore/ExerciseExplorer';
 import { WorkoutLogger } from './components/workout/WorkoutLogger';
 import { WorkoutHistoryView } from './components/history/WorkoutHistoryView';
 import { HistoryDashboard } from './components/history/HistoryDashboard';
@@ -9,7 +10,7 @@ import { loadActiveSession, saveActiveSession } from './utils/storage';
 import { WeightUnit } from './types/workout';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics'>('workout');
+  const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics' | 'explore'>('workout');
 
   // 무게 단위 상태 (기본값 kg, 영구 저장)
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(() => {
@@ -135,6 +136,7 @@ export const App: React.FC = () => {
             isDark={isDark}
           />
         )}
+        {activeTab === 'explore' && <ExerciseExplorer isDark={isDark} />}
         {activeTab === 'history' && (
           <WorkoutHistoryView weightUnit={weightUnit} />
         )}

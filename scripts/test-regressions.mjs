@@ -35,3 +35,16 @@ const atlasBytes = readFileSync(atlasPath);
 assert.equal(atlasBytes.subarray(1,4).toString(),'PNG');
 assert.equal(spawnSync('git',['check-ignore','--no-index','-q',atlasPath]).status,1,'Runtime atlas must not be ignored by Git');
 console.log('PASS: runtime atlas exists and is not excluded from Git');
+
+assert.equal(db.length, 903);
+assert.equal(db.filter(e => e.equipment === 'machine').length, 95);
+assert.ok(db.every(e => !e.defaultBrand), 'Built-in exercises must not assign a brand');
+for (const [query, id] of [
+ ['수직레그프레스', 'vertical-leg-press-machine'],
+ ['몸통 회전', 'torso-rotation-machine'],
+ ['ㄱㄹㅌㅋㅂ', 'glute-kickback-machine'],
+ ['허리머신', 'seated-back-extension-machine'],
+ ['독립암 풀다운', 'iso-lateral-pulldown-machine'],
+ ['독립암 삼두', 'iso-lateral-triceps-machine'],
+]) assert.ok(matchesExerciseSearch(db.find(e => e.id === id), query), query);
+console.log('PASS: new machine search and brand-neutral catalog');

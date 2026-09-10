@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { 
   Search, Sparkles, ChevronRight, RotateCcw, BookOpen 
 } from 'lucide-react';
 import { Exercise, MuscleTarget, Category, LoadType, LOAD_TYPE_LABELS, MOVEMENT_PLANE_LABELS } from '../../types/workout';
+import { matchesExerciseSearch } from '../../utils/exerciseSearch';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
@@ -13,6 +14,8 @@ interface ExerciseExplorerProps {
   isDark?: boolean;
 }
 
+const EQUIPMENT_LABELS = { machine: '머신', barbell: '바벨', dumbbell: '덤벨', cable: '케이블', bodyweight: '맨몸', other: '기타' };
+
 export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForWorkout, isDark = false }) => {
   const [selectedExercise, setSelectedExercise] = useState<Exercise>(EXERCISES_DATABASE[0]);
   const [viewMode, setViewMode] = useState<'duo' | '3d'>('duo');
@@ -22,12 +25,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
   const [activeMuscleFilter, setActiveMuscleFilter] = useState<MuscleTarget | null>(null);
 
   const filteredExercises = EXERCISES_DATABASE.filter((ex) => {
-    const query = searchQuery.trim().toLowerCase();
-    const matchSearch =
-      query === '' ||
-      ex.name.toLowerCase().includes(query) ||
-      ex.nameEn.toLowerCase().includes(query) ||
-      (ex.defaultBrand && ex.defaultBrand.toLowerCase().includes(query));
+    const matchSearch = matchesExerciseSearch(ex, searchQuery);
 
     // 다중 부위(categories) 완벽 대응: 하체 선택 시에도 데드리프트 노출, 등 선택 시에도 노출!
     const matchCat =
@@ -44,6 +42,9 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
 
     return matchSearch && matchCat && matchLoad && matchMuscle;
   });
+
+  const [visibleCount, setVisibleCount] = useState(50);
+  useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedLoadType, activeMuscleFilter]);
 
   // useCallback으로 참조를 고정: 검색어/필터 변경 등 무관한 리렌더 때마다
   // HumanMuscle3DViewer의 Three.js 씬이 통째로 재생성(카메라 리셋)되는 것을 방지
@@ -144,7 +145,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-black text-[#1D1D1F] dark:text-white">{selectedExercise.name}</h3>
                 <span className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 text-[10px] font-bold">
-                  {selectedExercise.equipment === 'machine' ? '머신' : selectedExercise.equipment === 'barbell' ? '바벨' : '덤벨/맨몸'}
+                  {EQUIPMENT_LABELS[selectedExercise.equipment]}
                 </span>
                 {selectedExercise.defaultBrand && (
                   <span className="px-2 py-0.5 rounded-lg bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-bold">
@@ -218,7 +219,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
       <div className="space-y-2 pt-1">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-gray-500 dark:text-gray-400">운동 종목 ({filteredExercises.length})</span>
-          {(searchQuery || selectedCategory !== 'all' || activeMuscleFilter) && (
+          {(searchQuery || selectedCategory !== 'all' || selectedLoadType !== 'all' || activeMuscleFilter) && (
             <button onClick={clearFilters} className="text-xs text-[#007AFF] hover:underline">
               필터 초기화
             </button>
@@ -231,14 +232,15 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="운동 검색 (예: 벤치, 스쿼트, 랫풀, 로우...)"
+            aria-label="운동 검색"
+            placeholder="이름·별칭·초성 검색 (예: 사레레, ㅂㅊ)"
             className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-4 py-2.5 border border-black/5 dark:border-white/10 outline-none focus:border-[#007AFF] shadow-xs transition"
           />
         </div>
 
         {/* 카테고리 필터 */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
-          {(['all', 'chest', 'back', 'legs', 'shoulders', 'arms', 'core'] as const).map((cat) => (
+          {(['all', 'chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'fullbody'] as const).map((cat) => (
             <button
               key={cat}
               type="button"
@@ -249,7 +251,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                   : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white border border-black/5 dark:border-white/5'
               }`}
             >
-              {cat === 'all' ? '전체' : cat === 'chest' ? '가슴' : cat === 'back' ? '등' : cat === 'legs' ? '하체' : cat === 'shoulders' ? '어깨' : cat === 'arms' ? '팔' : '복근'}
+              {cat === 'all' ? '전체' : cat === 'chest' ? '가슴' : cat === 'back' ? '등' : cat === 'legs' ? '하체' : cat === 'shoulders' ? '어깨' : cat === 'arms' ? '팔' : cat === 'core' ? '복근' : '전신'}
             </button>
           ))}
         </div>
@@ -257,7 +259,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
         {/* 장비 부하 방식 필터 (원판머신, 핀머신, 바벨, 덤벨, 케이블 등) */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]">
           <span className="text-gray-400 font-semibold shrink-0">장비:</span>
-          {(['all', 'plate-loaded', 'pin-loaded', 'barbell', 'dumbbell', 'cable', 'bodyweight'] as const).map((load) => (
+          {(['all', 'plate-loaded', 'pin-loaded', 'barbell', 'dumbbell', 'cable', 'bodyweight', 'other'] as const).map((load) => (
             <button
               key={load}
               type="button"
@@ -268,15 +270,26 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                   : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5'
               }`}
             >
-              {load === 'all' ? '전체' : load === 'plate-loaded' ? '플레이트(원판)' : load === 'pin-loaded' ? '핀머신' : load === 'barbell' ? '바벨' : load === 'dumbbell' ? '덤벨' : load === 'cable' ? '케이블' : '맨몸'}
+              {load === 'all' ? '전체' : load === 'plate-loaded' ? '플레이트(원판)' : load === 'pin-loaded' ? '핀머신' : load === 'barbell' ? '바벨' : load === 'dumbbell' ? '덤벨' : load === 'cable' ? '케이블' : load === 'bodyweight' ? '맨몸' : '기타'}
             </button>
           ))}
         </div>
       </div>
 
+      {activeMuscleFilter && (
+        <button type="button" onClick={() => setActiveMuscleFilter(null)} className="text-xs text-[#007AFF]">
+          {MUSCLE_INFO_MAP[activeMuscleFilter]?.nameKo} 필터 해제 ×
+        </button>
+      )}
+      {filteredExercises.length === 0 && (
+        <div className="p-6 text-center space-y-3 text-sm text-gray-500" role="status">
+          <p>조건에 맞는 운동이 없어요. 검색어를 줄이거나 필터를 초기화해 보세요.</p>
+          <button type="button" onClick={clearFilters} className="text-[#007AFF] font-bold">검색·필터 초기화</button>
+        </div>
+      )}
       {/* 리스트 */}
       <div className="space-y-2">
-        {filteredExercises.map((ex) => {
+        {filteredExercises.slice(0, visibleCount).map((ex) => {
           const isCurrent = selectedExercise?.id === ex.id;
           return (
             <button
@@ -298,7 +311,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                     {ex.name}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[10px] text-gray-500 dark:text-gray-400 font-bold">
-                    {ex.equipment === 'machine' ? '머신' : ex.equipment === 'barbell' ? '바벨' : '덤벨/맨몸'}
+                    {EQUIPMENT_LABELS[ex.equipment]}
                   </span>
                   {ex.defaultBrand && (
                     <span className="text-[10px] text-[#FF9500] font-semibold">
@@ -324,6 +337,11 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
             </button>
           );
         })}
+        {filteredExercises.length > visibleCount && (
+          <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full py-3 rounded-2xl bg-white dark:bg-[#1C1C1E] text-[#007AFF] text-sm font-bold">
+            더 보기 ({visibleCount} / {filteredExercises.length})
+          </button>
+        )}
       </div>
     </div>
   );

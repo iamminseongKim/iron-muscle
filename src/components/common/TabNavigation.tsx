@@ -1,14 +1,15 @@
 import React from 'react';
-import { Dumbbell, Calendar, BarChart2 } from 'lucide-react';
+import { Dumbbell, Calendar, BarChart2, Search } from 'lucide-react';
 
 interface TabNavigationProps {
-  activeTab: 'workout' | 'history' | 'analytics';
-  onTabChange: (tab: 'workout' | 'history' | 'analytics') => void;
+  activeTab: 'workout' | 'history' | 'analytics' | 'explore';
+  onTabChange: (tab: 'workout' | 'history' | 'analytics' | 'explore') => void;
 }
 
 export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'workout', label: '운동 기록', icon: Dumbbell },
+    { id: 'explore', label: '운동 탐색', icon: Search },
     { id: 'history', label: '기록 조회', icon: Calendar },
     { id: 'analytics', label: '통계 & 성장', icon: BarChart2 },
   ] as const;

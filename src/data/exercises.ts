@@ -33087,23 +33087,23 @@ export const EXERCISES_DATABASE: Exercise[] = [
   },
   {
     "id": "Torso_Rotation",
-    "name": "토르소 로테이션 (몸통 회전 머신)",
+    "name": "볼 몸통 회전",
     "nameEn": "Torso Rotation",
-    "category": "fullbody",
+    "category": "core",
     "categories": [
-      "fullbody"
+      "core"
     ],
     "equipment": "other",
     "loadType": "other",
-    "movementPlane": "arm-isolation",
+    "movementPlane": "core",
     "primaryMuscles": [
-      "abs"
+      "obliques"
     ],
     "secondaryMuscles": [],
-    "description": "토르소 로테이션 (몸통 회전 머신)은(는) 목표 부위의 근비대와 스트렝스 향상을 이끌어내는 전문 웨이트 트레이닝 운동입니다.",
+    "description": "공을 양손으로 들고 서서 몸통을 좌우로 회전하는 운동입니다.",
     "instructions": [
-      "Stand upright holding an exercise ball with both hands. Extend your arms so the ball is straight out in front of you. This will be your starting position.",
-      "Rotate your torso to one side, keeping your eyes on the ball as you move. Now, rotate back to the opposite direction. Repeat for 10-20 repetitions."
+      "서서 공을 양손으로 잡고 몸 앞쪽으로 팔을 뻗습니다.",
+      "공을 바라보며 몸통을 한쪽으로 천천히 돌린 뒤 반대쪽도 반복합니다."
     ],
     "tips": [
       "동작 내내 척추 중립과 복압을 단단히 유지하세요.",
@@ -33116,7 +33116,7 @@ export const EXERCISES_DATABASE: Exercise[] = [
     "level": "beginner",
     "isPopular": false,
     "aliases": [
-      "토르소로테이션몸통회전머신",
+      "볼몸통회전",
       "TorsoRotation"
     ]
   },

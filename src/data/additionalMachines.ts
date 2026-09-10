@@ -304,9 +304,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     "aliases": [
       "스탠딩어브덕터",
       "스탠딩아웃타이",
-      "파나타스탠딩어브덕션"
+      "파나타스탠딩어브덕션",
+      "Panatta",
+      "파나타"
     ],
-    "defaultBrand": "Panatta (파나타)",
     "description": "서서 양다리를 바깥쪽으로 벌리는 운동입니다.",
     "instructions": [
       "손잡이를 잡고 발판과 다리 패드에 몸을 맞춥니다.",
@@ -338,9 +339,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     "aliases": [
       "수평레그프레스",
       "시티드레그프레스",
-      "파나타레그프레스"
+      "파나타레그프레스",
+      "Panatta",
+      "파나타"
     ],
-    "defaultBrand": "Panatta (파나타)",
     "description": "앉은 자세에서 수평 방향으로 발판을 미는 운동입니다.",
     "instructions": [
       "좌석을 조절해 등을 지지하고 발판에 양발을 놓습니다.",
@@ -371,9 +373,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     "aliases": [
       "서큘러랫풀다운",
       "써큘러랫풀다운",
-      "파나타랫풀다운"
+      "파나타랫풀다운",
+      "Panatta",
+      "파나타"
     ],
-    "defaultBrand": "Panatta (파나타)",
     "description": "원호 궤적을 따라 양팔을 당기는 독립 레버 풀다운입니다.",
     "instructions": [
       "좌석과 허벅지 패드를 맞추고 위쪽 손잡이를 잡습니다.",
@@ -406,9 +409,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     "aliases": [
       "익스트림로우",
       "프라임로우",
-      "프라임익스트림로우"
+      "프라임익스트림로우",
+      "Prime",
+      "프라임"
     ],
-    "defaultBrand": "Prime (프라임)",
     "description": "좌석과 가슴 패드 위치를 조절하는 가슴 지지 로우입니다.",
     "instructions": [
       "가슴 패드와 좌석 높이를 맞추고 손잡이를 잡습니다.",
@@ -439,9 +443,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     "aliases": [
       "멀티힙",
       "멀티힙익스텐션",
-      "머신힙익스텐션"
+      "머신힙익스텐션",
+      "Prime",
+      "프라임"
     ],
-    "defaultBrand": "Prime (프라임)",
     "description": "멀티 힙 머신의 롤러를 다리 뒤로 밀며 고관절을 펴는 운동입니다.",
     "instructions": [
       "기구의 회전축과 고관절 높이를 맞추고 허벅지 뒤에 롤러를 댑니다.",
@@ -472,9 +477,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     ],
     "aliases": [
       "스탠딩체스트프레스",
-      "스탠딩가슴프레스"
+      "스탠딩가슴프레스",
+      "Gymleco",
+      "짐레코"
     ],
-    "defaultBrand": "Gymleco (짐레코)",
     "description": "서서 가슴 높이의 손잡이를 앞으로 미는 프레스입니다.",
     "instructions": [
       "기구의 지지대에 몸을 맞추고 손잡이를 가슴 높이에서 잡습니다.",
@@ -505,9 +511,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     ],
     "aliases": [
       "인클라인플라이머신",
-      "인클라인펙덱"
+      "인클라인펙덱",
+      "Gymleco",
+      "짐레코"
     ],
-    "defaultBrand": "Gymleco (짐레코)",
     "description": "경사진 지지대에서 양팔을 모으는 플라이입니다.",
     "instructions": [
       "등을 지지대에 대고 손잡이와 좌석 위치를 맞춥니다.",
@@ -538,9 +545,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     ],
     "aliases": [
       "머신업라이트로우",
-      "업라이트로우머신"
+      "업라이트로우머신",
+      "Gymleco",
+      "짐레코"
     ],
-    "defaultBrand": "Gymleco (짐레코)",
     "description": "독립 레버 손잡이를 위로 당기는 어깨 운동입니다.",
     "instructions": [
       "발을 안정적으로 두고 양손으로 손잡이를 잡습니다.",
@@ -569,9 +577,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     "aliases": [
       "동키카프머신",
       "덩키카프머신",
-      "동키레이즈"
+      "동키레이즈",
+      "Gymleco",
+      "짐레코"
     ],
-    "defaultBrand": "Gymleco (짐레코)",
     "description": "상체를 지지하고 골반 패드의 저항을 받으며 뒤꿈치를 올립니다.",
     "instructions": [
       "발 앞부분을 발판에 대고 상체와 골반을 기구 패드에 맞춥니다.",
@@ -602,9 +611,10 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     "aliases": [
       "핀머신사레레",
       "프라임사레레",
-      "시티드사이드레터럴레이즈"
+      "시티드사이드레터럴레이즈",
+      "Prime",
+      "프라임"
     ],
-    "defaultBrand": "Prime (프라임)",
     "description": "핀으로 저항을 선택하고 앉아서 팔을 옆으로 드는 운동입니다.",
     "instructions": [
       "좌석을 조절해 기구의 회전축에 어깨 높이를 맞춥니다.",
@@ -613,6 +623,193 @@ export const ADDITIONAL_MACHINES: Exercise[] = [
     "tips": [
       "기구의 사용 안내에 따라 시작 위치와 저항을 조절하세요.",
       "반동 없이 통증 없는 범위에서 수행하세요."
+    ],
+    "images": []
+  },
+  {
+    "id": "vertical-leg-press-machine",
+    "name": "수직 레그 프레스 머신",
+    "nameEn": "Vertical Leg Press",
+    "category": "legs",
+    "categories": [
+      "legs"
+    ],
+    "equipment": "machine",
+    "loadType": "plate-loaded",
+    "primaryMuscles": [
+      "quads",
+      "glutes"
+    ],
+    "secondaryMuscles": [
+      "hamstrings"
+    ],
+    "aliases": [
+      "버티컬레그프레스",
+      "수직레그프레스"
+    ],
+    "description": "누운 자세에서 위쪽 발판을 밀어 올리는 레그 프레스입니다.",
+    "instructions": [
+      "등과 골반을 패드에 대고 발판에 양발을 놓은 뒤 안전 스토퍼를 맞춥니다.",
+      "안전장치를 해제하고 편안한 범위에서 무릎을 굽혔다가 발판을 밀어 올립니다."
+    ],
+    "tips": [
+      "기구 안내에 따라 시작 위치와 저항을 조절하세요.",
+      "반동 없이 편안한 범위에서 움직이고 기구 설정을 기록하세요."
+    ],
+    "images": []
+  },
+  {
+    "id": "torso-rotation-machine",
+    "name": "토르소 로테이션 머신",
+    "nameEn": "Torso Rotation",
+    "category": "core",
+    "categories": [
+      "core"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "primaryMuscles": [
+      "obliques"
+    ],
+    "secondaryMuscles": [
+      "abs"
+    ],
+    "aliases": [
+      "토소로테이션",
+      "몸통회전",
+      "로터리토르소"
+    ],
+    "description": "골반을 지지하고 몸통을 회전하는 코어 머신 운동입니다.",
+    "instructions": [
+      "좌석과 패드를 몸에 맞추고 회전 시작 위치를 설정합니다.",
+      "골반을 지지한 채 몸통을 천천히 돌렸다가 돌아오고 반대 방향도 수행합니다."
+    ],
+    "tips": [
+      "기구 안내에 따라 시작 위치와 저항을 조절하세요.",
+      "반동 없이 편안한 범위에서 움직이고 기구 설정을 기록하세요."
+    ],
+    "images": []
+  },
+  {
+    "id": "glute-kickback-machine",
+    "name": "글루트 킥백 머신",
+    "nameEn": "Glute Kickback Machine",
+    "category": "legs",
+    "categories": [
+      "legs"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "primaryMuscles": [
+      "glutes"
+    ],
+    "secondaryMuscles": [
+      "hamstrings"
+    ],
+    "aliases": [
+      "힙킥백머신",
+      "글루트머신",
+      "엉덩이킥백"
+    ],
+    "description": "몸통을 패드에 지지하고 한쪽 발로 저항을 뒤로 미는 운동입니다.",
+    "instructions": [
+      "몸통을 패드에 지지하고 운동하는 발을 발판에 올립니다.",
+      "골반을 고정하고 발판을 뒤로 밀었다가 천천히 돌아옵니다."
+    ],
+    "tips": [
+      "기구 안내에 따라 시작 위치와 저항을 조절하세요.",
+      "반동 없이 편안한 범위에서 움직이고 기구 설정을 기록하세요."
+    ],
+    "images": []
+  },
+  {
+    "id": "seated-back-extension-machine",
+    "name": "시티드 백 익스텐션 머신",
+    "nameEn": "Seated Back Extension Machine",
+    "category": "back",
+    "categories": [
+      "back"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "primaryMuscles": [
+      "erectors"
+    ],
+    "secondaryMuscles": [],
+    "aliases": [
+      "허리머신",
+      "백익스텐션머신",
+      "시티드백익스텐션"
+    ],
+    "description": "앉아서 등 패드에 저항을 주며 몸통을 펴는 운동입니다.",
+    "instructions": [
+      "좌석과 등 패드를 맞추고 발을 지지대에 고정합니다.",
+      "골반을 안정적으로 유지하며 몸통을 폈다가 천천히 시작 위치로 돌아옵니다."
+    ],
+    "tips": [
+      "기구 안내에 따라 시작 위치와 저항을 조절하세요.",
+      "반동 없이 편안한 범위에서 움직이고 기구 설정을 기록하세요."
+    ],
+    "images": []
+  },
+  {
+    "id": "iso-lateral-pulldown-machine",
+    "name": "독립 레버 랫 풀다운 머신",
+    "nameEn": "Iso Lateral Pulldown",
+    "category": "back",
+    "categories": [
+      "back"
+    ],
+    "equipment": "machine",
+    "loadType": "plate-loaded",
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps"
+    ],
+    "aliases": [
+      "아이소레터럴풀다운",
+      "독립암풀다운",
+      "레버풀다운"
+    ],
+    "description": "좌우 독립 레버를 위에서 아래로 당기는 풀다운입니다.",
+    "instructions": [
+      "좌석과 허벅지 패드를 맞추고 양쪽 손잡이를 잡습니다.",
+      "몸통을 고정하고 팔꿈치를 아래로 당겼다가 천천히 돌아옵니다."
+    ],
+    "tips": [
+      "기구 안내에 따라 시작 위치와 저항을 조절하세요.",
+      "반동 없이 편안한 범위에서 움직이고 기구 설정을 기록하세요."
+    ],
+    "images": []
+  },
+  {
+    "id": "iso-lateral-triceps-machine",
+    "name": "독립 레버 트라이셉스 머신",
+    "nameEn": "Iso Lateral Triceps",
+    "category": "arms",
+    "categories": [
+      "arms"
+    ],
+    "equipment": "machine",
+    "loadType": "plate-loaded",
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [],
+    "aliases": [
+      "아이소레터럴트라이셉스",
+      "독립암삼두머신"
+    ],
+    "description": "좌우 독립 레버의 저항을 팔꿈치를 펴며 밀어내는 삼두 운동입니다.",
+    "instructions": [
+      "좌석을 조절하고 팔을 지지대에 맞춰 양쪽 손잡이를 잡습니다.",
+      "상완을 고정하고 팔꿈치를 폈다가 천천히 굽힙니다."
+    ],
+    "tips": [
+      "기구 안내에 따라 시작 위치와 저항을 조절하세요.",
+      "반동 없이 편안한 범위에서 움직이고 기구 설정을 기록하세요."
     ],
     "images": []
   }
