@@ -19,8 +19,17 @@ public class WorkoutBackupPlugin extends Plugin {
         if (call.getString("data") == null) { call.reject("백업 내용이 없습니다."); return; }
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/json");
-        intent.putExtra(Intent.EXTRA_TITLE, call.getString("filename", "iron-muscle-backup.json"));
+        String filename = call.getString("filename", "iron-muscle-backup.json");
+        String mimeType = call.getString("mimeType");
+        if (mimeType == null || mimeType.isEmpty()) {
+            if (filename.endsWith(".md") || filename.endsWith(".markdown") || filename.endsWith(".txt")) {
+                mimeType = "text/*";
+            } else {
+                mimeType = "application/json";
+            }
+        }
+        intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_TITLE, filename);
         startActivityForResult(call, intent, "onFileCreated");
     }
 
