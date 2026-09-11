@@ -6,6 +6,7 @@ import {
 import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { SetRow } from './SetRow';
+import { QuickSetEditor } from './QuickSetEditor';
 import { getExerciseRecords, convertWeight } from '../../utils/calculations';
 import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
@@ -61,6 +62,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const [viewerMode, setViewerMode] = useState<'3d' | 'photos'>('3d');
   const [isCustomBrand, setIsCustomBrand] = useState(false);
   const [showMachineSetting, setShowMachineSetting] = useState(false);
+  const [showQuickSets, setShowQuickSets] = useState(false);
 
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
   const baseExercise: Exercise = resolveRecordedExercise(exerciseItem);
@@ -533,6 +535,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Set Header */}
+      <button type="button" onClick={() => setShowQuickSets(v => !v)} aria-expanded={showQuickSets} className="m-2 px-3 py-2 rounded-lg text-xs font-bold text-[#FF2D55] bg-[#FF2D55]/10 flex items-center gap-1"><Zap size={14} />세트 퀵 설정</button>
+      {showQuickSets && <QuickSetEditor key={currentUnit} item={exerciseItem} unit={currentUnit} onApply={onUpdate} onClose={() => setShowQuickSets(false)} />}
       <div className="px-[15px] py-1 flex items-center gap-1.5 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
         <span className="w-6 shrink-0 text-center">세트</span>
         <span className="w-12 shrink-0 text-center">이전</span>
