@@ -75,7 +75,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
         {/* 프로그레스 바 */}
         <div className="w-full bg-gray-200 dark:bg-[#2C2C2E] h-1.5 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-amber-500 to-[#FF2D55] transition-all duration-300"
+            className="h-full bg-gradient-to-r from-amber-500 to-[#0F766E] transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>

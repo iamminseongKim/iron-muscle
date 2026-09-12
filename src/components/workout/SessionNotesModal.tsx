@@ -43,7 +43,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
         {/* Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between bg-[#F9F9FB] dark:bg-[#161618]">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#FF2D55]/10 text-[#FF2D55]">
+            <div className="p-2 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
               <FileText size={18} />
             </div>
             <div>
@@ -74,13 +74,13 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                     onClick={() => setSelectedEmoji(item.emoji)}
                     className={`py-2 px-1 rounded-2xl flex flex-col items-center gap-1 transition ${
                       isSelected
-                        ? 'bg-[#FF2D55]/10 border-2 border-[#FF2D55] scale-105 shadow-sm'
+                        ? 'bg-[#0F766E]/10 border-2 border-[#0F766E] scale-105 shadow-sm'
                         : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-black/20'
                     }`}
                   >
                     <span className="text-2xl">{item.emoji}</span>
                     <span className={`text-[10px] text-center leading-tight font-medium ${
-                      isSelected ? 'text-[#FF2D55] font-bold' : 'text-gray-500 dark:text-gray-400'
+                      isSelected ? 'text-[#0F766E] font-bold' : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {item.label.split(' ')[0]}
                     </span>
@@ -124,7 +124,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="예: 오늘은 하체 스트렝스 훈련. 스모 데드리프트 140kg 성공해서 뿌듯함. 다음엔 무릎 보호대 챙겨올 것."
-              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#007AFF] transition resize-none leading-relaxed"
+              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition resize-none leading-relaxed"
             />
           </div>
         </div>
@@ -141,7 +141,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#FF2D55] to-[#FF375F] hover:opacity-95 transition shadow-sm"
+            className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#0F766E] to-[#115E59] hover:opacity-95 transition shadow-sm"
           >
             기록 저장
           </button>

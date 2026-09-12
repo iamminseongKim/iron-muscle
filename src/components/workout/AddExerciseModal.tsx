@@ -204,7 +204,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div>
             <h3 id="exercise-picker-title" className="font-extrabold text-base text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
-              <Dumbbell size={18} className="text-[#FF2D55]" />
+              <Dumbbell size={18} className="text-[#0F766E]" />
               운동 종목 선택
             </h3>
             <p className="text-xs text-gray-400">총 {allExercises.length}종의 전문 운동 라이브러리</p>
@@ -213,7 +213,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
             <button
               type="button"
               onClick={() => setIsCreateModalOpen(true)}
-              className="flex items-center gap-1 px-3 py-1.5 bg-[#FF2D55]/10 hover:bg-[#FF2D55]/20 text-[#FF2D55] text-xs font-black rounded-xl transition"
+              className="flex items-center gap-1 px-3 py-1.5 bg-[#0F766E]/10 hover:bg-[#0F766E]/20 text-[#0F766E] text-xs font-black rounded-xl transition"
             >
               <Plus size={14} strokeWidth={3} />
               <span>직접 등록</span>
@@ -239,7 +239,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="운동명·브랜드·초성 검색"
-              className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-16 py-2 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#007AFF] shadow-xs transition"
+              className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-16 py-2 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#0F766E] shadow-xs transition"
             />
             {searchQuery && (
               <button
@@ -293,7 +293,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                 onClick={() => setSelectedEquipment(eq.id)}
                 className={`px-2.5 py-1 rounded-lg font-semibold whitespace-nowrap transition border ${
                   selectedEquipment === eq.id
-                    ? 'bg-[#007AFF] text-white border-transparent shadow-xs'
+                    ? 'bg-[#0F766E] text-white border-transparent shadow-xs'
                     : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 border-black/5 dark:border-white/5'
                 }`}
               >
@@ -305,7 +305,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
         <div className="px-4 py-2 flex items-center justify-between text-xs border-b border-black/5 dark:border-white/10">
           <span role="status" className="text-gray-500">{cleanQuery ? '전체 부위 검색' : '검색 결과'} {filteredExercises.length}개</span>
-          <button type="button" className="min-h-[36px] text-[#007AFF] font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); }}>필터 초기화</button>
+          <button type="button" className="min-h-[36px] text-[#0F766E] font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); }}>필터 초기화</button>
         </div>
         {/* 운동 목록 */}
         <div className="p-3 overflow-y-auto flex-1 space-y-2">
@@ -315,7 +315,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#FF2D55] text-white text-xs font-black rounded-2xl shadow-md hover:opacity-90 active:scale-98 transition"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#0F766E] text-white text-xs font-black rounded-2xl shadow-md hover:opacity-90 active:scale-98 transition"
               >
                 <Plus size={16} strokeWidth={3} />
                 <span>'{cleanQuery || '새 종목'}' 직접 등록하기</span>
@@ -330,7 +330,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                   onSelect(ex, ex.equipment, ex.defaultBrand);
                   onClose();
                 }}
-                className="w-full text-left px-2.5 py-2 rounded-xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#FF2D55]/40 transition flex items-center gap-3 group"
+                className="w-full text-left px-2.5 py-2 rounded-xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#0F766E]/40 transition flex items-center gap-3 group"
               >
                 {/* 실물 운동 사진 썸네일 (CDN 지연 로딩) */}
                 {ex.images && ex.images.length > 0 ? (
@@ -351,7 +351,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
                 <div className="flex-1 min-w-0 pr-1">
                   <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                    <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white group-hover:text-[#FF2D55] transition truncate">
+                    <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white group-hover:text-[#0F766E] transition truncate">
                       {ex.name}
                     </span>
                     <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
@@ -362,7 +362,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                         ★커스텀
                       </span>
                     ) : ex.isPopular && (
-                      <span className="px-1.5 py-0.2 rounded bg-red-500/10 text-[#FF2D55] text-[10px] font-bold">
+                      <span className="px-1.5 py-0.2 rounded bg-red-500/10 text-[#0F766E] text-[10px] font-bold">
                         ★인기
                       </span>
                     )}
@@ -374,21 +374,21 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                   </p>
 
                   <div className="flex flex-wrap items-center gap-1 text-[11px]">
-                    <span className="text-[#FF2D55] font-semibold text-[11px]">
+                    <span className="text-[#0F766E] font-semibold text-[11px]">
                       {ex.primaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m).join(', ')}
                     </span>
 
                   </div>
                 </div>
 
-                <div className="p-2 rounded-xl bg-white dark:bg-[#1C1C1E] group-hover:bg-[#FF2D55]/10 text-gray-400 group-hover:text-[#FF2D55] transition shadow-2xs shrink-0">
+                <div className="p-2 rounded-xl bg-white dark:bg-[#1C1C1E] group-hover:bg-[#0F766E]/10 text-gray-400 group-hover:text-[#0F766E] transition shadow-2xs shrink-0">
                   <ChevronRight size={16} />
                 </div>
               </button>
             ))
           )}
           {filteredExercises.length > visibleCount && (
-            <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full p-3 rounded-xl bg-blue-500/10 text-[#007AFF] text-sm font-bold">
+            <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full p-3 rounded-xl bg-blue-500/10 text-[#0F766E] text-sm font-bold">
               더 보기 ({Math.min(visibleCount, filteredExercises.length)} / {filteredExercises.length})
             </button>
           )}

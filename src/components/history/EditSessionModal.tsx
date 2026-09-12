@@ -133,7 +133,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
         {/* 모달 헤더 */}
         <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-[#F9F9FB] dark:bg-[#161618]">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#007AFF]/15 text-[#007AFF] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-full bg-[#0F766E]/15 text-[#0F766E] flex items-center justify-center font-bold">
               ✏️
             </div>
             <div>
@@ -158,7 +158,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           <div className="grid grid-cols-2 gap-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
             <div>
               <label className="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1">
-                <Calendar size={12} className="text-[#007AFF]" />
+                <Calendar size={12} className="text-[#0F766E]" />
                 운동 일자
               </label>
               <input
@@ -227,7 +227,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                 type="checkbox"
                 checked={isDeload}
                 onChange={(e) => setIsDeload(e.target.checked)}
-                className="w-4 h-4 rounded text-[#007AFF] accent-[#007AFF]"
+                className="w-4 h-4 rounded text-[#0F766E] accent-[#0F766E]"
               />
               <span className="font-bold text-[11px] text-gray-600 dark:text-gray-300">
                 디로딩 (Deload) 주간 운동으로 표시
@@ -254,13 +254,13 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between">
               <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
-                <Dumbbell size={14} className="text-[#FF2D55]" />
+                <Dumbbell size={14} className="text-[#0F766E]" />
                 운동 종목 및 세트 ({exercises.length}종목)
               </span>
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(true)}
-                className="px-2.5 py-1 bg-[#007AFF] hover:bg-[#0062CC] text-white font-bold rounded-xl flex items-center gap-1 text-[11px] transition shadow-xs"
+                className="px-2.5 py-1 bg-[#0F766E] hover:bg-[#0062CC] text-white font-bold rounded-xl flex items-center gap-1 text-[11px] transition shadow-xs"
               >
                 <Plus size={13} />
                 <span>종목 추가</span>
@@ -284,7 +284,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                     {/* 종목 헤더 */}
                     <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-md bg-[#FF2D55]/15 text-[#FF2D55] font-black flex items-center justify-center text-[10px]">
+                        <span className="w-5 h-5 rounded-md bg-[#0F766E]/15 text-[#0F766E] font-black flex items-center justify-center text-[10px]">
                           {eIdx + 1}
                         </span>
                         <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
@@ -305,7 +305,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             newExs[eIdx] = { ...exItem, weightUnit: next };
                             setExercises(newExs);
                           }}
-                          className="px-2 py-0.5 rounded-lg bg-black/5 dark:bg-white/10 text-[10px] font-bold text-[#007AFF] hover:bg-[#007AFF]/10 transition"
+                          className="px-2 py-0.5 rounded-lg bg-black/5 dark:bg-white/10 text-[10px] font-bold text-[#0F766E] hover:bg-[#0F766E]/10 transition"
                           title="중량 단위 전환"
                         >
                           단위: {exItem.weightUnit || 'kg'}
@@ -352,7 +352,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                               if (e.key === 'Enter') e.currentTarget.blur();
                             }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'weight', parseFloat(e.target.value) || 0)}
-                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-[#007AFF]"
+                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-[#0F766E]"
                           />
 
                           <input
@@ -364,7 +364,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                               if (e.key === 'Enter') e.currentTarget.blur();
                             }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'reps', parseInt(e.target.value) || 0)}
-                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-[#007AFF]"
+                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-[#0F766E]"
                           />
 
                           <input
@@ -434,7 +434,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 rounded-xl bg-[#007AFF] hover:bg-[#0062CC] text-white font-extrabold flex items-center gap-1.5 transition shadow-sm"
+            className="px-5 py-2 rounded-xl bg-[#0F766E] hover:bg-[#0062CC] text-white font-extrabold flex items-center gap-1.5 transition shadow-sm"
           >
             <Save size={15} />
             <span>수정사항 저장</span>

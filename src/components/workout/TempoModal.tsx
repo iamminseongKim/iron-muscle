@@ -100,7 +100,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
                 >
                   -
                 </button>
-                <span className="text-sm font-black text-[#007AFF] font-mono whitespace-nowrap shrink-0 min-w-[28px] text-center">
+                <span className="text-sm font-black text-[#0F766E] font-mono whitespace-nowrap shrink-0 min-w-[28px] text-center">
                   {pause}초
                 </span>
                 <button
@@ -123,7 +123,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
                 >
                   -
                 </button>
-                <span className="text-sm font-black text-[#FF2D55] font-mono whitespace-nowrap shrink-0 min-w-[28px] text-center">
+                <span className="text-sm font-black text-[#0F766E] font-mono whitespace-nowrap shrink-0 min-w-[28px] text-center">
                   {concentric}초
                 </span>
                 <button

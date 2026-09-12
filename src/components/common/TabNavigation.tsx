@@ -28,12 +28,12 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
               onClick={() => onTabChange(tab.id)}
               className={`flex-1 py-1.5 flex flex-col items-center gap-1 transition-all ${
                 isActive
-                  ? 'text-[#FF2D55] scale-105'
+                  ? 'text-[#0F766E] scale-105'
                   : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
               <div className={`p-1.5 rounded-xl transition ${
-                isActive ? 'bg-[#FF2D55]/10' : ''
+                isActive ? 'bg-[#0F766E]/10' : ''
               }`}>
                 <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               </div>

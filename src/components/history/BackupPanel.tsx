@@ -63,7 +63,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         앱 삭제 전 파일로 백업하거나, 기존에 추출했던 마크다운 일지(.md) 및 백업 파일을 불러와 기록을 온전히 복원할 수 있습니다.
       </p>
       <div className="flex gap-2">
-        <button disabled={busy} onClick={backup} className="px-3 py-2 rounded-lg bg-[#FF2D55] text-white font-bold">
+        <button disabled={busy} onClick={backup} className="px-3 py-2 rounded-lg bg-[#0F766E] text-white font-bold">
           파일로 백업
         </button>
         <button onClick={() => input.current?.click()} className="px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/10 font-bold">
@@ -95,14 +95,14 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
             className="w-full h-28 rounded-lg border border-gray-200 dark:border-white/10 p-2 bg-transparent text-xs font-mono"
             placeholder="앱에서 추출했던 마크다운 일지(_YYYYMMDD.md) 내용이나 백업 JSON을 여기에 붙여넣으세요."
           />
-          <button className="px-3 py-1.5 rounded-lg bg-[#FF2D55] text-white font-bold" onClick={() => preview(text)}>
+          <button className="px-3 py-1.5 rounded-lg bg-[#0F766E] text-white font-bold" onClick={() => preview(text)}>
             일지 내용 확인
           </button>
         </div>
       </details>
       {pending && (
         <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-lg space-y-2 border border-gray-200 dark:border-white/10">
-          <p className="font-bold text-[#FF2D55]">
+          <p className="font-bold text-[#0F766E]">
             운동 {pending.sessions.length}회 확인됨 (총 {totalSets}세트 · 볼륨 {totalVolume.toLocaleString()}kg)
             {pending.customExercises.length > 0 ? ` · 사용자 운동 ${pending.customExercises.length}종` : ''}
             {pending.activeSession ? ' · 진행 중인 운동 포함' : ''}
@@ -112,7 +112,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           </p>
           <div className="flex gap-4 pt-1">
             <button
-              className="font-bold text-[#FF2D55] py-1.5 px-3 rounded-lg bg-[#FF2D55]/10"
+              className="font-bold text-[#0F766E] py-1.5 px-3 rounded-lg bg-[#0F766E]/10"
               onClick={() => {
                 try {
                   const result = restoreBackup(pending);

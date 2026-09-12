@@ -1,3 +1,4 @@
+import { BodyPartIcon } from '../common/BodyPartIcon';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Play, Pause, Plus, CheckCircle2, Clock, Dumbbell, Sparkles, X, Flame,
@@ -282,7 +283,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     if (!session) return;
     const groupId = 'group-' + Date.now();
     const groupName = groupType === 'superset' ? '슈퍼세트' : groupType === 'compound' ? '컴파운드세트' : '자이언트세트';
-    const groupColor = groupType === 'superset' ? '#007AFF' : '#FF9500';
+    const groupColor = groupType === 'superset' ? '#0F766E' : '#FF9500';
 
     const existingGroupIds = new Set(session.exercises.map((e) => e.groupId).filter(Boolean));
     const groupLetter = String.fromCharCode(65 + existingGroupIds.size);
@@ -429,7 +430,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         {/* 상단 날짜 및 상태 카드 */}
         <div className="pt-2 text-center space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-semibold text-gray-500 shadow-xs">
-            <Calendar size={13} className="text-[#FF2D55]" />
+            <Calendar size={13} className="text-[#0F766E]" />
             {todayDateFormatted}
           </div>
           <h2 className="text-2xl font-black tracking-tight text-[#1D1D1F] dark:text-white">
@@ -444,10 +445,10 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-black text-gray-400 tracking-wider uppercase flex items-center gap-1.5">
-              <Target size={14} className="text-[#FF2D55]" />
+              <Target size={14} className="text-[#0F766E]" />
               오늘의 목표 부위 (다중 선택)
             </span>
-            <span className="text-[11px] font-bold text-[#007AFF]">
+            <span className="text-[11px] font-bold text-[#0F766E]">
               {selectedPartIds.length}개 선택됨
             </span>
           </div>
@@ -462,11 +463,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   onClick={() => handleTogglePart(part.id)}
                   className={`p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1 text-center transition-all duration-150 ${
                     isSelected
-                      ? 'bg-gradient-to-b from-[#1D1D1F] to-[#2C2C2E] dark:from-white dark:to-gray-100 text-white dark:text-black shadow-md scale-102 ring-2 ring-[#FF2D55]/30'
+                      ? 'bg-gradient-to-b from-[#1D1D1F] to-[#2C2C2E] dark:from-white dark:to-gray-100 text-white dark:text-black shadow-md scale-102 ring-2 ring-[#0F766E]/30'
                       : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3A3A3C] border border-transparent'
                   }`}
                 >
-                  <span className="text-xl leading-none">{part.icon}</span>
+                  <BodyPartIcon part={part.id} />
                   <span className="text-xs font-black tracking-tight">{part.label}</span>
                 </button>
               );
@@ -496,7 +497,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               value={customTitle}
               onChange={(e) => setCustomTitle(e.target.value)}
               placeholder={recommendedTitle}
-              className="w-full bg-[#F2F2F7] dark:bg-[#252528] text-sm font-bold text-[#1D1D1F] dark:text-white px-3.5 py-2.5 rounded-xl border border-transparent focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] outline-none transition"
+              className="w-full bg-[#F2F2F7] dark:bg-[#252528] text-sm font-bold text-[#1D1D1F] dark:text-white px-3.5 py-2.5 rounded-xl border border-transparent focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E] outline-none transition"
             />
           </div>
 
@@ -513,7 +514,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   onClick={() => setIdleCondition(opt.emoji)}
                   className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
                     idleCondition === opt.emoji
-                      ? 'bg-[#FF2D55] text-white shadow-xs'
+                      ? 'bg-[#0F766E] text-white shadow-xs'
                       : 'bg-[#F2F2F7] dark:bg-[#252528] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#333336]'
                   }`}
                 >
@@ -538,7 +539,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               type="button"
               onClick={() => setIdleDeload(!idleDeload)}
               className={`w-12 h-7 flex items-center rounded-full p-1 transition-colors duration-200 ease-in-out ${
-                idleDeload ? 'bg-[#007AFF]' : 'bg-gray-300 dark:bg-gray-700'
+                idleDeload ? 'bg-[#0F766E]' : 'bg-gray-300 dark:bg-gray-700'
               }`}
             >
               <div
@@ -555,9 +556,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           <button
             type="button"
             onClick={handleStartWorkout}
-            className="w-full py-5 bg-gradient-to-r from-[#FF2D55] to-[#FF375F] hover:opacity-95 text-white rounded-2xl text-[17px] font-black flex items-center justify-center gap-2.5 shadow-lg shadow-red-500/30 transition active:scale-98"
+            className="w-full py-5 bg-gradient-to-r from-[#0F766E] to-[#115E59] hover:opacity-95 text-white rounded-2xl text-[17px] font-black flex items-center justify-center gap-2.5 shadow-lg shadow-teal-900/30 transition active:scale-98"
           >
-            <Flame size={22} className="fill-white" />
+            <Dumbbell size={22} />
             <span>새 운동 시작하기 ({recommendedTitle})</span>
             <ArrowRight size={20} />
           </button>
@@ -576,7 +577,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                 alert('체험용 샘플 운동 일지가 불러와졌습니다. [기록 조회] 탭에서 확인해 보세요!');
                 window.location.reload();
               }}
-              className="text-[#007AFF] hover:underline font-bold mt-1 inline-block"
+              className="text-[#0F766E] hover:underline font-bold mt-1 inline-block"
             >
               체험용 샘플 기록 불러오기
             </button>
@@ -662,7 +663,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       <div className="rounded-xl bg-white dark:bg-[#1C1C1E] overflow-hidden">
         <button type="button" aria-label="운동 통계 상세" aria-expanded={showSessionStats} onClick={() => setShowSessionStats(!showSessionStats)} className="w-full px-3 min-h-[40px] flex items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
           <span><strong className="text-[#1D1D1F] dark:text-white">{session.exercises.length}</strong> 종목</span>
-          <span><strong className="text-[#FF2D55]">{completedSetCount}/{sessionSets.length}</strong> 세트 완료</span>
+          <span><strong className="text-[#0F766E]">{completedSetCount}/{sessionSets.length}</strong> 세트 완료</span>
           <span className="flex items-center gap-1"><strong className="text-[#1D1D1F] dark:text-white">{totalVolume.toLocaleString()}</strong> kg <span aria-hidden="true">{showSessionStats ? '⌃' : '⌄'}</span></span>
         </button>
         {showSessionStats && <div className="px-3 py-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"><span>총 횟수 <strong>{totalReps}회</strong></span><span>평균 RPE <strong>{avgRpe || '-'}</strong></span></div>}
@@ -699,7 +700,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                 clearFocusAndSelection();
                 setIsAddModalOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#007AFF] text-white rounded-xl text-xs font-bold shadow-xs active:scale-95 transition"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] text-white rounded-xl text-xs font-bold shadow-xs active:scale-95 transition"
             >
               <Plus size={15} />
               첫 운동 종목 추가하기
@@ -734,7 +735,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="w-full min-h-[44px] text-sm font-bold text-[#FF2D55] hover:bg-[#FF2D55]/5 rounded-xl flex items-center justify-center gap-2 transition active:scale-98"
+          className="w-full min-h-[44px] text-sm font-bold text-[#0F766E] hover:bg-[#0F766E]/5 rounded-xl flex items-center justify-center gap-2 transition active:scale-98"
         >
           <Plus size={18} />
           운동 종목 추가하기
@@ -743,7 +744,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         <button
           type="button"
           onClick={handleCompleteWorkout}
-          className="w-full mt-3 py-3 bg-[#FF2D55] hover:opacity-95 text-white rounded-2xl text-sm font-black flex items-center justify-center gap-2 shadow-md shadow-red-500/20 transition active:scale-98"
+          className="w-full mt-3 py-3 bg-[#0F766E] hover:opacity-95 text-white rounded-2xl text-sm font-black flex items-center justify-center gap-2 shadow-md shadow-teal-900/20 transition active:scale-98"
         >
           <CheckCircle2 size={18} />
           오늘 운동 완료 & 기록 저장

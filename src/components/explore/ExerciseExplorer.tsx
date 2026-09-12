@@ -64,7 +64,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
         <div className="flex items-center justify-between px-1">
           <div>
             <h2 className="text-base font-extrabold text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
-              <Sparkles size={16} className="text-[#FF2D55]" />
+              <Sparkles size={16} className="text-[#0F766E]" />
               해부학 근육 시각화
             </h2>
             <p className="text-xs text-gray-400">
@@ -80,7 +80,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
             </span>
             <button
               onClick={() => setActiveMuscleFilter(null)}
-              className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-[#007AFF] text-[11px] font-bold flex items-center gap-1"
+              className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-[#0F766E] text-[11px] font-bold flex items-center gap-1"
             >
               <span>필터 해제</span>
               <RotateCcw size={10} />
@@ -122,7 +122,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               <button
                 type="button"
                 onClick={() => onSelectForWorkout(selectedExercise)}
-                className="px-3.5 py-1.5 bg-[#007AFF] text-white text-xs font-bold rounded-xl shadow-sm hover:opacity-90 transition active:scale-98"
+                className="px-3.5 py-1.5 bg-[#0F766E] text-white text-xs font-bold rounded-xl shadow-sm hover:opacity-90 transition active:scale-98"
               >
                 + 기록에 담기
               </button>
@@ -132,7 +132,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
           {/* 주동근 & 협응근 배지 */}
           <div className="space-y-1.5 text-xs">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="px-2 py-0.5 rounded-md bg-[#FF2D55]/10 text-[#FF2D55] font-bold text-[11px]">
+              <span className="px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] font-bold text-[11px]">
                 주동근 (Primary)
               </span>
               {selectedExercise.primaryMuscles.map((m) => (
@@ -182,7 +182,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-gray-500 dark:text-gray-400">운동 종목 ({filteredExercises.length})</span>
           {(searchQuery || selectedCategory !== 'all' || selectedLoadType !== 'all' || activeMuscleFilter) && (
-            <button onClick={clearFilters} className="text-xs text-[#007AFF] hover:underline">
+            <button onClick={clearFilters} className="text-xs text-[#0F766E] hover:underline">
               필터 초기화
             </button>
           )}
@@ -196,7 +196,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="운동 검색"
             placeholder="이름·별칭·초성 검색 (예: 사레레, ㅂㅊ)"
-            className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-4 py-2.5 border border-black/5 dark:border-white/10 outline-none focus:border-[#007AFF] shadow-xs transition"
+            className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-4 py-2.5 border border-black/5 dark:border-white/10 outline-none focus:border-[#0F766E] shadow-xs transition"
           />
         </div>
 
@@ -228,7 +228,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               onClick={() => setSelectedLoadType(load)}
               className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap transition-all ${
                 selectedLoadType === load
-                  ? 'bg-[#007AFF] text-white shadow-xs'
+                  ? 'bg-[#0F766E] text-white shadow-xs'
                   : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5'
               }`}
             >
@@ -239,14 +239,14 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
       </div>
 
       {activeMuscleFilter && (
-        <button type="button" onClick={() => setActiveMuscleFilter(null)} className="text-xs text-[#007AFF]">
+        <button type="button" onClick={() => setActiveMuscleFilter(null)} className="text-xs text-[#0F766E]">
           {MUSCLE_INFO_MAP[activeMuscleFilter]?.nameKo} 필터 해제 ×
         </button>
       )}
       {filteredExercises.length === 0 && (
         <div className="p-6 text-center space-y-3 text-sm text-gray-500" role="status">
           <p>조건에 맞는 운동이 없어요. 검색어를 줄이거나 필터를 초기화해 보세요.</p>
-          <button type="button" onClick={clearFilters} className="text-[#007AFF] font-bold">검색·필터 초기화</button>
+          <button type="button" onClick={clearFilters} className="text-[#0F766E] font-bold">검색·필터 초기화</button>
         </div>
       )}
       {/* 리스트 */}
@@ -263,13 +263,13 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               }}
               className={`w-full text-left p-3.5 rounded-3xl border transition-all flex items-center justify-between ${
                 isCurrent
-                  ? 'bg-white dark:bg-[#1C1C1E] border-[#FF2D55] shadow-sm'
+                  ? 'bg-white dark:bg-[#1C1C1E] border-[#0F766E] shadow-sm'
                   : 'bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] border-black/5 dark:border-white/5'
               }`}
             >
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`font-extrabold text-sm ${isCurrent ? 'text-[#FF2D55]' : 'text-[#1D1D1F] dark:text-white'}`}>
+                  <span className={`font-extrabold text-sm ${isCurrent ? 'text-[#0F766E]' : 'text-[#1D1D1F] dark:text-white'}`}>
                     {ex.name}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[10px] text-gray-500 dark:text-gray-400 font-bold">
@@ -282,7 +282,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                  <span className="text-[#FF2D55] font-semibold">
+                  <span className="text-[#0F766E] font-semibold">
                     {ex.primaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0]).join(', ')}
                   </span>
                   {ex.secondaryMuscles.length > 0 && (
@@ -300,7 +300,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
           );
         })}
         {filteredExercises.length > visibleCount && (
-          <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full py-3 rounded-2xl bg-white dark:bg-[#1C1C1E] text-[#007AFF] text-sm font-bold">
+          <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full py-3 rounded-2xl bg-white dark:bg-[#1C1C1E] text-[#0F766E] text-sm font-bold">
             더 보기 ({visibleCount} / {filteredExercises.length})
           </button>
         )}

@@ -37,7 +37,7 @@ export function QuickSetEditor({ item, unit, onApply, onClose }: {
     <section aria-label="세트 퀵 설정" className="m-2 p-3 rounded-xl bg-[#F2F2F7] dark:bg-[#151516] space-y-3">
       <div className="flex justify-between items-center"><h4 className="font-bold text-sm dark:text-white">세트 퀵 설정</h4><button type="button" onClick={onClose} className="text-xs p-2 text-gray-500">닫기</button></div>
       <div className="grid grid-cols-3 gap-1">
-        {([['same', '동일 반복'], ['top', '탑 + 백오프'], ['pyramid', '피라미드']] as const).map(([mode, label]) => <button type="button" key={mode} aria-pressed={plan.mode === mode} onClick={() => change({ mode })} className={`rounded-lg py-2 text-xs font-bold ${plan.mode === mode ? 'bg-[#FF2D55] text-white' : 'bg-white dark:bg-[#2C2C2E] text-gray-500'}`}>{label}</button>)}
+        {([['same', '동일 반복'], ['top', '탑 + 백오프'], ['pyramid', '피라미드']] as const).map(([mode, label]) => <button type="button" key={mode} aria-pressed={plan.mode === mode} onClick={() => change({ mode })} className={`rounded-lg py-2 text-xs font-bold ${plan.mode === mode ? 'bg-[#0F766E] text-white' : 'bg-white dark:bg-[#2C2C2E] text-gray-500'}`}>{label}</button>)}
       </div>
       <p className="text-xs text-gray-500">{plan.mode === 'same' ? '한 번 입력한 값을 여러 세트에 반복합니다.' : plan.mode === 'top' ? '첫 세트는 탑세트, 나머지는 백오프로 설정합니다.' : '첫 세트를 기준으로 무게와 횟수를 일정하게 바꿉니다. 감소는 음수로 입력하세요.'}</p>
       <div className="grid grid-cols-2 gap-3">
@@ -55,7 +55,7 @@ export function QuickSetEditor({ item, unit, onApply, onClose }: {
         {error ? <p role="alert" className="text-red-500">{error}</p> : <ol className="max-h-40 overflow-y-auto space-y-1">{preview.map((s, i) => <li key={i} className="text-gray-600 dark:text-gray-300">{i + 1}. {s.tags?.[0] || ''} {s.weight}{unit} × {s.reps}회 · RPE {s.rpe ?? '—'} · {s.tempo ? `${s.tempo.eccentric}-${s.tempo.pause}-${s.tempo.concentric}초` : '템포 —'}</li>)}</ol>}
       </div>
       <p className="text-xs text-gray-500">완료한 세트는 유지합니다. 미완료 세트부터 {Number.isFinite(plan.count) ? plan.count : '—'}개에 적용하며 부족하면 추가합니다.{pending > plan.count ? ` 남는 ${pending - plan.count}개 세트는 유지합니다.` : ''} RPE 미지정·템포 해제 시 대상 세트의 해당 값도 지워집니다.</p>
-      <button type="button" disabled={!!error} onClick={() => { onApply({ ...item, sets: applyQuickSets(item.sets, plan, item.executionMode === 'unilateral' ? 'left' : 'both') }); onClose(); }} className="w-full py-3 rounded-xl bg-[#FF2D55] text-white text-sm font-bold disabled:opacity-40">{Number.isFinite(plan.count) ? plan.count : '—'}세트 적용</button>
+      <button type="button" disabled={!!error} onClick={() => { onApply({ ...item, sets: applyQuickSets(item.sets, plan, item.executionMode === 'unilateral' ? 'left' : 'both') }); onClose(); }} className="w-full py-3 rounded-xl bg-[#0F766E] text-white text-sm font-bold disabled:opacity-40">{Number.isFinite(plan.count) ? plan.count : '—'}세트 적용</button>
     </section>
   );
 }

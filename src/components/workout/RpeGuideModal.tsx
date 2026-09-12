@@ -66,7 +66,7 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
         {/* Modal Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-xl bg-red-500/15 text-[#FF2D55]">
+            <div className="p-1.5 rounded-xl bg-red-500/15 text-[#0F766E]">
               <HelpCircle size={18} />
             </div>
             <div>
@@ -119,7 +119,7 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
         <div className="p-3.5 border-t border-black/5 dark:border-white/10 bg-[#F9F9FB] dark:bg-[#161618] text-center">
           <button
             onClick={onClose}
-            className="w-full py-3 bg-[#FF2D55] text-white font-black rounded-2xl text-xs shadow-md shadow-red-500/20 hover:opacity-95 active:scale-98 transition"
+            className="w-full py-3 bg-[#0F766E] text-white font-black rounded-2xl text-xs shadow-md shadow-teal-900/20 hover:opacity-95 active:scale-98 transition"
           >
             이해했습니다
           </button>

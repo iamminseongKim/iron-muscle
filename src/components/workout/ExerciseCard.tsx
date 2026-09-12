@@ -144,7 +144,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     <div className={`bg-white dark:bg-[#1C1C1E] rounded-2xl border shadow-sm overflow-hidden transition-all ${
       isGrouped
         ? exerciseItem.groupType === 'superset'
-          ? 'border-l-4 border-l-[#007AFF] border-black/5 dark:border-white/5'
+          ? 'border-l-4 border-l-[#0F766E] border-black/5 dark:border-white/5'
           : 'border-l-4 border-l-[#FF9500] border-black/5 dark:border-white/5'
         : 'border-black/5 dark:border-white/5'
     }`}>
@@ -152,8 +152,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       {isGrouped && (
         <div className={`px-4 py-1.5 flex items-center justify-between text-xs font-black text-white ${
           exerciseItem.groupType === 'superset'
-            ? 'bg-gradient-to-r from-[#007AFF] to-[#5856D6]'
-            : 'bg-gradient-to-r from-[#FF9500] to-[#FF2D55]'
+            ? 'bg-gradient-to-r from-[#0F766E] to-[#5856D6]'
+            : 'bg-gradient-to-r from-[#FF9500] to-[#0F766E]'
         }`}>
           <span className="flex items-center gap-1.5 tracking-tight">
             {exerciseItem.groupType === 'superset' ? <Zap size={13} /> : <Flame size={13} />}
@@ -190,7 +190,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               </span>
             )}
             {(!collapsed && (exerciseItem.equipmentType === 'machine' || baseExercise.equipment === 'machine') && (exerciseName.includes('스미스') || exerciseNameEn.toLowerCase().includes('smith'))) && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#007AFF]/10 text-[#007AFF] dark:bg-[#007AFF]/20 text-[10px] font-bold tracking-tight">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] dark:bg-[#0F766E]/20 text-[10px] font-bold tracking-tight">
                 💡 스미스머신: 봉 무게 제외 (원판 무게만 기록)
               </span>
             )}
@@ -216,12 +216,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             onClick={() => { if (collapsed) onToggleCollapsed?.(); setShow3DViewer(!show3DViewer); }}
             className={`min-w-[36px] min-h-[36px] justify-center px-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
               show3DViewer
-                ? 'bg-[#FF2D55]/15 text-[#FF2D55] ring-1 ring-[#FF2D55]/30'
+                ? 'bg-[#0F766E]/15 text-[#0F766E] ring-1 ring-[#0F766E]/30'
                 : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'
             }`}
             title="타겟 근육 근육 해부도 및 3D 회전 모델 보기"
           >
-            <Eye size={13} className={show3DViewer ? 'text-[#FF2D55]' : 'text-gray-400'} />
+            <Eye size={13} className={show3DViewer ? 'text-[#0F766E]' : 'text-gray-400'} />
             <span className="sr-only">근육 보기</span>
           </button>
 
@@ -288,7 +288,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               onClick={() => onUpdate({ ...exerciseItem, executionMode: 'unilateral' })}
               className={`px-2 py-0.5 rounded-lg transition ${
                 exerciseItem.executionMode === 'unilateral'
-                  ? 'bg-[#007AFF] text-white shadow-xs'
+                  ? 'bg-[#0F766E] text-white shadow-xs'
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
@@ -308,7 +308,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               }}
               className={`px-2 py-0.5 rounded-lg transition font-black ${
                 currentUnit === 'kg'
-                  ? 'bg-white dark:bg-[#1C1C1E] text-[#007AFF] shadow-xs'
+                  ? 'bg-white dark:bg-[#1C1C1E] text-[#0F766E] shadow-xs'
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
@@ -321,7 +321,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               }}
               className={`px-2 py-0.5 rounded-lg transition font-black ${
                 currentUnit === 'lbs'
-                  ? 'bg-[#007AFF] text-white shadow-xs'
+                  ? 'bg-[#0F766E] text-white shadow-xs'
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
@@ -407,7 +407,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <button
             type="button"
             onClick={() => setShowMachineSetting(!showMachineSetting)}
-            className="text-[11px] text-gray-400 hover:text-[#007AFF] underline ml-auto"
+            className="text-[11px] text-gray-400 hover:text-[#0F766E] underline ml-auto"
           >
             {exerciseItem.machineSetting ? `세팅: ${exerciseItem.machineSetting}` : '+ 세팅(의자높이 등)'}
           </button>
@@ -434,7 +434,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           {/* 통합 해부도와 운동 동작 사진 */}
           <div className="flex items-center justify-between flex-wrap gap-2 min-w-0">
             <div className="flex items-center gap-1.5">
-              <Sparkles size={13} className="text-[#FF2D55]" />
+              <Sparkles size={13} className="text-[#0F766E]" />
               <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
                 {exerciseName} 자극 부위
               </span>
@@ -501,7 +501,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   <span className="font-bold text-gray-700 dark:text-gray-300 block">📋 올바른 운동 순서</span>
                   {baseExercise.instructions.slice(0, 4).map((step, idx) => (
                     <p key={idx} className="text-gray-600 dark:text-gray-400 text-[11px] leading-relaxed flex items-start gap-1.5">
-                      <span className="w-4 h-4 rounded-full bg-red-500/15 text-[#FF2D55] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-4 h-4 rounded-full bg-red-500/15 text-[#0F766E] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                         {idx + 1}
                       </span>
                       <span>{step}</span>
@@ -515,9 +515,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           {/* 타겟 근육 한국어 안내 */}
           <div className="bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-md rounded-2xl p-2.5 border border-black/5 dark:border-white/5 text-xs space-y-1">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="w-2 h-2 rounded-full bg-[#FF2D55] shadow-xs shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-[#0F766E] shadow-xs shrink-0" />
               <span className="font-bold text-gray-700 dark:text-gray-300">주동근:</span>
-              <span className="text-[#FF2D55] font-semibold">
+              <span className="text-[#0F766E] font-semibold">
                 {baseExercise.primaryMuscles?.map((m) => MUSCLE_INFO_MAP[m]?.nameKo || m).join(', ') || '전신 협응'}
               </span>
             </div>
@@ -535,7 +535,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Set Header */}
-      <button type="button" onClick={() => setShowQuickSets(v => !v)} aria-expanded={showQuickSets} className="m-2 px-3 py-2 rounded-lg text-xs font-bold text-[#FF2D55] bg-[#FF2D55]/10 flex items-center gap-1"><Zap size={14} />세트 퀵 설정</button>
+      <button type="button" onClick={() => setShowQuickSets(v => !v)} aria-expanded={showQuickSets} className="m-2 px-3 py-2 rounded-lg text-xs font-bold text-[#0F766E] bg-[#0F766E]/10 flex items-center gap-1"><Zap size={14} />세트 퀵 설정</button>
       {showQuickSets && <QuickSetEditor key={currentUnit} item={exerciseItem} unit={currentUnit} onApply={onUpdate} onClose={() => setShowQuickSets(false)} />}
       <div className="px-[15px] py-1 flex items-center gap-1.5 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
         <span className="w-6 shrink-0 text-center">세트</span>
@@ -576,7 +576,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <button
           type="button"
           onClick={handleAddSet}
-          className="w-full py-1.5 mt-0.5 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] text-xs font-bold text-[#FF2D55] rounded-lg flex items-center justify-center gap-1 transition active:scale-98"
+          className="w-full py-1.5 mt-0.5 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] text-xs font-bold text-[#0F766E] rounded-lg flex items-center justify-center gap-1 transition active:scale-98"
         >
           <Plus size={14} />
           <span>세트 추가</span>
@@ -592,7 +592,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
           <div className="flex items-center gap-1 font-semibold text-[11px]">
             <span>추정 1RM:</span>
-            <span className="font-extrabold text-[#007AFF]">{records.max1RM}{currentUnit}</span>
+            <span className="font-extrabold text-[#0F766E]">{records.max1RM}{currentUnit}</span>
           </div>
         </div>
       )}

@@ -46,7 +46,7 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
         {/* Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-xl bg-[#007AFF]/15 text-[#007AFF]">
+            <div className="p-1.5 rounded-xl bg-[#0F766E]/15 text-[#0F766E]">
               <MessageSquare size={18} />
             </div>
             <div>
@@ -67,7 +67,7 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
           {/* 빠른 태그 선택 */}
           <div>
             <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2 flex items-center gap-1.5">
-              <Tag size={13} className="text-[#007AFF]" />
+              <Tag size={13} className="text-[#0F766E]" />
               빠른 세트 태그
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -80,7 +80,7 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
                     onClick={() => toggleTag(tag)}
                     className={`px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
                       isSelected
-                        ? 'bg-[#007AFF] text-white shadow-xs'
+                        ? 'bg-[#0F766E] text-white shadow-xs'
                         : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
                     }`}
                   >
@@ -100,7 +100,7 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="예: 3회차 때 허리 긴장 풀림, 다음엔 스트랩 챙길 것"
-              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#007AFF] focus:bg-white dark:focus:bg-[#1C1C1E] transition resize-none font-medium"
+              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E] transition resize-none font-medium"
             />
           </div>
         </div>
@@ -117,7 +117,7 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 py-3 rounded-2xl text-xs font-black text-white bg-[#007AFF] hover:bg-blue-600 transition shadow-md shadow-blue-500/20 active:scale-98"
+            className="flex-1 py-3 rounded-2xl text-xs font-black text-white bg-[#0F766E] hover:bg-blue-600 transition shadow-md shadow-teal-900/20 active:scale-98"
           >
             저장
           </button>

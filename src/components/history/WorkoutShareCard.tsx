@@ -52,13 +52,13 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
       </div>
       <div className="overflow-y-auto min-h-0 px-4 pb-4 space-y-4">
         <div className="rounded-2xl bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 space-y-3">
-          <div className="flex gap-2">{[true, false].map(value => <button key={String(value)} type="button" aria-pressed={light === value} onClick={() => setLight(value)} className={`flex-1 py-2 rounded-xl text-xs font-bold ${light === value ? 'bg-white dark:bg-[#1C1C1E] text-[#007AFF] shadow-sm' : 'text-gray-500'}`}>{value ? '라이트' : '다크'}</button>)}</div>
+          <div className="flex gap-2">{[true, false].map(value => <button key={String(value)} type="button" aria-pressed={light === value} onClick={() => setLight(value)} className={`flex-1 py-2 rounded-xl text-xs font-bold ${light === value ? 'bg-white dark:bg-[#1C1C1E] text-[#0F766E] shadow-sm' : 'text-gray-500'}`}>{value ? '라이트' : '다크'}</button>)}</div>
           <label className="block text-xs font-bold">인증 문구
-            <input aria-label="인증 문구" value={title} maxLength={60} onChange={e => setTitle(e.target.value)} className="mt-2 w-full rounded-xl p-3 bg-white dark:bg-[#1C1C1E] text-sm outline-none focus:ring-2 focus:ring-[#007AFF]"/>
+            <input aria-label="인증 문구" value={title} maxLength={60} onChange={e => setTitle(e.target.value)} className="mt-2 w-full rounded-xl p-3 bg-white dark:bg-[#1C1C1E] text-sm outline-none focus:ring-2 focus:ring-[#0F766E]"/>
           </label>
-          <div className="flex justify-between text-xs"><span className="text-gray-500">최대 60자</span><button type="button" onClick={() => setTitle(recommendWorkoutQuote(title))} className="font-bold text-[#007AFF]">다른 문구 추천</button></div>
+          <div className="flex justify-between text-xs"><span className="text-gray-500">최대 60자</span><button type="button" onClick={() => setTitle(recommendWorkoutQuote(title))} className="font-bold text-[#0F766E]">다른 문구 추천</button></div>
           <label className="block text-xs font-bold">배경 사진
-            <input type="file" accept="image/*" aria-label="배경 사진 선택" className="block mt-2 w-full text-xs file:mr-2 file:border-0 file:rounded-lg file:px-3 file:py-2 file:bg-white file:text-[#007AFF]" onChange={async e => {
+            <input type="file" accept="image/*" aria-label="배경 사진 선택" className="block mt-2 w-full text-xs file:mr-2 file:border-0 file:rounded-lg file:px-3 file:py-2 file:bg-white file:text-[#0F766E]" onChange={async e => {
               const file = e.target.files?.[0]; e.target.value = '';
               if (!file) return;
               const request = ++photoRequest.current;
@@ -73,13 +73,13 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
           <label className="flex items-center justify-between text-xs font-bold">글자 색
             <select aria-label="글자 색" value={textColor} onChange={e => setTextColor(e.target.value as typeof textColor)} className="p-2 rounded-lg bg-white dark:bg-[#1C1C1E]"><option value="auto">자동</option><option value="white">흰색</option><option value="black">검정</option></select>
           </label>
-          {photo && <label className="block text-xs font-bold">가독성 보정 · {Math.round(overlay * 100)}%<input aria-label="가독성 보정" type="range" min="0" max="0.85" step="0.05" value={overlay} onChange={e => setOverlay(Number(e.target.value))} className="block mt-2 w-full accent-[#007AFF]"/></label>}
+          {photo && <label className="block text-xs font-bold">가독성 보정 · {Math.round(overlay * 100)}%<input aria-label="가독성 보정" type="range" min="0" max="0.85" step="0.05" value={overlay} onChange={e => setOverlay(Number(e.target.value))} className="block mt-2 w-full accent-[#0F766E]"/></label>}
         </div>
         {!summary.sets ? <p className="py-12 text-center text-sm text-gray-500">완료한 세트가 있는 날에 인증 카드를 만들 수 있어요.</p> : image ? <img src={image} alt={`${date} 운동 인증: ${summary.exercises.map(row => `${row.name} ${row.sets}세트 ${row.reps}회`).join(', ')}`} className="w-full rounded-xl"/> : <p role="status">이미지를 준비하고 있어요.</p>}
       </div>
       <div className="p-4 border-t border-gray-200 dark:border-white/10">
         {message && <p role="status" className="text-xs mb-3">{message}</p>}
-        <button type="button" disabled={busy || photoBusy || !image || !summary.sets} className="w-full py-3 rounded-xl bg-[#007AFF] text-white font-black flex justify-center items-center gap-2 disabled:opacity-40" onClick={async () => {
+        <button type="button" disabled={busy || photoBusy || !image || !summary.sets} className="w-full py-3 rounded-xl bg-[#0F766E] text-white font-black flex justify-center items-center gap-2 disabled:opacity-40" onClick={async () => {
           setBusy(true); setMessage('');
           try { const result = await saveWorkoutImage(`iron-muscle-${date}.png`, image); setMessage(result.message); }
           catch { setMessage('이미지를 저장하지 못했습니다. 다시 시도해 주세요.'); }

@@ -125,7 +125,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
         {/* 헤더 */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#FF2D55]/15 text-[#FF2D55] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-[#0F766E]/15 text-[#0F766E] flex items-center justify-center font-bold">
               <Sparkles size={16} />
             </div>
             <div>
@@ -147,7 +147,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           {/* 운동 종목명 */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-              운동 종목명 <span className="text-[#FF2D55]">*</span>
+              운동 종목명 <span className="text-[#0F766E]">*</span>
             </label>
             <input
               type="text"
@@ -156,7 +156,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="예: V-스쿼트, 바이킹 프레스, 펜들레이 로우"
-              className="w-full bg-gray-50 dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-[#1D1D1F] dark:text-white outline-none focus:border-[#FF2D55] transition"
+              className="w-full bg-gray-50 dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-[#1D1D1F] dark:text-white outline-none focus:border-[#0F766E] transition"
             />
           </div>
 
@@ -177,7 +177,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           {/* 타겟 부위 / 카테고리 */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-              운동 부위 <span className="text-[#FF2D55]">*</span>
+              운동 부위 <span className="text-[#0F766E]">*</span>
             </label>
             <div className="grid grid-cols-4 gap-1.5">
               {CATEGORY_OPTIONS.map((c) => (
@@ -187,7 +187,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                   onClick={() => handleCategoryChange(c.id)}
                   className={`py-2 rounded-xl text-xs font-extrabold transition ${
                     category === c.id
-                      ? 'bg-[#FF2D55] text-white shadow-sm'
+                      ? 'bg-[#0F766E] text-white shadow-sm'
                       : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
@@ -200,7 +200,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           {/* 운동 장비 유형 */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-              장비 유형 <span className="text-[#FF2D55]">*</span>
+              장비 유형 <span className="text-[#0F766E]">*</span>
             </label>
             <div className="grid grid-cols-3 gap-1.5">
               {EQUIPMENT_OPTIONS.map((eq) => (
@@ -210,7 +210,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                   onClick={() => setEquipment(eq.id)}
                   className={`py-2 rounded-xl text-xs font-bold transition ${
                     equipment === eq.id
-                      ? 'bg-[#007AFF] text-white shadow-sm'
+                      ? 'bg-[#0F766E] text-white shadow-sm'
                       : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
@@ -280,7 +280,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-3.5 bg-[#FF2D55] hover:opacity-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-red-500/20 active:scale-98 transition flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-[#0F766E] hover:opacity-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-teal-900/20 active:scale-98 transition flex items-center justify-center gap-2"
             >
               <Plus size={18} strokeWidth={3} />
               라이브러리에 등록하고 선택하기

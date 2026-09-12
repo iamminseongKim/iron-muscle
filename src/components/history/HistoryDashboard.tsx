@@ -58,7 +58,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
 
           <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
             <span className="text-[10px] text-gray-400 font-bold block">누적 볼륨</span>
-            <span className="text-xl font-black text-[#FF2D55]">{cumulativeVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{weightUnit}</span></span>
+            <span className="text-xl font-black text-[#0F766E]">{cumulativeVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{weightUnit}</span></span>
           </div>
 
           <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
@@ -82,7 +82,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
           </div>
           <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
             deloadAnalysis.shouldDeload
-              ? 'bg-red-500/10 text-[#FF2D55]'
+              ? 'bg-red-500/10 text-[#0F766E]'
               : 'bg-indigo-500/10 text-indigo-500'
           }`}>
             {deloadAnalysis.shouldDeload ? '⚠️ 디로딩 권장' : '⚡ 컨디션 최적'}
@@ -104,7 +104,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
       <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-xl bg-[#007AFF]/10 text-[#007AFF]">
+            <div className="p-1.5 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
               <TrendingUp size={16} />
             </div>
             <div>
@@ -117,9 +117,9 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
         <div>
           <button type="button" aria-haspopup="dialog" onClick={() => setIsPickerOpen(true)}
             className="w-full flex items-center gap-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white rounded-2xl p-3 text-sm text-left">
-            <Search size={18} className="shrink-0 text-[#007AFF]" />
+            <Search size={18} className="shrink-0 text-[#0F766E]" />
             <span className="flex-1 font-bold">{targetExercise?.name || '성장을 확인할 종목 검색'}</span>
-            <span className="text-xs text-[#007AFF] shrink-0">종목 변경</span>
+            <span className="text-xs text-[#0F766E] shrink-0">종목 변경</span>
           </button>
         </div>
 
@@ -151,7 +151,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500">{rec.weight}kg × {rec.reps}회</span>
-                    <span className="font-bold text-[#FF2D55]">추정 1RM {rec.max1RM}kg</span>
+                    <span className="font-bold text-[#0F766E]">추정 1RM {rec.max1RM}kg</span>
                   </div>
                 </div>
               ))}
@@ -165,7 +165,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
       {/* 과거 운동 히스토리 목록 */}
       <div className="space-y-2.5">
         <h3 className="text-sm font-extrabold text-[#1D1D1F] dark:text-white px-1 flex items-center gap-1.5">
-          <Calendar size={15} className="text-[#007AFF]" />
+          <Calendar size={15} className="text-[#0F766E]" />
           과거 운동 일지 ({history.length}회)
         </h3>
 

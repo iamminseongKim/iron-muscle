@@ -100,7 +100,7 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
   const bg = light ? '#F2F2F7' : '#000000';
   const fg = darkText ? '#1D1D1F' : '#FFFFFF';
   const muted = photo ? fg : darkText ? '#6E6E73' : '#AEAEB2';
-  const accent = photo || style.textColor !== 'auto' ? fg : light ? '#007AFF' : '#0A84FF';
+  const accent = photo || style.textColor !== 'auto' ? fg : fg;
   ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
   if (photo) {
     const scale = Math.max(canvas.width / photo.naturalWidth, canvas.height / photo.naturalHeight);
@@ -121,20 +121,11 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
   text(summary.date.replace(/-/g, '.'), 68, 261 + extraHeight, 30, muted);
   const stats = [[String(summary.exercises.length), '운동 종목'], [String(summary.sets), '완료 세트'], [String(Math.round(summary.seconds / 60)), '운동 시간 (분)']];
   stats.forEach(([value, label], i) => {
-    if (!photo && style.textColor === 'auto') {
-      ctx.fillStyle = light ? '#FFFFFF' : '#1C1C1E';
-      ctx.beginPath(); ctx.roundRect(56 + i * 330, 296 + extraHeight, 306, 136, 24); ctx.fill();
-    }
     text(value, 68 + i * 330, 366 + extraHeight, 68, accent, true); text(label, 68 + i * 330, 410 + extraHeight, 26, muted); });
   text(`총 ${summary.reps.toLocaleString()}회  /  ${summary.volume.toLocaleString()} ${summary.unit} 볼륨`, 68, 476 + extraHeight, 30, fg, true);
   let y = 525 + extraHeight;
   rows.forEach((row, index) => {
-    if (!photo && style.textColor === 'auto') {
-      ctx.fillStyle = light ? '#FFFFFF' : '#1C1C1E';
-      ctx.beginPath(); ctx.roundRect(48, y + 6, 984, 84 + row.lines.length * 44, 24); ctx.fill();
-    } else {
-      ctx.fillStyle = darkText ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.22)'; ctx.fillRect(64, y, 952, 1);
-    }
+    ctx.fillStyle = darkText ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.22)'; ctx.fillRect(64, y, 952, 1);
     text(String(index + 1).padStart(2, '0'), 68, y + 59, 27, accent, true);
     row.lines.forEach((line, n) => text(line, 140, y + 60 + n * 44, 36, fg, true));
     text(`${row.sets}세트 · ${row.reps}회 · ${row.maxWeight > 0 ? `최고 ${Number(row.maxWeight.toFixed(1))}${summary.unit}` : '맨몸'}`, 140, y + 60 + row.lines.length * 44, 27, muted);

@@ -187,9 +187,9 @@ export const SetRow: React.FC<SetRowProps> = ({
                 onClick={handleCycleSide}
                 className={`mt-0.5 px-1 py-0.2 text-[9px] font-black rounded-md transition ${
                   set.side === 'left'
-                    ? 'bg-[#007AFF] text-white shadow-xs'
+                    ? 'bg-[#0F766E] text-white shadow-xs'
                     : set.side === 'right'
-                    ? 'bg-[#FF2D55] text-white shadow-xs'
+                    ? 'bg-[#0F766E] text-white shadow-xs'
                     : 'bg-gray-200 dark:bg-[#3A3A3C] text-gray-600 dark:text-gray-300'
                 }`}
                 title="클릭하여 좌(L) / 우(R) / 양쪽 전환"
@@ -234,8 +234,8 @@ export const SetRow: React.FC<SetRowProps> = ({
               onChange={(e) => handleWeightChange(e.target.value)}
               className={`numeric-set-input w-full text-center rounded-lg h-9 py-1 px-1 pr-7 text-sm font-extrabold transition outline-none border ${
                 isWeightFresh
-                  ? 'bg-[#FF2D55]/10 dark:bg-[#FF2D55]/15 text-[#FF2D55] border-[#FF2D55] ring-2 ring-[#FF2D55]/10'
-                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#FF2D55] focus:bg-white dark:focus:bg-[#1C1C1E]'
+                  ? 'bg-[#0F766E]/10 dark:bg-[#0F766E]/15 text-[#0F766E] border-[#0F766E] ring-2 ring-[#0F766E]/10'
+                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E]'
               }`}
             />
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">
@@ -266,8 +266,8 @@ export const SetRow: React.FC<SetRowProps> = ({
               onChange={(e) => handleRepsChange(e.target.value)}
               className={`numeric-set-input w-full text-center rounded-lg h-9 py-1 px-1 pr-5 text-sm font-extrabold transition outline-none border ${
                 isRepsFresh
-                  ? 'bg-[#FF2D55]/10 dark:bg-[#FF2D55]/15 text-[#FF2D55] border-[#FF2D55] ring-2 ring-[#FF2D55]/10'
-                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#FF2D55] focus:bg-white dark:focus:bg-[#1C1C1E]'
+                  ? 'bg-[#0F766E]/10 dark:bg-[#0F766E]/15 text-[#0F766E] border-[#0F766E] ring-2 ring-[#0F766E]/10'
+                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E]'
               }`}
             />
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">회</span>
@@ -287,9 +287,9 @@ export const SetRow: React.FC<SetRowProps> = ({
           >
             <Check size={18} strokeWidth={2.5} />
           </button>
-          <button type="button" aria-label={`${index + 1}세트 상세 옵션`} aria-expanded={showOptions} onClick={() => setShowOptions(!showOptions)} className={`relative w-7 h-9 shrink-0 flex items-center justify-center rounded-lg ${showOptions ? 'bg-[#FF2D55]/10 text-[#FF2D55]' : 'text-gray-400'}`}>
+          <button type="button" aria-label={`${index + 1}세트 상세 옵션`} aria-expanded={showOptions} onClick={() => setShowOptions(!showOptions)} className={`relative w-7 h-9 shrink-0 flex items-center justify-center rounded-lg ${showOptions ? 'bg-[#0F766E]/10 text-[#0F766E]' : 'text-gray-400'}`}>
             <MoreHorizontal size={16} />
-            {(set.rpe !== undefined || hasTempo || hasCommentOrTags || hasRestTime) && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#FF2D55]" />}
+            {(set.rpe !== undefined || hasTempo || hasCommentOrTags || hasRestTime) && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#0F766E]" />}
           </button>
         </div>
 
@@ -346,7 +346,7 @@ export const SetRow: React.FC<SetRowProps> = ({
               onClick={() => setIsCommentModalOpen(true)}
               className={`px-2 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 transition ${
                 hasCommentOrTags
-                  ? 'bg-[#FF2D55]/10 text-[#FF2D55]'
+                  ? 'bg-[#0F766E]/10 text-[#0F766E]'
                   : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
               }`}
               title="세트별 메모/태그"
@@ -381,7 +381,7 @@ export const SetRow: React.FC<SetRowProps> = ({
         {hasCommentOrTags && (
           <div className="mt-1.5 pt-1.5 border-t border-black/5 dark:border-white/5 flex flex-wrap items-center gap-1 text-[11px]">
             {set.tags?.map((t) => (
-              <span key={t} className="px-1.5 py-0.5 rounded-md bg-[#007AFF]/10 text-[#007AFF] font-semibold">
+              <span key={t} className="px-1.5 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] font-semibold">
                 #{t}
               </span>
             ))}
