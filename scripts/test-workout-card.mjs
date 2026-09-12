@@ -23,3 +23,15 @@ assert.ok(!muscles.primaryMuscles.includes('quads'));
 assert.ok(muscles.secondaryMuscles.every(m => !muscles.primaryMuscles.includes(m)));
 assert.deepEqual(day.primaryMuscles.includes('made-up-muscle'), false);
 console.log('PASS: anatomy uses completed exercise muscles and primary takes precedence');
+const grouped = summarizeWorkoutDay([{ date: '2026-09-13', durationSeconds: 100, exercises: [
+  {...exercise, groupId: 'a', groupType: 'superset'},
+  {...exercise, exerciseId: 'push-up', groupId: 'a', groupType: 'superset'},
+  {...exercise, groupId: 'b', groupType: 'compound'},
+  exercise,
+] }, {date: '2026-09-13', durationSeconds: 100, exercises: [{...exercise, groupId:'a', groupType:'superset'}]}], '2026-09-13');
+assert.deepEqual(grouped.exercises.map(e=>e.groupLabel), ['슈퍼 A','슈퍼 A','컴파운드 B',undefined,'슈퍼 C']);
+assert.equal(grouped.exerciseCount, 2);
+assert.equal(grouped.sets, 5);
+assert.equal(grouped.reps, 50);
+assert.equal(grouped.volume, 500);
+console.log('PASS: compact groups, separate sessions, ungrouped records and unique exercise count');

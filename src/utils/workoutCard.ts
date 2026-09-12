@@ -4,10 +4,12 @@ import { resolveRecordedExercise } from './exerciseResolver';
 import { KG_TO_LBS } from './calculations';
 
 export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, unit: WeightUnit = 'kg') {
-  const rows = new Map<string, { name: string; sets: number; reps: number; maxWeight: number }>();
+  const rows = new Map<string, { name: string; sets: number; reps: number; maxWeight: number; groupLabel?: string }>();
   const primaryMuscles = new Set<string>(), secondaryMuscles = new Set<string>();
+  const groupLabels = new Map<string, string>();
+  const exerciseIds = new Set<string>();
   let seconds = 0, volumeKg = 0;
-  for (const session of sessions.filter(s => s.date === date)) {
+  for (const [sessionIndex, session] of sessions.filter(s => s.date === date).entries()) {
     let hasCompleted = false;
     for (const exercise of session.exercises) {
       const sets = exercise.sets.filter(s => s.completed && s.reps > 0);
@@ -16,7 +18,17 @@ export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, un
       const resolved = resolveRecordedExercise(exercise);
       resolved.primaryMuscles.forEach(m => primaryMuscles.add(m));
       resolved.secondaryMuscles.forEach(m => secondaryMuscles.add(m));
-      const row = rows.get(resolved.id) || { name: resolved.name, sets: 0, reps: 0, maxWeight: 0 };
+      exerciseIds.add(resolved.id);
+      const grouped = exercise.groupId && exercise.groupType && exercise.groupType !== 'single';
+      const groupKey = grouped ? JSON.stringify([sessionIndex, exercise.groupId, exercise.groupType]) : '';
+      if (groupKey && !groupLabels.has(groupKey)) {
+        let number = groupLabels.size + 1, letter = '';
+        while (number > 0) { number--; letter = String.fromCharCode(65 + number % 26) + letter; number = Math.floor(number / 26); }
+        const kind = exercise.groupType === 'superset' ? '슈퍼' : exercise.groupType === 'compound' ? '컴파운드' : '자이언트';
+        groupLabels.set(groupKey, `${kind} ${letter}`);
+      }
+      const rowKey = JSON.stringify([resolved.id, groupKey]);
+      const row = rows.get(rowKey) || { name: resolved.name, sets: 0, reps: 0, maxWeight: 0, groupLabel: groupLabels.get(groupKey) };
       for (const set of sets) {
         const kg = Math.max(0, set.weight) / (exercise.weightUnit === 'lbs' ? KG_TO_LBS : 1);
         row.sets++;
@@ -24,12 +36,12 @@ export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, un
         row.maxWeight = Math.max(row.maxWeight, kg * (unit === 'lbs' ? KG_TO_LBS : 1));
         volumeKg += kg * set.reps;
       }
-      rows.set(resolved.id, row);
+      rows.set(rowKey, row);
     }
     if (hasCompleted) seconds += Math.max(0, session.durationSeconds);
   }
   const exercises = [...rows.values()];
-  return { primaryMuscles: [...primaryMuscles], secondaryMuscles: [...secondaryMuscles].filter(m => !primaryMuscles.has(m)), date, unit, exercises, seconds, volume: Math.round(volumeKg * (unit === 'lbs' ? KG_TO_LBS : 1)),
+  return { exerciseCount: exerciseIds.size, primaryMuscles: [...primaryMuscles], secondaryMuscles: [...secondaryMuscles].filter(m => !primaryMuscles.has(m)), date, unit, exercises, seconds, volume: Math.round(volumeKg * (unit === 'lbs' ? KG_TO_LBS : 1)),
     sets: exercises.reduce((sum, row) => sum + row.sets, 0), reps: exercises.reduce((sum, row) => sum + row.reps, 0) };
 }
 
@@ -119,7 +131,7 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
   text('IRON MUSCLE / WORKOUT LOG', 94, 89, 25, accent, true);
   titleLines.forEach((line, index) => text(line, 64, 202 + index * 76, 64, fg, true));
   text(summary.date.replace(/-/g, '.'), 68, 261 + extraHeight, 30, muted);
-  const stats = [[String(summary.exercises.length), '운동 종목'], [String(summary.sets), '완료 세트'], [String(Math.round(summary.seconds / 60)), '운동 시간 (분)']];
+  const stats = [[String(summary.exerciseCount), '운동 종목'], [String(summary.sets), '완료 세트'], [String(Math.round(summary.seconds / 60)), '운동 시간 (분)']];
   stats.forEach(([value, label], i) => {
     text(value, 68 + i * 330, 366 + extraHeight, 68, accent, true); text(label, 68 + i * 330, 410 + extraHeight, 26, muted); });
   text(`총 ${summary.reps.toLocaleString()}회  /  ${summary.volume.toLocaleString()} ${summary.unit} 볼륨`, 68, 476 + extraHeight, 30, fg, true);
@@ -128,7 +140,7 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
     ctx.fillStyle = darkText ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.22)'; ctx.fillRect(64, y, 952, 1);
     text(String(index + 1).padStart(2, '0'), 68, y + 59, 27, accent, true);
     row.lines.forEach((line, n) => text(line, 140, y + 60 + n * 44, 36, fg, true));
-    text(`${row.sets}세트 · ${row.reps}회 · ${row.maxWeight > 0 ? `최고 ${Number(row.maxWeight.toFixed(1))}${summary.unit}` : '맨몸'}`, 140, y + 60 + row.lines.length * 44, 27, muted);
+    text(`${row.groupLabel ? `[${row.groupLabel}] · ` : ''}${row.sets}세트 · ${row.reps}회 · ${row.maxWeight > 0 ? `최고 ${Number(row.maxWeight.toFixed(1))}${summary.unit}` : '맨몸'}`, 140, y + 60 + row.lines.length * 44, 27, muted);
     y += 100 + row.lines.length * 44;
   });
   if (style.anatomy) {
