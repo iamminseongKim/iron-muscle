@@ -1,6 +1,7 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
 
 export const nativeBackup = registerPlugin<{
+  saveImage(options: { filename: string; data: string }): Promise<{ cancelled: boolean; bytesWritten?: number }>;
   save(options: { filename: string; data: string; mimeType?: string; encoding?: 'base64' }): Promise<{ cancelled: boolean }>;
 }>('WorkoutBackup');
 
@@ -83,8 +84,9 @@ export async function saveWorkoutImage(filename: string, dataUrl: string): Promi
   const data = dataUrl.split(',')[1];
   if (!data || !dataUrl.startsWith('data:image/png;base64,')) throw new Error('Invalid PNG');
   if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
-    const result = await nativeBackup.save({ filename, data, mimeType: 'image/png', encoding: 'base64' });
-    return { message: result.cancelled ? '저장을 취소했습니다.' : '운동 인증 이미지를 저장했습니다.' };
+    const result = await nativeBackup.saveImage({ filename, data });
+    if (!result.cancelled && (!result.bytesWritten || result.bytesWritten !== atob(data).length)) throw new Error('저장 파일 검증에 실패했습니다.');
+    return { message: result.cancelled ? '저장을 취소했습니다.' : '운동 인증 이미지를 기기에 저장하고 확인했습니다.' };
   }
   const bytes = Uint8Array.from(atob(data), char => char.charCodeAt(0));
   const file = new File([bytes], filename, { type: 'image/png' });

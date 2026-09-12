@@ -1,9 +1,11 @@
+import { ANATOMY_REGIONS } from '../data/anatomyRegions';
 import { WorkoutSession, WeightUnit } from '../types/workout';
 import { resolveRecordedExercise } from './exerciseResolver';
 import { KG_TO_LBS } from './calculations';
 
 export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, unit: WeightUnit = 'kg') {
   const rows = new Map<string, { name: string; sets: number; reps: number; maxWeight: number }>();
+  const primaryMuscles = new Set<string>(), secondaryMuscles = new Set<string>();
   let seconds = 0, volumeKg = 0;
   for (const session of sessions.filter(s => s.date === date)) {
     let hasCompleted = false;
@@ -12,6 +14,8 @@ export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, un
       if (!sets.length) continue;
       hasCompleted = true;
       const resolved = resolveRecordedExercise(exercise);
+      resolved.primaryMuscles.forEach(m => primaryMuscles.add(m));
+      resolved.secondaryMuscles.forEach(m => secondaryMuscles.add(m));
       const row = rows.get(resolved.id) || { name: resolved.name, sets: 0, reps: 0, maxWeight: 0 };
       for (const set of sets) {
         const kg = Math.max(0, set.weight) / (exercise.weightUnit === 'lbs' ? KG_TO_LBS : 1);
@@ -25,7 +29,7 @@ export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, un
     if (hasCompleted) seconds += Math.max(0, session.durationSeconds);
   }
   const exercises = [...rows.values()];
-  return { date, unit, exercises, seconds, volume: Math.round(volumeKg * (unit === 'lbs' ? KG_TO_LBS : 1)),
+  return { primaryMuscles: [...primaryMuscles], secondaryMuscles: [...secondaryMuscles].filter(m => !primaryMuscles.has(m)), date, unit, exercises, seconds, volume: Math.round(volumeKg * (unit === 'lbs' ? KG_TO_LBS : 1)),
     sets: exercises.reduce((sum, row) => sum + row.sets, 0), reps: exercises.reduce((sum, row) => sum + row.reps, 0) };
 }
 
@@ -40,6 +44,7 @@ export interface WorkoutCardStyle {
   light: boolean;
   title: string;
   photo?: HTMLImageElement;
+  anatomy?: HTMLImageElement;
   textColor: 'auto' | 'white' | 'black';
   overlay: number;
 }
@@ -90,7 +95,7 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
   const titleLines = wrap(style.title.trim() || '오늘의 운동', 64, 944);
   const extraHeight = Math.max(0, titleLines.length - 1) * 76;
   canvas.width = 1080;
-  canvas.height = Math.max(1350 + extraHeight, 650 + extraHeight + rows.reduce((sum, row) => sum + 100 + row.lines.length * 44, 0));
+  canvas.height = Math.max(1630 + extraHeight, 930 + extraHeight + rows.reduce((sum, row) => sum + 100 + row.lines.length * 44, 0));
   const darkText = style.textColor === 'black' || (style.textColor === 'auto' && !photo && light);
   const bg = light ? '#F2F2F7' : '#000000';
   const fg = darkText ? '#1D1D1F' : '#FFFFFF';
@@ -135,6 +140,25 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
     text(`${row.sets}세트 · ${row.reps}회 · ${row.maxWeight > 0 ? `최고 ${Number(row.maxWeight.toFixed(1))}${summary.unit}` : '맨몸'}`, 140, y + 60 + row.lines.length * 44, 27, muted);
     y += 100 + row.lines.length * 44;
   });
+  if (style.anatomy) {
+    ctx.save();
+    const x = 752, y = canvas.height - 365, scale = 250 / 1122;
+    ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.roundRect(x - 12, y - 12, 274, 336, 18); ctx.fill();
+    ctx.translate(x, y); ctx.scale(scale, scale);
+    ctx.drawImage(style.anatomy, 0, 0, 1122, 1402);
+    for (const region of ANATOMY_REGIONS) {
+      const primary = summary.primaryMuscles.includes(region.id);
+      if (!primary && !summary.secondaryMuscles.includes(region.id)) continue;
+      ctx.fillStyle = primary ? '#FF2D55' : '#FF9500'; ctx.globalAlpha = 0.8;
+      ctx.fill(new Path2D(region.d));
+      if (region.mirror) { ctx.save(); ctx.translate(region.mirror, 0); ctx.scale(-1, 1); ctx.fill(new Path2D(region.d)); ctx.restore(); }
+    }
+    ctx.restore();
+    text('오늘 운동한 부위', 68, canvas.height - 246, 28, fg, true);
+    text('● 주동근', 68, canvas.height - 201, 24, '#FF2D55');
+    text('● 협응근', 68, canvas.height - 163, 24, '#FF9500');
+    if (!summary.primaryMuscles.length && !summary.secondaryMuscles.length) text('등록된 부위 정보 없음', 68, canvas.height - 122, 23, muted);
+  }
   text('완료 세트 기준 · 볼륨은 기록 중량 × 반복수', 68, canvas.height - 76, 23, muted);
   text('IRON MUSCLE  /  나의 운동 기록', 68, canvas.height - 36, 22, accent, true);
   return canvas.toDataURL('image/png');

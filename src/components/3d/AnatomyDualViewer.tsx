@@ -1,3 +1,4 @@
+import { ANATOMY_REGIONS as REGIONS } from '../../data/anatomyRegions';
 import React, { useState } from 'react';
 import { MuscleTarget } from '../../types/workout';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
@@ -13,26 +14,7 @@ interface AnatomyDualViewerProps {
 
 // Atlas coordinates are tied to public/anatomy/muscle-atlas.png (1122 × 1402).
 // These are approximate visual muscle regions, not diagnostic segmentation.
-const REGIONS: {id: MuscleTarget; d: string; mirror?: number}[] = [
-  {id:'chest_upper',d:'M150 272 Q212 242 280 263 L283 296 Q215 284 161 314 Z',mirror:588},
-  {id:'chest',d:'M160 316 Q221 287 282 299 L283 350 Q258 389 211 374 Q172 365 160 316Z',mirror:588},
-  {id:'deltoid_front',d:'M147 269 Q174 248 209 250 Q182 274 161 321 L135 340 Q121 300 147 269Z',mirror:588},
-  {id:'deltoid_side',d:'M143 266 Q109 282 111 329 L122 365 L138 335 Q126 302 143 266Z',mirror:588},
-  {id:'biceps',d:'M132 348 Q149 337 165 329 Q182 371 158 428 L132 458 Q118 418 132 348Z',mirror:588},
-  {id:'forearms',d:'M130 447 Q146 457 128 515 L91 621 L57 628 Q75 550 91 505Z',mirror:588},
-  {id:'abs',d:'M241 386 Q266 372 290 391 L287 503 L293 522 L281 607 L239 552 Q229 461 241 386Z',mirror:588},
-  {id:'obliques',d:'M192 407 L222 385 L232 485 L245 552 L267 597 L193 549 Q173 489 192 407Z',mirror:588},
-  {id:'quads',d:'M194 560 Q173 613 167 690 Q162 790 204 876 Q219 901 235 880 Q279 795 269 717 L261 625 L236 612 L214 734 L201 820 Q191 737 216 649Z',mirror:588},
-  {id:'traps',d:'M815 174 L796 203 L709 247 Q762 254 780 294 L819 389 L825 435 L831 389 L868 294 Q888 255 941 247 L855 204 L837 174Z'},
-  {id:'deltoid_rear',d:'M687 262 Q718 251 751 279 L765 324 Q741 353 702 355 L668 338 Q658 293 687 262Z',mirror:1650},
-  {id:'triceps',d:'M664 344 Q692 356 710 359 Q710 413 674 468 L645 436 Q650 382 664 344Z',mirror:1650},
-  {id:'lats',d:'M708 358 Q765 369 806 400 L817 452 L788 536 Q747 519 714 500 L693 425Z',mirror:1650},
-  {id:'erectors',d:'M810 428 L822 424 L822 543 L785 576 L776 551 L798 482Z',mirror:1650},
-  {id:'glutes',d:'M784 540 Q731 542 708 577 L702 644 Q733 697 792 698 L819 680 L819 577Z',mirror:1650},
-  {id:'hamstrings',d:'M718 683 Q759 707 800 704 Q810 791 779 905 L742 927 Q699 830 707 746Z',mirror:1650},
-  {id:'calves',d:'M735 922 Q710 966 709 1028 Q709 1072 735 1087 Q772 1077 779 1036 Q786 967 763 922Z',mirror:1650},
-  {id:'forearms',d:'M641 447 Q670 461 660 510 L620 630 L587 635 Q600 551 610 511Z',mirror:1650},
-];
+
 
 export const AnatomyDualViewer: React.FC<AnatomyDualViewerProps> = ({primaryMuscles = [], secondaryMuscles = [], selectedMuscle, onMuscleClick}) => {
   const [view, setView] = useState<'both' | 'front' | 'back'>('both');

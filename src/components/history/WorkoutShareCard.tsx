@@ -27,11 +27,13 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
   useEffect(() => {
     let active = true;
     setImage(''); setMessage('');
-    document.fonts.ready.then(() => {
+    const anatomy = new Image();
+    anatomy.src = '/anatomy/muscle-atlas.png';
+    Promise.all([document.fonts.ready, anatomy.decode()]).then(() => {
       if (!active) return;
-      try { setImage(renderWorkoutCard(summary, { light, title, photo, textColor, overlay })); }
+      try { setImage(renderWorkoutCard(summary, { light, title, photo, textColor, overlay, anatomy })); }
       catch { setMessage('이미지 생성에 실패했습니다. 다시 열어 주세요.'); }
-    });
+    }).catch(() => { if (active) setMessage('해부도 이미지를 불러오지 못했습니다. 다시 열어 주세요.'); });
     return () => { active = false; };
   }, [summary, light, title, photo, textColor, overlay]);
   return <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-3" onClick={onClose}>

@@ -190,53 +190,16 @@ jobs:
             echo "tag=build-${{ github.run_number }}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Generate version-specific release notes
+        run: node scripts/release-notes.mjs "${{ steps.release_tag.outputs.tag }}"
+
       - name: Publish GitHub Release (Android APK & iOS IPA)
         uses: softprops/action-gh-release@v2
         with:
           target_commitish: ${{ github.sha }}
           tag_name: ${{ steps.release_tag.outputs.tag }}
           name: "Iron Muscle Tracker ${{ steps.release_tag.outputs.tag }} (Android & iOS)"
-          body: |
-            ## 🏋️‍♂️ Iron Muscle Tracker ${{ steps.release_tag.outputs.tag }} 로컬 설치용 배포판
-
-            모든 데이터는 서버 없이 기기 내부(로컬)에만 안전하게 저장되는 독립형 앱입니다.
-
-            ---
-
-            ### 🍎 아이폰 & 아이패드 (iPhone / iPad) 로컬 설치
-
-            #### 📥 [방법 1] iOS IPA 사이드로딩 (AltStore / Sideloadly)
-            1. 아래 **Assets** 섹션의 **`IronMuscle-iOS.ipa`** 파일을 다운로드합니다.
-            2. PC/Mac에서 **AltStore** 또는 **Sideloadly**를 실행하여 본인의 기기에 직접 설치합니다.
-
-            #### 💻 [방법 2] Mac Xcode 실기기 빌드
-            ```bash
-            git clone https://github.com/iamminseongKim/iron-muscle.git
-            cd iron-muscle && npm install && npm run build
-            npx cap open ios
-            ```
-            Xcode에서 본인 개인 무료 계정(Signing)을 선택하고 연결된 iPhone/iPad로 빌드하여 설치합니다.
-
-            ---
-
-            ### 🤖 안드로이드 (Android) 스마트폰 설치
-
-            1. 아래 **Assets** 섹션의 **`IronMuscle-${{ steps.release_tag.outputs.tag }}.apk`** 링크를 터치하여 다운로드합니다.
-            2. 다운로드 완료 후 파일을 열고 **'출처를 알 수 없는 앱 설치 허용'**을 켠 뒤 설치합니다.
-
-            ---
-
-            ### 🌟 최신 업데이트 핵심 요약
-            - **🌐 876개 전 종목 한국어 번역 완료**: 모든 운동 종목의 상세 설명, 수행 방법(Instructions), 코칭 팁(Tips) 100% 한국어화 (영어 원문 보존 및 다국어 지원 구조 완비)
-            - **🏷️ 동작 중심 명칭 개편 & 브랜드 종속성 탈피**: 특정 머신 제조사 브랜드명에 얽매이지 않고 운동 역학과 동작 중심으로 명칭 통일 (기존 운동 ID 및 사용자 기록 완벽 보존)
-            - **🦾 3D 인터랙티브 근육 해부도 연동**: Three.js 기반 인체 근육 3D 모델에서 타겟 부위(주동근/협응근)를 직관적으로 시각화 및 양방향 탐색
-            - **📱 앱 하단 버전 & 크레딧 워터마크 표시**: 실시간 배포 버전 및 제작자 크레딧 정보 표기
-            - **📥 AI 분석용 마크다운 일지(.md) 실제 기기 다운로드 지원**: Android SAF(Storage Access Framework) 및 네이티브 파일 저장 연동으로 모바일 환경에서 실제 .md 파일 다운로드 완벽 지원 (다운로드 시 불필요한 자동 복사 제거)
-            - **🎯 오늘 운동 부위 다중 선택 & 루틴 추천**: 가슴, 등, 하체, 어깨, 팔, 복근 등 다중 타겟 부위 선택 및 맞춤형 루틴명 자동 생성
-            - **🔥 운동 시작 라이프사이클 안전 분리**: 타이머와 세션 상태를 철저히 동기화하여 앱 백그라운드 전환 시에도 시간 및 기록 안전 보존
-            - **✏️ 과거 운동 일지 완벽 수정/삭제**: 기록 조회 탭에서 과거 일지의 날짜, 제목, 종목별 세트 무게/횟수/RPE/휴식시간 실시간 편집 지원
-            - **🔗 슈퍼세트/컴파운드세트 묶음 연동**: 시그니처 네온 브래킷으로 여러 종목 결합 수행 지원
-            - **🔒 100% 오프라인 로컬 보안 보장**: 모든 운동 기록은 서버 전송 없이 사용자 기기 내부에만 완벽하게 보관 (JSON/MD 백업 및 복원 지원)
+          body_path: release-notes.md
           files: release-assets/*
           draft: false
           prerelease: false

@@ -4,3 +4,5 @@
 - 변경 전 원격 태그와 GitHub 릴리즈를 확인하고 기존 버전보다 높은 적절한 버전을 사용합니다. package.json, package-lock.json, Android versionName을 맞춥니다.
 - 릴리즈 작업 시 npm test와 npm run build를 통과시킨 뒤 커밋 및 버전 태그를 푸시하고 GitHub Actions 상태를 확인합니다. 앱 산출물 배포 완료 여부는 실제 상태대로 보고합니다.
 - 머신 종목 이름은 브랜드명 없이 동작 중심으로 작성합니다. 기존 운동 ID와 사용자 기록을 보존하고 브랜드를 자동 지정하지 않습니다.
+
+- 버전은 SemVer를 사용합니다. 하위 호환 오류 수정은 patch, 하위 호환 기능 추가는 minor, 호환성이 깨지는 변경은 major를 올립니다. 버전별 `releases/<version>.md`에 실제 변경 사항과 검증 한계를 기록하고 릴리즈의 최신 업데이트 핵심 요약으로 사용합니다.
