@@ -338,7 +338,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             </button>
           </div>
 
-          {dailySessions.length > 0 && <button type="button" onClick={() => setIsShareCardOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#c6f36b] text-[#182016] font-black text-sm"><Share2 size={18}/>운동 인증 카드 만들기</button>}
+          {dailySessions.length > 0 && <button type="button" onClick={() => setIsShareCardOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#007AFF]/10 text-[#007AFF] font-black text-sm"><Share2 size={18}/>운동 인증 카드 만들기</button>}
           {/* 해당 일자의 운동 목록 */}
           {dailySessions.length === 0 ? (
             <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-3">
