@@ -1,7 +1,7 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
 
 export const nativeBackup = registerPlugin<{
-  save(options: { filename: string; data: string; mimeType?: string }): Promise<{ cancelled: boolean }>;
+  save(options: { filename: string; data: string; mimeType?: string; encoding?: 'base64' }): Promise<{ cancelled: boolean }>;
 }>('WorkoutBackup');
 
 export async function saveFileToDevice(
@@ -76,4 +76,30 @@ export async function saveFileToDevice(
       return { success: false, message: `다운로드 실패: ${uriErr.message || '지원되지 않는 환경입니다.'}` };
     }
   }
+}
+
+/** Preserve PNG bytes through Android SAF and browser file sharing. */
+export async function saveWorkoutImage(filename: string, dataUrl: string): Promise<{ message: string }> {
+  const data = dataUrl.split(',')[1];
+  if (!data || !dataUrl.startsWith('data:image/png;base64,')) throw new Error('Invalid PNG');
+  if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+    const result = await nativeBackup.save({ filename, data, mimeType: 'image/png', encoding: 'base64' });
+    return { message: result.cancelled ? '저장을 취소했습니다.' : '운동 인증 이미지를 저장했습니다.' };
+  }
+  const bytes = Uint8Array.from(atob(data), char => char.charCodeAt(0));
+  const file = new File([bytes], filename, { type: 'image/png' });
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: '오늘의 운동 인증' });
+      return { message: '공유 창으로 이미지를 전달했습니다.' };
+    } catch (error) {
+      if ((error as Error).name === 'AbortError') return { message: '공유를 취소했습니다.' };
+    }
+  }
+  const url = URL.createObjectURL(file);
+  const link = document.createElement('a');
+  link.href = url; link.download = filename;
+  document.body.appendChild(link); link.click(); link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+  return { message: 'PNG 이미지 다운로드를 시작했습니다.' };
 }

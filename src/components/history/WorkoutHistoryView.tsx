@@ -8,6 +8,7 @@ import { WorkoutSession, WorkoutExercise, WeightUnit } from '../../types/workout
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from '../../utils/calculations';
 import { loadSavedSessions, saveSessions, clearAllSessions, loadSampleDataForDemo } from '../../utils/storage';
+import { WorkoutShareCard } from './WorkoutShareCard';
 import { BackupPanel } from './BackupPanel';
 import { EditSessionModal } from './EditSessionModal';
 import { saveFileToDevice } from '../../utils/nativeFile';
@@ -20,13 +21,16 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
   const [sessions, setSessions] = useState<WorkoutSession[]>(() => loadSavedSessions());
   const [viewScope, setViewScope] = useState<'daily' | 'monthly' | 'yearly'>('daily');
   
+  const [isShareCardOpen, setIsShareCardOpen] = useState(false);
+
   // Edit Modal State
   const [editingSession, setEditingSession] = useState<WorkoutSession | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Date states
   const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     return today;
   });
 
@@ -334,6 +338,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             </button>
           </div>
 
+          {dailySessions.length > 0 && <button type="button" onClick={() => setIsShareCardOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#c6f36b] text-[#182016] font-black text-sm"><Share2 size={18}/>운동 인증 카드 만들기</button>}
           {/* 해당 일자의 운동 목록 */}
           {dailySessions.length === 0 ? (
             <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-3">
@@ -831,6 +836,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
         </div>
       )}
 
+      {isShareCardOpen && <WorkoutShareCard sessions={dailySessions} date={selectedDate} unit={weightUnit} onClose={() => setIsShareCardOpen(false)}/>}
       {/* 과거 운동 기록 수정 모달 */}
       <EditSessionModal
         isOpen={isEditModalOpen}

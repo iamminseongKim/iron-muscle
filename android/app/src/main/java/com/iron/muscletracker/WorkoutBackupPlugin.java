@@ -42,7 +42,10 @@ public class WorkoutBackupPlugin extends Plugin {
         }
         try (OutputStream out = getContext().getContentResolver().openOutputStream(result.getData().getData(), "wt")) {
             if (out == null) throw new Exception("파일을 열 수 없습니다.");
-            out.write(call.getString("data", "").getBytes(StandardCharsets.UTF_8));
+            byte[] bytes = "base64".equals(call.getString("encoding"))
+                ? android.util.Base64.decode(call.getString("data", ""), android.util.Base64.DEFAULT)
+                : call.getString("data", "").getBytes(StandardCharsets.UTF_8);
+            out.write(bytes);
             out.flush();
             response.put("cancelled", false); call.resolve(response);
         } catch (Exception error) { call.reject("백업 파일 저장에 실패했습니다.", error); }

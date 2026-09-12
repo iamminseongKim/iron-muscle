@@ -1,11 +1,11 @@
 {
   "name": "iron-muscle-tracker",
   "private": true,
-  "version": "3.11.0",
+  "version": "3.12.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "test": "node scripts/test-regressions.mjs && node scripts/test-backup.mjs && node scripts/test-markdown-parser.mjs && node scripts/test-custom-exercises.mjs && node scripts/test-quick-sets.mjs",
+    "test": "node scripts/test-regressions.mjs && node scripts/test-backup.mjs && node scripts/test-markdown-parser.mjs && node scripts/test-custom-exercises.mjs && node scripts/test-quick-sets.mjs && node scripts/test-workout-card.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "cap:sync": "cap sync",
