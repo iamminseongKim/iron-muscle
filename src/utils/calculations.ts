@@ -44,19 +44,20 @@ export function calculateTUTLoad(weight: number, reps: number, tempo?: Tempo): n
   return Math.round(weight * tut);
 }
 
-// 4. 세션 총 볼륨 (kg 기준 통일) 계산
-export function calculateSessionVolume(session: WorkoutSession): number {
-  let totalVolume = 0;
+// 4. 세션 총 볼륨 (kg 기본, unit 지정 시 해당 단위로 환산) 계산
+export function calculateSessionVolume(session: WorkoutSession, unit: WeightUnit = 'kg'): number {
+  let totalVolumeKg = 0;
   session.exercises.forEach(ex => {
-    const isLbs = ex.weightUnit === 'lbs';
+    const isLbs = (ex.weightUnit || session.weightUnit) === 'lbs';
     ex.sets.forEach(s => {
       if (s.completed && s.weight > 0 && s.reps > 0) {
         const weightInKg = isLbs ? s.weight / KG_TO_LBS : s.weight;
-        totalVolume += weightInKg * s.reps;
+        totalVolumeKg += weightInKg * s.reps;
       }
     });
   });
-  return Math.round(totalVolume);
+  const vol = unit === 'lbs' ? totalVolumeKg * KG_TO_LBS : totalVolumeKg;
+  return Math.round(vol);
 }
 
 // 5. 세션 총 횟수 (Reps)
@@ -110,18 +111,28 @@ export function getExerciseRecords(sets: WorkoutSet[]) {
   return { maxWeight, max1RM, maxSetVolume, totalSets, totalVolume };
 }
 
+export interface ProgressionRecord {
+  date: string;
+  max1RM: number;
+  weightUnit: WeightUnit;
+  brand?: string;
+  weight: number;
+  reps: number;
+}
+
 // 8. 종목별 통합 성장 분석 (여러 세션에 걸친 1RM 성장률 %)
 export function calculateProgression(exerciseId: string, history: WorkoutSession[]) {
-  const records: { date: string; max1RM: number; brand?: string; weight: number; reps: number }[] = [];
+  const records: ProgressionRecord[] = [];
 
   history.forEach(session => {
     session.exercises.forEach(ex => {
       if (ex.exerciseId === exerciseId) {
+        const exUnit: WeightUnit = ex.weightUnit || session.weightUnit || 'kg';
         let best1RM = 0;
         let bestWeight = 0;
         let bestReps = 0;
         ex.sets.forEach(s => {
-          if (s.completed) {
+          if (s.completed && s.weight > 0 && s.reps > 0) {
             const oneRm = calculate1RM(s.weight, s.reps, s.rpe);
             if (oneRm > best1RM) {
               best1RM = oneRm;
@@ -134,6 +145,7 @@ export function calculateProgression(exerciseId: string, history: WorkoutSession
           records.push({
             date: session.date,
             max1RM: best1RM,
+            weightUnit: exUnit,
             brand: ex.machineBrand,
             weight: bestWeight,
             reps: bestReps
@@ -147,9 +159,13 @@ export function calculateProgression(exerciseId: string, history: WorkoutSession
 
   let growthRate = 0;
   if (records.length >= 2) {
-    const first = records[0].max1RM;
-    const last = records[records.length - 1].max1RM;
-    growthRate = Math.round(((last - first) / first) * 1000) / 10;
+    const first = records[0];
+    const last = records[records.length - 1];
+    const firstInKg = first.weightUnit === 'lbs' ? first.max1RM / KG_TO_LBS : first.max1RM;
+    const lastInKg = last.weightUnit === 'lbs' ? last.max1RM / KG_TO_LBS : last.max1RM;
+    if (firstInKg > 0) {
+      growthRate = Math.round(((lastInKg - firstInKg) / firstInKg) * 1000) / 10;
+    }
   }
 
   return { records, growthRate };

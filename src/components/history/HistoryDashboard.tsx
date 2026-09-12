@@ -7,7 +7,7 @@ import { EXERCISES_DATABASE } from '../../data/exercises';
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { 
   calculateSessionVolume, calculateSessionReps, calculateAverageRPE, 
-  calculateProgression, checkDeloadRecommendation 
+  calculateProgression, checkDeloadRecommendation, convertWeight 
 } from '../../utils/calculations';
 import { GrowthExercisePicker } from './GrowthExercisePicker';
 import { buildGrowthExerciseOptions } from '../../utils/growthExercises';
@@ -36,7 +36,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
   const targetExercise = exerciseOptions.find(option => option.exercise.id === selectedExerciseId)?.exercise;
 
   const totalWorkouts = history.length;
-  const cumulativeVolume = history.reduce((sum, s) => sum + calculateSessionVolume(s), 0);
+  const cumulativeVolume = history.reduce((sum, s) => sum + calculateSessionVolume(s, weightUnit), 0);
   const cumulativeReps = history.reduce((sum, s) => sum + calculateSessionReps(s), 0);
 
   return (
@@ -127,9 +127,21 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{targetExercise ? `${targetExercise.name} 성장률` : '종목별 성장 기록'}</span>
             <span className={`text-sm font-black ${
-              progression.growthRate > 0 ? 'text-[#34C759]' : 'text-gray-400'
+              progression.records.length < 2
+                ? 'text-gray-400'
+                : progression.growthRate > 0
+                ? 'text-[#34C759]'
+                : progression.growthRate === 0
+                ? 'text-gray-400'
+                : 'text-[#FF9500]'
             }`}>
-              {progression.growthRate > 0 ? `+${progression.growthRate}% 성장 🚀` : '기록 측정 중'}
+              {progression.records.length < 2
+                ? '기록 측정 중'
+                : progression.growthRate > 0
+                ? `+${progression.growthRate}% 성장 🚀`
+                : progression.growthRate === 0
+                ? '0.0% (유지)'
+                : `${progression.growthRate}%`}
             </span>
           </div>
 
@@ -139,22 +151,36 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
             </div>
           ) : (
             <div className="space-y-1.5 pt-1">
-              {progression.records.map((rec, i) => (
-                <div key={i} className="flex items-center justify-between p-2.5 bg-white dark:bg-[#1C1C1E] rounded-xl text-xs shadow-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-semibold text-gray-400">{rec.date}</span>
-                    {rec.brand && (
-                      <span className="px-1.5 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-semibold">
-                        {rec.brand.split(' ')[0]}
+              {progression.records.map((rec, i) => {
+                const recUnit = rec.weightUnit || 'kg';
+                const converted1RM = recUnit !== weightUnit
+                  ? convertWeight(rec.max1RM, recUnit, weightUnit)
+                  : null;
+
+                return (
+                  <div key={i} className="flex items-center justify-between p-2.5 bg-white dark:bg-[#1C1C1E] rounded-xl text-xs shadow-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-semibold text-gray-400">{rec.date}</span>
+                      {rec.brand && (
+                        <span className="px-1.5 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-semibold">
+                          {rec.brand.split(' ')[0]}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">{rec.weight}{recUnit} × {rec.reps}회</span>
+                      <span className="font-bold text-[#0F766E]">
+                        추정 1RM {rec.max1RM}{recUnit}
+                        {converted1RM !== null && (
+                          <span className="text-[11px] font-normal text-gray-400 dark:text-gray-400 ml-1">
+                            (≈{converted1RM}{weightUnit})
+                          </span>
+                        )}
                       </span>
-                    )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500">{rec.weight}kg × {rec.reps}회</span>
-                    <span className="font-bold text-[#0F766E]">추정 1RM {rec.max1RM}kg</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -170,7 +196,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
         </h3>
 
         {history.map((sess) => {
-          const vol = calculateSessionVolume(sess);
+          const vol = calculateSessionVolume(sess, weightUnit);
           const completedExercises = sess.exercises;
 
           return (
@@ -191,7 +217,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                     </span>
                   )}
                   <span className="px-2.5 py-0.5 rounded-full bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-gray-200 text-xs font-bold">
-                    {vol.toLocaleString()} kg
+                    {vol.toLocaleString()} {weightUnit}
                   </span>
                 </div>
               </div>
