@@ -8,7 +8,7 @@ try{
  await page.select('[aria-label="Language / 언어"]','en');
  await page.evaluate(()=>[...document.querySelectorAll('nav button')].find(b=>b.textContent.includes('Exercises')).click());
  await page.waitForSelector('[data-target-count]',{timeout:45000}).catch(async e=>{console.log(await page.evaluate(()=>document.body.innerText));throw e});
- assert.ok(urls.some(u=>u.includes('anatomy.glb.gz')));assert.ok(urls.some(u=>u.includes('skeleton.glb.gz')));
+ assert.ok(urls.some(u=>u.includes('anatomy.glb')));assert.ok(urls.some(u=>u.includes('skeleton.glb')));
  assert.ok(await page.$eval('[data-target-count]',e=>Number(e.dataset.targetCount)>=17));
  assert.deepEqual(errors,[]);
  console.log('PASS production compressed models, 17 target groups, no initial 3D requests');

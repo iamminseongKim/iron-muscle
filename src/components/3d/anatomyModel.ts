@@ -1,5 +1,4 @@
 import { MeshoptDecoder } from 'meshoptimizer/meshopt_decoder.module.js';
-import { gunzipSync } from 'fflate';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -38,20 +37,8 @@ export function disposeAnatomy(group: THREE.Object3D) {
 export async function loadAnatomyModel(): Promise<{ group: THREE.Group; parts: AnatomyPart[] }> {
   await MeshoptDecoder.ready;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-  const loadModel = async (name: string) => {
-    const glbUrl = `${import.meta.env.BASE_URL}anatomy/${name}.glb`;
-    const gzUrl = `${glbUrl}.gz`;
-    try {
-      const response = await fetch(gzUrl);
-      if (response.ok) {
-        const payload = new Uint8Array(await response.arrayBuffer());
-        const bytes = payload[0] === 0x1f && payload[1] === 0x8b ? gunzipSync(payload) : payload;
-        return await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer, '');
-      }
-    } catch {
-      // Fallback to direct .glb loading (essential for Android APK where AAPT decompresses assets)
-    }
-    return await loader.loadAsync(glbUrl);
+  const loadModel = (name: string) => {
+    return loader.loadAsync(`${import.meta.env.BASE_URL}anatomy/${name}.glb`);
   };
   // allSettled ensures a successful half-load is disposed if the other file fails.
   const results = await Promise.allSettled([

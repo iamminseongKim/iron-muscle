@@ -24,6 +24,6 @@ for (const name of ['anatomy', 'skeleton']) {
    });
  });
   fs.writeFileSync(`dist/anatomy/${name}.glb`, encoded);
-  fs.writeFileSync(`dist/anatomy/${name}.glb.gz`, gzipSync(encoded, {level:9}));
-  console.log(`Verified ${name}: ${originalMeshes.length} meshes, exact attributes and triangle topology; glb: ${fs.statSync(`dist/anatomy/${name}.glb`).size} bytes, gz: ${fs.statSync(`dist/anatomy/${name}.glb.gz`).size} bytes`);
+  fs.rmSync(`dist/anatomy/${name}.glb.gz`, { force: true });
+  console.log(`Verified ${name}: ${originalMeshes.length} meshes, exact attributes and triangle topology; glb: ${fs.statSync(`dist/anatomy/${name}.glb`).size} bytes`);
 }
