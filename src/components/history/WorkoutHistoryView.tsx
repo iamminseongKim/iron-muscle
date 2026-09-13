@@ -31,6 +31,37 @@ interface WorkoutHistoryViewProps {
 export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUnit = 'kg' }) => {
   const language = useLanguage();
   const exportLabels = exportMessages[language];
+
+  const formatYearAllWorkouts = (year: number, lang: string) => {
+    switch (lang) {
+      case 'ko': return `${year}년 전체 트레이닝`;
+      case 'ja': return `${year}年 全トレーニング`;
+      case 'zh-CN': return `${year}年 全年训练`;
+      case 'zh-TW': return `${year}年 全年訓練`;
+      case 'es': return `${year} Entrenamientos completos`;
+      case 'fr': return `${year} Tous les entraînements`;
+      case 'de': return `${year} Gesamtes Training`;
+      default: return `${year} All Workouts`;
+    }
+  };
+
+  const formatMonthLabel = (m: number, lang: string) => {
+    if (lang === 'ko') return `${m}월`;
+    if (lang === 'ja' || lang === 'zh-CN' || lang === 'zh-TW') return `${m}月`;
+    const enShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return enShort[m - 1] || `${m}`;
+  };
+
+  const formatYearMonthHeader = (ym: string, lang: string) => {
+    const [y, mStr] = ym.split('-');
+    const mNum = parseInt(mStr, 10);
+    if (lang === 'ko') return `${y}년 ${mNum}월`;
+    if (lang === 'ja' || lang === 'zh-CN' || lang === 'zh-TW') return `${y}年 ${mNum}月`;
+    const enMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthName = enMonths[mNum - 1] || mStr;
+    if (lang === 'es') return `${monthName} de ${y}`;
+    return `${monthName} ${y}`;
+  };
   const [sessions, setSessions] = useState<WorkoutSession[]>(() => loadSavedSessions());
   const [viewScope, setViewScope] = useState<'daily' | 'monthly' | 'yearly'>('daily');
   
@@ -340,7 +371,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 className="bg-transparent font-black text-sm text-[#1D1D1F] dark:text-white text-center outline-none cursor-pointer"
               />
               {workoutDates.has(selectedDate) && (
-                <span className="w-2 h-2 rounded-full bg-[#34C759]" title="운동 완료일" />
+                <span className="w-2 h-2 rounded-full bg-[#34C759]" title={t("운동 완료일")} />
               )}
             </div>
 
@@ -363,13 +394,13 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 </div>
                 <div className="min-w-0">
                   <h4 className="text-xs font-black text-gray-900 dark:text-white flex items-center gap-1.5 flex-wrap">
-                    <span>{t("오늘")}{dailySessions.length}개의 운동 기록이 있습니다</span>
+                    <span>{t("오늘")} {dailySessions.length}{t("개의 운동 기록이 있습니다")}</span>
                     <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#0F766E]/20 text-[#0F766E] font-extrabold">
-                      {dailySessions.length}개 세션
+                      {dailySessions.length}{t("개 세션")}
                     </span>
                   </h4>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                    실수로 나눠졌거나 2차 운동을 하나의 일지로 통합합니다.
+                    {t("실수로 나눠졌거나 2차 운동을 하나의 일지로 통합합니다.")}
                   </p>
                 </div>
               </div>
@@ -395,10 +426,10 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <Dumbbell size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
               <div>
                 <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                  {selectedDate}에 기록된 운동이 없습니다.
+                  {selectedDate} · {t("기록된 운동이 없습니다.")}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  [운동 기록] 탭에서 오늘의 운동을 시작하거나 날짜를 변경해 보세요.
+                  {t("[운동 기록] 탭에서 오늘의 운동을 시작하거나 날짜를 변경해 보세요.")}
                 </p>
               </div>
 
@@ -436,12 +467,12 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         </h3>
                         {session.isDeload && (
                           <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 text-[10px] font-bold">
-                            디로딩
+                            {t("디로딩")}
                           </span>
                         )}
                       </div>
                       <span className="text-xs text-gray-400">
-                        {session.date} · {Math.round(session.durationSeconds / 60)}분 동안 수행
+                        {session.date} · {Math.round(session.durationSeconds / 60)}{t("분 동안 수행")}
                       </span>
                     </div>
 
@@ -593,7 +624,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <ChevronLeft size={18} />
             </button>
             <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
-              {currentMonth.split('-')[0]}년 {currentMonth.split('-')[1]}월
+              {formatYearMonthHeader(currentMonth, language)}
             </span>
             <button
               onClick={handleNextMonth}
@@ -634,7 +665,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
             <div className="grid grid-cols-7 gap-1 text-center">
               {['일', '월', '화', '수', '목', '금', '토'].map((w) => (
-                <span key={w} className="text-[10px] text-gray-400 font-bold py-1">{w}</span>
+                <span key={w} className="text-[10px] text-gray-400 font-bold py-1">{t(w)}</span>
               ))}
 
               {/* Day cells (1-31) */}
@@ -683,7 +714,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                   <span className="text-lg">{s.conditionEmoji || '💪'}</span>
                   <div>
                     <h4 className="text-xs font-bold text-[#1D1D1F] dark:text-white">{s.title || t("오늘의 운동")}</h4>
-                    <span className="text-[11px] text-gray-400">{s.date} · {s.exercises.length}개 종목</span>
+                    <span className="text-[11px] text-gray-400">{s.date} · {s.exercises.length}{t("개 종목")}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -725,7 +756,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <ChevronLeft size={18} />
             </button>
             <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
-              {currentYear}년 전체 트레이닝
+              {formatYearAllWorkouts(currentYear, language)}
             </span>
             <button
               onClick={() => setCurrentYear(currentYear + 1)}
@@ -772,7 +803,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         }`}
                       />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-400">{i + 1}월</span>
+                    <span className="text-[10px] font-bold text-gray-400">{formatMonthLabel(i + 1, language)}</span>
                   </div>
                 );
               })}

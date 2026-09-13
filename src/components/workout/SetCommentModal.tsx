@@ -51,12 +51,13 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
               <MessageSquare size={18} />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">{setNumber}세트 세부 코멘트</h3>
-              <p className="text-xs text-gray-400">세트별 특이사항 및 태그 달기</p>
+              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">{setNumber}{t("세트 세부 코멘트")}</h3>
+              <p className="text-xs text-gray-400">{t("세트별 특이사항 및 태그 달기")}</p>
             </div>
           </div>
           <button 
             onClick={onClose} 
+            aria-label={t("닫기")}
             className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition"
           >
             <X size={18} />
@@ -67,9 +68,9 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
         <div className="p-4 space-y-4">
           {/* 빠른 태그 선택 */}
           <div>
-            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2 flex items-center gap-1.5">
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1.5">
               <Tag size={13} className="text-[#0F766E]" />
-              빠른 세트 태그
+              {t("빠른 세트 태그")}
             </span>
             <div className="flex flex-wrap gap-1.5">
               {AVAILABLE_TAGS.map((tag) => {
@@ -86,7 +87,7 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
                     }`}
                   >
                     {isSelected && <Check size={12} strokeWidth={3} />}
-                    {tag}
+                    {t(tag)}
                   </button>
                 );
               })}
@@ -95,12 +96,12 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
 
           {/* 메모 텍스트 입력창 */}
           <div>
-            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-1.5">세트 메모 (선택사항)</span>
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-1.5">{t("세트 메모 (선택사항)")}</span>
             <textarea
               rows={3}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="예: 3회차 때 허리 긴장 풀림, 다음엔 스트랩 챙길 것"
+              placeholder={t("예: 3회차 때 허리 긴장 풀림, 다음엔 스트랩 챙길 것")}
               className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E] transition resize-none font-medium"
             />
           </div>

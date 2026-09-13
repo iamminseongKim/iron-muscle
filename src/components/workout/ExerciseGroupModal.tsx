@@ -1,4 +1,4 @@
-import { t } from '../../i18n';
+import { t, displayExercise } from '../../i18n';
 import React, { useState } from 'react';
 import { Zap, Flame, X, Check, Link2, Unlink } from 'lucide-react';
 import { WorkoutExercise, ExerciseGroupType } from '../../types/workout';
@@ -27,7 +27,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
   if (!isOpen) return null;
 
   const currentBase = resolveRecordedExercise(currentExercise);
-  const currentName = currentBase?.name || '현재 종목';
+  const currentName = currentBase ? displayExercise(currentBase) : t('현재 종목');
 
   // Other exercises that can be linked
   const otherExercises = allSessionExercises.filter((e) => e.id !== currentExercise.id);
@@ -64,7 +64,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-extrabold text-[#1D1D1F] dark:text-white">
-                종목 묶기 설정
+                {t("종목 묶기 설정")}
               </h3>
               <p className="text-xs text-gray-400 truncate max-w-[200px]">
                 {currentName}
@@ -73,6 +73,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label={t("닫기")}
             className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-400 transition"
           >
             <X size={18} />
@@ -82,12 +83,12 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
         {isAlreadyGrouped ? (
           <div className="space-y-3">
             <div className="p-3.5 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-2xl">
-              <span className="text-xs text-gray-400 font-medium block mb-1">현재 상태</span>
+              <span className="text-xs text-gray-400 font-medium block mb-1">{t("현재 상태")}</span>
               <p className="text-sm font-bold text-[#0F766E]">
-                {currentExercise.groupLabel || '묶음 진행 중'}
+                {currentExercise.groupLabel ? t(currentExercise.groupLabel) : t('묶음 진행 중')}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                다른 종목과 결합되어 한 세트로 순서대로 진행됩니다.
+                {t("다른 종목과 결합되어 한 세트로 순서대로 진행됩니다.")}
               </p>
             </div>
 
@@ -97,7 +98,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
               className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-[#FF3B30] rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition"
             >
               <Unlink size={16} />
-              이 종목 묶음 해제하기
+              {t("이 종목 묶음 해제하기")}
             </button>
           </div>
         ) : (
@@ -105,7 +106,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
             {/* 묶음 방식 선택: 슈퍼세트 vs 컴파운드세트 */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-500 dark:text-gray-400">
-                묶음 방식 선택
+                {t("묶음 방식 선택")}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -119,10 +120,10 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                 >
                   <div className="flex items-center gap-1.5 font-bold text-xs mb-1">
                     <Zap size={14} className="text-[#0F766E]" />
-                    ⚡ 슈퍼세트
+                    {t("⚡ 슈퍼세트")}
                   </div>
                   <p className="text-[11px] text-gray-400 leading-tight">
-                    길항근 / 다른 부위 2개 종목을 번갈아 수행 (예: 이두+삼두, 가슴+등)
+                    {t("길항근 / 다른 부위 2개 종목을 번갈아 수행 (예: 이두+삼두, 가슴+등)")}
                   </p>
                 </button>
 
@@ -137,10 +138,10 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                 >
                   <div className="flex items-center gap-1.5 font-bold text-xs mb-1">
                     <Flame size={14} className="text-[#FF9500]" />
-                    🔥 컴파운드세트
+                    {t("🔥 컴파운드세트")}
                   </div>
                   <p className="text-[11px] text-gray-400 leading-tight">
-                    같은 부위 2개 종목을 연속 수행하여 완전 탈진 유도
+                    {t("같은 부위 2개 종목을 연속 수행하여 완전 탈진 유도")}
                   </p>
                 </button>
               </div>
@@ -149,11 +150,11 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
             {/* 함께 묶을 대상 종목 선택 */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-500 dark:text-gray-400">
-                함께 묶을 종목 선택
+                {t("함께 묶을 종목 선택")}
               </label>
               {otherExercises.length === 0 ? (
                 <div className="p-4 text-center text-xs text-gray-400 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-2xl">
-                  함께 묶을 다른 운동이 세션에 없습니다.<br />먼저 다른 운동을 추가해 주세요.
+                  {t("함께 묶을 다른 운동이 세션에 없습니다. 먼저 다른 운동을 추가해 주세요.")}
                 </div>
               ) : (
                 <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
@@ -172,10 +173,10 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                         }`}
                       >
                         <div className="text-xs font-bold truncate">
-                          {base?.name || t("운동 종목")}
+                          {base ? displayExercise(base) : t("운동 종목")}
                           {target.groupLabel && (
                             <span className="ml-1.5 text-[10px] text-gray-400">
-                              ({target.groupLabel})
+                              ({t(target.groupLabel)})
                             </span>
                           )}
                         </div>
@@ -205,7 +206,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
               }`}
             >
               <Link2 size={16} />
-              선택한 종목과 {selectedGroupType === 'superset' ? t("슈퍼세트") : t("컴파운드세트")} 묶기
+              {t("선택한 종목과 묶기")}
             </button>
           </div>
         )}

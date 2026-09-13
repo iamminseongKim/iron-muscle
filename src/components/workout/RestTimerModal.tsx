@@ -15,7 +15,7 @@ interface RestTimerModalProps {
 export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   isOpen,
   initialSeconds = 90,
-  exerciseName = '운동',
+  exerciseName = '',
   setNumber = 1,
   onClose,
   onFinishAndSave,
@@ -264,7 +264,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
                 {isCompleted ? `${t("완료!")} ${elapsedSeconds}s` : formatTime(remainingSeconds)}
               </span>
               <span className="text-[10px] font-bold text-gray-400 block -mt-0.5 truncate max-w-[80px]">
-                {isCompleted ? t('휴식 완료') : `${exerciseName} #${setNumber}`}
+                {isCompleted ? t('휴식 완료') : `${exerciseName || t('운동')} #${setNumber}`}
               </span>
             </div>
           </button>
@@ -335,7 +335,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
           <div>
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">{t("휴식 시간")}</span>
             <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white truncate max-w-[160px]">
-              {exerciseName} #{setNumber}{t("세트")} {t("휴식")}
+              {exerciseName || t('운동')} #{setNumber}{t("세트")} {t("휴식")}
             </h3>
           </div>
 

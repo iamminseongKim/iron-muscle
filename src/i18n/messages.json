@@ -831,13 +831,13 @@
   ],
   "최상 (100%)": [
     "최상 (100%)",
-    "Excellent (100%)",
-    "最高 (100%)",
+    "Superb (100%)",
+    "絶好調 (100%)",
     "极佳 (100%)",
     "極佳 (100%)",
     "Excelente (100%)",
-    "Excellent (100%)",
-    "Ausgezeichnet (100%)"
+    "Au top (100%)",
+    "Hervorragend (100%)"
   ],
   "좋음 (80%)": [
     "좋음 (80%)",
@@ -845,7 +845,7 @@
     "良好 (80%)",
     "良好 (80%)",
     "良好 (80%)",
-    "Bien (80%)",
+    "Bueno (80%)",
     "Bien (80%)",
     "Gut (80%)"
   ],
@@ -853,8 +853,8 @@
     "보통 (60%)",
     "Normal (60%)",
     "普通 (60%)",
-    "一般 (60%)",
-    "一般 (60%)",
+    "普通 (60%)",
+    "普通 (60%)",
     "Normal (60%)",
     "Normal (60%)",
     "Normal (60%)"
@@ -871,12 +871,12 @@
   ],
   "가볍게 회복": [
     "가볍게 회복",
-    "Light recovery",
+    "Light Recovery",
     "軽い回復",
-    "轻度恢复",
-    "輕度恢復",
-    "Recuperación ligera",
-    "Récupération légère",
+    "轻松恢复",
+    "輕鬆恢復",
+    "Recuperación suave",
+    "Récupération douce",
     "Leichte Erholung"
   ],
   "체험용 샘플 기록 불러오기": [
@@ -912,12 +912,12 @@
   "운동 검색": [
     "운동 검색",
     "Search exercises",
-    "種目を検索",
+    "種目検索",
     "搜索动作",
     "搜尋動作",
-    "Buscar ejercicio",
-    "Rechercher un exercice",
-    "Übung suchen"
+    "Buscar ejercicios",
+    "Rechercher des exercices",
+    "Übungen suchen"
   ],
   "운동 선택": [
     "운동 선택",
@@ -1111,23 +1111,23 @@
   ],
   "이미지 생성에 실패했습니다. 다시 열어 주세요.": [
     "이미지 생성에 실패했습니다. 다시 열어 주세요.",
-    "Image generation failed. Please reopen the card.",
-    "画像を生成できませんでした。開き直してください。",
-    "图片生成失败，请重新打开卡片。",
-    "圖片產生失敗，請重新開啟卡片。",
-    "No se pudo generar la imagen. Abre la tarjeta de nuevo.",
-    "Échec de génération. Rouvrez la carte.",
-    "Bild konnte nicht erstellt werden. Karte erneut öffnen."
+    "Failed to generate image. Please open again.",
+    "画像の生成に失敗しました。もう一度開いてください。",
+    "生成图片失败，请重新打开。",
+    "生成圖片失敗，請重新開啟。",
+    "Error al generar la imagen. Ábrela de nuevo.",
+    "Échec de la génération de l'image. Veuillez rouvrir.",
+    "Bilderstellung fehlgeschlagen. Bitte erneut öffnen."
   ],
   "해부도 이미지를 불러오지 못했습니다. 다시 열어 주세요.": [
     "해부도 이미지를 불러오지 못했습니다. 다시 열어 주세요.",
-    "Could not load the anatomy image. Please reopen the card.",
-    "解剖図を読み込めませんでした。開き直してください。",
-    "无法加载解剖图，请重新打开卡片。",
-    "無法載入解剖圖，請重新開啟卡片。",
-    "No se pudo cargar la anatomía. Abre la tarjeta de nuevo.",
-    "Impossible de charger l’anatomie. Rouvrez la carte.",
-    "Anatomiebild konnte nicht geladen werden. Karte erneut öffnen."
+    "Failed to load anatomy image. Please open again.",
+    "解剖図画像の読み込みに失敗しました。もう一度開いてください。",
+    "未能加载解剖图，请重新打开。",
+    "未能載入解剖圖，請重新開啟。",
+    "No se pudo cargar la imagen de anatomía. Ábrela de nuevo.",
+    "Impossible de charger l'image anatomique. Veuillez rouvrir.",
+    "Anatomiebild konnte nicht geladen werden. Bitte erneut öffnen."
   ],
   "이미지를 저장하지 못했습니다. 다시 시도해 주세요.": [
     "이미지를 저장하지 못했습니다. 다시 시도해 주세요.",
@@ -1371,7 +1371,7 @@
   ],
   "웜업": [
     "웜업",
-    "Warm-up",
+    "Warmup",
     "ウォームアップ",
     "热身",
     "熱身",
@@ -1381,93 +1381,93 @@
   ],
   "탑세트": [
     "탑세트",
-    "Top set",
+    "Top Set",
     "トップセット",
-    "顶组",
-    "頂組",
-    "Serie principal",
-    "Série principale",
-    "Schwerster Satz"
+    "顶峰组",
+    "頂峰組",
+    "Serie Top",
+    "Série Top",
+    "Top-Satz"
   ],
   "백오프": [
     "백오프",
     "Back-off",
     "バックオフ",
-    "回退组",
-    "回退組",
-    "Serie de descarga",
-    "Série allégée",
-    "Reduzierter Satz"
+    "减重组",
+    "減重組",
+    "Descarga",
+    "Back-off",
+    "Back-off"
   ],
   "드롭세트": [
     "드롭세트",
-    "Drop set",
+    "Drop Set",
     "ドロップセット",
     "递减组",
     "遞減組",
     "Serie descendente",
-    "Série dégressive",
-    "Reduktionssatz"
+    "Drop set",
+    "Dropsatz"
   ],
   "실패지점": [
     "실패지점",
     "Failure",
-    "限界",
-    "力竭",
-    "力竭",
-    "Fallo",
-    "Échec",
+    "限界到達",
+    "力竭点",
+    "力竭點",
+    "Punto de fallo",
+    "Point d'échec",
     "Muskelversagen"
   ],
   "스트랩 착용": [
     "스트랩 착용",
-    "Straps",
-    "ストラップ使用",
-    "使用拉力带",
-    "使用拉力帶",
-    "Correas",
-    "Sangles",
-    "Zughilfen"
+    "Straps Used",
+    "ストラップ着用",
+    "使用握力带",
+    "使用握力帶",
+    "Con correas",
+    "Avec sangles",
+    "Mit Zughilfen"
   ],
   "벨트 착용": [
     "벨트 착용",
-    "Belt",
-    "ベルト使用",
-    "使用腰带",
-    "使用腰帶",
-    "Cinturón",
-    "Ceinture",
-    "Gürtel"
+    "Belt Used",
+    "ベルト着用",
+    "佩戴腰带",
+    "配戴腰帶",
+    "Con cinturón",
+    "Avec ceinture",
+    "Mit Gürtel"
   ],
   "자세 불안": [
     "자세 불안",
-    "Unstable technique",
-    "フォーム不安定",
-    "动作不稳定",
-    "動作不穩定",
+    "Shaky Form",
+    "フォーム乱れ",
+    "动作不稳",
+    "動作不穩",
     "Técnica inestable",
-    "Technique instable",
-    "Unsichere Technik"
+    "Forme instable",
+    "Unsaubere Form"
   ],
   "치팅 1회": [
     "치팅 1회",
-    "One assisted rep",
-    "反動1回",
+    "1 Cheated Rep",
+    "チーティング1回",
     "借力1次",
     "借力1次",
-    "Una repetición con impulso",
-    "Une répétition avec élan",
-    "Eine Wiederholung mit Schwung"
+    "1 rep con trampa",
+    "1 rep trichée",
+    "1 Wdh. geschummelt"
   ],
   "자극 최고": [
     "자극 최고",
-    "Great muscle engagement",
-    "刺激良好",
-    "肌肉刺激良好",
-    "肌肉刺激良好",
-    "Gran estímulo muscular",
-    "Bonne sollicitation",
-    "Gute Muskelansprache"
+    "Insane Pump",
+    "最高の刺激",
+    "泵感绝佳",
+    "泵感絕佳",
+    "Bomba increíble",
+    "Congestion max",
+    "Krasse Pumpe"
   ],
   "언어 설정": [
     "언어 설정",
@@ -1605,7 +1605,7 @@
     "平均RPE",
     "平均RPE",
     "平均RPE",
-    "RPE medio",
+    "RPE promedio",
     "RPE moyen",
     "Durchschnitts-RPE"
   ],
@@ -1741,7 +1741,7 @@
   ],
   "세트 완료": [
     "세트 완료",
-    "sets completed",
+    "Sets Completed",
     "セット完了",
     "组完成",
     "組完成",
@@ -1921,13 +1921,13 @@
   ],
   "플레이트(원판)": [
     "플레이트(원판)",
-    "Plate-Loaded",
-    "プレート（円盤）",
-    "挂片(杠铃片)",
-    "掛片(槓鈴片)",
-    "Discos",
-    "Disques",
-    "Hantelscheiben"
+    "Plate-loaded",
+    "プレートロード",
+    "挂片式（杠铃片）",
+    "掛片式（槓鈴片）",
+    "Con discos",
+    "À disques",
+    "Scheibenbeladen"
   ],
   "핀머신": [
     "핀머신",
@@ -2051,13 +2051,13 @@
   ],
   "일": [
     "일",
-    "days",
+    "S",
     "日",
-    "天",
-    "天",
-    "días",
-    "jours",
-    "Tage"
+    "日",
+    "日",
+    "D",
+    "D",
+    "S"
   ],
   "연간 누적 볼륨": [
     "연간 누적 볼륨",
@@ -2621,23 +2621,23 @@
   ],
   "3D 모델을 표시하지 못했어요.": [
     "3D 모델을 표시하지 못했어요.",
-    "Could not load 3D model.",
+    "Could not display 3D model.",
     "3Dモデルを表示できませんでした。",
     "未能显示3D模型。",
     "未能顯示3D模型。",
-    "No se pudo cargar el modelo 3D.",
-    "Impossible de charger le modèle 3D.",
-    "3D-Modell konnte nicht geladen werden."
+    "No se pudo mostrar el modelo 3D.",
+    "Impossible d'afficher le modèle 3D.",
+    "3D-Modell konnte nicht angezeigt werden."
   ],
   "다시 불러오기": [
     "다시 불러오기",
-    "Retry",
+    "Reload",
     "再読み込み",
-    "重试",
-    "重試",
-    "Reintentar",
-    "Réessayer",
-    "Erneut versuchen"
+    "重新加载",
+    "重新載入",
+    "Recargar",
+    "Recharger",
+    "Neu laden"
   ],
   "앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.": [
     "앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.",
@@ -2661,23 +2661,23 @@
   ],
   "동일한 3D 인체의 전면과 후면": [
     "동일한 3D 인체의 전면과 후면",
-    "Front and back of the same 3D body",
-    "同一3D人体の前面と後面",
-    "同一3D人体的正面与背面",
-    "同一3D人體的正面與背面",
-    "Frente y dorso del mismo cuerpo 3D",
-    "Face et dos du même corps 3D",
-    "Vorder- und Rückseite desselben 3D-Körpers"
+    "Front and back of the 3D body",
+    "3D人体の前面と背面",
+    "3D人体的前后视图",
+    "3D人體的前後視圖",
+    "Vista frontal y posterior del cuerpo 3D",
+    "Vue avant et arrière du corps 3D",
+    "Vorder- und Rückansicht des 3D-Körpers"
   ],
   "드래그로 회전하고 두 손가락으로 확대하는 인체": [
     "드래그로 회전하고 두 손가락으로 확대하는 인체",
-    "Interactive 3D body: rotate and zoom",
-    "ドラッグで回転しピンチで拡大する人体",
-    "可拖动旋转及缩放的人体3D模型",
-    "可拖曳旋轉及縮放的人體3D模型",
-    "Cuerpo 3D interactivo: gira y haz zoom",
-    "Corps 3D interactif : pivotez et zoomez",
-    "Interaktiver 3D-Körper: drehen und zoomen"
+    "Drag to rotate, pinch to zoom the body",
+    "ドラッグで回転、ピンチで拡大する人体",
+    "拖动旋转，双指缩放人体模型",
+    "拖曳旋轉，雙指縮放人體模型",
+    "Arrastra para rotar y pellizca para hacer zoom",
+    "Glissez pour pivoter, pincez pour zoomer",
+    "Ziehen zum Drehen, Aufziehen zum Zoomen"
   ],
   "3D 모델 출처": [
     "3D 모델 출처",
@@ -2781,7 +2781,7 @@
   ],
   "필터 초기화": [
     "필터 초기화",
-    "Reset Filters",
+    "Reset filters",
     "フィルター初期化",
     "重置筛选",
     "重設篩選",
@@ -2832,52 +2832,52 @@
   "최상의 컨디션": [
     "최상의 컨디션",
     "Peak Condition",
-    "最高の調子",
-    "状态极佳",
-    "狀態極佳",
-    "En plena forma",
-    "Excellente forme",
+    "最高のコンディション",
+    "最佳状态",
+    "最佳狀態",
+    "Condición máxima",
+    "Condition optimale",
     "Topform"
   ],
   "적절한 펌핑 & 힘": [
     "적절한 펌핑 & 힘",
-    "Good Pump & Strength",
-    "良いパンプ感と筋力",
-    "力量与泵感良好",
-    "力量與泵感良好",
+    "Great Pump & Strength",
+    "適度なパンプ＆力",
+    "良好泵感与力量",
+    "良好泵感與力量",
     "Buen bombeo y fuerza",
-    "Bonne congestion et force",
+    "Bonne congestion & force",
     "Guter Pump & Kraft"
   ],
   "수면 부족 / 피로": [
     "수면 부족 / 피로",
-    "Lack of Sleep / Fatigued",
-    "睡眠不足・疲労",
-    "睡眠不足/疲惫",
-    "睡眠不足/疲憊",
+    "Lack of Sleep / Fatigue",
+    "睡眠不足 / 疲労",
+    "睡眠不足 / 疲劳",
+    "睡眠不足 / 疲勞",
     "Falta de sueño / Fatiga",
     "Manque de sommeil / Fatigue",
-    "Schlafmangel / Müde"
+    "Schlafmangel / Müdigkeit"
   ],
   "관절 / 통증 주의": [
     "관절 / 통증 주의",
-    "Joint / Soreness Caution",
-    "関節・痛み注意",
-    "注意关节/酸痛",
-    "注意關節/酸痛",
-    "Cuidado con articulaciones",
-    "Attention articulations",
-    "Vorsicht bei Gelenken"
+    "Joint / Pain Caution",
+    "関節 / 痛み注意",
+    "注意关节 / 疼痛",
+    "注意關節 / 疼痛",
+    "Cuidado con articulaciones / dolor",
+    "Attention articulations / douleur",
+    "Achtung Gelenke / Schmerzen"
   ],
   "신기록 갱신 달성": [
     "신기록 갱신 달성",
     "New PR Achieved",
     "新記録更新達成",
-    "刷新个人最佳纪录",
-    "刷新個人最佳紀錄",
-    "¡Nuevo récord personal!",
-    "Nouveau record personnel !",
-    "Neuer PR aufgestellt!"
+    "达成个人新纪录",
+    "達成個人新紀錄",
+    "¡Nuevo récord conseguido!",
+    "Nouveau record battu !",
+    "Neue Bestleistung erreicht!"
   ],
   "운동 부위 재설정": [
     "운동 부위 재설정",
@@ -3311,13 +3311,13 @@
   ],
   "세트 퀵 설정": [
     "세트 퀵 설정",
-    "Quick Set Config",
-    "セット一括設定",
-    "组数快捷设置",
-    "組數快捷設置",
-    "Configuración rápida de series",
-    "Configuration rapide des séries",
-    "Schnellkonfiguration von Sätzen"
+    "Quick Set Settings",
+    "セットクイック設定",
+    "组快速设置",
+    "組快速設定",
+    "Ajuste rápido de series",
+    "Réglage rapide des séries",
+    "Schnelle Satzkonfiguration"
   ],
   "이전": [
     "이전",
@@ -3378,5 +3378,2165 @@
     "Espalda",
     "Dos",
     "Hinten"
+  ],
+  "피로 누적 방지 및 근신경계 회복을 위한 감량 세션": [
+    "피로 누적 방지 및 근신경계 회복을 위한 감량 세션",
+    "Deload session for fatigue reduction and neuromuscular recovery",
+    "疲労蓄積防止と筋神経系回復のための減量セッション",
+    "减载训练：预防疲劳累积并促进神经肌肉恢复",
+    "減載訓練：預防疲勞累積並促進神經肌肉恢復",
+    "Sesión de descarga para reducir fatiga y recuperar el sistema neuromuscular",
+    "Séance de décharge pour réduire la fatigue et récupérer le système neuromusculaire",
+    "Deload-Einheit zur Ermüdungsreduktion und neuromuskulären Erholung"
+  ],
+  "터치하여 운동 시간 일시정지 (전화/화장실 등)": [
+    "터치하여 운동 시간 일시정지 (전화/화장실 등)",
+    "Tap to pause workout timer (calls, break, etc.)",
+    "タップしてトレーニングタイマーを一時停止",
+    "点击暂停训练计时（接电话/休息等）",
+    "點擊暫停訓練計時（接電話/休息等）",
+    "Toca para pausar el temporizador de entrenamiento",
+    "Appuyez pour mettre en pause le chronomètre d'entraînement",
+    "Tippen, um das Trainingstimer zu pausieren"
+  ],
+  "터치하여 운동 시간 재개": [
+    "터치하여 운동 시간 재개",
+    "Tap to resume workout timer",
+    "タップしてトレーニングタイマーを再開",
+    "点击恢复训练计时",
+    "點擊恢復訓練計時",
+    "Toca para reanudar el temporizador",
+    "Appuyez pour reprendre l'entraînement",
+    "Tippen, um das Training fortzusetzen"
+  ],
+  "통합 3D 근육 해부도": [
+    "통합 3D 근육 해부도",
+    "Integrated 3D Muscle Anatomy",
+    "統合3D筋肉解剖図",
+    "整合3D肌肉解剖图",
+    "整合3D肌肉解剖圖",
+    "Anatomía muscular 3D integrada",
+    "Anatomie musculaire 3D intégrée",
+    "Integrierte 3D-Muskelanatomie"
+  ],
+  "3D 해부학 모델을 불러오는 중…": [
+    "3D 해부학 모델을 불러오는 중…",
+    "Loading 3D anatomy model…",
+    "3D解剖モデルを読み込み中…",
+    "正在加载3D解剖模型…",
+    "正在載入3D解剖模型…",
+    "Cargando modelo anatómico 3D…",
+    "Chargement du modèle anatomique 3D…",
+    "3D-Anatomiemodell wird geladen…"
+  ],
+  "운동 완료일": [
+    "운동 완료일",
+    "Workout completed date",
+    "トレーニング完了日",
+    "训练完成日",
+    "訓練完成日",
+    "Fecha de entrenamiento completado",
+    "Date d'entraînement terminé",
+    "Training abgeschlossen am"
+  ],
+  "개의 운동 기록이 있습니다": [
+    "개의 운동 기록이 있습니다",
+    " workout records",
+    "件のトレーニング記録があります",
+    "条训练记录",
+    "條訓練紀錄",
+    " registros de entrenamiento",
+    " séances d'entraînement",
+    " Trainingseinträge vorhanden"
+  ],
+  "개 세션": [
+    "개 세션",
+    " sessions",
+    "セッション",
+    "次会话",
+    "次訓練",
+    " sesiones",
+    " séances",
+    " Einheiten"
+  ],
+  "실수로 나눠졌거나 2차 운동을 하나의 일지로 통합합니다.": [
+    "실수로 나눠졌거나 2차 운동을 하나의 일지로 통합합니다.",
+    "Merge split sessions or a second workout into a single log.",
+    "分割された記録や2部練を1つのログに統合します。",
+    "将分开的记录或二次训练合并为一篇日志。",
+    "將分開的紀錄或二次訓練合併為一篇日誌。",
+    "Combina sesiones divididas o un segundo entrenamiento en un solo registro.",
+    "Fusionner les séances fractionnées en un seul journal.",
+    "Zusammenführen von geteilten Einheiten in ein Protokoll."
+  ],
+  "기록된 운동이 없습니다.": [
+    "기록된 운동이 없습니다.",
+    "No workouts recorded.",
+    "記録されたトレーニングはありません。",
+    "暂无记录的训练。",
+    "暫無紀錄的訓練。",
+    "No hay entrenamientos registrados.",
+    "Aucun entraînement enregistré.",
+    "Keine Trainingseinheiten erfasst."
+  ],
+  "[운동 기록] 탭에서 오늘의 운동을 시작하거나 날짜를 변경해 보세요.": [
+    "[운동 기록] 탭에서 오늘의 운동을 시작하거나 날짜를 변경해 보세요.",
+    "Start today's workout in the [Workout] tab or choose another date.",
+    "[運動記録]タブで本日のトレーニングを始めるか、日付を変更してください。",
+    "请在[运动记录]选项卡开始今天的训练或选择其他日期。",
+    "請在[運動紀錄]分頁開始今天的訓練或選擇其他日期。",
+    "Inicia el entrenamiento de hoy en la pestaña [Entrenar] o cambia de fecha.",
+    "Commencez l'entraînement du jour dans l'onglet [Entraînement] ou changez de date.",
+    "Starte das heutige Training im Tab [Training] oder wähle ein anderes Datum."
+  ],
+  "분 동안 수행": [
+    "분 동안 수행",
+    " min workout",
+    "分間実施",
+    "分钟训练",
+    "分鐘訓練",
+    " min de entrenamiento",
+    " min d'entraînement",
+    " Min. Training"
+  ],
+  "개 종목": [
+    "개 종목",
+    " exercises",
+    "種目",
+    "个动作",
+    "個動作",
+    " ejercicios",
+    " exercices",
+    " Übungen"
+  ],
+  "운동 일지 텍스트": [
+    "운동 일지 텍스트",
+    "Workout log text",
+    "トレーニングログテキスト",
+    "训练日志文本",
+    "訓練日誌文字",
+    "Texto del diario de entrenamiento",
+    "Texte du journal d'entraînement",
+    "Trainingsprotokoll-Text"
+  ],
+  "진행 중": [
+    "진행 중",
+    "In Progress",
+    "進行中",
+    "进行中",
+    "進行中",
+    "En progreso",
+    "En cours",
+    "In Bearbeitung"
+  ],
+  "운동 부위 및 일지 수정": [
+    "운동 부위 및 일지 수정",
+    "Edit target parts and notes",
+    "部位およびログの編集",
+    "编辑训练部位与日志",
+    "編輯訓練部位與日誌",
+    "Editar partes corporales y notas",
+    "Modifier les parties cibles et les notes",
+    "Körperpartien und Notizen bearbeiten"
+  ],
+  "부위 설정": [
+    "부위 설정",
+    "Set Parts",
+    "部位設定",
+    "设置部位",
+    "設定部位",
+    "Elegir partes",
+    "Définir zones",
+    "Partien festlegen"
+  ],
+  "일지 작성됨": [
+    "일지 작성됨",
+    "Note Added",
+    "日誌作成済",
+    "已添加笔记",
+    "已添加筆記",
+    "Nota guardada",
+    "Note ajoutée",
+    "Notiz hinzugefügt"
+  ],
+  "일지": [
+    "일지",
+    "Note",
+    "日誌",
+    "笔记",
+    "筆記",
+    "Nota",
+    "Note",
+    "Notiz"
+  ],
+  "운동 취소": [
+    "운동 취소",
+    "Cancel Workout",
+    "トレーニング中止",
+    "取消训练",
+    "取消訓練",
+    "Cancelar entrenamiento",
+    "Annuler l'entraînement",
+    "Training abbrechen"
+  ],
+  "운동 통계 상세": [
+    "운동 통계 상세",
+    "Workout Stats Detail",
+    "トレーニング統計詳細",
+    "训练统计详情",
+    "訓練統計詳情",
+    "Detalles de estadísticas",
+    "Détails des statistiques",
+    "Trainingsstatistik-Details"
+  ],
+  "총 횟수": [
+    "총 횟수",
+    "Total Reps",
+    "合計回数",
+    "总次数",
+    "總次數",
+    "Repeticiones totales",
+    "Répétitions totales",
+    "Gesamtwiederholungen"
+  ],
+  "세트 완료율": [
+    "세트 완료율",
+    "Set Completion Rate",
+    "セット完了率",
+    "组完成率",
+    "組完成率",
+    "Tasa de finalización",
+    "Taux d'achèvement",
+    "Satz-Abschlussrate"
+  ],
+  "모두 접기": [
+    "모두 접기",
+    "Collapse All",
+    "すべて折りたたむ",
+    "全部折叠",
+    "全部摺疊",
+    "Plegar todo",
+    "Tout réduire",
+    "Alle einklappen"
+  ],
+  "모두 펼치기": [
+    "모두 펼치기",
+    "Expand All",
+    "すべて展開",
+    "全部展开",
+    "全部展開",
+    "Desplegar todo",
+    "Tout développer",
+    "Alle ausklappen"
+  ],
+  "아직 등록된 운동 종목이 없습니다.": [
+    "아직 등록된 운동 종목이 없습니다.",
+    "No exercises registered yet.",
+    "まだ登録されたトレーニング種目はありません。",
+    "尚未添加训练动作。",
+    "尚未添加訓練動作。",
+    "Aún no hay ejercicios añadidos.",
+    "Aucun exercice ajouté pour l'instant.",
+    "Noch keine Übungen hinzugefügt."
+  ],
+  "아래 버튼을 눌러 첫 종목을 라이브러리에서 추가해 보세요.": [
+    "아래 버튼을 눌러 첫 종목을 라이브러리에서 추가해 보세요.",
+    "Tap the button below to add your first exercise from the library.",
+    "下のボタンを押して最初の種目をライブラリから追加してください。",
+    "点击下方按钮从动作库添加第一个动作。",
+    "點擊下方按鈕從動作庫添加第一個動作。",
+    "Toca el botón inferior para añadir tu primer ejercicio de la biblioteca.",
+    "Appuyez sur le bouton ci-dessous pour ajouter votre premier exercice.",
+    "Tippe auf den Button unten, um deine erste Übung hinzuzufügen."
+  ],
+  "첫 운동 종목 추가하기": [
+    "첫 운동 종목 추가하기",
+    "Add First Exercise",
+    "最初の種目を追加",
+    "添加第一个动作",
+    "添加第一個動作",
+    "Añadir primer ejercicio",
+    "Ajouter le premier exercice",
+    "Erste Übung hinzufügen"
+  ],
+  "운동 종목 추가하기": [
+    "운동 종목 추가하기",
+    "Add Exercise",
+    "種目を追加",
+    "添加动作",
+    "添加動作",
+    "Añadir ejercicio",
+    "Ajouter un exercice",
+    "Übung hinzufügen"
+  ],
+  "꾹 눌러서 운동 완료 (1.5초)": [
+    "꾹 눌러서 운동 완료 (1.5초)",
+    "Hold to finish workout (1.5s)",
+    "長押しして運動完了（1.5秒）",
+    "长按完成训练（1.5秒）",
+    "長按完成訓練（1.5秒）",
+    "Mantén presionado para terminar (1.5s)",
+    "Maintenir pour terminer (1,5s)",
+    "Gedrückt halten zum Beenden (1,5s)"
+  ],
+  "운동 완료 중...": [
+    "운동 완료 중...",
+    "Finishing workout...",
+    "運動完了処理中…",
+    "正在完成训练…",
+    "正在完成訓練…",
+    "Finalizando entrenamiento...",
+    "Finalisation de l'entraînement...",
+    "Training wird abgeschlossen..."
+  ],
+  "손을 떼면 취소": [
+    "손을 떼면 취소",
+    "Release to cancel",
+    "離すとキャンセル",
+    "松开取消",
+    "放開取消",
+    "Suelta para cancelar",
+    "Relâcher pour annuler",
+    "Loslassen zum Abbrechen"
+  ],
+  "오늘 운동 완료 & 기록 저장 (1.5초간 꾹 누르기)": [
+    "오늘 운동 완료 & 기록 저장 (1.5초간 꾹 누르기)",
+    "Complete & Save Workout (Hold for 1.5s)",
+    "本日の運動完了＆記録保存（1.5秒長押し）",
+    "完成今日训练并保存（长按1.5秒）",
+    "完成今日訓練並保存（長按1.5秒）",
+    "Completar y guardar entrenamiento (Mantener 1.5s)",
+    "Terminer et enregistrer (Maintenir 1,5s)",
+    "Training abschließen & speichern (1,5s halten)"
+  ],
+  "오터치 방지를 위해 1.5초간 꾹 누르고 있어야 완료됩니다.": [
+    "오터치 방지를 위해 1.5초간 꾹 누르고 있어야 완료됩니다.",
+    "Hold firmly for 1.5 seconds to prevent accidental taps.",
+    "誤操作防止のため1.5秒間長押しすると完了します。",
+    "长按1.5秒以防止误触完成。",
+    "長按1.5秒以防止誤觸完成。",
+    "Mantén pulsado 1,5 segundos para evitar toques accidentales.",
+    "Maintenez 1,5 s pour éviter les touches accidentelles.",
+    "Halte 1,5 Sekunden gedrückt, um versehentliches Antippen zu vermeiden."
+  ],
+  "클릭하여 좌(L) / 우(R) / 양쪽 전환": [
+    "클릭하여 좌(L) / 우(R) / 양쪽 전환",
+    "Click to toggle Left(L) / Right(R) / Both",
+    "クリックして左(L) / 右(R) / 両方切替",
+    "点击切换 左(L) / 右(R) / 双侧",
+    "點擊切換 左(L) / 右(R) / 雙側",
+    "Haz clic para alternar Izq(L) / Der(R) / Ambos",
+    "Cliquez pour basculer Gauche / Droite / Les deux",
+    "Klicken zum Wechseln: Links / Rechts / Beide"
+  ],
+  "양": [
+    "양",
+    "Both",
+    "両",
+    "双",
+    "雙",
+    "Ambos",
+    "Deux",
+    "Beide"
+  ],
+  "세트 무게": [
+    "세트 무게",
+    "set weight",
+    "セット重量",
+    "组重量",
+    "組重量",
+    "peso de serie",
+    "poids de la série",
+    "Satzgewicht"
+  ],
+  "세트 횟수": [
+    "세트 횟수",
+    "set reps",
+    "セット回数",
+    "组次数",
+    "組次數",
+    "repeticiones de serie",
+    "répétitions de la série",
+    "Satzwiederholungen"
+  ],
+  "세트 상세 옵션": [
+    "세트 상세 옵션",
+    "set options",
+    "セット詳細オプション",
+    "组详细选项",
+    "組詳細選項",
+    "opciones de serie",
+    "options de série",
+    "Satz-Optionen"
+  ],
+  "세트 RPE": [
+    "세트 RPE",
+    "set RPE",
+    "セットRPE",
+    "组RPE",
+    "組RPE",
+    "RPE de serie",
+    "RPE de série",
+    "Satz-RPE"
+  ],
+  "RPE 선택": [
+    "RPE 선택",
+    "Select RPE",
+    "RPE選択",
+    "选择RPE",
+    "選擇RPE",
+    "Elegir RPE",
+    "Choisir RPE",
+    "RPE wählen"
+  ],
+  "RPE 10 (한계)": [
+    "RPE 10 (한계)",
+    "RPE 10 (Max)",
+    "RPE 10 (限界)",
+    "RPE 10 (力竭)",
+    "RPE 10 (力竭)",
+    "RPE 10 (Límite)",
+    "RPE 10 (Échec)",
+    "RPE 10 (Limit)"
+  ],
+  "RPE 6 (웜업)": [
+    "RPE 6 (웜업)",
+    "RPE 6 (Warmup)",
+    "RPE 6 (ウォーミングアップ)",
+    "RPE 6 (热身)",
+    "RPE 6 (熱身)",
+    "RPE 6 (Calentamiento)",
+    "RPE 6 (Échauffement)",
+    "RPE 6 (Aufwärmen)"
+  ],
+  "수축/이완 템포": [
+    "수축/이완 템포",
+    "Eccentric/Concentric Tempo",
+    "収縮/伸張テンポ",
+    "离心/向心节奏",
+    "離心/向心節奏",
+    "Tempo excéntrico/concéntrico",
+    "Tempo excentrique/concentrique",
+    "Exzentrisches/Konzentrisches Tempo"
+  ],
+  "세트별 메모/태그": [
+    "세트별 메모/태그",
+    "Set Note/Tag",
+    "セット別メモ/タグ",
+    "每组笔记/标签",
+    "每組筆記/標籤",
+    "Nota/etiqueta de serie",
+    "Note/étiquette de série",
+    "Satznotiz/Tag"
+  ],
+  "초 휴식": [
+    "초 휴식",
+    "s rest",
+    "秒休憩",
+    "秒休息",
+    "秒休息",
+    "s de descanso",
+    "s de repos",
+    "s Pause"
+  ],
+  "세트 삭제": [
+    "세트 삭제",
+    "Delete Set",
+    "セット削除",
+    "删除组",
+    "刪除組",
+    "Eliminar serie",
+    "Supprimer la série",
+    "Satz löschen"
+  ],
+  "세트 세부 코멘트": [
+    "세트 세부 코멘트",
+    "Set Detailed Comment",
+    "セット詳細コメント",
+    "每组详细注释",
+    "每組詳細註解",
+    "Comentario detallado de la serie",
+    "Commentaire détaillé de la série",
+    "Detaillierter Satzkommentar"
+  ],
+  "세트별 특이사항 및 태그 달기": [
+    "세트별 특이사항 및 태그 달기",
+    "Add notes and tags for this set",
+    "セットごとの特記事項とタグ付け",
+    "为该组添加特殊说明与标签",
+    "為該組添加特殊說明與標籤",
+    "Añade notas y etiquetas a esta serie",
+    "Ajouter des notes et étiquettes pour cette série",
+    "Notizen und Tags für diesen Satz hinzufügen"
+  ],
+  "빠른 세트 태그": [
+    "빠른 세트 태그",
+    "Quick Set Tags",
+    "クイックセットタグ",
+    "快速组标签",
+    "快速組標籤",
+    "Etiquetas rápidas de serie",
+    "Étiquettes rapides de série",
+    "Schnell-Tags für Sätze"
+  ],
+  "세트 메모 (선택사항)": [
+    "세트 메모 (선택사항)",
+    "Set Memo (Optional)",
+    "セットメモ（任意）",
+    "组备忘录（可选）",
+    "組備忘錄（可選）",
+    "Nota de serie (Opcional)",
+    "Note de série (Optionnel)",
+    "Satznotiz (Optional)"
+  ],
+  "예: 3회차 때 허리 긴장 풀림, 다음엔 스트랩 챙길 것": [
+    "예: 3회차 때 허리 긴장 풀림, 다음엔 스트랩 챙길 것",
+    "e.g. Lost lower back tension on rep 3, bring straps next time",
+    "例：3回目で腰の緊張が抜けた、次回はストラップを持参",
+    "例：第3次动作时下背部松懈，下次带好拉力带",
+    "例：第3次動作時下背部鬆懈，下次帶好拉力帶",
+    "ej. Pérdida de tensión lumbar en la 3ª repetición, llevar correas",
+    "ex. Perte de tension lombaire à la 3e répétition, prendre des sangles",
+    "z.B. Spannung im unteren Rücken bei Wdh. 3 verloren, nächstes Mal Zughilfen mitnehmen"
+  ],
+  "수축·이완 템포 (TUT)": [
+    "수축·이완 템포 (TUT)",
+    "Contraction & Extension Tempo (TUT)",
+    "収縮・伸張テンポ (TUT)",
+    "向心/离心节奏 (TUT)",
+    "向心/離心節奏 (TUT)",
+    "Tempo de contracción y extensión (TUT)",
+    "Tempo de contraction et d'étirement (TUT)",
+    "Kontraktions- und Dehnungstempo (TUT)"
+  ],
+  "근육 긴장 지속시간을 통한 점진적 과부하": [
+    "근육 긴장 지속시간을 통한 점진적 과부하",
+    "Progressive overload through Time Under Tension",
+    "筋肉緊張持続時間（TUT）による漸進的過負荷",
+    "通过肌肉处于张力下的时间（TUT）实现渐进性超负荷",
+    "透過肌肉處於張力下的時間（TUT）實現漸進性超負荷",
+    "Sobrecarga progresiva mediante el tiempo bajo tensión",
+    "Surcharge progressive grâce au temps sous tension",
+    "Progressive Überlastung durch Time Under Tension"
+  ],
+  "이완 (내릴때)": [
+    "이완 (내릴때)",
+    "Eccentric (Lowering)",
+    "伸張（下ろす時）",
+    "离心（下放）",
+    "離心（下放）",
+    "Excéntrico (Bajar)",
+    "Excentrique (Descente)",
+    "Exzentrisch (Absenken)"
+  ],
+  "정지 (바닥)": [
+    "정지 (바닥)",
+    "Pause (Bottom)",
+    "停止（ボトム）",
+    "停顿（底部）",
+    "停頓（底部）",
+    "Pausa (Abajo)",
+    "Pause (Bas)",
+    "Pause (Unten)"
+  ],
+  "수축 (밀때)": [
+    "수축 (밀때)",
+    "Concentric (Lifting)",
+    "収縮（上げる時）",
+    "向心（推起/拉起）",
+    "向心（推起/拉起）",
+    "Concéntrico (Levantar)",
+    "Concentrique (Montée)",
+    "Konzentrisch (Anheben)"
+  ],
+  "1회 반복당 긴장 시간:": [
+    "1회 반복당 긴장 시간:",
+    "Tension time per rep:",
+    "1レップ当たりの緊張時間:",
+    "每单次动作受力时间:",
+    "每單次動作受力時間:",
+    "Tiempo de tensión por repetición:",
+    "Temps de tension par répétition :",
+    "Spannungszeit pro Wdh.:"
+  ],
+  "10회 시": [
+    "10회 시",
+    "for 10 reps",
+    "10回時",
+    "10次时",
+    "10次時",
+    "en 10 reps",
+    "pour 10 reps",
+    "bei 10 Wdh."
+  ],
+  "초 지속": [
+    "초 지속",
+    "s total",
+    "秒持続",
+    "秒持续",
+    "秒持續",
+    "s duración",
+    "s durée",
+    "s Dauer"
+  ],
+  "추천 템포 프리셋": [
+    "추천 템포 프리셋",
+    "Recommended Tempo Presets",
+    "おすすめテンポプリセット",
+    "推荐节奏预设",
+    "推薦節奏預設",
+    "Ajustes predefinidos recomendados",
+    "Préréglages de tempo recommandés",
+    "Empfohlene Tempo-Voreinstellungen"
+  ],
+  "무게가 늘지 않더라도, 이완(네거티브) 속도를 1초 늘리면 근육에 실질적인 과부하가 발생합니다!": [
+    "무게가 늘지 않더라도, 이완(네거티브) 속도를 1초 늘리면 근육에 실질적인 과부하가 발생합니다!",
+    "Even without increasing weight, adding 1s to the negative creates effective muscular overload!",
+    "重量を増やさなくても、ネガティブ動作を1秒遅くするだけで筋肉に効果的な過負荷を与えられます！",
+    "即使不增加重量，将离心（慢放）时间延长1秒也能对肌肉产生切实有效的超负荷刺激！",
+    "即使不增加重量，將離心（慢放）時間延長1秒也能對肌肉產生切實有效的超負荷刺激！",
+    "¡Incluso sin subir peso, frenar la bajada 1s genera una sobrecarga muscular muy efectiva!",
+    "Même sans augmenter la charge, ralentir la descente de 1s crée une surcharge très efficace !",
+    "Auch ohne mehr Gewicht: 1 Sekunde langsameres Absenken erzeugt echte progressive Überlastung!"
+  ],
+  "템포 적용하기": [
+    "템포 적용하기",
+    "Apply Tempo",
+    "テンポを適用",
+    "应用节奏",
+    "套用節奏",
+    "Aplicar tempo",
+    "Appliquer le tempo",
+    "Tempo anwenden"
+  ],
+  "종목 묶기 설정": [
+    "종목 묶기 설정",
+    "Group Exercises Setup",
+    "種目グループ設定",
+    "组合动作设置",
+    "組合動作設定",
+    "Configuración de superseries",
+    "Configuration des superséries",
+    "Übungsgruppe einrichten"
+  ],
+  "현재 상태": [
+    "현재 상태",
+    "Current Status",
+    "現在の状態",
+    "当前状态",
+    "當前狀態",
+    "Estado actual",
+    "Statut actuel",
+    "Aktueller Status"
+  ],
+  "묶음 진행 중": [
+    "묶음 진행 중",
+    "Group in progress",
+    "グループ進行中",
+    "组合进行中",
+    "組合進行中",
+    "Grupo en curso",
+    "Groupe en cours",
+    "Gruppe aktiv"
+  ],
+  "다른 종목과 결합되어 한 세트로 순서대로 진행됩니다.": [
+    "다른 종목과 결합되어 한 세트로 순서대로 진행됩니다.",
+    "Combined with other exercises and performed sequentially as one set.",
+    "他の種目と結合され、1セットとして順番に進行します。",
+    "与其他动作绑定，按顺序作为一组连续进行。",
+    "與其他動作綁定，按順序作為一組連續進行。",
+    "Combinado con otros ejercicios y realizado en secuencia como una sola serie.",
+    "Combiné avec d'autres exercices et exécuté en séquence comme une seule série.",
+    "Mit anderen Übungen kombiniert und nacheinander als ein Satz ausgeführt."
+  ],
+  "이 종목 묶음 해제하기": [
+    "이 종목 묶음 해제하기",
+    "Ungroup this exercise",
+    "この種目のグループ解除",
+    "解除此动作组合",
+    "解除此動作組合",
+    "Desagrupar este ejercicio",
+    "Dissocier cet exercice",
+    "Diese Übung entgruppieren"
+  ],
+  "묶음 방식 선택": [
+    "묶음 방식 선택",
+    "Select Grouping Style",
+    "グループ方式の選択",
+    "选择组合方式",
+    "選擇組合方式",
+    "Seleccionar estilo de grupo",
+    "Sélectionner le mode de regroupement",
+    "Gruppenart auswählen"
+  ],
+  "길항근 / 다른 부위 2개 종목을 번갈아 수행 (예: 이두+삼두, 가슴+등)": [
+    "길항근 / 다른 부위 2개 종목을 번갈아 수행 (예: 이두+삼두, 가슴+등)",
+    "Alternate 2 exercises for opposing/different muscle groups (e.g. Biceps+Triceps, Chest+Back)",
+    "拮抗筋/異なる部位の2種目を交互に実施（例：上腕二頭筋+三頭筋、胸+背中）",
+    "交替进行对抗肌/不同肌群的2个动作（例：二头+三头、胸部+背部）",
+    "交替進行對抗肌/不同肌群的2個動作（例：二頭+三頭、胸部+背部）",
+    "Alterna 2 ejercicios para músculos opuestos (ej. Bíceps+Tríceps, Pecho+Espalda)",
+    "Alternez 2 exercices de muscles opposés (ex. Biceps+Triceps, Pectoraux+Dos)",
+    "2 Übungen für gegensätzliche Muskeln abwechseln (z.B. Bizeps+Trizeps, Brust+Rücken)"
+  ],
+  "같은 부위 2개 종목을 연속 수행하여 완전 탈진 유도": [
+    "같은 부위 2개 종목을 연속 수행하여 완전 탈진 유도",
+    "Perform 2 exercises for the same muscle group consecutively to trigger complete exhaustion",
+    "同一部位の2種目を連続で行い、完全な筋疲労を誘導",
+    "连续进行同一部位的2个动作以达到彻底力竭",
+    "連續進行同一部位的2個動作以達到徹底力竭",
+    "Realiza 2 ejercicios del mismo grupo muscular seguidos para inducir agotamiento total",
+    "Enchaînez 2 exercices du même groupe pour induire l'épuisement total",
+    "2 Übungen derselben Muskelgruppe nacheinander ausführen bis zur vollen Erschöpfung"
+  ],
+  "함께 묶을 종목 선택": [
+    "함께 묶을 종목 선택",
+    "Select exercise to group with",
+    "一緒に組む種目を選択",
+    "选择一起组合的动作",
+    "選擇一起組合的動作",
+    "Selecciona ejercicio para agrupar",
+    "Sélectionnez l'exercice à associer",
+    "Übung zum Gruppieren auswählen"
+  ],
+  "함께 묶을 다른 운동이 세션에 없습니다.": [
+    "함께 묶을 다른 운동이 세션에 없습니다.",
+    "No other exercises available in this session.",
+    "セッション内にグループ化できる他の種目がありません。",
+    "当前训练中没有其他动作可供绑定。",
+    "當前訓練中沒有其他動作可供綁定。",
+    "No hay otros ejercicios en esta sesión para agrupar.",
+    "Aucun autre exercice dans cette séance à regrouper.",
+    "Keine weiteren Übungen in dieser Einheit zum Gruppieren."
+  ],
+  "먼저 다른 운동을 추가해 주세요.": [
+    "먼저 다른 운동을 추가해 주세요.",
+    "Please add another exercise first.",
+    "まずは別の種目を追加してください。",
+    "请先添加其他训练动作。",
+    "請先添加其他訓練動作。",
+    "Añade otro ejercicio primero.",
+    "Veuillez d'abord ajouter un autre exercice.",
+    "Bitte füge zuerst eine andere Übung hinzu."
+  ],
+  "선택한 종목과": [
+    "선택한 종목과",
+    "Group with selected as",
+    "選択した種目と",
+    "与所选动作绑定为",
+    "與所選動作綁定為",
+    "Agrupar seleccionados como",
+    "Grouper les sélectionnés en",
+    "Mit ausgewählten gruppieren als"
+  ],
+  "묶기": [
+    "묶기",
+    "Group",
+    "グループ化",
+    "组合",
+    "組合",
+    "Agrupar",
+    "Grouper",
+    "Gruppieren"
+  ],
+  "묶음 해제": [
+    "묶음 해제",
+    "Unlink",
+    "解除",
+    "解除组合",
+    "解除組合",
+    "Desvincular",
+    "Dissocier",
+    "Entkoppeln"
+  ],
+  "덤벨: 한쪽(편측) 무게 기준": [
+    "덤벨: 한쪽(편측) 무게 기준",
+    "Dumbbell: weight is per single side",
+    "ダンベル：片手（片側）の重量基準",
+    "哑铃：单侧重量标准",
+    "啞鈴：單側重量標準",
+    "Mancuerna: peso por cada lado",
+    "Haltère : poids par côté individuel",
+    "Kurzhantel: Gewicht pro Seite"
+  ],
+  "스미스머신: 봉 무게 제외 (원판 무게만 기록)": [
+    "스미스머신: 봉 무게 제외 (원판 무게만 기록)",
+    "Smith machine: record plate weight only (excl. bar)",
+    "スミスマシン：バー重量を除く（プレート重量のみ記録）",
+    "史密斯机：不计杠铃杆重量（仅记录杠铃片重量）",
+    "史密斯機：不計槓鈴桿重量（僅記錄槓鈴片重量）",
+    "Máquina Smith: solo peso de placas (excl. barra)",
+    "Machine Smith : plaques uniquement (hors barre)",
+    "Smith Machine: nur Scheibengewicht (ohne Stange)"
+  ],
+  "수행방식:": [
+    "수행방식:",
+    "Execution:",
+    "実施形式:",
+    "执行方式:",
+    "執行方式:",
+    "Ejecución:",
+    "Exécution :",
+    "Ausführung:"
+  ],
+  "투암 (양측)": [
+    "투암 (양측)",
+    "Bilateral (Both)",
+    "両側（両手/両足）",
+    "双手/双侧",
+    "雙手/雙側",
+    "Bilateral (Ambos lados)",
+    "Bilatéral (Deux côtés)",
+    "Bilateral (Beidseitig)"
+  ],
+  "원암 (편측 L/R)": [
+    "원암 (편측 L/R)",
+    "Unilateral (Single L/R)",
+    "片側（片手/片足 L/R）",
+    "单手/单侧 (L/R)",
+    "單手/單側 (L/R)",
+    "Unilateral (Un solo lado L/R)",
+    "Unilatéral (Côté unique G/D)",
+    "Unilateral (Einseitig L/R)"
+  ],
+  "단위:": [
+    "단위:",
+    "Unit:",
+    "単位:",
+    "单位:",
+    "單位:",
+    "Unidad:",
+    "Unité :",
+    "Einheit:"
+  ],
+  "lb (파운드)": [
+    "lb (파운드)",
+    "lb (pounds)",
+    "lb（ポンド）",
+    "lb（磅）",
+    "lb（磅）",
+    "lb (libras)",
+    "lb (livres)",
+    "lb (Pfund)"
+  ],
+  "부하방식:": [
+    "부하방식:",
+    "Load Type:",
+    "負荷方式:",
+    "负荷方式:",
+    "負荷方式:",
+    "Tipo de carga:",
+    "Type de charge :",
+    "Belastungsart:"
+  ],
+  "머신 브랜드:": [
+    "머신 브랜드:",
+    "Machine Brand:",
+    "マシンブランド:",
+    "器械品牌:",
+    "器材品牌:",
+    "Marca de máquina:",
+    "Marque de la machine :",
+    "Gerätemarke:"
+  ],
+  "머신 브랜드": [
+    "머신 브랜드",
+    "Machine Brand",
+    "マシンブランド",
+    "器械品牌",
+    "器材品牌",
+    "Marca de máquina",
+    "Marque de la machine",
+    "Gerätemarke"
+  ],
+  "브랜드 선택": [
+    "브랜드 선택",
+    "Select brand",
+    "ブランド選択",
+    "选择品牌",
+    "選擇品牌",
+    "Seleccionar marca",
+    "Sélectionner la marque",
+    "Marke auswählen"
+  ],
+  "머신 브랜드 직접 입력": [
+    "머신 브랜드 직접 입력",
+    "Enter machine brand manually",
+    "マシンブランド直接入力",
+    "手动输入器械品牌",
+    "手動輸入器材品牌",
+    "Ingresar marca manualmente",
+    "Saisir la marque manuellement",
+    "Gerätemarke manuell eingeben"
+  ],
+  "목록 선택": [
+    "목록 선택",
+    "Select from list",
+    "リストから選択",
+    "从列表选择",
+    "從清單選擇",
+    "Elegir de la lista",
+    "Choisir dans la liste",
+    "Aus Liste auswählen"
+  ],
+  "+ 세팅(의자높이 등)": [
+    "+ 세팅(의자높이 등)",
+    "+ Settings (seat height, etc.)",
+    "+ 設定（シート高など）",
+    "+ 调节设置（座椅高度等）",
+    "+ 調節設定（座椅高度等）",
+    "+ Ajustes (altura de asiento, etc.)",
+    "+ Réglages (hauteur du siège, etc.)",
+    "+ Einstellungen (Sitzhöhe etc.)"
+  ],
+  "세팅:": [
+    "세팅:",
+    "Setting:",
+    "設定:",
+    "设置:",
+    "設定:",
+    "Ajuste:",
+    "Réglage :",
+    "Einstellung:"
+  ],
+  "예: 의자 4단, 발판 중간, 등받이 각도 2단계": [
+    "예: 의자 4단, 발판 중간, 등받이 각도 2단계",
+    "e.g. Seat pin 4, footplate mid, backrest angle 2",
+    "例: シート4段、足場中央、背もたれ角度2段",
+    "例如：座椅4档、踏板中位、靠背角度2档",
+    "例如：座椅4檔、踏板中位、靠背角度2檔",
+    "Ej: Asiento 4, reposapiés medio, respaldo nivel 2",
+    "Ex : Siège niveau 4, repose-pied milieu, dossier niveau 2",
+    "z.B. Sitz Stufe 4, Fußplatte Mitte, Rückenlehne Stufe 2"
+  ],
+  "자극 부위": [
+    "자극 부위",
+    "Target Muscles",
+    "刺激部位",
+    "目标肌群",
+    "目標肌群",
+    "Músculos diana",
+    "Muscles ciblés",
+    "Zielmuskeln"
+  ],
+  "근육 해부도": [
+    "근육 해부도",
+    "Muscle Anatomy",
+    "筋肉解剖図",
+    "肌肉解剖图",
+    "肌肉解剖圖",
+    "Anatomía muscular",
+    "Anatomie musculaire",
+    "Muskelanatomie"
+  ],
+  "실물 사진": [
+    "실물 사진",
+    "Real Photos",
+    "実物写真",
+    "动作实拍",
+    "動作實拍",
+    "Fotos reales",
+    "Photos réelles",
+    "Echte Fotos"
+  ],
+  "옵션": [
+    "옵션",
+    "Option",
+    "オプション",
+    "选项",
+    "選項",
+    "Opción",
+    "Option",
+    "Option"
+  ],
+  "최고 중량:": [
+    "최고 중량:",
+    "Max Weight:",
+    "最高重量:",
+    "最大重量:",
+    "最大重量:",
+    "Peso máx.:",
+    "Poids max :",
+    "Max. Gewicht:"
+  ],
+  "추정 1RM:": [
+    "추정 1RM:",
+    "Est. 1RM:",
+    "推定1RM:",
+    "预估1RM:",
+    "預估1RM:",
+    "1RM est.:",
+    "1RM estimé :",
+    "Geschätztes 1RM:"
+  ],
+  "운동 종목 선택": [
+    "운동 종목 선택",
+    "Select Exercise",
+    "種目選択",
+    "选择训练动作",
+    "選擇訓練動作",
+    "Seleccionar ejercicio",
+    "Sélectionner l'exercice",
+    "Übung auswählen"
+  ],
+  "종의 전문 운동 라이브러리": [
+    "종의 전문 운동 라이브러리",
+    " exercises library",
+    "種の専門トレーニングライブラリ",
+    "种专业动作库",
+    "種專業動作庫",
+    " biblioteca de ejercicios",
+    " bibliothèque d'exercices",
+    " Übungsbibliothek"
+  ],
+  "직접 등록": [
+    "직접 등록",
+    "Custom Add",
+    "直接登録",
+    "自建动作",
+    "自建動作",
+    "Añadir propio",
+    "Créer personnalisé",
+    "Eigene erstellen"
+  ],
+  "운동 선택 닫기": [
+    "운동 선택 닫기",
+    "Close exercise picker",
+    "種目選択を閉じる",
+    "关闭动作选择",
+    "關閉動作選擇",
+    "Cerrar selección de ejercicio",
+    "Fermer la sélection d'exercice",
+    "Übungsauswahl schließen"
+  ],
+  "운동명·브랜드·초성 검색": [
+    "운동명·브랜드·초성 검색",
+    "Search by name, brand, or initials",
+    "種目名・ブランド・頭文字で検索",
+    "按动作名称、品牌或首字母搜索",
+    "按動作名稱、品牌或首字母搜尋",
+    "Buscar por nombre, marca o iniciales",
+    "Rechercher par nom, marque ou initiales",
+    "Nach Name, Marke oder Anfangsbuchstaben suchen"
+  ],
+  "지우기": [
+    "지우기",
+    "Clear",
+    "クリア",
+    "清除",
+    "清除",
+    "Borrar",
+    "Effacer",
+    "Löschen"
+  ],
+  "오늘 목표": [
+    "오늘 목표",
+    "Today's Focus",
+    "本日の目標",
+    "今日目标",
+    "今日目標",
+    "Objetivo de hoy",
+    "Objectif du jour",
+    "Heutiges Ziel"
+  ],
+  "전체 부위 검색": [
+    "전체 부위 검색",
+    "Search all parts",
+    "全部位検索",
+    "全部部位搜索",
+    "全部部位搜尋",
+    "Buscar en todas las partes",
+    "Recherche sur tout le corps",
+    "Alle Körperbereiche durchsuchen"
+  ],
+  "에 맞는 운동을 찾지 못했습니다.": [
+    "에 맞는 운동을 찾지 못했습니다.",
+    " matched no exercises.",
+    "に一致する種目が見つかりませんでした。",
+    "没有找到符合条件的动作。",
+    "沒有找到符合條件的動作。",
+    " no arrojó ningún ejercicio.",
+    " ne correspond à aucun exercice.",
+    " ergab keine Treffer."
+  ],
+  "직접 등록하기": [
+    "직접 등록하기",
+    "Create Custom Exercise",
+    "直接登録する",
+    "手动添加此动作",
+    "手動添加此動作",
+    "Crear ejercicio personalizado",
+    "Créer un exercice personnalisé",
+    "Benutzerdefinierte Übung erstellen"
+  ],
+  "선택한 조건": [
+    "선택한 조건",
+    "selected filters",
+    "選択した条件",
+    "所选条件",
+    "所選條件",
+    "filtros seleccionados",
+    "filtres sélectionnés",
+    "gewählte Filter"
+  ],
+  "새 종목": [
+    "새 종목",
+    "New Exercise",
+    "新しい種目",
+    "新动作",
+    "新動作",
+    "Nuevo ejercicio",
+    "Nouvel exercice",
+    "Neue Übung"
+  ],
+  "맨몸/소도구": [
+    "맨몸/소도구",
+    "Bodyweight / Equipment",
+    "自重 / 小器具",
+    "自重 / 小器械",
+    "徒手 / 小器材",
+    "Peso corporal / Accesorios",
+    "Poids du corps / Accessoires",
+    "Körpergewicht / Kleingeräte"
+  ],
+  "커스텀": [
+    "커스텀",
+    "Custom",
+    "カスタム",
+    "自定义",
+    "自訂",
+    "Personalizado",
+    "Personnalisé",
+    "Benutzerdefiniert"
+  ],
+  "인기": [
+    "인기",
+    "Popular",
+    "人気",
+    "热门",
+    "熱門",
+    "Popular",
+    "Populaire",
+    "Beliebt"
+  ],
+  "새 운동 직접 등록": [
+    "새 운동 직접 등록",
+    "Register Custom Exercise",
+    "新しい種目を直接登録",
+    "自主添加新动作",
+    "自主新增新動作",
+    "Registrar ejercicio personalizado",
+    "Créer un exercice personnalisé",
+    "Benutzerdefinierte Übung erstellen"
+  ],
+  "라이브러리에 나만의 커스텀 운동 추가": [
+    "라이브러리에 나만의 커스텀 운동 추가",
+    "Add custom exercises to your personal library",
+    "ライブラリに自分だけのカスタム種目を追加",
+    "在健身库中添加属于自己的自定义动作",
+    "在健身庫中新增屬於自己的自訂動作",
+    "Agrega ejercicios personalizados a tu biblioteca",
+    "Ajoutez vos propres exercices à votre bibliothèque",
+    "Eigene Übungen zur Bibliothek hinzufügen"
+  ],
+  "운동 종목명": [
+    "운동 종목명",
+    "Exercise Name",
+    "種目名",
+    "动作名称",
+    "動作名稱",
+    "Nombre del ejercicio",
+    "Nom de l'exercice",
+    "Übungsname"
+  ],
+  "예: V-스쿼트, 바이킹 프레스, 펜들레이 로우": [
+    "예: V-스쿼트, 바이킹 프레스, 펜들레이 로우",
+    "e.g. V-Squat, Viking Press, Pendlay Row",
+    "例: Vスクワット、バイキングプレス、ペンドレイロウ",
+    "例如：V型深蹲、维京推举、潘德雷划船",
+    "例如：V型深蹲、維京推舉、潘德雷划船",
+    "Ej: Sentadilla en V, Viking Press, Remo Pendlay",
+    "Ex : V-Squat, Viking Press, Pendlay Row",
+    "z.B. V-Squat, Viking Press, Pendlay Row"
+  ],
+  "영문 명칭 (선택)": [
+    "영문 명칭 (선택)",
+    "English Name (Optional)",
+    "英語名（任意）",
+    "英文名称（选填）",
+    "英文名稱（選填）",
+    "Nombre en inglés (opcional)",
+    "Nom en anglais (facultatif)",
+    "Englischer Name (optional)"
+  ],
+  "예: V-Squat Machine, Viking Press": [
+    "예: V-Squat Machine, Viking Press",
+    "e.g. V-Squat Machine, Viking Press",
+    "例: V-Squat Machine, Viking Press",
+    "例如：V-Squat Machine, Viking Press",
+    "例如：V-Squat Machine, Viking Press",
+    "Ej: V-Squat Machine, Viking Press",
+    "Ex : V-Squat Machine, Viking Press",
+    "z.B. V-Squat Machine, Viking Press"
+  ],
+  "운동 부위": [
+    "운동 부위",
+    "Muscle Group",
+    "鍛える部位",
+    "训练部位",
+    "訓練部位",
+    "Grupo muscular",
+    "Groupe musculaire",
+    "Muskelgruppe"
+  ],
+  "장비 유형": [
+    "장비 유형",
+    "Equipment Type",
+    "器具タイプ",
+    "器材类型",
+    "器材類型",
+    "Tipo de equipo",
+    "Type d'équipement",
+    "Ausrüstungstyp"
+  ],
+  "머신 부하 방식": [
+    "머신 부하 방식",
+    "Machine Load Type",
+    "マシン負荷方式",
+    "器械负荷方式",
+    "器材負荷方式",
+    "Tipo de carga de máquina",
+    "Type de charge machine",
+    "Gerätewiderstandsart"
+  ],
+  "플레이트 (원판 로드)": [
+    "플레이트 (원판 로드)",
+    "Plate (Plate Loaded)",
+    "プレート（プレートロード）",
+    "杠铃片（奥杆挂片）",
+    "槓鈴片（奧槓掛片）",
+    "Placas (cargado con discos)",
+    "Disques (chargé par disques)",
+    "Hantelscheiben (Plate-Loaded)"
+  ],
+  "핀머신 (웨이트 스택)": [
+    "핀머신 (웨이트 스택)",
+    "Pin (Weight Stack)",
+    "ピンマシン（ウェイトスタック）",
+    "插销式（配重插片）",
+    "插銷式（配重插片）",
+    "Máquina de pasador (placas)",
+    "Machine à broche (charge guidée)",
+    "Steckgewichte (Gewichtsblock)"
+  ],
+  "라이브러리에 등록하고 선택하기": [
+    "라이브러리에 등록하고 선택하기",
+    "Register to library & select",
+    "ライブラリに登録して選択",
+    "添加至动作库并选择",
+    "新增至動作庫並選擇",
+    "Registrar en biblioteca y seleccionar",
+    "Ajouter à la bibliothèque et sélectionner",
+    "Zur Bibliothek hinzufügen und auswählen"
+  ],
+  "동일 반복": [
+    "동일 반복",
+    "Straight Sets",
+    "同一反復",
+    "等重直组",
+    "等重直組",
+    "Series iguales",
+    "Séries identiques",
+    "Gleiche Sätze"
+  ],
+  "탑 + 백오프": [
+    "탑 + 백오프",
+    "Top + Back-off",
+    "トップ + バックオフ",
+    "顶峰 + 减重递减",
+    "頂峰 + 減重遞減",
+    "Top + Descarga",
+    "Top + Back-off",
+    "Top + Back-off"
+  ],
+  "피라미드": [
+    "피라미드",
+    "Pyramid",
+    "ピラミッド",
+    "金字塔组",
+    "金字塔組",
+    "Pirámide",
+    "Pyramide",
+    "Pyramide"
+  ],
+  "한 번 입력한 값을 여러 세트에 반복합니다.": [
+    "한 번 입력한 값을 여러 세트에 반복합니다.",
+    "Repeats the entered value across multiple sets.",
+    "一度入力した値を複数のセットに繰り返します。",
+    "将输入的值重复应用到多个组。",
+    "將輸入的值重複套用到多個組。",
+    "Repite el valor introducido en varias series.",
+    "Répète la valeur saisie sur plusieurs séries.",
+    "Wiederholt den eingegebenen Wert für mehrere Sätze."
+  ],
+  "첫 세트는 탑세트, 나머지는 백오프로 설정합니다.": [
+    "첫 세트는 탑세트, 나머지는 백오프로 설정합니다.",
+    "Sets set 1 as heavy top set, remaining as back-off sets.",
+    "第1セットをトップセット、残りをバックオフに設定します。",
+    "第1组设为大重量顶峰组，其余设为减重组。",
+    "第1組設為大重量頂峰組，其餘設為減重組。",
+    "Primera serie máxima, el resto series de descarga.",
+    "Première série lourde, le reste en allègement.",
+    "Erster Satz schwerer Top-Satz, Rest Back-off-Sätze."
+  ],
+  "첫 세트를 기준으로 무게와 횟수를 일정하게 바꿉니다. 감소는 음수로 입력하세요.": [
+    "첫 세트를 기준으로 무게와 횟수를 일정하게 바꿉니다. 감소는 음수로 입력하세요.",
+    "Adjusts weight and reps progressively from set 1. Use negative values for decrease.",
+    "第1セットを基準に重量とレップ数を増減します。減少はマイナスで入力。",
+    "以首组为基准按步长递增或递减重量和次数。减少请输入负数。",
+    "以首組為基準按步長遞增或遞減重量和次數。減少請輸入負數。",
+    "Ajusta peso y repeticiones de forma progresiva. Usa negativos para reducir.",
+    "Ajuste poids et reps progressivement. Négatif pour diminuer.",
+    "Passt Gewicht und Wdh. schrittweise an. Für Verringerung negatives Vorzeichen."
+  ],
+  "설정할 세트 수": [
+    "설정할 세트 수",
+    "Number of Sets",
+    "設定セット数",
+    "设置组数",
+    "設定組數",
+    "Número de series",
+    "Nombre de séries",
+    "Anzahl der Sätze"
+  ],
+  "탑세트 RPE": [
+    "탑세트 RPE",
+    "Top Set RPE",
+    "トップセットRPE",
+    "顶峰组RPE",
+    "頂峰組RPE",
+    "RPE serie top",
+    "RPE série top",
+    "Top-Satz RPE"
+  ],
+  "공통 RPE": [
+    "공통 RPE",
+    "Common RPE",
+    "共通RPE",
+    "通用RPE",
+    "通用RPE",
+    "RPE común",
+    "RPE commun",
+    "Gemeinsames RPE"
+  ],
+  "첫 세트": [
+    "첫 세트",
+    "First Set",
+    "第1セット",
+    "第一组",
+    "第一組",
+    "Primera serie",
+    "Première série",
+    "Erster Satz"
+  ],
+  "백오프 무게": [
+    "백오프 무게",
+    "Back-off Weight",
+    "バックオフ重量",
+    "减重组重量",
+    "減重組重量",
+    "Peso de descarga",
+    "Poids de back-off",
+    "Back-off Gewicht"
+  ],
+  "백오프 횟수": [
+    "백오프 횟수",
+    "Back-off Reps",
+    "バックオフ回数",
+    "减重组次数",
+    "減重組次數",
+    "Reps de descarga",
+    "Reps de back-off",
+    "Back-off Wdh."
+  ],
+  "백오프 RPE": [
+    "백오프 RPE",
+    "Back-off RPE",
+    "バックオフRPE",
+    "减重组RPE",
+    "減重組RPE",
+    "RPE de descarga",
+    "RPE de back-off",
+    "Back-off RPE"
+  ],
+  "세트당 무게 변화": [
+    "세트당 무게 변화",
+    "Weight Step per Set",
+    "セット毎の重量増減",
+    "每组重量变化",
+    "每組重量變化",
+    "Variación de peso por serie",
+    "Changement de poids par série",
+    "Gewichtsänderung pro Satz"
+  ],
+  "세트당 횟수 변화": [
+    "세트당 횟수 변화",
+    "Reps Step per Set",
+    "セット毎の回数増減",
+    "每组次数变化",
+    "每組次數變化",
+    "Variación de reps por serie",
+    "Changement de reps par série",
+    "Wdh.-Änderung pro Satz"
+  ],
+  "공통 템포 설정 (초)": [
+    "공통 템포 설정 (초)",
+    "Common Tempo Setting (sec)",
+    "共通テンポ設定（秒）",
+    "统一动作节奏（秒）",
+    "統一動作節奏（秒）",
+    "Ajuste de tempo común (s)",
+    "Réglage du tempo commun (s)",
+    "Gemeinsame Tempoeinstellung (s)"
+  ],
+  "공통 템포": [
+    "공통 템포",
+    "Common Tempo",
+    "共通テンポ",
+    "通用节奏",
+    "通用節奏",
+    "Tempo común",
+    "Tempo commun",
+    "Gemeinsames Tempo"
+  ],
+  "적용 미리보기": [
+    "적용 미리보기",
+    "Preview",
+    "適用プレビュー",
+    "效果预览",
+    "效果預覽",
+    "Vista previa",
+    "Aperçu",
+    "Vorschau"
+  ],
+  "세트 적용": [
+    "세트 적용",
+    "Apply Sets",
+    "セット適用",
+    "应用组设置",
+    "套用組設定",
+    "Aplicar series",
+    "Appliquer les séries",
+    "Sätze anwenden"
+  ],
+  "완료한 세트는 유지합니다. 미완료 세트부터 적용하며 부족하면 추가합니다.": [
+    "완료한 세트는 유지합니다. 미완료 세트부터 적용하며 부족하면 추가합니다.",
+    "Completed sets are preserved. Applies to pending sets and appends if needed.",
+    "完了したセットは保持されます。未完了セットから適用し、不足分は追加されます。",
+    "已完成的组将被保留。从待完成的组开始应用，不足时自动追加。",
+    "已完成的組將被保留。從待完成的組開始套用，不足時自動追加。",
+    "Las series completadas se mantienen. Se aplica a las pendientes y añade más si falta.",
+    "Les séries terminées sont conservées. S'applique aux séries restantes.",
+    "Abgeschlossene Sätze bleiben erhalten. Gilt ab offenen Sätzen, fügt bei Bedarf hinzu."
+  ],
+  "미지정": [
+    "미지정",
+    "Unspecified",
+    "未指定",
+    "未指定",
+    "未指定",
+    "Sin especificar",
+    "Non spécifié",
+    "Nicht angegeben"
+  ],
+  "템포 —": [
+    "템포 —",
+    "Tempo —",
+    "テンポ —",
+    "节奏 —",
+    "節奏 —",
+    "Tempo —",
+    "Tempo —",
+    "Tempo —"
+  ],
+  "RPE & RIR 가이드": [
+    "RPE & RIR 가이드",
+    "RPE & RIR Guide",
+    "RPE & RIRガイド",
+    "RPE与RIR指南",
+    "RPE與RIR指南",
+    "Guía de RPE y RIR",
+    "Guide RPE et RIR",
+    "RPE- & RIR-Leitfaden"
+  ],
+  "운동 자각도 및 여유 반복수 완벽 이해하기": [
+    "운동 자각도 및 여유 반복수 완벽 이해하기",
+    "Master perceived exertion & reps in reserve",
+    "自覚的運動強度と余力レップ数を完全に理解する",
+    "轻松掌握主观用力程度与储备次数",
+    "輕鬆掌握主觀自覺強度與保留次數",
+    "Comprende la intensidad percibida y las repeticiones en reserva",
+    "Comprendre l'effort perçu et les répétitions en réserve",
+    "Anstrengungsempfinden und Wiederholungsreserve verstehen"
+  ],
+  "💡 RPE란 무엇인가요?": [
+    "💡 RPE란 무엇인가요?",
+    "💡 What is RPE?",
+    "💡 RPEとは何ですか？",
+    "💡 什么是RPE？",
+    "💡 什麼是RPE？",
+    "💡 ¿Qué es el RPE?",
+    "💡 Qu'est-ce que le RPE ?",
+    "💡 Was ist RPE?"
+  ],
+  "RPE (Rating of Perceived Exertion)는 '세트를 마쳤을 때 얼마나 힘들었는지'를 6~10점 척도로 매기는 운동 자각도입니다.": [
+    "RPE (Rating of Perceived Exertion)는 '세트를 마쳤을 때 얼마나 힘들었는지'를 6~10점 척도로 매기는 운동 자각도입니다.",
+    "RPE (Rating of Perceived Exertion) measures how hard a set felt on a 6–10 scale.",
+    "RPE（自覚的運動強度）は「セット終了時にどれだけきつかったか」を6〜10の尺度で測る指標です。",
+    "RPE（主观用力程度评估）是以6~10分衡量一组训练完成时疲劳与困难程度的指标。",
+    "RPE（主觀自覺強度評估）是以6~10分衡量一組訓練完成時疲勞與困難程度的指標。",
+    "RPE (Rating of Perceived Exertion) mide la dificultad de la serie en una escala de 6 a 10.",
+    "Le RPE évalue la difficulté ressentie de la série sur une échelle de 6 à 10.",
+    "RPE bewertet das Anstrengungsempfinden eines Satzes auf einer Skala von 6 bis 10."
+  ],
+  "RIR(Reps in Reserve)은 '실패 지점까지 앞으로 몇 번을 더 들 수 있었는가'를 의미합니다. (예: RPE 8 = RIR 2, 즉 2개 더 가능)": [
+    "RIR(Reps in Reserve)은 '실패 지점까지 앞으로 몇 번을 더 들 수 있었는가'를 의미합니다. (예: RPE 8 = RIR 2, 즉 2개 더 가능)",
+    "RIR (Reps in Reserve) indicates how many more reps you could have done before failure. (e.g., RPE 8 = RIR 2: 2 reps left)",
+    "RIR（レップス・イン・リザーブ）は「限界まであと何回挙げられたか」を意味します。（例：RPE 8 = RIR 2、あと2回可能）",
+    "RIR（储备次数）表示距离完全力竭还能再做几次动作。（例：RPE 8 = RIR 2，即还能再做2次）",
+    "RIR（保留次數）表示距離完全力竭還能再做幾次動作。（例：RPE 8 = RIR 2，即還能再做2次）",
+    "RIR (Reps in Reserve) indica cuántas repeticiones más podías hacer antes del fallo. (ej. RPE 8 = RIR 2: 2 reps más)",
+    "Le RIR indique combien de répétitions supplémentaires étaient possibles avant l'échec. (ex. RPE 8 = RIR 2 : 2 de plus)",
+    "RIR gibt an, wie viele Wiederholungen vor dem Muskelversagen noch möglich waren. (z.B. RPE 8 = RIR 2)"
+  ],
+  "한계 지점 (Max Effort)": [
+    "한계 지점 (Max Effort)",
+    "Max Effort (Failure)",
+    "限界到達（Max Effort）",
+    "极力量 / 力竭 (Max Effort)",
+    "極力量 / 力竭 (Max Effort)",
+    "Esfuerzo máximo (Fallo)",
+    "Effort maximal (Échec)",
+    "Maximaler Einsatz (Versagen)"
+  ],
+  "모든 힘을 다 쏟아부어 더 이상 1회도 수행 불가능한 극한 상태.": [
+    "모든 힘을 다 쏟아부어 더 이상 1회도 수행 불가능한 극한 상태.",
+    "Pushed with absolute maximum effort; zero additional reps possible.",
+    "全力を尽くし、これ以上1回も挙げられない限界状態。",
+    "倾注全部力量，无法再多完成任何一次的极限状态。",
+    "傾注全部力量，無法再多完成任何一次的極限狀態。",
+    "Esfuerzo al límite absoluto; imposible hacer una repetición más.",
+    "Effort maximal absolu ; impossible de faire une répétition de plus.",
+    "Voller Einsatz; keine weitere Wiederholung mehr möglich."
+  ],
+  "0회": [
+    "0회",
+    "0 reps",
+    "0回",
+    "0次",
+    "0次",
+    "0 reps",
+    "0 rep",
+    "0 Wdh."
+  ],
+  "거의 실패 (Near Failure)": [
+    "거의 실패 (Near Failure)",
+    "Near Failure",
+    "ほぼ限界（Near Failure）",
+    "接近力竭 (Near Failure)",
+    "接近力竭 (Near Failure)",
+    "Cerca del fallo",
+    "Presque à l'échec",
+    "Nahe am Versagen"
+  ],
+  "1회 더는 불가능하지만, 무게를 아주 살짝만 더 올릴 수는 있는 상태.": [
+    "1회 더는 불가능하지만, 무게를 아주 살짝만 더 올릴 수는 있는 상태.",
+    "Could not do 1 more rep, but could perhaps add a tiny bit of weight.",
+    "もう1回は不可能だが、重量をほんの少しなら上げられる状態。",
+    "无法多做1次，但或许还能微量增加一点点重量。",
+    "無法多做1次，但或許還能微量增加一點點重量。",
+    "Imposible hacer 1 rep más, pero tal vez con un peso ligeramente mayor.",
+    "Impossible de faire 1 rep de plus, mais charge maximale atteinte.",
+    "Keine Wiederholung mehr möglich, eventuell minimal mehr Gewicht."
+  ],
+  "0~1회": [
+    "0~1회",
+    "0–1 reps",
+    "0〜1回",
+    "0~1次",
+    "0~1次",
+    "0-1 reps",
+    "0 à 1 rep",
+    "0–1 Wdh."
+  ],
+  "고강도 본세트 (Very Hard)": [
+    "고강도 본세트 (Very Hard)",
+    "High Intensity Set (Very Hard)",
+    "高強度メインセット（Very Hard）",
+    "高强度正式组 (Very Hard)",
+    "高強度正式組 (Very Hard)",
+    "Serie pesada principal (Muy dura)",
+    "Série lourde principale (Très difficile)",
+    "Schwerer Arbeitssatz (Sehr hart)"
+  ],
+  "온 힘을 다하면 딱 1회 정도 더 들 수 있었던 상태.": [
+    "온 힘을 다하면 딱 1회 정도 더 들 수 있었던 상태.",
+    "Could have squeezed out exactly 1 more rep with full grit.",
+    "全力を出せばあと1回だけ挙げられた状態。",
+    "全力以赴的话刚好还能再拼出1次。",
+    "全力以赴的話剛好還能再拼出1次。",
+    "Podrías haber sacado exactamente 1 repetición más al límite.",
+    "Une seule répétition supplémentaire possible avec un effort maximal.",
+    "Mit aller Kraft wäre noch genau 1 Wiederholung gegangen."
+  ],
+  "1회 여유 (RIR 1)": [
+    "1회 여유 (RIR 1)",
+    "1 rep in reserve (RIR 1)",
+    "1回余力 (RIR 1)",
+    "余量1次 (RIR 1)",
+    "保留1次 (RIR 1)",
+    "1 rep de reserva (RIR 1)",
+    "1 rep en réserve (RIR 1)",
+    "1 Wdh. Reserve (RIR 1)"
+  ],
+  "최적의 근비대 존 (Sweet Spot)": [
+    "최적의 근비대 존 (Sweet Spot)",
+    "Hypertrophy Sweet Spot",
+    "筋肥大の最適ゾーン（Sweet Spot）",
+    "最佳肌肥大区间 (Sweet Spot)",
+    "最佳肌肥大區間 (Sweet Spot)",
+    "Punto óptimo de hipertrofia",
+    "Zone idéale d'hypertrophie",
+    "Optimaler Muskelaufbaubereich"
+  ],
+  "2회 정도 더 가능한 강도로, 부상 없이 근비대와 근신경 발달을 극대화.": [
+    "2회 정도 더 가능한 강도로, 부상 없이 근비대와 근신경 발달을 극대화.",
+    "2 more reps in tank; maximizes hypertrophy and neural gains with lowest injury risk.",
+    "あと2回可能な強度で、怪我なく筋肥大と神経伝達を最大化。",
+    "尚余2次余量，安全防伤并最大化肌肉肥大与神经募集。",
+    "尚保留2次次數，安全防傷並最大化肌肥大與神經募集。",
+    "Quedaban 2 reps; maximiza la hipertrofia sin riesgo de lesión.",
+    "2 reps en réserve ; maximise l'hypertrophie sans risque de blessure.",
+    "2 Wdh. Reserve; maximiert Muskelaufbau sicher ohne Verletzungsrisiko."
+  ],
+  "2회 여유 (RIR 2)": [
+    "2회 여유 (RIR 2)",
+    "2 reps in reserve (RIR 2)",
+    "2回余力 (RIR 2)",
+    "余量2次 (RIR 2)",
+    "保留2次 (RIR 2)",
+    "2 reps de reserva (RIR 2)",
+    "2 reps en réserve (RIR 2)",
+    "2 Wdh. Reserve (RIR 2)"
+  ],
+  "적당한 부하 (Moderate)": [
+    "적당한 부하 (Moderate)",
+    "Moderate Load",
+    "適度な負荷（Moderate）",
+    "适度负荷 (Moderate)",
+    "適度負荷 (Moderate)",
+    "Carga moderada",
+    "Charge modérée",
+    "Moderate Last"
+  ],
+  "자세가 흐트러지지 않고 경쾌한 속도로 힘차게 밀어낼 수 있는 상태.": [
+    "자세가 흐트러지지 않고 경쾌한 속도로 힘차게 밀어낼 수 있는 상태.",
+    "Clean form, crisp bar speed with solid power.",
+    "フォームが崩れず、軽快なスピードで力強く押し出せる状態。",
+    "动作标准稳定，动作速度轻快有力。",
+    "動作標準穩定，動作速度輕快有力。",
+    "Técnica limpia, velocidad de barra fluida y potente.",
+    "Forme propre, vitesse d'exécution fluide et puissante.",
+    "Saubere Technik, flüssiges Tempo und gute Kraft."
+  ],
+  "3회 여유 (RIR 3)": [
+    "3회 여유 (RIR 3)",
+    "3 reps in reserve (RIR 3)",
+    "3回余力 (RIR 3)",
+    "余量3次 (RIR 3)",
+    "保留3次 (RIR 3)",
+    "3 reps de reserva (RIR 3)",
+    "3 reps en réserve (RIR 3)",
+    "3 Wdh. Reserve (RIR 3)"
+  ],
+  "6.0 이하": [
+    "6.0 이하",
+    "6.0 or below",
+    "6.0以下",
+    "6.0及以下",
+    "6.0及以下",
+    "6.0 o menor",
+    "6.0 ou moins",
+    "6.0 oder weniger"
+  ],
+  "4회 이상": [
+    "4회 이상",
+    "4+ reps",
+    "4回以上",
+    "4次以上",
+    "4次以上",
+    "4+ reps",
+    "4+ reps",
+    "4+ Wdh."
+  ],
+  "가벼움 / 웜업 (Warm-up)": [
+    "가벼움 / 웜업 (Warm-up)",
+    "Light / Warm-up",
+    "軽め / ウォームアップ（Warm-up）",
+    "轻松 / 热身 (Warm-up)",
+    "輕鬆 / 熱身 (Warm-up)",
+    "Ligero / Calentamiento",
+    "Léger / Échauffement",
+    "Leicht / Aufwärmen"
+  ],
+  "관절을 데우고 신경계를 깨우는 가벼운 준비 운동.": [
+    "관절을 데우고 신경계를 깨우는 가벼운 준비 운동.",
+    "Light prep sets to lubricate joints and prime the nervous system.",
+    "関節を温め、神経系を目覚めさせる準備運動。",
+    "活动关节、激活神经肌肉系统的热身准备组。",
+    "活動關節、活化神經肌肉系統的熱身準備組。",
+    "Series suaves para lubricar articulaciones y activar el sistema nervioso.",
+    "Séries légères pour chauffer les articulations et réveiller le système nerveux.",
+    "Leichte Sätze zum Aufwärmen der Gelenke und Aktivieren des Nervensystems."
+  ],
+  "이해했습니다": [
+    "이해했습니다",
+    "Got it",
+    "了解しました",
+    "我知道了",
+    "我知道了",
+    "Entendido",
+    "Compris",
+    "Verstanden"
+  ],
+  "월": [
+    "월",
+    "M",
+    "月",
+    "一",
+    "一",
+    "L",
+    "L",
+    "M"
+  ],
+  "화": [
+    "화",
+    "T",
+    "火",
+    "二",
+    "二",
+    "M",
+    "M",
+    "D"
+  ],
+  "수": [
+    "수",
+    "W",
+    "水",
+    "三",
+    "三",
+    "X",
+    "M",
+    "M"
+  ],
+  "목": [
+    "목",
+    "T",
+    "木",
+    "四",
+    "四",
+    "J",
+    "J",
+    "D"
+  ],
+  "금": [
+    "금",
+    "F",
+    "金",
+    "五",
+    "五",
+    "V",
+    "V",
+    "F"
+  ],
+  "토": [
+    "토",
+    "S",
+    "土",
+    "六",
+    "六",
+    "S",
+    "S",
+    "S"
+  ],
+  "표준 보디빌딩 (2-0-1)": [
+    "표준 보디빌딩 (2-0-1)",
+    "Standard Bodybuilding (2-0-1)",
+    "標準ボディビル (2-0-1)",
+    "标准健美 (2-0-1)",
+    "標準健美 (2-0-1)",
+    "Culturismo estándar (2-0-1)",
+    "Culturisme standard (2-0-1)",
+    "Standard-Bodybuilding (2-0-1)"
+  ],
+  "2초 이완, 0초 정지, 1초 수축": [
+    "2초 이완, 0초 정지, 1초 수축",
+    "2s eccentric, 0s pause, 1s concentric",
+    "2秒伸張、0秒停止、1秒収縮",
+    "2秒离心，0秒停顿，1秒向心",
+    "2秒離心，0秒停頓，1秒向心",
+    "2s excéntrico, 0s pausa, 1s concéntrico",
+    "2s excentrique, 0s pause, 1s concentrique",
+    "2s exzentrisch, 0s Pause, 1s konzentrisch"
+  ],
+  "네거티브 과부하 (3-1-1)": [
+    "네거티브 과부하 (3-1-1)",
+    "Negative Overload (3-1-1)",
+    "ネガティブ過負荷 (3-1-1)",
+    "离心超负荷 (3-1-1)",
+    "離心超負荷 (3-1-1)",
+    "Sobrecarga negativa (3-1-1)",
+    "Surcharge négative (3-1-1)",
+    "Negative Überlastung (3-1-1)"
+  ],
+  "3초 천천히 이완, 1초 정지": [
+    "3초 천천히 이완, 1초 정지",
+    "3s slow eccentric, 1s pause",
+    "3秒ゆっくり伸張、1秒停止",
+    "3秒慢速离心，1秒停顿",
+    "3秒慢速離心，1秒停頓",
+    "3s bajada lenta, 1s pausa",
+    "3s descente lente, 1s pause",
+    "3s langsam absenken, 1s Pause"
+  ],
+  "극대 장력 TUT (4-2-1)": [
+    "극대 장력 TUT (4-2-1)",
+    "Max Tension TUT (4-2-1)",
+    "最大張力 TUT (4-2-1)",
+    "极致张力 TUT (4-2-1)",
+    "極致張力 TUT (4-2-1)",
+    "Máxima tensión TUT (4-2-1)",
+    "Tension maximale TUT (4-2-1)",
+    "Max. Spannung TUT (4-2-1)"
+  ],
+  "4초 극한 신장, 2초 정지": [
+    "4초 극한 신장, 2초 정지",
+    "4s extreme stretch, 2s pause",
+    "4秒極限伸張、2秒停止",
+    "4秒深度离心拉伸，2秒停顿",
+    "4秒深度離心拉伸，2秒停頓",
+    "4s estiramiento extremo, 2s pausa",
+    "4s étirement extrême, 2s pause",
+    "4s Dehnung, 2s Pause"
+  ],
+  "파워 / 스피드 (1-0-1)": [
+    "파워 / 스피드 (1-0-1)",
+    "Power / Speed (1-0-1)",
+    "パワー / スピード (1-0-1)",
+    "爆发力 / 速度 (1-0-1)",
+    "爆發力 / 速度 (1-0-1)",
+    "Potencia / Velocidad (1-0-1)",
+    "Puissance / Vitesse (1-0-1)",
+    "Power / Tempo (1-0-1)"
+  ],
+  "폭발적인 추진력 중심": [
+    "폭발적인 추진력 중심",
+    "Explosive drive focus",
+    "爆発的な推進力重視",
+    "专注于爆发式发力",
+    "專注於爆發式發力",
+    "Foco en empuje explosivo",
+    "Accent sur l'élan explosif",
+    "Fokus auf explosive Kraft"
+  ],
+  "예: 가슴 & 삼두 루틴": [
+    "예: 가슴 & 삼두 루틴",
+    "e.g. Chest & Triceps routine",
+    "例：胸＆上腕三頭筋ルーティン",
+    "例：胸部与三头肌训练",
+    "例：胸部與三頭肌訓練",
+    "ej. Rutina de pecho y tríceps",
+    "ex. Séance pectoraux et triceps",
+    "z.B. Brust- & Trizeps-Routine"
+  ],
+  "동작": [
+    "동작",
+    "Action",
+    "動作",
+    "动作",
+    "動作",
+    "Movimiento",
+    "Mouvement",
+    "Bewegung"
+  ],
+  "클릭하여 이 종목의 중량 단위(kg ⇋ lb) 즉시 전환": [
+    "클릭하여 이 종목의 중량 단위(kg ⇋ lb) 즉시 전환",
+    "Click to toggle weight unit (kg ⇋ lb) for this exercise",
+    "クリックしてこの種目の重量単位（kg ⇋ lb）を切り替え",
+    "点击即时切换此动作的重量单位 (kg ⇋ lb)",
+    "點擊即時切換此動作的重量單位 (kg ⇋ lb)",
+    "Haz clic para cambiar la unidad de peso (kg ⇋ lb)",
+    "Cliquez pour basculer l'unité de poids (kg ⇋ lb)",
+    "Klicken, um die Gewichtseinheit (kg ⇋ lb) umzuschalten"
+  ],
+  "무게": [
+    "무게",
+    "Weight",
+    "重量",
+    "重量",
+    "重量",
+    "Peso",
+    "Poids",
+    "Gewicht"
+  ],
+  "탑세트 무게": [
+    "탑세트 무게",
+    "Top Set Weight",
+    "トップセット重量",
+    "顶峰组重量",
+    "頂峰組重量",
+    "Peso de serie superior",
+    "Poids du top set",
+    "Top-Satz-Gewicht"
+  ],
+  "첫 세트 무게": [
+    "첫 세트 무게",
+    "First Set Weight",
+    "第1セット重量",
+    "首组重量",
+    "首組重量",
+    "Peso de primera serie",
+    "Poids de la première série",
+    "Erster Satz Gewicht"
+  ],
+  "탑세트 횟수": [
+    "탑세트 횟수",
+    "Top Set Reps",
+    "トップセット回数",
+    "顶峰组次数",
+    "頂峰組次數",
+    "Reps de serie superior",
+    "Répétitions du top set",
+    "Top-Satz-Wiederholungen"
+  ],
+  "첫 세트 횟수": [
+    "첫 세트 횟수",
+    "First Set Reps",
+    "第1セット回数",
+    "首组次数",
+    "首組次數",
+    "Reps de primera serie",
+    "Répétitions de la première série",
+    "Erster Satz Wiederholungen"
+  ],
+  "타겟 근육 근육 해부도 및 3D 회전 모델 보기": [
+    "타겟 근육 근육 해부도 및 3D 회전 모델 보기",
+    "View target muscle anatomy & 3D rotating model",
+    "ターゲット筋肉解剖図と3D回転モデルを表示",
+    "查看目标肌肉解剖图与3D旋转模型",
+    "檢視目標肌肉解剖圖與3D旋轉模型",
+    "Ver anatomía muscular y modelo 3D giratorio",
+    "Voir l'anatomie musculaire et le modèle 3D rotatif",
+    "Zielmuskel-Anatomie und rotierendes 3D-Modell ansehen"
+  ],
+  "다른 종목과 슈퍼세트/컴파운드세트로 묶기": [
+    "다른 종목과 슈퍼세트/컴파운드세트로 묶기",
+    "Group as Superset/Compound set with another exercise",
+    "他の種目とスーパーセット/コンパウンドセットで組む",
+    "与其他动作组合为超级组/复合组",
+    "與其他動作組合為超級組/複合組",
+    "Agrupar como biserie/serie compuesta con otro ejercicio",
+    "Grouper en superset/série composée avec un autre exercice",
+    "Als Superset/Compound-Satz mit anderer Übung gruppieren"
+  ],
+  "근육 보기": [
+    "근육 보기",
+    "View Muscles",
+    "筋肉を表示",
+    "查看肌肉",
+    "檢視肌肉",
+    "Ver músculos",
+    "Voir les muscles",
+    "Muskeln ansehen"
+  ],
+  "프리": [
+    "프리",
+    "Free",
+    "フリー",
+    "自由",
+    "自由",
+    "Libre",
+    "Libre",
+    "Frei"
+  ],
+  "현재 종목": [
+    "현재 종목",
+    "Current exercise",
+    "現在の種目",
+    "当前动作",
+    "當前動作",
+    "Ejercicio actual",
+    "Exercice actuel",
+    "Aktuelle Übung"
+  ],
+  "함께 묶을 다른 운동이 세션에 없습니다. 먼저 다른 운동을 추가해 주세요.": [
+    "함께 묶을 다른 운동이 세션에 없습니다. 먼저 다른 운동을 추가해 주세요.",
+    "No other exercise in session to group with. Please add another exercise first.",
+    "セッションに他に組む種目がありません。先に他の種目を追加してください。",
+    "当前训练中没有其他可组合的动作，请先添加其他动作。",
+    "當前訓練中沒有其他可組合的動作，請先新增其他動作。",
+    "No hay otro ejercicio en la sesión para agrupar. Agrega otro ejercicio primero.",
+    "Aucun autre exercice dans la séance à associer. Ajoutez d'abord un autre exercice.",
+    "Keine andere Übung in der Einheit zum Gruppieren vorhanden. Bitte zuerst hinzufügen."
+  ],
+  "선택한 종목과 묶기": [
+    "선택한 종목과 묶기",
+    "Group with selected exercise",
+    "選択した種目と組む",
+    "与所选动作组合",
+    "與所選動作組合",
+    "Agrupar con el ejercicio seleccionado",
+    "Associer avec l'exercice sélectionné",
+    "Mit ausgewählter Übung gruppieren"
+  ],
+  "🔥 오늘 목표": [
+    "🔥 오늘 목표",
+    "🔥 Today's Target",
+    "🔥 今日の目標",
+    "🔥 今日目标",
+    "🔥 今日目標",
+    "🔥 Objetivo de hoy",
+    "🔥 Cible du jour",
+    "🔥 Heutiges Ziel"
+  ],
+  "★커스텀": [
+    "★커스텀",
+    "★Custom",
+    "★カスタム",
+    "★自定义",
+    "★自訂",
+    "★Personalizado",
+    "★Personnalisé",
+    "★Benutzerdefiniert"
+  ],
+  "★인기": [
+    "★인기",
+    "★Popular",
+    "★人気",
+    "★热门",
+    "★熱門",
+    "★Popular",
+    "★Populaire",
+    "★Beliebt"
+  ],
+  "기타 (직접 입력)": [
+    "기타 (직접 입력)",
+    "Other (Direct input)",
+    "その他（直接入力）",
+    "其他（手动输入）",
+    "其他（手動輸入）",
+    "Otro (Entrada directa)",
+    "Autre (Saisie directe)",
+    "Sonstige (Direkteingabe)"
+  ],
+  "최고": [
+    "최고",
+    "Max",
+    "最高",
+    "最高",
+    "最高",
+    "Máx",
+    "Max",
+    "Max"
+  ],
+  "편측": [
+    "편측",
+    "Unilateral",
+    "片側",
+    "单侧",
+    "單側",
+    "Unilateral",
+    "Unilatéral",
+    "Einseitig"
+  ],
+  "양측": [
+    "양측",
+    "Bilateral",
+    "両側",
+    "双侧",
+    "雙側",
+    "Bilateral",
+    "Bilatéral",
+    "Beidseitig"
+  ],
+  "원판": [
+    "원판",
+    "Plate",
+    "プレート",
+    "挂片",
+    "掛片",
+    "Disco",
+    "Disque",
+    "Scheibe"
+  ],
+  "브랜드 미지정": [
+    "브랜드 미지정",
+    "No brand specified",
+    "ブランド未指定",
+    "未指定品牌",
+    "未指定品牌",
+    "Sin marca",
+    "Sans marque",
+    "Keine Marke"
+  ],
+  "장비": [
+    "장비",
+    "Equipment",
+    "器具",
+    "器材",
+    "器材",
+    "Equipo",
+    "Équipement",
+    "Ausrüstung"
+  ],
+  "모든 장비": [
+    "모든 장비",
+    "All Equipment",
+    "すべての器具",
+    "所有器材",
+    "所有器材",
+    "Todo el equipo",
+    "Tous les équipements",
+    "Alle Ausrüstung"
+  ],
+  "바른 자세와 통제된 템포로 안전하게 운동을 수행하세요.": [
+    "바른 자세와 통제된 템포로 안전하게 운동을 수행하세요.",
+    "Perform exercises safely with proper posture and controlled tempo.",
+    "正しいフォームとコントロールされたテンポで安全に運動を行ってください。",
+    "保持正确的姿势和受控的节奏安全进行训练。",
+    "保持正確的姿勢和受控的節奏安全進行訓練。",
+    "Realiza el ejercicio de forma segura con la postura correcta y ritmo controlado.",
+    "Effectuez les exercices en toute sécurité avec une bonne posture et un tempo contrôlé.",
+    "Führe die Übungen sicher mit korrekter Haltung und kontrolliertem Tempo aus."
+  ],
+  "목표 근육에 긴장을 유지하며 점진적 과부하를 적용하세요.": [
+    "목표 근육에 긴장을 유지하며 점진적 과부하를 적용하세요.",
+    "Maintain tension in target muscles and apply progressive overload.",
+    "対象筋に緊張を維持しながら漸進性過負荷を適用してください。",
+    "保持目标肌肉持续受张力，并应用渐进式超负荷。",
+    "保持目標肌肉持續受張力，並應用漸進式超負荷。",
+    "Mantén la tensión en el músculo objetivo y aplica sobrecarga progresiva.",
+    "Maintenez la tension sur les muscles cibles et appliquez une surcharge progressive.",
+    "Spannung im Zielmuskel halten und progressive Überlastung anwenden."
+  ],
+  "사용자 정의 커스텀 운동:": [
+    "사용자 정의 커스텀 운동:",
+    "User-defined custom exercise:",
+    "ユーザー定義カスタム種目:",
+    "用户自定义动作:",
+    "使用者自訂動作:",
+    "Ejercicio personalizado por el usuario:",
+    "Exercice personnalisé par l'utilisateur :",
+    "Benutzerdefinierte Übung:"
   ]
 }

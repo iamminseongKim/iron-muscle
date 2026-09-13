@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ? 'bg-white dark:bg-[#1C1C1E] border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white hover:border-[#34C759]/50'
                 : 'bg-[#FF9500]/15 dark:bg-[#FF9500]/25 border-[#FF9500]/50 text-[#FF9500] ring-2 ring-[#FF9500]/20'
             }`}
-            title={isWorkoutTimerRunning ? '터치하여 운동 시간 일시정지 (전화/화장실 등)' : '터치하여 운동 시간 재개'}
+            title={isWorkoutTimerRunning ? t('터치하여 운동 시간 일시정지 (전화/화장실 등)') : t('터치하여 운동 시간 재개')}
           >
             {isWorkoutTimerRunning ? (
               <span className="flex items-center gap-1 shrink-0">

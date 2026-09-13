@@ -168,7 +168,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
   const displayedTarget = onSelectMuscle ? activeMuscleFilter : selected;
   const chooseView = (mode: View) => { setView(mode); apiRef.current?.view(mode); };
   return (
-    <section aria-label="통합 3D 근육 해부도" className="rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-[#F3F5F8] dark:bg-[#151519]">
+    <section aria-label={t("통합 3D 근육 해부도")} className="rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-[#F3F5F8] dark:bg-[#151519]">
       <div className="px-3 pt-3 flex flex-wrap gap-3 text-xs text-gray-600 dark:text-gray-300">
         <span><span className="text-[#FF2D55]">●</span> {t("주동근")}</span><span><span className="text-[#FF9500]">●</span> {t("협응근")}</span><span><span className="text-[#328bff]">●</span> {t("선택 근육")}</span>
       </div>

@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React from 'react';
 import { X, HelpCircle, Flame, ShieldAlert, Award, Zap } from 'lucide-react';
 
@@ -70,12 +71,13 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
               <HelpCircle size={18} />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">RPE & RIR 가이드</h3>
-              <p className="text-xs text-gray-400">운동 자각도 및 여유 반복수 완벽 이해하기</p>
+              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">{t("RPE & RIR 가이드")}</h3>
+              <p className="text-xs text-gray-400">{t("운동 자각도 및 여유 반복수 완벽 이해하기")}</p>
             </div>
           </div>
           <button 
             onClick={onClose} 
+            aria-label={t("닫기")}
             className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition"
           >
             <X size={18} />
@@ -85,10 +87,10 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
         {/* Modal Content */}
         <div className="p-4 overflow-y-auto space-y-3.5 text-sm">
           <div className="bg-red-500/10 dark:bg-red-950/30 p-3.5 rounded-2xl border border-red-500/20 text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-            <strong className="text-red-600 dark:text-red-400 font-bold block mb-1">💡 RPE란 무엇인가요?</strong>
-            <strong>RPE (Rating of Perceived Exertion)</strong>는 '세트를 마쳤을 때 얼마나 힘들었는지'를 6~10점 척도로 매기는 운동 자각도입니다.
+            <strong className="text-red-600 dark:text-red-400 font-bold block mb-1">{t("💡 RPE란 무엇인가요?")}</strong>
+            {t("RPE (Rating of Perceived Exertion)는 '세트를 마쳤을 때 얼마나 힘들었는지'를 6~10점 척도로 매기는 운동 자각도입니다.")}
             <span className="block mt-1 text-amber-700 dark:text-amber-300">
-              <strong>RIR(Reps in Reserve)</strong>은 '실패 지점까지 앞으로 몇 번을 더 들 수 있었는가'를 의미합니다. (예: RPE 8 = RIR 2, 즉 2개 더 가능)
+              {t("RIR(Reps in Reserve)은 '실패 지점까지 앞으로 몇 번을 더 들 수 있었는가'를 의미합니다. (예: RPE 8 = RIR 2, 즉 2개 더 가능)")}
             </span>
           </div>
 
@@ -103,13 +105,13 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
                     <span className={`px-2 py-0.5 rounded-md text-xs font-black border ${item.badge}`}>
                       RPE {item.rpe}
                     </span>
-                    <span className="text-xs font-bold text-[#1D1D1F] dark:text-white">{item.title}</span>
+                    <span className="text-xs font-bold text-[#1D1D1F] dark:text-white">{t(item.title)}</span>
                   </div>
                   <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-[#1C1C1E] px-2 py-0.5 rounded-lg border border-black/5 dark:border-white/5">
-                    {item.rir}
+                    {t(item.rir)}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">{item.desc}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-snug">{t(item.desc)}</p>
               </div>
             ))}
           </div>
@@ -121,7 +123,7 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
             onClick={onClose}
             className="w-full py-3 bg-[#0F766E] text-white font-black rounded-2xl text-xs shadow-md shadow-teal-900/20 hover:opacity-95 active:scale-98 transition"
           >
-            이해했습니다
+            {t("이해했습니다")}
           </button>
         </div>
       </div>

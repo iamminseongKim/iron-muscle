@@ -104,9 +104,9 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
       movementPlane: defaultPlane[category] || 'squat-pattern',
       primaryMuscles: [selectedMuscle],
       secondaryMuscles: [],
-      description: `사용자 정의 커스텀 운동: ${cleanName}`,
-      instructions: ['바른 자세와 통제된 템포로 안전하게 운동을 수행하세요.'],
-      tips: ['목표 근육에 긴장을 유지하며 점진적 과부하를 적용하세요.'],
+      description: `${t('사용자 정의 커스텀 운동:')} ${cleanName}`,
+      instructions: [t('바른 자세와 통제된 템포로 안전하게 운동을 수행하세요.')],
+      tips: [t('목표 근육에 긴장을 유지하며 점진적 과부하를 적용하세요.')],
       isPopular: true,
       aliases: [cleanName.replace(/\s+/g, '')],
     };
@@ -129,13 +129,14 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
               <Sparkles size={16} />
             </div>
             <div>
-              <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white">새 운동 직접 등록</h3>
-              <p className="text-[11px] text-gray-400">라이브러리에 나만의 커스텀 운동 추가</p>
+              <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white">{t("새 운동 직접 등록")}</h3>
+              <p className="text-[11px] text-gray-400">{t("라이브러리에 나만의 커스텀 운동 추가")}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
+            aria-label={t("닫기")}
             className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white transition"
           >
             <X size={18} />
@@ -147,7 +148,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           {/* 운동 종목명 */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-              운동 종목명 <span className="text-[#0F766E]">*</span>
+              {t("운동 종목명")} <span className="text-[#0F766E]">*</span>
             </label>
             <input
               type="text"
@@ -155,7 +156,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
               autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="예: V-스쿼트, 바이킹 프레스, 펜들레이 로우"
+              placeholder={t("예: V-스쿼트, 바이킹 프레스, 펜들레이 로우")}
               className="w-full bg-gray-50 dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-[#1D1D1F] dark:text-white outline-none focus:border-[#0F766E] transition"
             />
           </div>
@@ -163,13 +164,13 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           {/* 영문명 (선택) */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
-              영문 명칭 (선택)
+              {t("영문 명칭 (선택)")}
             </label>
             <input
               type="text"
               value={nameEn}
               onChange={(e) => setNameEn(e.target.value)}
-              placeholder="예: V-Squat Machine, Viking Press"
+              placeholder={t("예: V-Squat Machine, Viking Press")}
               className="w-full bg-gray-50 dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#1D1D1F] dark:text-white outline-none"
             />
           </div>
@@ -177,7 +178,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           {/* 타겟 부위 / 카테고리 */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-              운동 부위 <span className="text-[#0F766E]">*</span>
+              {t("운동 부위")} <span className="text-[#0F766E]">*</span>
             </label>
             <div className="grid grid-cols-4 gap-1.5">
               {CATEGORY_OPTIONS.map((c) => (
@@ -200,7 +201,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           {/* 운동 장비 유형 */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-              장비 유형 <span className="text-[#0F766E]">*</span>
+              {t("장비 유형")} <span className="text-[#0F766E]">*</span>
             </label>
             <div className="grid grid-cols-3 gap-1.5">
               {EQUIPMENT_OPTIONS.map((eq) => (
@@ -224,7 +225,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           {equipment === 'machine' && (
             <div>
               <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">
-                머신 부하 방식
+                {t("머신 부하 방식")}
               </label>
               <div className="flex gap-2">
                 <button
@@ -236,7 +237,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                       : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300'
                   }`}
                 >
-                  플레이트 (원판 로드)
+                  {t("플레이트 (원판 로드)")}
                 </button>
                 <button
                   type="button"
@@ -247,7 +248,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                       : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300'
                   }`}
                 >
-                  핀머신 (웨이트 스택)
+                  {t("핀머신 (웨이트 스택)")}
                 </button>
               </div>
             </div>
@@ -283,7 +284,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
               className="w-full py-3.5 bg-[#0F766E] hover:opacity-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-teal-900/20 active:scale-98 transition flex items-center justify-center gap-2"
             >
               <Plus size={18} strokeWidth={3} />
-              라이브러리에 등록하고 선택하기
+              {t("라이브러리에 등록하고 선택하기")}
             </button>
           </div>
         </form>

@@ -167,7 +167,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             className="px-2 py-0.5 rounded-full bg-black/20 hover:bg-black/40 text-[10px] transition flex items-center gap-1"
           >
             <Unlink size={10} />
-            묶음 해제
+            {t("묶음 해제")}
           </button>
         </div>
       )}
@@ -185,15 +185,15 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
           </div>
           <div className="flex items-center gap-2 flex-wrap mt-0.5">
-            <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}세트 완료{records.maxWeight > 0 ? ` · 최고 ${records.maxWeight}${currentUnit}` : ''}</span>
+            <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}{t("세트 완료")}{records.maxWeight > 0 ? ` · ${t("최고")} ${records.maxWeight}${currentUnit}` : ''}</span>
             {(!collapsed && (exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes(t("덤벨")) || exerciseNameEn.toLowerCase().includes('dumbbell'))) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
-                💡 덤벨: 한쪽(편측) 무게 기준
+                💡 {t("덤벨: 한쪽(편측) 무게 기준")}
               </span>
             )}
             {(!collapsed && (exerciseItem.equipmentType === 'machine' || baseExercise.equipment === 'machine') && (exerciseName.includes('스미스') || exerciseNameEn.toLowerCase().includes('smith'))) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] dark:bg-[#0F766E]/20 text-[10px] font-bold tracking-tight">
-                💡 스미스머신: 봉 무게 제외 (원판 무게만 기록)
+                💡 {t("스미스머신: 봉 무게 제외 (원판 무게만 기록)")}
               </span>
             )}
           </div>
@@ -206,10 +206,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               type="button"
               onClick={onOpenGroupModal}
               className="min-w-[36px] min-h-[36px] justify-center px-2 rounded-xl text-xs font-bold transition flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5"
-              title="다른 종목과 슈퍼세트/컴파운드세트로 묶기"
+              title={t("다른 종목과 슈퍼세트/컴파운드세트로 묶기")}
             >
               <Link2 size={13} className="text-gray-400" />
-              <span className="sr-only">묶기</span>
+              <span className="sr-only">{t("묶기")}</span>
             </button>
           )}
 
@@ -221,16 +221,16 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 ? 'bg-[#0F766E]/15 text-[#0F766E] ring-1 ring-[#0F766E]/30'
                 : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'
             }`}
-            title="타겟 근육 근육 해부도 및 3D 회전 모델 보기"
+            title={t("타겟 근육 근육 해부도 및 3D 회전 모델 보기")}
           >
             <Eye size={13} className={show3DViewer ? 'text-[#0F766E]' : 'text-gray-400'} />
-            <span className="sr-only">근육 보기</span>
+            <span className="sr-only">{t("근육 보기")}</span>
           </button>
 
           <button
             type="button"
             onClick={onDelete}
-            aria-label={`${exerciseName} 삭제`}
+            aria-label={`${exerciseName} ${t("삭제")}`}
             className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 rounded-xl transition"
           >
             <Trash2 size={16} />
@@ -241,11 +241,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <div hidden={collapsed}>
       <details className="border-b border-black/5 dark:border-white/5">
         <summary className="px-3 py-2 cursor-pointer text-xs text-gray-500 dark:text-gray-400 marker:text-gray-400">
-          <span className="font-bold text-gray-500 dark:text-gray-400">운동 설정</span>
-          <span className="ml-2">{exerciseItem.executionMode === 'unilateral' ? '편측' : '양측'} · {currentUnit}{exerciseItem.equipmentType === 'machine' ? ` · ${currentLoadType === 'pin-loaded' ? '핀머신' : '원판'} · ${exerciseItem.machineBrand?.split(' (')[0] || '브랜드 미지정'}` : ''}</span>
+          <span className="font-bold text-gray-500 dark:text-gray-400">{t("운동 설정")}</span>
+          <span className="ml-2">{exerciseItem.executionMode === 'unilateral' ? t('편측') : t('양측')} · {currentUnit}{exerciseItem.equipmentType === 'machine' ? ` · ${currentLoadType === 'pin-loaded' ? t('핀머신') : t('원판')} · ${exerciseItem.machineBrand?.split(' (')[0] || t('브랜드 미지정')}` : ''}</span>
         </summary>
         <p className="px-3 text-xs text-gray-400">{exerciseNameEn}</p>
-        <div className="px-3 py-1 flex items-center gap-2"><span className="text-xs text-gray-500">장비</span>
+        <div className="px-3 py-1 flex items-center gap-2"><span className="text-xs text-gray-500">{t("장비")}</span>
             {/* 세련된 애플 세그먼트 컨트롤 (프리 vs 머신) */}
             <div className="flex items-center bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-xl p-0.5 text-[11px] font-bold">
               <button
@@ -255,7 +255,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   exerciseItem.equipmentType !== 'machine' ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-sm' : 'text-gray-400'
                 }`}
               >
-                프리
+                {t("프리")}
               </button>
               <button
                 type="button"
@@ -270,7 +270,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <div className="px-4 py-2 bg-[#F9F9FB] dark:bg-[#18181A] border-b border-black/5 dark:border-white/5 flex flex-wrap items-center justify-between gap-2 text-xs">
         {/* 편측성 토글: 투암 vs 원암 */}
         <div className="flex items-center gap-1.5">
-          <span className="text-[11px] text-gray-400 font-bold">수행방식:</span>
+          <span className="text-[11px] text-gray-400 font-bold">{t("수행방식:")}</span>
           <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-[10px] font-bold">
             <button
               type="button"
@@ -281,7 +281,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
-              투암 (양측)
+              {t("투암 (양측)")}
             </button>
             <button
               type="button"
@@ -292,14 +292,14 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
-              원암 (편측 L/R)
+              {t("원암 (편측 L/R)")}
             </button>
           </div>
         </div>
 
         {/* 종목별 무게 단위 토글: kg vs lb (머신별 독립 설정) */}
         <div className="flex items-center gap-1.5">
-          <span className="text-[11px] text-gray-400 font-bold">단위:</span>
+          <span className="text-[11px] text-gray-400 font-bold">{t("단위:")}</span>
           <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-[10px] font-bold">
             <button
               type="button"
@@ -325,7 +325,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
-              lb (파운드)
+              {t("lb (파운드)")}
             </button>
           </div>
         </div>
@@ -333,7 +333,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         {/* 부하 방식 토글 (머신일 경우): 플레이트 vs 핀로드 */}
         {exerciseItem.equipmentType === 'machine' && (
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] text-gray-400 font-bold">부하방식:</span>
+            <span className="text-[11px] text-gray-400 font-bold">{t("부하방식:")}</span>
             <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-[10px] font-bold">
               <button
                 type="button"
@@ -344,7 +344,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
               >
-                플레이트(원판)
+                {t("플레이트(원판)")}
               </button>
               <button
                 type="button"
@@ -355,7 +355,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
               >
-                핀머신
+                {t("핀머신")}
               </button>
             </div>
           </div>
@@ -367,21 +367,21 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <div className="px-4 py-2 bg-[#F9F9FB] dark:bg-[#18181A] border-b border-black/5 dark:border-white/5 flex flex-wrap items-center gap-2 text-xs">
           <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 font-bold">
             <Settings2 size={14} className="text-[#FF9500]" />
-            <span>머신 브랜드:</span>
+            <span>{t("머신 브랜드:")}</span>
           </div>
 
           {!isCustomBrand ? (
             <select
-              aria-label="머신 브랜드"
+              aria-label={t("머신 브랜드")}
               value={exerciseItem.machineBrand || ''}
               onChange={(e) => handleBrandSelect(e.target.value)}
               className="bg-white dark:bg-[#2C2C2E] text-[#FF9500] font-bold rounded-xl px-2.5 py-1 text-xs border border-black/10 dark:border-white/10 outline-none cursor-pointer"
             >
-              <option value="">브랜드 선택</option>
+              <option value="">{t("브랜드 선택")}</option>
               {exerciseItem.machineBrand && !POPULAR_MACHINE_BRANDS.some(b => b === exerciseItem.machineBrand) && <option value={exerciseItem.machineBrand}>{exerciseItem.machineBrand}</option>}
               {POPULAR_MACHINE_BRANDS.map((b) => (
                 <option key={b} value={b}>
-                  {b}
+                  {b === '기타 (직접 입력)' ? t('기타 (직접 입력)') : b}
                 </option>
               ))}
             </select>
@@ -390,7 +390,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <input
                 type="text"
                 value={exerciseItem.machineBrand || ''}
-                placeholder="머신 브랜드 직접 입력"
+                placeholder={t("머신 브랜드 직접 입력")}
                 onChange={(e) => onUpdate({ ...exerciseItem, machineBrand: e.target.value })}
                 className="bg-white dark:bg-[#2C2C2E] text-[#FF9500] font-bold rounded-xl px-2.5 py-1 text-xs border border-black/10 dark:border-white/10 w-40 outline-none"
               />
@@ -399,7 +399,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 onClick={() => setIsCustomBrand(false)}
                 className="text-[11px] text-gray-400 hover:underline"
               >
-                목록 선택
+                {t("목록 선택")}
               </button>
             </div>
           )}
@@ -409,7 +409,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             onClick={() => setShowMachineSetting(!showMachineSetting)}
             className="text-[11px] text-gray-400 hover:text-[#0F766E] underline ml-auto"
           >
-            {exerciseItem.machineSetting ? `세팅: ${exerciseItem.machineSetting}` : '+ 세팅(의자높이 등)'}
+            {exerciseItem.machineSetting ? `${t("세팅:")} ${exerciseItem.machineSetting}` : t('+ 세팅(의자높이 등)')}
           </button>
 
           {showMachineSetting && (
@@ -417,7 +417,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <input
                 type="text"
                 value={exerciseItem.machineSetting || ''}
-                placeholder="예: 의자 4단, 발판 중간, 등받이 각도 2단계"
+                placeholder={t("예: 의자 4단, 발판 중간, 등받이 각도 2단계")}
                 onChange={(e) => onUpdate({ ...exerciseItem, machineSetting: e.target.value })}
                 className="w-full bg-white dark:bg-[#2C2C2E] text-gray-800 dark:text-gray-200 rounded-xl px-3 py-1.5 text-xs border border-black/10 dark:border-white/10 outline-none"
               />
@@ -436,7 +436,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             <div className="flex items-center gap-1.5">
               <Sparkles size={13} className="text-[#0F766E]" />
               <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                {exerciseName} 자극 부위
+                {exerciseName} {t("자극 부위")}
               </span>
             </div>
 
@@ -450,7 +450,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
               >
-                근육 해부도
+                {t("근육 해부도")}
               </button>
               {baseExercise.images && baseExercise.images.length > 0 && (
                 <button
@@ -462,7 +462,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                       : 'text-gray-500 hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  📸 실물 사진
+                  {t("📸 실물 사진")}
                 </button>
               )}
             </div>
@@ -486,7 +486,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   <div key={i} className="relative rounded-2xl overflow-hidden bg-black/5 dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 aspect-square flex items-center justify-center">
                     <img
                       src={imgUrl}
-                      alt={`${exerciseName} 동작 ${i + 1}`}
+                      alt={`${exerciseName} ${t("동작")} ${i + 1}`}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
@@ -544,14 +544,14 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           type="button"
           onClick={handleToggleExerciseUnit}
           className="flex-1 text-center font-bold text-gray-500 dark:text-gray-400 hover:opacity-80 transition flex items-center justify-center gap-1"
-          title="클릭하여 이 종목의 중량 단위(kg ⇋ lb) 즉시 전환"
+          title={t("클릭하여 이 종목의 중량 단위(kg ⇋ lb) 즉시 전환")}
         >
-          <span>무게 ({currentUnit})</span>
+          <span>{t("무게")} ({currentUnit})</span>
 
         </button>
         <span className="flex-1 text-center font-bold">{t("횟수")}</span>
         <span className="w-9 shrink-0 text-center">{t("완료")}</span>
-        <span className="w-7 shrink-0 text-center">옵션</span>
+        <span className="w-7 shrink-0 text-center">{t("옵션")}</span>
       </div>
 
       {/* Sets List */}
@@ -588,10 +588,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <div className="px-4 py-2 bg-[#F2F2F7]/50 dark:bg-[#1F1F21] border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1.5 font-bold">
             <Trophy size={13} className="text-[#FF9500]" />
-            <span>최고 중량: {records.maxWeight}{currentUnit}</span>
+            <span>{t("최고 중량:")} {records.maxWeight}{currentUnit}</span>
           </div>
           <div className="flex items-center gap-1 font-semibold text-[11px]">
-            <span>추정 1RM:</span>
+            <span>{t("추정 1RM:")}</span>
             <span className="font-extrabold text-[#0F766E]">{records.max1RM}{currentUnit}</span>
           </div>
         </div>

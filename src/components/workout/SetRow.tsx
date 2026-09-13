@@ -193,9 +193,9 @@ export const SetRow: React.FC<SetRowProps> = ({
                     ? 'bg-[#0F766E] text-white shadow-xs'
                     : 'bg-gray-200 dark:bg-[#3A3A3C] text-gray-600 dark:text-gray-300'
                 }`}
-                title="클릭하여 좌(L) / 우(R) / 양쪽 전환"
+                title={t("클릭하여 좌(L) / 우(R) / 양쪽 전환")}
               >
-                {set.side === 'left' ? '좌' : set.side === 'right' ? '우' : '양'}
+                {set.side === 'left' ? t('좌') : set.side === 'right' ? t('우') : t('양')}
               </button>
             )}
           </div>
@@ -214,7 +214,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           {/* 중량 (kg/lbs) 입력 */}
           <div className="flex-1 min-w-0 relative">
             <input
-              aria-label={`${index + 1}세트 무게`}
+              aria-label={`${index + 1}${t("세트 무게")}`}
               ref={weightInputRef}
               type="text"
               pattern="[0-9]*[.]?[0-9]*"
@@ -247,7 +247,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           {/* 횟수 (reps) 입력 */}
           <div className="flex-1 min-w-0 relative">
             <input
-              aria-label={`${index + 1}세트 횟수`}
+              aria-label={`${index + 1}${t("세트 횟수")}`}
               ref={repsInputRef}
               type="text"
               pattern="[0-9]*"
@@ -271,13 +271,13 @@ export const SetRow: React.FC<SetRowProps> = ({
                   : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E]'
               }`}
             />
-            <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">회</span>
+            <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">{t("회")}</span>
           </div>
 
           {/* 세트 완료 체크 버튼 (애플 스타일 라운드 체크) */}
           <button
             type="button"
-            aria-label={`${index + 1}세트 완료`}
+            aria-label={`${index + 1}${t("세트 완료")}`}
             aria-pressed={set.completed}
             onClick={handleToggleComplete}
             className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center transition-all ${
@@ -288,7 +288,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           >
             <Check size={18} strokeWidth={2.5} />
           </button>
-          <button type="button" aria-label={`${index + 1}세트 상세 옵션`} aria-expanded={showOptions} onClick={() => setShowOptions(!showOptions)} className={`relative w-7 h-9 shrink-0 flex items-center justify-center rounded-lg ${showOptions ? 'bg-[#0F766E]/10 text-[#0F766E]' : 'text-gray-400'}`}>
+          <button type="button" aria-label={`${index + 1}${t("세트 상세 옵션")}`} aria-expanded={showOptions} onClick={() => setShowOptions(!showOptions)} className={`relative w-7 h-9 shrink-0 flex items-center justify-center rounded-lg ${showOptions ? 'bg-[#0F766E]/10 text-[#0F766E]' : 'text-gray-400'}`}>
             <MoreHorizontal size={16} />
             {(set.rpe !== undefined || hasTempo || hasCommentOrTags || hasRestTime) && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#0F766E]" />}
           </button>
@@ -301,7 +301,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             {/* RPE 드롭다운 칩 */}
             <div className="relative inline-flex items-center">
               <select
-                aria-label={`${index + 1}세트 RPE`}
+                aria-label={`${index + 1}${t("세트 RPE")}`}
                 value={set.rpe !== undefined ? set.rpe : ''}
                 onChange={handleRpeChange}
                 className={`appearance-none font-bold text-[11px] rounded-lg pl-2 pr-5 py-1 outline-none cursor-pointer transition border ${
@@ -310,8 +310,8 @@ export const SetRow: React.FC<SetRowProps> = ({
                     : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 dark:text-gray-400 border-transparent hover:border-black/10'
                 }`}
               >
-                <option value="" className="text-gray-400">RPE 선택</option>
-                <option value="10">RPE 10 (한계)</option>
+                <option value="" className="text-gray-400">{t("RPE 선택")}</option>
+                <option value="10">{t("RPE 10 (한계)")}</option>
                 <option value="9.5">RPE 9.5</option>
                 <option value="9">RPE 9 (RIR 1)</option>
                 <option value="8.5">RPE 8.5</option>
@@ -319,7 +319,7 @@ export const SetRow: React.FC<SetRowProps> = ({
                 <option value="7.5">RPE 7.5</option>
                 <option value="7">RPE 7 (RIR 3)</option>
                 <option value="6.5">RPE 6.5</option>
-                <option value="6">RPE 6 (웜업)</option>
+                <option value="6">{t("RPE 6 (웜업)")}</option>
               </select>
               <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[8px] text-gray-400 pointer-events-none">▼</span>
             </div>
@@ -333,11 +333,11 @@ export const SetRow: React.FC<SetRowProps> = ({
                   ? 'bg-amber-500/15 text-[#FF9500]'
                   : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
               }`}
-              title="수축/이완 템포"
+              title={t("수축/이완 템포")}
             >
               <Clock size={12} />
               <span className="whitespace-nowrap">
-                {hasTempo ? `${set.tempo?.eccentric}-${set.tempo?.pause}-${set.tempo?.concentric}s` : '템포'}
+                {hasTempo ? `${set.tempo?.eccentric}-${set.tempo?.pause}-${set.tempo?.concentric}s` : t('템포')}
               </span>
             </button>
 
@@ -350,11 +350,11 @@ export const SetRow: React.FC<SetRowProps> = ({
                   ? 'bg-[#0F766E]/10 text-[#0F766E]'
                   : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
               }`}
-              title="세트별 메모/태그"
+              title={t("세트별 메모/태그")}
             >
               <MessageSquare size={12} />
               <span className="whitespace-nowrap">
-                {hasCommentOrTags ? t("메모") : t("메모")}
+                {t("메모")}
               </span>
             </button>
 
@@ -362,7 +362,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             {hasRestTime && (
               <span className="px-2 py-1 rounded-lg bg-[#34C759]/10 text-[#34C759] text-[11px] font-bold flex items-center gap-1 whitespace-nowrap">
                 <Timer size={12} />
-                {set.restSeconds}초 휴식
+                {set.restSeconds}{t("초 휴식")}
               </span>
             )}
           </div>
@@ -372,7 +372,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             type="button"
             onClick={onDelete}
             className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition shrink-0 ml-auto"
-            title="세트 삭제"
+            title={t("세트 삭제")}
           >
             <X size={15} />
           </button>
@@ -381,9 +381,9 @@ export const SetRow: React.FC<SetRowProps> = ({
         {/* 메모 내용이나 태그가 있을 때 추가 프리뷰 노출 */}
         {hasCommentOrTags && (
           <div className="mt-1.5 pt-1.5 border-t border-black/5 dark:border-white/5 flex flex-wrap items-center gap-1 text-[11px]">
-            {set.tags?.map((t) => (
-              <span key={t} className="px-1.5 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] font-semibold">
-                #{t}
+            {set.tags?.map((tag) => (
+              <span key={tag} className="px-1.5 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] font-semibold">
+                #{t(tag)}
               </span>
             ))}
             {set.comment && (

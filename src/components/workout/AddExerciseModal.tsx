@@ -206,9 +206,9 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           <div>
             <h3 id="exercise-picker-title" className="font-extrabold text-base text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
               <Dumbbell size={18} className="text-[#0F766E]" />
-              운동 종목 선택
+              {t("운동 종목 선택")}
             </h3>
-            <p className="text-xs text-gray-400">총 {allExercises.length}종의 전문 운동 라이브러리</p>
+            <p className="text-xs text-gray-400">{t("총")} {allExercises.length}{t("종의 전문 운동 라이브러리")}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -217,11 +217,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               className="flex items-center gap-1 px-3 py-1.5 bg-[#0F766E]/10 hover:bg-[#0F766E]/20 text-[#0F766E] text-xs font-black rounded-xl transition"
             >
               <Plus size={14} strokeWidth={3} />
-              <span>직접 등록</span>
+              <span>{t("직접 등록")}</span>
             </button>
             <button
               onClick={onClose}
-              aria-label="운동 선택 닫기"
+              aria-label={t("운동 선택 닫기")}
               className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             >
               <X size={18} />
@@ -236,10 +236,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
             <input
               ref={searchInputRef}
               type="text"
-              aria-label="운동 검색"
+              aria-label={t("운동 검색")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="운동명·브랜드·초성 검색"
+              placeholder={t("운동명·브랜드·초성 검색")}
               className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-16 py-2 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#0F766E] shadow-xs transition"
             />
             {searchQuery && (
@@ -247,7 +247,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-black dark:hover:text-white"
               >
-                지우기
+                {t("지우기")}
               </button>
             )}
           </div>
@@ -264,7 +264,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     : 'bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20'
                 }`}
               >
-                <span>🔥 오늘 목표</span>
+                <span>{t("🔥 오늘 목표")}</span>
                 <span className="text-[10px] opacity-90">({getTargetLabels()})</span>
               </button>
             )}
@@ -305,21 +305,21 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         </div>
 
         <div className="px-4 py-2 flex items-center justify-between text-xs border-b border-black/5 dark:border-white/10">
-          <span role="status" className="text-gray-500">{cleanQuery ? '전체 부위 검색' : '검색 결과'} {filteredExercises.length}개</span>
-          <button type="button" className="min-h-[36px] text-[#0F766E] font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); }}>필터 초기화</button>
+          <span role="status" className="text-gray-500">{cleanQuery ? t('전체 부위 검색') : t('검색 결과')} {filteredExercises.length}{t("개")}</span>
+          <button type="button" className="min-h-[36px] text-[#0F766E] font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); }}>{t("필터 초기화")}</button>
         </div>
         {/* 운동 목록 */}
         <div className="p-3 overflow-y-auto flex-1 space-y-2">
           {filteredExercises.length === 0 ? (
             <div className="py-12 text-center text-gray-400 space-y-3">
-              <p className="text-xs">'{cleanQuery || '선택한 조건'}'에 맞는 운동을 찾지 못했습니다.</p>
+              <p className="text-xs">'{cleanQuery || t('선택한 조건')}'{t("에 맞는 운동을 찾지 못했습니다.")}</p>
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(true)}
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#0F766E] text-white text-xs font-black rounded-2xl shadow-md hover:opacity-90 active:scale-98 transition"
               >
                 <Plus size={16} strokeWidth={3} />
-                <span>'{cleanQuery || '새 종목'}' 직접 등록하기</span>
+                <span>'{cleanQuery || t('새 종목')}' {t("직접 등록하기")}</span>
               </button>
             </div>
           ) : (
@@ -345,7 +345,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     }}
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-[#1C1C1E] flex items-center justify-center text-gray-400 shrink-0 border border-black/5 dark:border-white/5">
+                  <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-[#1C1C1E] flex items-center justify-center text-gray-400 shrink-0 border border-black/5 dark:border-white/10">
                     <Dumbbell size={18} />
                   </div>
                 )}
@@ -356,15 +356,15 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                       {displayExercise(ex)}
                     </span>
                     <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
-                      {ex.equipment === 'machine' ? t("머신") : ex.equipment === 'barbell' ? t("바벨") : ex.equipment === 'dumbbell' ? t("덤벨") : ex.equipment === 'cable' ? t("케이블") : '맨몸/소도구'}
+                      {ex.equipment === 'machine' ? t("머신") : ex.equipment === 'barbell' ? t("바벨") : ex.equipment === 'dumbbell' ? t("덤벨") : ex.equipment === 'cable' ? t("케이블") : t('맨몸/소도구')}
                     </span>
                     {ex.id.startsWith('custom_') ? (
                       <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">
-                        ★커스텀
+                        {t("★커스텀")}
                       </span>
                     ) : ex.isPopular && (
                       <span className="px-1.5 py-0.2 rounded bg-red-500/10 text-[#0F766E] text-[10px] font-bold">
-                        ★인기
+                        {t("★인기")}
                       </span>
                     )}
                   </div>

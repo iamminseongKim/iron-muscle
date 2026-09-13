@@ -90,7 +90,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         <summary className="cursor-pointer py-1.5 text-gray-500 font-medium">{t("마크다운 일지 / 백업 텍스트 직접 붙여넣기")}</summary>
         <div className="mt-2 space-y-2">
           <textarea
-            aria-label="운동 일지 텍스트"
+            aria-label={t("운동 일지 텍스트")}
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="w-full h-28 rounded-lg border border-gray-200 dark:border-white/10 p-2 bg-transparent text-xs font-mono"
@@ -109,7 +109,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
             {pending.activeSession ? ` · ${t("진행 중인 운동 포함")}` : ''}
           </p>
           <p className="text-gray-500">
-            {pending.sessions.map((s) => `${s.date} ${s.title} (${s.exercises.length}종목)`).slice(0, 3).join(' / ')}
+            {pending.sessions.map((s) => `${s.date} ${s.title} (${s.exercises.length}${t("개 종목")})`).slice(0, 3).join(' / ')}
           </p>
           <div className="flex gap-4 pt-1">
             <button

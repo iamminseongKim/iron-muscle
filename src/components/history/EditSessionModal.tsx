@@ -26,7 +26,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
   if (!isOpen || !session) return null;
 
   const [date, setDate] = useState<string>(session.date);
-  const [title, setTitle] = useState<string>(session.title || '오늘의 운동');
+  const [title, setTitle] = useState<string>(session.title || t('오늘의 운동'));
   const [notes, setNotes] = useState<string>(session.notes || '');
   const [conditionEmoji, setConditionEmoji] = useState<string>(session.conditionEmoji || '💪');
   const [isDeload, setIsDeload] = useState<boolean>(Boolean(session.isDeload));
@@ -127,7 +127,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
     const updated: WorkoutSession = {
       ...session,
       date,
-      title: title.trim() || '오늘의 운동',
+      title: title.trim() || t('오늘의 운동'),
       notes: notes.trim() || undefined,
       conditionEmoji,
       isDeload,
@@ -206,7 +206,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                 <input
                   type="text"
                   value={title}
-                  placeholder="예: 가슴 & 삼두 루틴"
+                  placeholder={t("예: 가슴 & 삼두 루틴")}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full bg-white dark:bg-[#1C1C1E] px-3 py-1.5 rounded-xl border border-black/10 dark:border-white/10 font-bold text-[#1D1D1F] dark:text-white outline-none"
                 />
@@ -425,14 +425,14 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                               type="number"
                               min="0"
                               step="5"
-                              placeholder="초"
+                              placeholder={t("초")}
                               value={set.restSeconds ?? ''}
                               onChange={(e) => handleUpdateSet(eIdx, sIdx, 'restSeconds', e.target.value === '' ? undefined : Math.max(0, parseInt(e.target.value) || 0))}
                               className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] px-1 py-1 rounded-lg text-center font-medium text-gray-700 dark:text-gray-300 outline-none focus:ring-1 focus:ring-[#0F766E]"
                             />
                             {set.restSeconds !== undefined && set.restSeconds >= 60 && (
                               <span className="text-[9px] font-bold text-[#0F766E] leading-none mt-0.5 pointer-events-none">
-                                {Math.floor(set.restSeconds / 60)}분{set.restSeconds % 60 ? ` ${set.restSeconds % 60}초` : ''}
+                                {Math.floor(set.restSeconds / 60)}{t("분")}{set.restSeconds % 60 ? ` ${set.restSeconds % 60}${t("초")}` : ''}
                               </span>
                             )}
                           </div>

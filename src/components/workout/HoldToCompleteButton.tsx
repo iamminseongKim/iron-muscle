@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+import { t } from '../../i18n';
 
 interface HoldToCompleteButtonProps {
   onComplete: () => void;
@@ -119,7 +120,7 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
       <div
         role="button"
         tabIndex={0}
-        aria-label="꾹 눌러서 운동 완료 (1.5초)"
+        aria-label={t("꾹 눌러서 운동 완료 (1.5초)")}
         onTouchStart={handleStart}
         onTouchEnd={handleEnd}
         onTouchCancel={handleEnd}
@@ -150,9 +151,9 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
             className={`transition-transform duration-150 ${isHolding ? 'scale-110' : ''}`}
           />
           {isHolding ? (
-            <span>운동 완료 중... {Math.round(progress * 100)}% (손을 떼면 취소)</span>
+            <span>{t("운동 완료 중...")} {Math.round(progress * 100)}% ({t("손을 떼면 취소")})</span>
           ) : (
-            <span>오늘 운동 완료 & 기록 저장 (1.5초간 꾹 누르기)</span>
+            <span>{t("오늘 운동 완료 & 기록 저장 (1.5초간 꾹 누르기)")}</span>
           )}
         </div>
       </div>
@@ -161,7 +162,7 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
       {showHint && (
         <div className="mt-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-semibold animate-fade-in text-center">
           <AlertCircle size={14} className="shrink-0" />
-          <span>오터치 방지를 위해 <strong>1.5초간 꾹 누르고</strong> 있어야 완료됩니다.</span>
+          <span>{t("오터치 방지를 위해 1.5초간 꾹 누르고 있어야 완료됩니다.")}</span>
         </div>
       )}
     </div>
