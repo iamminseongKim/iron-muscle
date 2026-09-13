@@ -1,9 +1,8 @@
-import { t } from '../../i18n';
+import { t, displayMuscle } from '../../i18n';
 import React, { useState } from 'react';
 import { X, Plus, Dumbbell, Sparkles } from 'lucide-react';
 import { Exercise, Category, EquipmentType, MuscleTarget, MovementPlane } from '../../types/workout';
 import { saveCustomExercise } from '../../utils/storage';
-import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 
 interface CreateCustomExerciseModalProps {
   isOpen: boolean;
@@ -256,8 +255,8 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
 
           {/* 주동근 선택 */}
           <div>
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-              주요 타겟 근육
+            <label className="text-xs font-bold text-gray-500 dark:text-gray-400 block">
+              {t("주요 타겟 근육")}
             </label>
             <div className="flex flex-wrap gap-1.5">
               {(CATEGORY_PRIMARY_MUSCLES[category] || []).map((m) => (
@@ -271,7 +270,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                       : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-400'
                   }`}
                 >
-                  {MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m}
+                  {displayMuscle(m)}
                 </button>
               ))}
             </div>

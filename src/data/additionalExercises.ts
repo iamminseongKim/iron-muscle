@@ -34,7 +34,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "덤벨 중량은 한쪽 무게 기준으로 기록하세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A lying triceps extension variation performed on an incline bench with dumbbells, providing an intense stretch and overload on the long head of the triceps.",
+    "instructionsEn": [
+      "Lie back on a 30 to 45 degree incline bench holding a pair of dumbbells with a neutral grip.",
+      "Extend your arms upward, tilting your upper arms slightly back past vertical to keep continuous tension on the triceps.",
+      "Keeping your elbows fixed in place, bend at the elbows to lower the dumbbells alongside your ears.",
+      "Drive through the triceps to extend your elbows back to the starting position without flaring your elbows."
+    ]
   },
   {
     "id": "incline-ezbar-triceps-extension",
@@ -68,7 +75,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "어깨 관절이 흔들리지 않도록 고정하고 팔꿈치를 모아주는 텐션을 유지하세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "An incline variation of the EZ-bar skull crusher that reduces wrist strain while placing deep mechanical tension and stretch on the long head of the triceps.",
+    "instructionsEn": [
+      "Lie on a 30 to 45 degree incline bench and hold an EZ-bar with a close overhand grip above your chest.",
+      "Angle your upper arms slightly backward to maintain tension at lockout.",
+      "Lower the bar slowly toward the crown of your head by bending only at the elbows.",
+      "Contract your triceps forcefully to extend your arms back to the starting position without locking out hard."
+    ]
   },
   {
     "id": "incline-cable-triceps-extension",
@@ -100,7 +114,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "케이블 특유의 끝까지 잃지 않는 장력을 활용해 피크 수축을 1초간 유지해 보세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "An incline bench extension using a low cable pulley, maintaining continuous and smooth resistance throughout both the stretched and contracted positions.",
+    "instructionsEn": [
+      "Set an incline bench in front of a low cable pulley with a rope attachment.",
+      "Grasp the rope overhead with your back resting against the bench and upper arms angled slightly back.",
+      "Lower the rope behind your head, flexing deeply at the elbows to stretch the triceps.",
+      "Extend your elbows fully and spread the rope ends slightly apart at peak contraction."
+    ]
   },
   {
     "id": "cable-overhead-triceps-extension",
@@ -132,7 +153,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "허리가 꺾이지 않도록 복압을 잡고 한 발을 앞으로 내밀어 스탠스를 넓히세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "An overhead cable extension that places the triceps long head into maximum stretch, promoting comprehensive arm development.",
+    "instructionsEn": [
+      "Attach a rope to a cable pulley set at chest or head height, face away from the stack, and step forward into a staggered stance.",
+      "Hold the rope behind your head with elbows bent and pointing forward.",
+      "Extend your arms forward and overhead until your elbows are fully extended.",
+      "Slowly return to the deep stretch position under control."
+    ]
   },
   {
     "id": "crossbody-cable-triceps-extension",
@@ -165,7 +193,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "팔꿈치 관절에 압박이 거의 없어 엘보우 통증이 있는 분들에게 매우 추천되는 종목입니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "Also known as the Katana Extension, this dual-cable exercise aligns perfectly with the angle of the triceps fibers for isolated, joint-friendly loading.",
+    "instructionsEn": [
+      "Set dual cables at shoulder height, cross your arms to grasp the opposite cable handles without attachments.",
+      "Keep your upper arms stationary and elbows pointed slightly outward.",
+      "Extend both arms downward and outward across your body until your triceps fully contract.",
+      "Slowly bend your elbows back to the starting stretch position under control."
+    ]
   },
   {
     "id": "decline-ezbar-triceps-extension",
@@ -197,7 +232,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "바가 머리 위를 지나가므로 무리한 고중량보다는 안정적인 중량 통제가 중요합니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A decline bench skull crusher variation that increases range of motion and shifts tension deeply into the medial and lateral heads of the triceps.",
+    "instructionsEn": [
+      "Secure your legs on a decline bench and hold an EZ-bar with a close overhand grip.",
+      "Extend your arms upward and slightly back toward your head.",
+      "Lower the bar toward your forehead or crown by bending your elbows.",
+      "Press the weight back up using only your triceps to full extension."
+    ]
   },
   {
     "id": "barbell-jm-press",
@@ -233,7 +275,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "순수 익스텐션이 아니라 프레스 동작과 믹스하여 팔꿈치 관절 부담을 줄이면서 고중량을 다룰 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A hybrid between a close-grip bench press and a skull crusher, popularized by powerlifters to build immense lockout strength and triceps mass.",
+    "instructionsEn": [
+      "Lie on a flat bench with a close grip on the barbell, directly over your upper chest.",
+      "Lower the bar straight down toward your neck/upper chest by simultaneously bending elbows and tucking them forward.",
+      "Stop just before the forearms touch the biceps, pausing momentarily.",
+      "Drive the bar straight up by powerfully contracting the triceps."
+    ]
   },
   {
     "id": "smith-jm-press",
@@ -269,7 +318,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "스미스머신은 기본 봉 무게를 제외한 순수 원판 무게만 기록하세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "The JM press performed on a Smith machine, offering strict linear bar path stability to isolate the triceps with heavier loads safely.",
+    "instructionsEn": [
+      "Lie on a flat bench positioned directly under the Smith machine bar.",
+      "Grip the bar with a close-to-medium grip and unrack.",
+      "Lower the bar along the vertical track toward your throat/chin level with elbows tucked.",
+      "Press the bar back up to full elbow extension focusing entirely on triceps drive."
+    ]
   },
   {
     "id": "single-arm-cable-pushdown",
@@ -302,7 +358,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "약한 팔부터 먼저 세트를 진행하여 좌우 밸런스를 맞추세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A unilateral triceps movement that corrects side-to-side muscle imbalances and maximizes peak contraction of the lateral triceps head.",
+    "instructionsEn": [
+      "Stand facing a high pulley with a single handle or bare cable.",
+      "Pin your elbow tightly to your side with your forearm parallel to the floor.",
+      "Push the cable straight down until your arm is fully locked out, squeezing the triceps hard.",
+      "Control the eccentric return back to 90 degrees of elbow flexion."
+    ]
   },
   {
     "id": "cable-rope-kickback",
@@ -334,7 +397,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "팔꿈치가 아래로 떨어지지 않도록 고정하는 것이 핵심입니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A cable-loaded kickback providing continuous resistance through full elbow extension, targeting the shortened position of the triceps.",
+    "instructionsEn": [
+      "Attach a rope or single handle to a low cable pulley and hinge forward at the hips with a flat back.",
+      "Pin your upper arm parallel to your torso and keep it motionless.",
+      "Extend your forearm backward until your arm is completely straight.",
+      "Squeeze the triceps firmly at the top before slowly lowering the weight."
+    ]
   },
   {
     "id": "decline-dumbbell-fly",
@@ -366,7 +436,13 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "반동 없이 이완 시 2~3초의 템포를 가져가면 훨씬 높은 자극을 얻을 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A decline angle chest fly that emphasizes the lower sternal pectoralis fibers while reducing shoulder joint strain.",
+    "instructionsEn": [
+      "Lie on a decline bench holding dumbbells above your lower chest with palms facing each other.",
+      "With a slight bend in your elbows, lower the dumbbells outward in a wide arc until you feel a deep stretch in your lower chest.",
+      "Bring the dumbbells back up along the same path, focusing on squeezing your lower pecs together."
+    ]
   },
   {
     "id": "smith-incline-bench-press",
@@ -402,7 +478,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "머신 봉 무게는 제외하고 꽂은 원판 무게만 기록하세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "An incline chest press on the Smith machine that stabilizes the bar path, allowing maximum focus and overload on the clavicular (upper) chest.",
+    "instructionsEn": [
+      "Position an incline bench (30 degrees) under the Smith machine bar.",
+      "Grip the bar slightly wider than shoulder width and unrack.",
+      "Lower the bar smoothly to your upper chest just below the collarbone.",
+      "Press the bar upward through your upper pecs until arms are extended."
+    ]
   },
   {
     "id": "smith-flat-bench-press",
@@ -437,7 +520,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "안전 스토퍼를 가슴 높이에 맞추어 두면 혼자서도 안전하게 탑세트를 수행할 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A stable flat bench press variant on the Smith machine that minimizes stabilizer fatigue to focus purely on pectoral hypertrophy.",
+    "instructionsEn": [
+      "Lie centered on a flat bench under the Smith machine bar.",
+      "Grip the bar slightly outside shoulder width and unrack.",
+      "Lower the bar under control to touch your mid-chest.",
+      "Drive the bar straight up by contracting your chest and triceps."
+    ]
   },
   {
     "id": "smith-decline-bench-press",
@@ -470,7 +560,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "손목이 꺾이지 않도록 바를 손바닥 하단에 얹으세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A decline press on the Smith machine that delivers heavy, controlled overload to the lower chest and triceps.",
+    "instructionsEn": [
+      "Secure yourself on a decline bench aligned with the Smith bar.",
+      "Grip the bar comfortably and unrack with control.",
+      "Lower the bar to your lower chest/sternum.",
+      "Press back up smoothly, focusing on squeezing the lower pectoralis."
+    ]
   },
   {
     "id": "cable-low-to-high-fly",
@@ -505,7 +602,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "승모근이 으쓱하지 않도록 어깨를 아래로 단단히 눌러주세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A low-pulley fly that matches the upward fiber direction of the clavicular pectoralis, building upper chest thickness and separation.",
+    "instructionsEn": [
+      "Set pulleys at the lowest position and hold a handle in each hand with arms low and palms forward.",
+      "Take a staggered stance and keep a slight bend in your elbows.",
+      "Sweep your hands upward and inward in an arc toward eye level.",
+      "Squeeze your upper chest tightly at the peak, then lower under control."
+    ]
   },
   {
     "id": "cable-high-to-low-fly",
@@ -537,7 +641,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "손이 모였을 때 새끼손가락 쪽을 맞닿게 모아주면 하부 수축감이 극대화됩니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A high-pulley cable crossover targeting the lower and sternal heads of the chest with peak contraction.",
+    "instructionsEn": [
+      "Set pulleys at or above head height, step forward into a staggered stance.",
+      "With slightly bent elbows, bring your hands downward and together in front of your hips.",
+      "Cross your hands slightly or squeeze hard at peak contraction.",
+      "Allow the cables to guide your arms back up to a comfortable stretch."
+    ]
   },
   {
     "id": "dumbbell-squeeze-press",
@@ -572,7 +683,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "단순히 위아래로 움직이는 것이 아니라 좌우로 서로 쥐어짜는 압력이 핵심입니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "Also known as the Hex Press, pressing dumbbells pressed tightly against each other creates intense isometric tension across the inner pecs.",
+    "instructionsEn": [
+      "Lie on a flat bench holding two dumbbells pressed firmly together over your chest.",
+      "Maintain inward squeezing pressure against each dumbbell throughout the entire rep.",
+      "Lower the dumbbells to your chest while maintaining inward pressure.",
+      "Press back up to full extension while continuously squeezing them together."
+    ]
   },
   {
     "id": "chest-supported-incline-dumbbell-row",
@@ -608,7 +726,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "허리 통증이나 디스크 부담이 있는 날에도 안심하고 고중량을 칠 수 있는 효자 종목입니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A prone incline row that completely eliminates lower back fatigue and momentum, directing maximum tension to the lats and mid-back.",
+    "instructionsEn": [
+      "Lie face down on a 30 to 45 degree incline bench holding a pair of dumbbells.",
+      "Let your arms hang straight down, allowing your scapulae to stretch forward.",
+      "Drive your elbows up and back, retracting your shoulder blades at the top.",
+      "Lower the weights slowly back to a full dead hang stretch."
+    ]
   },
   {
     "id": "smith-bent-over-row",
@@ -644,7 +769,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "스트랩을 착용하면 전완근 피로 없이 등에만 100% 집중할 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A bent-over row performed in a fixed track, ensuring consistent bar path and heavy mid-back loading without spinal swaying.",
+    "instructionsEn": [
+      "Stand inside the Smith machine with feet shoulder-width apart and hinge forward at a 45 degree angle.",
+      "Grip the bar with an overhand or underhand grip just wider than your knees.",
+      "Pull the bar smoothly up toward your lower ribcage or belly button by driving elbows back.",
+      "Pause and squeeze your back, then lower the bar with control."
+    ]
   },
   {
     "id": "mag-grip-lat-pulldown",
@@ -679,7 +811,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "와이드/미디엄/클로즈 그립에 따라 등 안쪽 또는 바깥쪽 타겟을 유연하게 바꿀 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A pulldown utilizing a Maximum Advantage Grip handle, which minimizes forearm/wrist strain and maximizes lat engagement through a neutral grip.",
+    "instructionsEn": [
+      "Attach a MAG grip handle to the lat pulldown cable and adjust thigh pads snugly.",
+      "Grip the MAG handle with palms facing each other without gripping excessively hard.",
+      "Lean back slightly, pull through your elbows until the handle approaches your upper chest.",
+      "Control the upward return to a complete lat stretch."
+    ]
   },
   {
     "id": "mag-grip-seated-cable-row",
@@ -713,7 +852,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "당길 때 상체를 지나치게 뒤로 젖히지 않는 것이 고립에 유리합니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A seated cable row using a specialized neutral MAG grip to optimize pulling mechanics and deep lat/rhomboid contraction.",
+    "instructionsEn": [
+      "Sit upright on the cable row station with feet braced and knees slightly bent.",
+      "Grip the MAG handle, keep your spine tall, and pull the handle toward your abdomen.",
+      "Drive your elbows back and squeeze your shoulder blades together.",
+      "Extend your arms smoothly back to full stretch without rounding your lower back."
+    ]
   },
   {
     "id": "single-arm-lat-pulldown",
@@ -748,7 +894,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "골반을 안정시키고 당기는 쪽 광배근에 손을 얹어 마인드-머슬 커넥션을 높여보세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A unilateral lat pulldown that allows a larger range of motion and personalized pulling angle to build symmetrical, detailed lats.",
+    "instructionsEn": [
+      "Attach a single handle to the high pulley and kneel or sit facing the cable.",
+      "Reach up for a full stretch on the working lat with your arm overhead.",
+      "Pull your elbow down toward your hip, slightly tilting your torso toward the working side.",
+      "Hold the contracted position briefly, then slowly return to full elevation."
+    ]
   },
   {
     "id": "behind-neck-lat-pulldown",
@@ -782,7 +935,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "어깨 유연성이 부족한 경우 무리하게 당기지 말고 가동 범위를 편안한 선에서 조절하세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A variation of the lat pulldown pulling to the base of the neck, placing intense mechanical demand on the upper lats, rear delts, and teres muscles.",
+    "instructionsEn": [
+      "Sit on the machine with a wide overhand grip on the bar.",
+      "Keep your torso upright with head slightly tilted forward.",
+      "Pull the bar down smoothly to the upper neck/trapezius level without hitting your head.",
+      "Control the bar back up to the top stretch position."
+    ]
   },
   {
     "id": "meadows-row",
@@ -816,7 +976,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "스트랩을 감고 작은 원판(10~15kg)을 여러 개 꽂아야 깊은 이완 가동범위가 확보됩니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A landmine row variation developed by John Meadows, featuring a staggered stance and overhand grip that targets the lower lats and upper back thickness.",
+    "instructionsEn": [
+      "Stand perpendicular to a landmine barbell with a staggered stance, resting your non-working forearm on your front knee.",
+      "Grip the thick end of the barbell sleeve with an overhand grip.",
+      "Pull your elbow up and outward, driving the barbell toward your hip/ribcage.",
+      "Lower the bar down for a deep lat and scapular stretch."
+    ]
   },
   {
     "id": "chest-supported-tbar-row",
@@ -851,7 +1018,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "패드에서 가슴이 떨어지지 않게 유지하는 것이 핵심입니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A classic T-bar row with chest pad support that isolates the rhomboids, middle trapezius, and lats with zero lower back strain.",
+    "instructionsEn": [
+      "Rest your chest firmly against the angled pad and grip the handles (wide or neutral).",
+      "Start with arms fully extended and lats stretched.",
+      "Pull your elbows back past your torso, pinching your shoulder blades together at the top.",
+      "Lower the weight slowly under full muscular control."
+    ]
   },
   {
     "id": "incline-dumbbell-lateral-raise",
@@ -884,7 +1058,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "반동을 전혀 쓸 수 없어 가벼운 무게(2~5kg)로도 불타는 자극을 경험할 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A lateral raise performed lying sideways on an incline bench, increasing resistance at the beginning of the movement where standing raises are easiest.",
+    "instructionsEn": [
+      "Lie sideways on an incline bench (about 45 degrees) holding a dumbbell in your top hand.",
+      "Let the dumbbell hang across your waist with a slight elbow bend.",
+      "Raise the dumbbell laterally until your arm is parallel to the ground.",
+      "Lower the weight slowly, resisting gravity throughout the descent."
+    ]
   },
   {
     "id": "single-arm-cable-lateral-raise",
@@ -917,7 +1098,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "손목을 손등 쪽으로 꺾지 않고 팔꿈치가 손보다 살짝 먼저 올라가는 느낌을 잡으세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A unilateral cable lateral raise that provides continuous, uniform resistance on the lateral deltoid throughout the entire range of motion.",
+    "instructionsEn": [
+      "Set a cable pulley to hip or knee height and stand beside it with a slight outward lean.",
+      "Hold the handle with your outside hand, arm hanging across your body.",
+      "Raise your arm laterally up to shoulder height, leading with your elbow.",
+      "Lower the cable slowly back across your body under continuous tension."
+    ]
   },
   {
     "id": "cable-y-raise",
@@ -953,7 +1141,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "어깨 충돌 증후군 없이 안전하게 어깨 볼륨과 견갑 안정성을 동시에 잡을 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A dual-cable raise moving in a Y-shape pattern that aligns with the scapular plane to build round lateral and rear deltoids safely.",
+    "instructionsEn": [
+      "Set dual low pulleys at shin height, cross cables, and grasp opposite handles.",
+      "Stand upright and raise both arms diagonally upward and outward into a Y shape.",
+      "Squeeze the side and rear delts at the top when arms reach about 45 degrees overhead.",
+      "Slowly lower your arms back down in the same diagonal plane."
+    ]
   },
   {
     "id": "smith-overhead-press",
@@ -988,7 +1183,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "팔꿈치가 뒤로 빠지지 않도록 바 바로 아래에 수직으로 위치시키세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A seated overhead shoulder press on the Smith machine that allows safe, heavy pressing without balancing demands to maximize front delt mass.",
+    "instructionsEn": [
+      "Place an upright bench under the Smith machine bar so the bar clears your nose and chin.",
+      "Grip the bar slightly wider than shoulder width and unrack overhead.",
+      "Lower the bar smoothly to chin or upper chest level.",
+      "Press the bar forcefully upward back to the starting position."
+    ]
   },
   {
     "id": "smith-behind-neck-press",
@@ -1023,7 +1225,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "어깨 가동 범위가 허용하는 깊이까지만 내리고 무리한 과신전은 피하세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A behind-the-neck press on the Smith machine emphasizing the lateral and posterior heads of the deltoids.",
+    "instructionsEn": [
+      "Sit on an upright bench under the Smith bar.",
+      "Take a wide grip, unrack, and lower the bar carefully to the base of your neck.",
+      "Press the bar back up to full extension without locking your elbows harshly.",
+      "Perform with controlled tempo and moderate weight."
+    ]
   },
   {
     "id": "chest-supported-rear-delt-fly",
@@ -1058,7 +1267,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "새끼손가락 쪽을 살짝 위로 들어 올리는 큐를 주면 후면 삼각근 자극이 선명해집니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "An incline bench fly that isolates the rear deltoids and upper back by preventing torso swinging and momentum.",
+    "instructionsEn": [
+      "Lie chest-down on a low-incline bench holding light dumbbells.",
+      "With slightly bent elbows, raise your arms out to the sides in a wide arc.",
+      "Focus on leading with your elbows to isolate the posterior deltoid.",
+      "Lower the dumbbells slowly back under control."
+    ]
   },
   {
     "id": "cable-crossover-rear-delt-fly",
@@ -1090,7 +1306,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "고중량보다는 15~20회 고반복으로 펌핑을 채우기에 적합합니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A standing high cable fly crossing arms to deliver constant tension on the posterior deltoids and mid-trapezius.",
+    "instructionsEn": [
+      "Set dual pulleys at eye height and grasp opposite cables without handles.",
+      "Stand tall with arms crossed in front of you.",
+      "Pull your hands outward and backward in a horizontal arc until your rear delts contract.",
+      "Control the eccentric return back across your body."
+    ]
   },
   {
     "id": "cable-upright-row",
@@ -1124,7 +1347,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "로프를 사용하면 손목이 자유로워 어깨 충돌 부담을 크게 줄일 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "An upright row using a cable pulley that delivers constant tension to the lateral deltoids and upper trapezius.",
+    "instructionsEn": [
+      "Attach a straight or EZ-bar to a low pulley and stand close to the cable.",
+      "Grip the bar shoulder-width apart and pull straight up along your torso toward chest height.",
+      "Lead with your elbows, keeping them higher than your wrists at all times.",
+      "Lower the bar under control back to arm length."
+    ]
   },
   {
     "id": "spider-curl",
@@ -1157,7 +1387,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "상체가 반동을 쓸 수 없도록 벤치가 차단해주므로 순수한 고립감을 맛볼 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A prone incline curl that places the arms in front of the torso, maximizing peak contraction and tension on the short head of the biceps.",
+    "instructionsEn": [
+      "Lie chest-down on an incline bench with your arms hanging vertically over the high end.",
+      "Hold a barbell, EZ-bar, or dumbbells with an underhand grip.",
+      "Curl the weight upward toward your face while keeping your upper arms strictly vertical.",
+      "Squeeze the biceps at peak contraction, then lower slowly to a full stretch."
+    ]
   },
   {
     "id": "bayesian-cable-curl",
@@ -1190,7 +1427,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "신장 구간(이완 지점)에서 가장 강한 자극이 오므로 천천히 네거티브를 통제하세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A behind-the-back cable curl that places the biceps into deep stretch behind the torso, optimizing hypertrophy via stretch-mediated tension.",
+    "instructionsEn": [
+      "Set a low cable pulley and face away from the machine.",
+      "Hold the handle behind your hip with your arm extended and shoulder slightly retracted.",
+      "Curl your forearm forward and upward while keeping your elbow pinned back.",
+      "Lower the weight back into a full, deep biceps stretch under control."
+    ]
   },
   {
     "id": "cable-preacher-curl",
@@ -1222,7 +1466,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "팔꿈치를 완전히 100% 펴서 락아웃하면 건에 무리가 갈 수 있으니 95% 지점에서 멈추세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A preacher curl using a cable station to provide continuous resistance at the top of the curl where free weights lose tension.",
+    "instructionsEn": [
+      "Position a preacher bench facing a low cable pulley.",
+      "Rest your triceps firmly on the pad and grip the cable attachment with palms up.",
+      "Curl the cable upward until your biceps are fully contracted.",
+      "Lower the bar slowly until your arms are nearly straight, maintaining tension."
+    ]
   },
   {
     "id": "drag-curl",
@@ -1254,7 +1505,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "팔꿈치가 몸 앞쪽으로 절대 나가지 않도록 뒤로 끌어당기는 것이 핵심입니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A barbell curl where the bar is dragged directly up against the torso with elbows driven back, isolating the biceps and removing front delt involvement.",
+    "instructionsEn": [
+      "Stand upright holding a barbell with a shoulder-width underhand grip.",
+      "Instead of curling outward, pull your elbows backward and drag the bar upward touching your shirt.",
+      "Contract your biceps hard at upper chest level.",
+      "Lower the bar along the same vertical path against your torso."
+    ]
   },
   {
     "id": "biceps-21s-curl",
@@ -1289,7 +1547,13 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "중량을 평소보다 30~40% 낮춰야 올바른 자세로 21회를 완주할 수 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A famous high-volume burn-out technique consisting of 7 bottom-half reps, 7 top-half reps, and 7 full-range reps in one unbroken set.",
+    "instructionsEn": [
+      "Perform 7 repetitions from the bottom stretch position up to the 90-degree midpoint.",
+      "Immediately perform 7 repetitions from the 90-degree midpoint to full contraction at the top.",
+      "Finish with 7 complete full-range repetitions from bottom to top without resting."
+    ]
   },
   {
     "id": "smith-squat",
@@ -1324,7 +1588,13 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "발을 앞쪽에 두면 척추 기립근 부담이 현저히 줄어들고 사두근 고립이 쉬워집니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A squat on the Smith machine that allows customized foot placement (forward stance) to isolate the quadriceps or glutes with high stability.",
+    "instructionsEn": [
+      "Set the bar at upper chest height, step under it with feet placed slightly forward of the bar.",
+      "Unrack and descend by bending knees and hips until thighs are parallel to the ground.",
+      "Drive through your heels and mid-foot to stand back up, keeping your torso upright."
+    ]
   },
   {
     "id": "smith-bulgarian-split-squat",
@@ -1360,7 +1630,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "상체를 살짝 앞으로 숙이면 둔근 자극이, 세우면 대퇴사두근 자극이 커집니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A single-leg squat with the rear foot elevated on a bench, stabilized by the Smith track to build immense unilateral leg strength and glute shape.",
+    "instructionsEn": [
+      "Place a bench behind the Smith machine and rest one foot laces on the bench.",
+      "Step forward with your working leg and unrack the bar on your upper traps.",
+      "Lower your hips straight down until your front thigh is parallel to the ground.",
+      "Push through the front heel to return to the starting position."
+    ]
   },
   {
     "id": "smith-hip-thrust",
@@ -1394,7 +1671,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "골반 뼈 보호를 위해 반드시 두꺼운 스펀지 패드를 바에 감싸세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A hip thrust performed on the Smith machine providing a secure, fixed bar path for heavy, comfortable glute overload.",
+    "instructionsEn": [
+      "Sit on the floor with your upper back against a bench and the padded Smith bar across your hips.",
+      "Plant your feet flat on the floor, shoulder-width apart.",
+      "Drive through your heels to extend your hips upward until your torso and thighs form a straight table.",
+      "Squeeze your glutes hard at the top for 1 second before lowering under control."
+    ]
   },
   {
     "id": "barbell-hip-thrust",
@@ -1427,7 +1711,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "허리를 과도하게 꺾지 말고 골반을 후방경사(Tuck)시키는 느낌으로 조여주세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "The gold-standard compound movement for glute hypertrophy and hip extension strength.",
+    "instructionsEn": [
+      "Sit on the floor with your mid-back against a stable bench and a padded barbell over your hips.",
+      "Set your feet flat, shins vertical at top lockout.",
+      "Extend your hips upward by squeezing your glutes until your body is fully aligned.",
+      "Pause at lockout, then lower your hips with control back toward the floor."
+    ]
   },
   {
     "id": "cable-pull-through",
@@ -1462,7 +1753,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "데드리프트의 힙힌지 감각을 익히기에 최고의 안전한 드릴 운동입니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A posterior chain movement using a low pulley rope to teach proper hip hinge mechanics while training the glutes and hamstrings.",
+    "instructionsEn": [
+      "Set a low pulley, face away, and straddle the cable holding the rope between your legs.",
+      "Take a couple steps forward, hinge back at the hips with soft knees and a neutral spine.",
+      "Extend your hips forward forcefully, squeezing your glutes at the top of the movement.",
+      "Hinge back slowly under the cable tension."
+    ]
   },
   {
     "id": "sissy-squat",
@@ -1494,7 +1792,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "무릎 관절 부담이 있을 수 있으니 맨몸부터 천천히 가동 범위를 넓혀가세요."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A bodyweight or weighted quad isolation exercise that places extreme stretch and load on the rectus femoris through extreme knee flexion.",
+    "instructionsEn": [
+      "Stand tall or secure your shins in a sissy squat bench.",
+      "Lean your torso backward in line with your thighs as you bend deeply at the knees.",
+      "Lower your body until your knees are bent past 90 degrees with intense quad stretch.",
+      "Drive through the balls of your feet and quads to return to full extension."
+    ]
   },
   {
     "id": "captain-chair-leg-raise",
@@ -1526,7 +1831,14 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "무릎을 접는 니레이즈(Knee Raise)로 난이도를 낮춰 시작할 수도 있습니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "A vertical knee or leg raise performed on a Captain Chair station, effectively isolating the lower abdominals and hip flexors.",
+    "instructionsEn": [
+      "Rest your forearms on the pads and grip the handles, letting your legs hang freely with your back against the backrest.",
+      "Engage your core and raise your knees toward your chest (or keep legs straight for advanced difficulty).",
+      "Curl your pelvis slightly upward at the top to fully contract the abs.",
+      "Lower your legs slowly back down without swinging."
+    ]
   },
   {
     "id": "ab-wheel-rollout",
@@ -1561,6 +1873,13 @@ export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
       "허리가 아래로 푹 꺼지지 않도록 복부 긴장을 끝까지 유지하는 것이 매우 중요합니다."
     ],
     "isPopular": true,
-    "images": []
+    "images": [],
+    "descriptionEn": "An advanced anti-extension core exercise that builds tremendous abdominal strength, stability, and lats tension.",
+    "instructionsEn": [
+      "Kneel on a soft mat holding the ab wheel directly beneath your shoulders.",
+      "Brace your core, tuck your tailbone, and slowly roll the wheel forward in a controlled line.",
+      "Extend as far as you can without letting your lower back arch or sag.",
+      "Pull through your abs and lats to return the wheel back beneath your chest."
+    ]
   }
 ];
