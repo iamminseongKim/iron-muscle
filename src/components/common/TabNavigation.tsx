@@ -1,11 +1,11 @@
 import { t } from '../../i18n';
 import React from 'react';
-import { Dumbbell, Calendar, BarChart2, Search } from 'lucide-react';
+import { Dumbbell, Calendar, BarChart2, Search, User } from 'lucide-react';
 import packageJson from '../../../package.json';
 
 interface TabNavigationProps {
-  activeTab: 'workout' | 'history' | 'analytics' | 'explore';
-  onTabChange: (tab: 'workout' | 'history' | 'analytics' | 'explore') => void;
+  activeTab: 'workout' | 'history' | 'analytics' | 'explore' | 'my';
+  onTabChange: (tab: 'workout' | 'history' | 'analytics' | 'explore' | 'my') => void;
 }
 
 export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange }) => {
@@ -14,12 +14,13 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
     { id: 'explore', label: '운동 탐색', icon: Search },
     { id: 'history', label: '기록 조회', icon: Calendar },
     { id: 'analytics', label: '통계 & 성장', icon: BarChart2 },
+    { id: 'my', label: '마이', icon: User },
   ] as const;
 
   return (
     <nav
       data-bottom-navigation
-      className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto select-none w-[calc(100%-40px)] max-w-sm sm:max-w-md"
+      className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto select-none w-[calc(100%-24px)] max-w-md"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <div className="flex items-center px-1.5 py-1.5 bg-white/70 dark:bg-[#1C1C1E]/75 backdrop-blur-3xl rounded-[28px] shadow-[0_8px_32px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.55)] border border-white/60 dark:border-white/8 ring-1 ring-black/6 dark:ring-white/6">
@@ -31,6 +32,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
+              aria-current={isActive ? 'page' : undefined}
               className={`flex-1 py-2 px-1 rounded-[20px] flex flex-col items-center gap-0.5 transition-all duration-200 ${
                 isActive
                   ? 'bg-[#0F766E]/12 text-[#0F766E] dark:text-[#2DD4BF] font-black'

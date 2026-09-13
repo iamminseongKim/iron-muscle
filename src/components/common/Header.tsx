@@ -3,7 +3,7 @@ import React from 'react';
 import { Flame, Sun, Moon, Play, Pause } from 'lucide-react';
 
 interface HeaderProps {
-  activeTab: 'workout' | 'history' | 'analytics' | 'explore';
+  activeTab: 'workout' | 'history' | 'analytics' | 'explore' | 'my';
   isDark: boolean;
   onToggleTheme: () => void;
   totalWorkoutSeconds?: number;

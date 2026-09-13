@@ -20,6 +20,10 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Read your recent weight to save your body weight with new workouts.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Save completed strength workouts to Apple Health when you enable workout sharing.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

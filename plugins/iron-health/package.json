@@ -1,0 +1,6 @@
+{
+  "name": "@iron-muscle/health", "version": "1.0.0", "description": "Local HealthKit and Health Connect bridge for Iron Muscle",
+  "main": "index.js", "license": "UNLICENSED", "author": "Iron Muscle",
+  "capacitor": { "ios": { "src": "ios" }, "android": { "src": "android" } },
+  "peerDependencies": { "@capacitor/core": "^5.0.0" }
+}

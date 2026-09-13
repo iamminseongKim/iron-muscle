@@ -1,5 +1,6 @@
 import { useLanguage, getLanguage } from './i18n';
-import { LanguageSettings } from './components/common/LanguageSettings';
+import { MyPage } from './components/profile/MyPage';
+import { refreshHealth } from './services/health/healthService';
 import React, { useState, useEffect, lazy, Suspense, memo, useCallback } from 'react';
 import { useKeyboardViewport } from './hooks/useKeyboardViewport';
 import { Header } from './components/common/Header';
@@ -15,7 +16,14 @@ import { WeightUnit } from './types/workout';
 export const App: React.FC = () => {
   const language = useLanguage();
   useEffect(() => { document.documentElement.lang = language; }, [language]);
-  const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics' | 'explore'>('workout');
+  const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics' | 'explore' | 'my'>('workout');
+
+  useEffect(() => {
+    void refreshHealth();
+    const refresh = () => { if (!document.hidden) void refreshHealth(); };
+    document.addEventListener('visibilitychange', refresh);
+    return () => document.removeEventListener('visibilitychange', refresh);
+  }, []);
 
   const onWorkoutCompleted = useCallback(() => setActiveTab('history'), []);
 
@@ -135,7 +143,7 @@ export const App: React.FC = () => {
         onToggleWorkoutTimer={toggleWorkoutTimer}
       />
 
-      <LanguageSettings />
+
       {/* 메인 컨텐츠 */}
       <main className="flex-1 w-full pt-2"><Suspense fallback={<div role="status" className="p-8 text-center">…</div>}>
         {activeTab === 'workout' && (
@@ -144,6 +152,7 @@ export const App: React.FC = () => {
             isDark={isDark}
           />
         )}
+        {activeTab === 'my' && <MyPage isDark={isDark} onToggleTheme={toggleTheme} weightUnit={weightUnit} onToggleWeightUnit={toggleWeightUnit} />}
         {activeTab === 'explore' && <ExerciseExplorer isDark={isDark} />}
         {activeTab === 'history' && (
           <WorkoutHistoryView weightUnit={weightUnit} />

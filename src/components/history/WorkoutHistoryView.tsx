@@ -607,6 +607,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       </div>
                       <span className="text-xs text-gray-400">
                         {session.date} · {Math.round(session.durationSeconds / 60)}{t("분 동안 수행")}
+                        {session.bodyWeight !== undefined && ` · ${t("체중")} ${(session.bodyWeight * (weightUnit === "lbs" ? 2.2046226218 : 1)).toFixed(1)}${weightUnit}`}
                       </span>
                     </div>
 

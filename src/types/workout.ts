@@ -175,7 +175,7 @@ export interface WorkoutSession {
   conditionEmoji?: string; // 🔥, 💪, 🥱, 🤕, 🚀
   isDeload?: boolean;
   overallRpe?: number;
-  bodyWeight?: number;
+  bodyWeight?: number; // kg snapshot at workout start; never rewritten by later health sync
   completed: boolean;
   weightUnit?: WeightUnit; // 'kg' | 'lbs' (기본값 'kg')
   targetCategories?: Category[]; // 오늘 운동하기로 선택한 타겟 카테고리 목록

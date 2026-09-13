@@ -1,3 +1,5 @@
+import { loadHealthPreferences, enqueueWorkout } from '../../services/health/healthStore';
+import { flushWorkoutExports } from '../../services/health/healthService';
 import { t } from '../../i18n';
 import { getLanguage, useLanguage } from '../../i18n';
 import { BodyPartIcon } from '../common/BodyPartIcon';
@@ -148,6 +150,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       exercises: [],
       completed: false,
       weightUnit: 'kg',
+      bodyWeight: loadHealthPreferences().weight?.kg,
       conditionEmoji: idleCondition,
       isDeload: idleDeload,
       notes: '',
@@ -403,6 +406,18 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
     const history = loadSavedSessions();
     saveSessions([finalSession, ...history]);
+    // Verify persistence before discarding the active workout or starting external writes.
+    if (!loadSavedSessions().some(saved => saved.id === finalSession.id)) {
+      alert(t('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.'));
+      return;
+    }
+    let healthMessage = '';
+    try {
+      if (enqueueWorkout(finalSession)) {
+        healthMessage = '\n' + t('건강 앱 전송을 예약했습니다. 마이에서 결과를 확인하세요.');
+        void flushWorkoutExports().catch(() => {});
+      }
+    } catch { healthMessage = '\n' + t('운동은 저장했지만 건강 앱 전송을 예약하지 못했습니다.'); }
     saveActiveSession(null);
     setSession(null);
 
@@ -410,7 +425,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     const secs = finalDuration % 60;
     const timeStr = `${mins > 0 ? `${mins}m ` : ''}${secs}s`;
 
-    alert(`🎉 ${t('오늘 운동 완료!')}\n⏱️ ${t('총 운동 시간:')} ${timeStr}\n${t('총 볼륨:')} ${calculateSessionVolume(finalSession).toLocaleString()}kg\n${t('총 횟수:')} ${calculateSessionReps(finalSession)}${t('회')}\n${t('기록이 성공적으로 저장되었습니다.')}`);
+    alert(`🎉 ${t('오늘 운동 완료!')}\n⏱️ ${t('총 운동 시간:')} ${timeStr}\n${t('총 볼륨:')} ${calculateSessionVolume(finalSession).toLocaleString()}kg\n${t('총 횟수:')} ${calculateSessionReps(finalSession)}${t('회')}\n${t('기록이 성공적으로 저장되었습니다.')}${healthMessage}`);
 
     if (onWorkoutCompleted) {
       onWorkoutCompleted();
