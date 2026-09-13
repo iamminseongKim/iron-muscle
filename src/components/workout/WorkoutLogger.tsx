@@ -19,6 +19,7 @@ import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, conv
 import { saveActiveSession, loadActiveSession, saveSessions, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { soundManager } from '../../utils/audio';
 import { sanitizeSessionExercises } from '../../utils/exerciseResolver';
+import { mapPartIdsToCategories, formatWorkoutTitleFromParts } from '../../utils/bodyPartDetector';
 
 interface WorkoutLoggerProps {
   onWorkoutCompleted?: () => void;
@@ -609,22 +610,34 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             <span className="text-[11px] text-gray-400">
               {session.date} 진행 중
             </span>
-            {session.targetPartIds && session.targetPartIds.length > 0 && (
-              <div className="flex items-center gap-1">
-                {session.targetPartIds.map((id) => {
+            <button
+              type="button"
+              onClick={() => {
+                clearFocusAndSelection();
+                setIsNotesModalOpen(true);
+              }}
+              className="flex items-center gap-1 hover:opacity-80 transition cursor-pointer"
+              title="운동 부위 및 일지 수정"
+            >
+              {session.targetPartIds && session.targetPartIds.length > 0 ? (
+                session.targetPartIds.map((id) => {
                   const opt = TARGET_BODY_PARTS.find((p) => p.id === id);
                   if (!opt) return null;
                   return (
                     <span
                       key={id}
-                      className="px-1.5 py-0.2 rounded bg-red-500/10 text-red-600 dark:text-red-400 text-[9px] font-bold"
+                      className="px-1.5 py-0.2 rounded bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] text-[9px] font-bold"
                     >
                       {opt.label}
                     </span>
                   );
-                })}
-              </div>
-            )}
+                })
+              ) : (
+                <span className="px-1.5 py-0.2 rounded bg-gray-500/10 text-gray-500 text-[9px] font-bold">
+                  + 부위 설정
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
@@ -770,15 +783,31 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         targetPartIds={session.targetPartIds}
       />
 
-      {/* 세션 메모 및 이모지 모달 */}
+      {/* 세션 메모 및 부위 재설정 모달 */}
       <SessionNotesModal
         isOpen={isNotesModalOpen}
         initialNotes={session.notes}
         initialEmoji={session.conditionEmoji}
         isDeload={session.isDeload}
+        initialPartIds={session.targetPartIds}
+        currentExercises={session.exercises}
         onClose={() => setIsNotesModalOpen(false)}
-        onSave={(notes, emoji, isDeload) => {
-          const updated = { ...session, notes, conditionEmoji: emoji, isDeload };
+        onSave={(notes, emoji, isDeload, updatedPartIds, shouldUpdateTitle) => {
+          const updatedCategories = mapPartIdsToCategories(updatedPartIds);
+          const newTitle =
+            shouldUpdateTitle && updatedPartIds.length > 0
+              ? formatWorkoutTitleFromParts(updatedPartIds)
+              : session.title;
+
+          const updated: WorkoutSession = {
+            ...session,
+            notes,
+            conditionEmoji: emoji,
+            isDeload,
+            targetPartIds: updatedPartIds,
+            targetCategories: updatedCategories,
+            title: newTitle,
+          };
           setSession(updated);
           saveActiveSession(updated);
         }}

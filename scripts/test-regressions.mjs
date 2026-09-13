@@ -36,10 +36,13 @@ assert.equal(atlasBytes.subarray(1,4).toString(),'PNG');
 assert.equal(spawnSync('git',['check-ignore','--no-index','-q',atlasPath]).status,1,'Runtime atlas must not be ignored by Git');
 console.log('PASS: runtime atlas exists and is not excluded from Git');
 
-assert.equal(db.length, 929);
-assert.equal(db.filter(e => e.equipment === 'machine').length, 121);
+assert.equal(db.length, 975);
+assert.equal(db.filter(e => e.equipment === 'machine').length, 133);
 assert.ok(db.every(e => !e.defaultBrand), 'Built-in exercises must not assign a brand');
 for (const [query, id] of [
+ ['인클라인 트라이셉스', 'incline-dumbbell-triceps-extension'],
+ ['카타나 익스텐션', 'crossbody-cable-triceps-extension'],
+ ['스미스 jm', 'smith-jm-press'],
  ['수직레그프레스', 'vertical-leg-press-machine'],
  ['몸통 회전', 'torso-rotation-machine'],
  ['ㄱㄹㅌㅋㅂ', 'glute-kickback-machine'],
