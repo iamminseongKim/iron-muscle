@@ -78,21 +78,37 @@
 
 /* Safe Area support for Android and iOS notched devices */
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 16px);
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+}
+.pt-safe {
+  padding-top: max(12px, env(safe-area-inset-top, 0px));
 }
 
-/* Fit input dialogs to the visible area above Android/iOS keyboards. */
+/* Fit input dialogs to the visible area above Android/iOS keyboards with notch/Dynamic Island avoidance. */
 .keyboard-aware-modal {
   top: var(--input-viewport-top, 0px);
   bottom: auto;
   height: var(--input-viewport-height, 100dvh);
   overflow-y: auto;
+  padding-top: max(16px, env(safe-area-inset-top, 16px)) !important;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px)) !important;
+  box-sizing: border-box;
 }
 .keyboard-aware-modal > div {
-  max-height: 100%;
+  max-height: calc(100% - env(safe-area-inset-top, 0px));
   min-height: 0;
   overflow-y: auto;
 }
+
+/* Ensure all full-screen modal overlays respect iOS Dynamic Island and Safe Area */
+.fixed.inset-0.z-50,
+.fixed.inset-0.z-60,
+.fixed.inset-0.z-\[100\] {
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  box-sizing: border-box;
+}
+
 html[data-keyboard-open="true"] [data-bottom-navigation] { display: none; }
 input, textarea, select { scroll-margin-block: 72px; }
 /* Parent stack spacing must not offset viewport-fixed dialogs. */

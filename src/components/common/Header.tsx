@@ -29,7 +29,10 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-[#F2F2F7]/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/5 dark:border-white/10 px-4 py-2.5">
+    <header
+      className="sticky top-0 z-30 bg-[#F2F2F7]/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/5 dark:border-white/10 px-4 pb-2.5"
+      style={{ paddingTop: 'max(10px, env(safe-area-inset-top, 0px))' }}
+    >
       <div className="max-w-lg md:max-w-5xl lg:max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
           <img src="/brand-mark.svg" alt="" className="w-8 h-8 shrink-0"/>

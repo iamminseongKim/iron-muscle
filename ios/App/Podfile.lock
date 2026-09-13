@@ -1,0 +1,40 @@
+PODS:
+  - Capacitor (5.7.8):
+    - CapacitorCordova
+  - CapacitorCordova (5.7.8)
+  - CapacitorHaptics (5.0.8):
+    - Capacitor
+  - CapacitorStatusBar (5.0.8):
+    - Capacitor
+  - IronMuscleHealth (1.0.0):
+    - Capacitor
+
+DEPENDENCIES:
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
+  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+  - IronMuscleHealth (from `../../plugins/iron-health`)
+
+EXTERNAL SOURCES:
+  Capacitor:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorCordova:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorHaptics:
+    :path: "../../node_modules/@capacitor/haptics"
+  CapacitorStatusBar:
+    :path: "../../node_modules/@capacitor/status-bar"
+  IronMuscleHealth:
+    :path: "../../plugins/iron-health"
+
+SPEC CHECKSUMS:
+  Capacitor: 9686e5711b48a1aa84671ede795d0175848abcba
+  CapacitorCordova: 31ab98dca2ddcee051027a1afe7e8c85c82f7297
+  CapacitorHaptics: acd823c6ed0ec2cd968a09316768144b0495a1e7
+  CapacitorStatusBar: 8e0a8f213504695505dc8c4f808dffbe03aa0e0f
+  IronMuscleHealth: e735e81bf50f2b7955d1bb61400efe6b35f3064e
+
+PODFILE CHECKSUM: c1424e1b36fac978a9c73e6d78c6708afb506a62
+
+COCOAPODS: 1.17.0

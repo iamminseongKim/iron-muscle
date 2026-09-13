@@ -199,7 +199,13 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   }
 
   return (
-    <div className="keyboard-aware-modal fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-md animate-fade-in">
+    <div
+      className="keyboard-aware-modal fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-md animate-fade-in"
+      style={{
+        paddingTop: 'max(20px, env(safe-area-inset-top, 20px))',
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',
+      }}
+    >
       <div role="dialog" aria-modal="true" aria-labelledby="exercise-picker-title" className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-lg max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
