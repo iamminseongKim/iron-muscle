@@ -64,5 +64,41 @@ const noEnEx = {
 assert.ok(!/[가-힣]/.test(displayExerciseDescription(noEnEx)));
 assert.ok(displayExerciseDescription(noEnEx).includes('Exercise A'));
 
-console.log(`PASS ${Object.keys(data).length} labels in 8 languages, muscle localization, English fallback guides, persistence and custom text preservation`);
+// Test multilingual exercise localization
+const smithEx = {
+  id: 'smith-shoulder-press',
+  name: '스미스 머신 숄더 프레스',
+  nameEn: 'Smith Machine Overhead Shoulder Press'
+};
+setLanguage('ko');
+assert.equal(displayExercise(smithEx), '스미스 머신 숄더 프레스');
+setLanguage('ja');
+assert.equal(displayExercise(smithEx), 'スミスマシン・ショルダープレス');
+setLanguage('zh-CN');
+assert.equal(displayExercise(smithEx), '史密斯坐姿推肩');
+setLanguage('es');
+assert.equal(displayExercise(smithEx), 'Press de hombros en máquina Smith');
+setLanguage('de');
+assert.equal(displayExercise(smithEx), 'Schulterdrücken an der Smith-Maschine');
+setLanguage('fr');
+assert.equal(displayExercise(smithEx), 'Développé épaules à la Smith machine');
+
+// Test language pack modular structure integrity
+const { locales } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
+for (const lang of ['ko', 'en', 'ja', 'zh-CN', 'zh-TW', 'es', 'fr', 'de']) {
+  assert.ok(locales[lang], `Locale ${lang} must exist`);
+  assert.ok(Object.keys(locales[lang].ui).length >= 338, `Locale ${lang} must contain UI strings`);
+  assert.ok(Object.keys(locales[lang].muscles).length >= 17, `Locale ${lang} must contain muscles`);
+  assert.ok(Object.keys(locales[lang].exercises).length >= 1000, `Locale ${lang} must contain exercises`);
+}
+
+// Test multilingual exercise search
+const searchBundle = await build({ entryPoints: ['src/utils/exerciseSearch.ts'], bundle: true, write: false, platform: 'node', format: 'esm' });
+const { matchesExerciseSearch } = await import(`data:text/javascript;base64,${Buffer.from(searchBundle.outputFiles[0].text).toString('base64')}`);
+assert.ok(matchesExerciseSearch(smithEx, 'スミスマシン'), 'Search matching Japanese');
+assert.ok(matchesExerciseSearch(smithEx, '史密斯'), 'Search matching Chinese');
+assert.ok(matchesExerciseSearch(smithEx, 'máquina Smith'), 'Search matching Spanish');
+assert.ok(matchesExerciseSearch(smithEx, 'Smith-Maschine'), 'Search matching German');
+
+console.log(`PASS ${Object.keys(data).length} labels in 8 languages, modular language packs, exercise translations and multilingual search`);
 

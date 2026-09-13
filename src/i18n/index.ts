@@ -23,18 +23,51 @@ export function setLanguage(next: Language) {
 }
 export const subscribeLanguage = (callback: () => void) => { subscribers.add(callback); return () => { subscribers.delete(callback); }; };
 export function useLanguage() { return useSyncExternalStore(subscribeLanguage, getLanguage, () => 'ko' as Language); }
-export function t(value: string, locale: Language = language): string { return messages.get(value)?.[keys.indexOf(locale)] || value; }
+import { locales, LocalePack } from './locales';
+export { locales };
+export type { LocalePack };
+
+export function t(value: string, locale: Language = language): string {
+  const pack = locales[locale];
+  if (pack?.ui?.[value]) return pack.ui[value];
+  return messages.get(value)?.[keys.indexOf(locale)] || value;
+}
+
 import { MUSCLE_INFO_MAP } from '../data/muscleMap';
 import { MuscleTarget } from '../types/workout';
 
-export function displayExercise(exercise: {name: string; nameEn?: string}) { return language === 'ko' ? exercise.name : exercise.nameEn || exercise.name; }
+export function displayExercise(exercise: { id?: string; name: string; nameEn?: string }, locale?: Language | number): string {
+  const currentLang = typeof locale === 'string' ? locale : language;
+  if (currentLang === 'ko') return exercise.name;
+  const pack = locales[currentLang];
+  if (exercise.id && pack?.exercises?.[exercise.id]) {
+    return pack.exercises[exercise.id];
+  }
+  if (pack?.exercises?.[exercise.name]) {
+    return pack.exercises[exercise.name];
+  }
+  return exercise.nameEn || exercise.name;
+}
 
-export function displayMuscle(target: string): string {
+export function getAllExerciseTranslations(exercise: { id?: string; name: string; nameEn?: string }): string[] {
+  const set = new Set<string>();
+  for (const lang of keys) {
+    const trans = displayExercise(exercise, lang);
+    if (trans) set.add(trans);
+  }
+  return [...set];
+}
+
+export function displayMuscle(target: string, locale?: Language | number): string {
+  const currentLang = typeof locale === 'string' ? locale : language;
+  const pack = locales[currentLang];
+  if (pack?.muscles?.[target]) return pack.muscles[target];
   const info = MUSCLE_INFO_MAP[target as MuscleTarget];
-  if (!info) return t(target);
+  if (!info) return t(target, currentLang);
   const shortKo = info.nameKo.split(' ')[0];
-  if (language === 'ko') return shortKo;
-  const translated = t(shortKo);
+  if (currentLang === 'ko') return shortKo;
+  if (pack?.muscles?.[shortKo]) return pack.muscles[shortKo];
+  const translated = t(shortKo, currentLang);
   if (translated && translated !== shortKo) return translated;
   return info.nameEn || shortKo;
 }
