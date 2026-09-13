@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useState, useRef, useEffect } from 'react';
 import { Check, X, MoreHorizontal, MessageSquare, Clock, HelpCircle, Timer } from 'lucide-react';
 import { WorkoutSet, Tempo, ExecutionMode, WeightUnit } from '../../types/workout';
@@ -353,7 +354,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             >
               <MessageSquare size={12} />
               <span className="whitespace-nowrap">
-                {hasCommentOrTags ? '메모' : '메모'}
+                {hasCommentOrTags ? t("메모") : t("메모")}
               </span>
             </button>
 

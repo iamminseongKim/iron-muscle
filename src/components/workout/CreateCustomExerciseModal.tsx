@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useState } from 'react';
 import { X, Plus, Dumbbell, Sparkles } from 'lucide-react';
 import { Exercise, Category, EquipmentType, MuscleTarget, MovementPlane } from '../../types/workout';
@@ -191,7 +192,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                       : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
-                  {c.label}
+                  {t(c.label)}
                 </button>
               ))}
             </div>
@@ -214,7 +215,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                       : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
-                  {eq.label}
+                  {t(eq.label)}
                 </button>
               ))}
             </div>

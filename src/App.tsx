@@ -1,16 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useLanguage, getLanguage } from './i18n';
+import { LanguageSettings } from './components/common/LanguageSettings';
+import React, { useState, useEffect, lazy, Suspense, memo, useCallback } from 'react';
 import { useKeyboardViewport } from './hooks/useKeyboardViewport';
 import { Header } from './components/common/Header';
 import { TabNavigation } from './components/common/TabNavigation';
-import { ExerciseExplorer } from './components/explore/ExerciseExplorer';
-import { WorkoutLogger } from './components/workout/WorkoutLogger';
-import { WorkoutHistoryView } from './components/history/WorkoutHistoryView';
-import { HistoryDashboard } from './components/history/HistoryDashboard';
+const ExerciseExplorer = lazy(() => import('./components/explore/ExerciseExplorer').then(module => ({default: module.ExerciseExplorer})));
+import { WorkoutLogger as WorkoutLoggerComponent } from './components/workout/WorkoutLogger';
+const WorkoutLogger = memo(WorkoutLoggerComponent);
+const WorkoutHistoryView = lazy(() => import('./components/history/WorkoutHistoryView').then(module => ({default: module.WorkoutHistoryView})));
+const HistoryDashboard = lazy(() => import('./components/history/HistoryDashboard').then(module => ({default: module.HistoryDashboard})));
 import { loadActiveSession, saveActiveSession } from './utils/storage';
 import { WeightUnit } from './types/workout';
 
 export const App: React.FC = () => {
+  const language = useLanguage();
+  useEffect(() => { document.documentElement.lang = language; }, [language]);
   const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics' | 'explore'>('workout');
+
+  const onWorkoutCompleted = useCallback(() => setActiveTab('history'), []);
 
   // 무게 단위 상태 (기본값 kg, 영구 저장)
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(() => {
@@ -128,11 +135,12 @@ export const App: React.FC = () => {
         onToggleWorkoutTimer={toggleWorkoutTimer}
       />
 
+      <LanguageSettings />
       {/* 메인 컨텐츠 */}
-      <main className="flex-1 w-full pt-2">
+      <main className="flex-1 w-full pt-2"><Suspense fallback={<div role="status" className="p-8 text-center">…</div>}>
         {activeTab === 'workout' && (
           <WorkoutLogger
-            onWorkoutCompleted={() => setActiveTab('history')}
+            onWorkoutCompleted={onWorkoutCompleted}
             isDark={isDark}
           />
         )}
@@ -143,7 +151,7 @@ export const App: React.FC = () => {
         {activeTab === 'analytics' && (
           <HistoryDashboard weightUnit={weightUnit} />
         )}
-      </main>
+      </Suspense></main>
 
       {/* 하단 탭 네비게이션 */}
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />

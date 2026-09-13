@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useState } from 'react';
 import { X, Clock, Zap, Info } from 'lucide-react';
 import { Tempo } from '../../types/workout';
@@ -155,7 +156,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
                 className="w-full text-left p-2.5 bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-gray-200 dark:hover:bg-[#3A3A3C] rounded-2xl border border-black/5 dark:border-white/5 transition flex items-center justify-between"
               >
                 <div>
-                  <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">{p.label}</span>
+                  <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">{t(p.label)}</span>
                   <span className="text-[11px] text-gray-400">{p.sub}</span>
                 </div>
                 <Zap size={14} className="text-[#FF9500] shrink-0" />
@@ -175,9 +176,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
             type="button"
             onClick={onClose}
             className="flex-1 py-3 rounded-2xl text-xs font-bold text-gray-600 dark:text-gray-300 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-[#3A3A3C] transition shadow-xs"
-          >
-            취소
-          </button>
+          >{t("취소")}</button>
           <button
             type="button"
             onClick={handleSave}

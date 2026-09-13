@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useEffect, useState } from 'react';
 import { Play, Pause, RotateCcw, X, Bell } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
@@ -160,7 +161,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
               type="button"
               onClick={onClose}
               className="p-1.5 text-gray-400 hover:text-black dark:hover:text-white rounded-lg transition"
-              title="닫기"
+              title={t("닫기")}
             >
               <X size={16} />
             </button>

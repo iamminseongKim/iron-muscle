@@ -1,3 +1,5 @@
+import { t } from '../../i18n';
+import { getLanguage, useLanguage } from '../../i18n';
 import { BodyPartIcon } from '../common/BodyPartIcon';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
@@ -38,6 +40,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   onWorkoutCompleted,
   isDark = false,
 }) => {
+  useLanguage();
   // 현재 진행 중인 세션 (없으면 null -> 대기 화면 표시)
   const [showSessionStats, setShowSessionStats] = useState(false);
   const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<Set<string>>(new Set());
@@ -100,14 +103,14 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   // 선택 부위 기반 세션 타이틀 자동 추천
   const recommendedTitle = useMemo(() => {
     if (customTitle.trim()) return customTitle;
-    if (selectedPartIds.length === 0) return '자유 루틴';
+    if (selectedPartIds.length === 0) return t('자유 루틴');
     const labels = selectedPartIds
       .map((id) => TARGET_BODY_PARTS.find((p) => p.id === id)?.label)
-      .filter(Boolean);
-    if (labels.length === 1) return `${labels[0]} 루틴`;
-    if (labels.length === 2) return `${labels.join(' & ')} 루틴`;
-    return `${labels.slice(0, 2).join(', ')} 외 ${labels.length - 2}곳 루틴`;
-  }, [selectedPartIds, customTitle]);
+      .filter(Boolean).map(label => t(label!));
+    if (labels.length === 1) return `${labels[0]} ${t('루틴')}`;
+    if (labels.length === 2) return `${labels.join(' & ')} ${t('루틴')}`;
+    return `${labels.slice(0, 2).join(', ')} +${labels.length - 2} ${t('루틴')}`;
+  }, [selectedPartIds, customTitle, getLanguage()]);
 
   // 부위 토글 핸들러
   const handleTogglePart = (partId: string) => {
@@ -420,7 +423,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   // 1. 대기 화면 (Session === null)
   // ==========================================
   if (!session) {
-    const todayDateFormatted = new Date().toLocaleDateString('ko-KR', {
+    const todayDateFormatted = new Date().toLocaleDateString(getLanguage(), {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -435,24 +438,17 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             <Calendar size={13} className="text-[#0F766E]" />
             {todayDateFormatted}
           </div>
-          <h2 className="text-2xl font-black tracking-tight text-[#1D1D1F] dark:text-white">
-            오늘의 운동 시작하기
-          </h2>
-          <p className="text-xs text-gray-400">
-            오늘 운동할 부위를 선택하면 첫 운동 추가 시 해당 부위가 자동 추천됩니다.
-          </p>
+          <h2 className="text-2xl font-black tracking-tight text-[#1D1D1F] dark:text-white">{t("오늘의 운동 시작하기")}</h2>
+          <p className="text-xs text-gray-400">{t("오늘 운동할 부위를 선택하면 첫 운동 추가 시 해당 부위가 자동 추천됩니다.")}</p>
         </div>
 
         {/* 1. 운동 부위 다중 선택 카드 */}
         <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-black text-gray-400 tracking-wider uppercase flex items-center gap-1.5">
-              <Target size={14} className="text-[#0F766E]" />
-              오늘의 목표 부위 (다중 선택)
-            </span>
+              <Target size={14} className="text-[#0F766E]" />{t("오늘의 목표 부위 (다중 선택)")}</span>
             <span className="text-[11px] font-bold text-[#0F766E]">
-              {selectedPartIds.length}개 선택됨
-            </span>
+              {selectedPartIds.length}{t("개 선택됨")}</span>
           </div>
 
           <div className="grid grid-cols-4 gap-2">
@@ -470,7 +466,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   }`}
                 >
                   <BodyPartIcon part={part.id} />
-                  <span className="text-xs font-black tracking-tight">{part.label}</span>
+                  <span className="text-xs font-black tracking-tight">{t(part.label)}</span>
                 </button>
               );
             })}
@@ -481,9 +477,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             <Sparkles size={14} className="text-[#FF9500] shrink-0" />
             <span>
               <strong className="text-[#1D1D1F] dark:text-white">
-                {selectedPartIds.map((id) => TARGET_BODY_PARTS.find((p) => p.id === id)?.label).join(', ')}
+                {selectedPartIds.map((id) => TARGET_BODY_PARTS.find((p) => p.id === id)?.label || '').map(label => t(label)).join(', ')}
               </strong>
-              {selectedPartIds.length > 0 ? ' 부위가 첫 운동 라이브러리 탭에 최우선 노출됩니다.' : '부위를 선택해 주세요.'}
+              {" "}{selectedPartIds.length > 0 ? t("부위가 첫 운동 라이브러리 탭에 최우선 노출됩니다.") : t("부위를 선택해 주세요.")}
             </span>
           </div>
         </div>
@@ -491,9 +487,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         {/* 2. 세션 설정 카드 (제목, 컨디션, 디로딩) */}
         <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3.5">
           <div>
-            <label className="block text-xs font-black text-gray-400 mb-1.5">
-              루틴 이름 (자동 생성 또는 직접 입력)
-            </label>
+            <label className="block text-xs font-black text-gray-400 mb-1.5">{t("루틴 이름 (자동 생성 또는 직접 입력)")}</label>
             <input
               type="text"
               value={customTitle}
@@ -505,9 +499,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
           {/* 컨디션 이모지 선택 */}
           <div>
-            <label className="block text-xs font-black text-gray-400 mb-1.5">
-              오늘의 컨디션
-            </label>
+            <label className="block text-xs font-black text-gray-400 mb-1.5">{t("오늘의 컨디션")}</label>
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
               {CONDITION_OPTIONS.map((opt) => (
                 <button
@@ -521,7 +513,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   }`}
                 >
                   <span className="text-base leading-none">{opt.emoji}</span>
-                  <span>{opt.label}</span>
+                  <span>{t(opt.label)}</span>
                 </button>
               ))}
             </div>
@@ -530,9 +522,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           {/* 디로딩 토글 */}
           <div className="flex items-center justify-between pt-1 border-t border-black/5 dark:border-white/5">
             <div>
-              <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">
-                디로딩 주간 (저강도 회복 훈련)
-              </span>
+              <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">{t("디로딩 주간 (저강도 회복 훈련)")}</span>
               <span className="text-[11px] text-gray-400">
                 피로 누적 방지 및 근신경계 회복을 위한 감량 세션
               </span>
@@ -561,7 +551,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             className="w-full py-5 bg-gradient-to-r from-[#0F766E] to-[#115E59] hover:opacity-95 text-white rounded-2xl text-[17px] font-black flex items-center justify-center gap-2.5 shadow-lg shadow-teal-900/30 transition active:scale-98"
           >
             <Dumbbell size={22} />
-            <span>새 운동 시작하기 ({recommendedTitle})</span>
+            <span>{t("새 운동 시작하기")} ({recommendedTitle})</span>
             <ArrowRight size={20} />
           </button>
         </div>
@@ -569,7 +559,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         {/* 안내 카드 & 샘플 데이터 옵션 */}
         <div className="p-3.5 bg-white/60 dark:bg-[#1C1C1E]/60 rounded-2xl border border-black/5 dark:border-white/5 text-center text-xs text-gray-400 space-y-1">
           <p>
-            저장된 운동 일지: <strong className="text-gray-700 dark:text-gray-300">{savedCount}개</strong> · 하단 [기록 조회] 탭에서 이전 기록을 수정/삭제하거나 AI 마크다운으로 내보낼 수 있습니다.
+            {t("저장된 운동 일지")}: <strong className="text-gray-700 dark:text-gray-300">{savedCount}</strong> · {t("기록 조회")} / {t("AI 분석 추출")}
           </p>
           {savedCount === 0 && (
             <button
@@ -580,9 +570,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                 window.location.reload();
               }}
               className="text-[#0F766E] hover:underline font-bold mt-1 inline-block"
-            >
-              체험용 샘플 기록 불러오기
-            </button>
+            >{t("체험용 샘플 기록 불러오기")}</button>
           )}
         </div>
       </div>
@@ -628,7 +616,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                       key={id}
                       className="px-1.5 py-0.2 rounded bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] text-[9px] font-bold"
                     >
-                      {opt.label}
+                      {t(opt.label)}
                     </span>
                   );
                 })

@@ -1,3 +1,6 @@
+import { displayExercise, getLanguage as exerciseLanguage } from '../../i18n';
+import { t } from '../../i18n';
+import { lazy, Suspense } from 'react';
 import React, { useState, useCallback, useEffect } from 'react';
 import { 
   Search, Sparkles, ChevronRight, RotateCcw, BookOpen 
@@ -6,7 +9,7 @@ import { Exercise, MuscleTarget, Category, LoadType, LOAD_TYPE_LABELS, MOVEMENT_
 import { matchesExerciseSearch } from '../../utils/exerciseSearch';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
-import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
+const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 
 interface ExerciseExplorerProps {
   onSelectForWorkout?: (exercise: Exercise) => void;
@@ -68,7 +71,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               해부학 근육 시각화
             </h2>
             <p className="text-xs text-gray-400">
-              {selectedExercise ? `${selectedExercise.name}의 주동근·협응근` : '인체를 터치하여 운동 찾기'}
+              {selectedExercise ? `${displayExercise(selectedExercise)}의 주동근·협응근` : '인체를 터치하여 운동 찾기'}
             </p>
           </div>
         </div>
@@ -89,14 +92,14 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
         )}
 
         {/* 뷰어 컴포넌트 렌더링 */}
-        <HumanMuscle3DViewer
+        <Suspense fallback={<div className="h-48 flex items-center justify-center" role="status">3D…</div>}><HumanMuscle3DViewer
           primaryMuscles={selectedExercise?.primaryMuscles || []}
           secondaryMuscles={selectedExercise?.secondaryMuscles || []}
           activeMuscleFilter={activeMuscleFilter}
           onSelectMuscle={handleMuscleClickOn3D}
           height="440px"
           isDark={isDark}
-        />
+        /></Suspense>
       </div>
 
       {/* 선택된 운동 상세 카드 */}
@@ -105,7 +108,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-black text-[#1D1D1F] dark:text-white">{selectedExercise.name}</h3>
+                <h3 className="text-lg font-black text-[#1D1D1F] dark:text-white">{displayExercise(selectedExercise)}</h3>
                 <span className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 text-[10px] font-bold">
                   {EQUIPMENT_LABELS[selectedExercise.equipment]}
                 </span>
@@ -157,7 +160,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
           </div>
 
           <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed pt-1">
-            {selectedExercise.description}
+            {exerciseLanguage() === 'ko' ? selectedExercise.description : selectedExercise.descriptionEn || selectedExercise.description}
           </p>
 
           {/* 가이드 */}
@@ -168,7 +171,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                 올바른 자세 가이드
               </span>
               <ol className="list-decimal list-inside space-y-1 text-xs text-gray-700 dark:text-gray-300">
-                {selectedExercise.instructions.map((inst, i) => (
+                {(exerciseLanguage() === 'ko' ? selectedExercise.instructions : selectedExercise.instructionsEn || selectedExercise.instructions).map((inst, i) => (
                   <li key={i} className="leading-snug">{inst}</li>
                 ))}
               </ol>
@@ -213,7 +216,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                   : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white border border-black/5 dark:border-white/5'
               }`}
             >
-              {cat === 'all' ? '전체' : cat === 'chest' ? '가슴' : cat === 'back' ? '등' : cat === 'legs' ? '하체' : cat === 'shoulders' ? '어깨' : cat === 'arms' ? '팔' : cat === 'core' ? '복근' : '전신'}
+              {cat === 'all' ? t("전체") : cat === 'chest' ? t("가슴") : cat === 'back' ? t("등") : cat === 'legs' ? t("하체") : cat === 'shoulders' ? t("어깨") : cat === 'arms' ? '팔' : cat === 'core' ? t("복근") : t("전신")}
             </button>
           ))}
         </div>
@@ -232,7 +235,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                   : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5'
               }`}
             >
-              {load === 'all' ? '전체' : load === 'plate-loaded' ? '플레이트(원판)' : load === 'pin-loaded' ? '핀머신' : load === 'barbell' ? '바벨' : load === 'dumbbell' ? '덤벨' : load === 'cable' ? '케이블' : load === 'bodyweight' ? '맨몸' : '기타'}
+              {load === 'all' ? t("전체") : load === 'plate-loaded' ? '플레이트(원판)' : load === 'pin-loaded' ? '핀머신' : load === 'barbell' ? t("바벨") : load === 'dumbbell' ? t("덤벨") : load === 'cable' ? t("케이블") : load === 'bodyweight' ? t("맨몸") : '기타'}
             </button>
           ))}
         </div>
@@ -270,7 +273,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`font-extrabold text-sm ${isCurrent ? 'text-[#0F766E]' : 'text-[#1D1D1F] dark:text-white'}`}>
-                    {ex.name}
+                    {displayExercise(ex)}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[10px] text-gray-500 dark:text-gray-400 font-bold">
                     {EQUIPMENT_LABELS[ex.equipment]}

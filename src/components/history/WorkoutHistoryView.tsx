@@ -1,3 +1,6 @@
+import exportMessages from '../../i18n/exportMessages.json';
+import { useLanguage } from '../../i18n';
+import { t } from '../../i18n';
 import React, { useState, useMemo } from 'react';
 import { 
   Calendar, ChevronLeft, ChevronRight, Download, Copy, Check, 
@@ -27,6 +30,8 @@ interface WorkoutHistoryViewProps {
 }
 
 export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUnit = 'kg' }) => {
+  const language = useLanguage();
+  const exportLabels = exportMessages[language];
   const [sessions, setSessions] = useState<WorkoutSession[]>(() => loadSavedSessions());
   const [viewScope, setViewScope] = useState<'daily' | 'monthly' | 'yearly'>('daily');
   
@@ -213,13 +218,14 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
   const currentMarkdown = useMemo(() => {
     return generateAiCoachingMarkdown(exportTargetSessions, {
+      language,
       scope: exportScope,
       selectedDate: exportDate,
       customStartDate: exportCustomStart,
       customEndDate: exportCustomEnd,
       selectedBodyPart,
     });
-  }, [exportTargetSessions, exportScope, exportDate, exportCustomStart, exportCustomEnd, selectedBodyPart]);
+  }, [exportTargetSessions, exportScope, exportDate, exportCustomStart, exportCustomEnd, selectedBodyPart, language]);
 
   const handleCopyMarkdown = async () => {
     try {
@@ -256,7 +262,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
     // 💡 사용자가 다운로드 시 클립보드 복사는 수행하지 않고, 실제 파일 다운로드/저장만 실행
     const res = await saveFileToDevice(filename, currentMarkdown, 'text/markdown');
     if (res.message) {
-      setDownloadFeedback(res.message);
+      setDownloadFeedback(res.cancelled ? t("저장을 취소했습니다.") : res.success ? `${t("저장")}: ${filename}` : `${t("저장")} ✕`);
       setTimeout(() => setDownloadFeedback(null), 3000);
     }
   };
@@ -267,9 +273,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
       <div className="flex items-center justify-between pt-1">
         <div>
           <h2 className="text-xl font-black text-[#1D1D1F] dark:text-white tracking-tight flex items-center gap-2">
-            <Calendar size={20} className="text-[#0F766E]" />
-            운동 기록 조회
-          </h2>
+            <Calendar size={20} className="text-[#0F766E]" />{t("운동 기록 조회")}</h2>
           <p className="text-xs text-gray-400">날짜별, 월별, 연별 운동 일지 및 AI 분석 추출</p>
         </div>
 
@@ -280,7 +284,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#0F766E] to-[#5856D6] hover:opacity-95 text-white rounded-full text-xs font-black shadow-md shadow-teal-900/20 active:scale-98 transition"
         >
           <Bot size={14} />
-          <span>AI 분석 추출</span>
+          <span>{t("AI 분석 추출")}</span>
         </button>
       </div>
 
@@ -296,9 +300,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
               : 'text-gray-500 hover:text-black dark:hover:text-white'
           }`}
-        >
-          일간 (날짜별)
-        </button>
+        >{t("일간 (날짜별)")}</button>
         <button
           type="button"
           onClick={() => setViewScope('monthly')}
@@ -307,9 +309,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
               : 'text-gray-500 hover:text-black dark:hover:text-white'
           }`}
-        >
-          월간 (월별)
-        </button>
+        >{t("월간 (월별)")}</button>
         <button
           type="button"
           onClick={() => setViewScope('yearly')}
@@ -318,9 +318,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
               : 'text-gray-500 hover:text-black dark:hover:text-white'
           }`}
-        >
-          연간 (년별)
-        </button>
+        >{t("연간 (년별)")}</button>
       </div>
 
       {/* ================= 1. 일간 (날짜별 뷰) ================= */}
@@ -355,7 +353,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             </button>
           </div>
 
-          {dailySessions.length > 0 && <button type="button" onClick={() => setIsShareCardOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#0F766E]/10 text-[#0F766E] font-black text-sm"><Share2 size={18}/>운동 인증 카드 만들기</button>}
+          {dailySessions.length > 0 && <button type="button" onClick={() => setIsShareCardOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#0F766E]/10 text-[#0F766E] font-black text-sm"><Share2 size={18}/>{t("운동 인증 카드 만들기")}</button>}
 
           {/* 오늘 운동 기록이 2개 이상일 때 나타나는 합치기 배너 */}
           {dailySessions.length > 1 && (
@@ -366,7 +364,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 </div>
                 <div className="min-w-0">
                   <h4 className="text-xs font-black text-gray-900 dark:text-white flex items-center gap-1.5 flex-wrap">
-                    <span>오늘 {dailySessions.length}개의 운동 기록이 있습니다</span>
+                    <span>{t("오늘")}{dailySessions.length}개의 운동 기록이 있습니다</span>
                     <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#0F766E]/20 text-[#0F766E] font-extrabold">
                       {dailySessions.length}개 세션
                     </span>
@@ -413,7 +411,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                     className="px-3.5 py-1.5 rounded-xl bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-black/10 text-gray-600 dark:text-gray-300 text-xs font-bold transition inline-flex items-center gap-1.5"
                   >
                     <RotateCcw size={13} className="text-[#0F766E]" />
-                    <span>체험용 샘플 기록 불러오기</span>
+                    <span>{t("체험용 샘플 기록 불러오기")}</span>
                   </button>
                 </div>
               )}
@@ -435,7 +433,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       <div className="flex items-center gap-2">
                         <span className="text-lg leading-none">{session.conditionEmoji || '💪'}</span>
                         <h3 className="text-base font-extrabold text-[#1D1D1F] dark:text-white">
-                          {session.title || '오늘의 운동'}
+                          {session.title || t("오늘의 운동")}
                         </h3>
                         {session.isDeload && (
                           <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 text-[10px] font-bold">
@@ -623,7 +621,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <span className="text-xl font-black text-[#0F766E]">
                 {monthlySessions.length > 0
                   ? Math.round(monthlySessions.reduce((s, x) => s + x.durationSeconds, 0) / monthlySessions.length / 60)
-                  : 0} <span className="text-xs font-normal text-gray-400">분</span>
+                  : 0} <span className="text-xs font-normal text-gray-400">{t("분")}</span>
               </span>
             </div>
           </div>
@@ -685,7 +683,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg">{s.conditionEmoji || '💪'}</span>
                   <div>
-                    <h4 className="text-xs font-bold text-[#1D1D1F] dark:text-white">{s.title || '오늘의 운동'}</h4>
+                    <h4 className="text-xs font-bold text-[#1D1D1F] dark:text-white">{s.title || t("오늘의 운동")}</h4>
                     <span className="text-[11px] text-gray-400">{s.date} · {s.exercises.length}개 종목</span>
                   </div>
                 </div>
@@ -696,7 +694,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       type="button"
                       onClick={() => handleOpenEditSession(s)}
                       className="p-1 rounded-lg hover:bg-black/10 text-gray-400 hover:text-[#0F766E] transition"
-                      title="수정"
+                      title={t("수정")}
                     >
                       <Edit3 size={13} />
                     </button>
@@ -704,7 +702,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       type="button"
                       onClick={() => handleDeleteSession(s.id, s.date)}
                       className="p-1 rounded-lg hover:bg-red-500/15 text-gray-400 hover:text-red-500 transition"
-                      title="삭제"
+                      title={t("삭제")}
                     >
                       <Trash2 size={13} />
                     </button>
@@ -796,9 +794,9 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 </div>
                 <div>
                   <h3 className="text-base font-extrabold text-[#1D1D1F] dark:text-white">
-                    AI 분석용 Markdown 추출
+                    {t("AI 분석 추출")} · Markdown
                   </h3>
-                  <p className="text-xs text-gray-400">ChatGPT, Claude, Gemini에 바로 붙여넣어 코칭받기</p>
+                  <p className="text-xs text-gray-400">ChatGPT / Claude / Gemini</p>
                 </div>
               </div>
               <button
@@ -812,7 +810,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             {/* 1. 분석 기간 모드 탭 (Scope Selection) */}
             <div className="px-4 pt-3 pb-2 bg-[#F9F9FB] dark:bg-[#18181A] border-b border-black/5 dark:border-white/5 space-y-2.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-gray-500">분석 기간:</span>
+                <span className="font-bold text-gray-500">{exportLabels.period}:</span>
                 <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl font-bold text-[11px] overflow-x-auto">
                   <button
                     type="button"
@@ -823,7 +821,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         : 'text-gray-500'
                     }`}
                   >
-                    하루 (1일)
+                    {t("당일")}
                   </button>
                   <button
                     type="button"
@@ -834,7 +832,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         : 'text-gray-500'
                     }`}
                   >
-                    최근 1주일
+                    {t("주간")}
                   </button>
                   <button
                     type="button"
@@ -844,9 +842,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
                         : 'text-gray-500'
                     }`}
-                  >
-                    월간
-                  </button>
+                  >{t("월간")}</button>
                   <button
                     type="button"
                     onClick={() => setExportScope('custom')}
@@ -855,9 +851,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
                         : 'text-gray-500'
                     }`}
-                  >
-                    직접 지정
-                  </button>
+                  >{t("직접 지정")}</button>
                   <button
                     type="button"
                     onClick={() => setExportScope('all')}
@@ -866,9 +860,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
                         : 'text-gray-500'
                     }`}
-                  >
-                    전체
-                  </button>
+                  >{t("전체")}</button>
                 </div>
               </div>
 
@@ -876,7 +868,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
                 {exportScope === 'day' && (
                   <div className="flex items-center gap-2 w-full">
-                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">대상 날짜:</span>
+                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">{t("대상 날짜:")}</span>
                     <input
                       type="date"
                       value={exportDate}
@@ -890,9 +882,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         setExportDate(today);
                       }}
                       className="px-2 py-1 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-lg text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:text-[#0F766E]"
-                    >
-                      오늘
-                    </button>
+                    >{t("오늘")}</button>
                     <button
                       type="button"
                       onClick={() => {
@@ -901,39 +891,33 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         setExportDate(yest.toISOString().slice(0, 10));
                       }}
                       className="px-2 py-1 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-lg text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:text-[#0F766E]"
-                    >
-                      어제
-                    </button>
+                    >{t("어제")}</button>
                   </div>
                 )}
 
                 {exportScope === 'week' && (
                   <div className="flex items-center gap-2 w-full">
-                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">기준일:</span>
+                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">{t("기준일:")}</span>
                     <input
                       type="date"
                       value={exportDate}
                       onChange={(e) => setExportDate(e.target.value)}
                       className="bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-[#0F766E]"
                     />
-                    <span className="text-[11px] text-gray-400 font-medium truncate">
-                      (기준일 포함 직전 7일간 분석)
-                    </span>
+                    <span className="text-[11px] text-gray-400 font-medium truncate">{t("(기준일 포함 직전 7일간 분석)")}</span>
                   </div>
                 )}
 
                 {exportScope === 'month' && (
                   <div className="flex items-center gap-2 w-full">
-                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">대상 월:</span>
+                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">{t("대상 월:")}</span>
                     <input
                       type="month"
                       value={exportDate.slice(0, 7)}
                       onChange={(e) => setExportDate(`${e.target.value}-01`)}
                       className="bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-[#0F766E]"
                     />
-                    <span className="text-[11px] text-gray-400 font-medium">
-                      (해당 월 전체 세션 분석)
-                    </span>
+                    <span className="text-[11px] text-gray-400 font-medium">{t("(해당 월 전체 세션 분석)")}</span>
                   </div>
                 )}
 
@@ -957,7 +941,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
                 {exportScope === 'all' && (
                   <div className="w-full text-gray-400 text-[11px] font-medium py-0.5">
-                    등록된 모든 운동 세션 (총 {sessions.length}일)을 바탕으로 장기 주기화 및 성장 추이를 분석합니다.
+                    {exportLabels.allTime} · {exportLabels.sessions}: {sessions.length}
                   </div>
                 )}
               </div>
@@ -966,11 +950,9 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <div className="pt-1">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[11px] font-bold text-gray-500 flex items-center gap-1">
-                    <Dumbbell size={12} className="text-[#0F766E]" />
-                    운동 부위 필터:
-                  </span>
+                    <Dumbbell size={12} className="text-[#0F766E]" />{t("운동 부위 필터:")}</span>
                   <span className="text-[10px] text-gray-400">
-                    해당 기간 {exportTargetSessions.length}회 세션 선택됨
+                    {exportLabels.sessions}: {exportTargetSessions.length}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
@@ -991,7 +973,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         }`}
                       >
                         <span>{part.icon}</span>
-                        <span>{part.label.split(' ')[0]}</span>
+                        <span>{exportLabels[part.id]}</span>
                         {part.totalSets > 0 && (
                           <span
                             className={`text-[10px] px-1 py-0.2 rounded-full font-black ${
@@ -1013,18 +995,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             {/* 4. AI 맞춤 프롬프트 안내 배지 */}
             <div className="px-4 py-2 bg-[#0F766E]/10 dark:bg-[#0F766E]/20 border-b border-black/5 dark:border-white/5 flex items-center gap-2 text-xs text-[#0F766E] dark:text-[#2DD4BF] font-semibold">
               <Sparkles size={14} className="shrink-0 text-[#0F766E] dark:text-[#2DD4BF]" />
-              <span className="truncate">
-                {selectedBodyPart === 'chest' && '🛡️ 가슴 집중 분석: 각도별(상/중/하부) 밸런스 및 4주 가슴 특화 루틴 가이드'}
-                {selectedBodyPart === 'back' && '🦅 등 집중 분석: 수직/수평 당기기 밸런스, 악력 피로 및 4주 등 특화 루틴 가이드'}
-                {selectedBodyPart === 'legs' && '🦵 하체 집중 분석: 사두/햄스트링 비율, CNS 신경계 피로 및 4주 하체 특화 루틴 가이드'}
-                {selectedBodyPart === 'shoulders' && '🥥 어깨 집중 분석: 3D 삼각근 입체 밸런스, 승모근 보상 방지 및 4주 어깨 특화 루틴'}
-                {selectedBodyPart === 'biceps' && '💪 이두근 집중 분석: 장두/단두 고립 자극, 템포 및 4주 이두 특화 루틴 가이드'}
-                {selectedBodyPart === 'triceps' && '⚡ 삼두근 집중 분석: 외측두/장두 자극, 엘보우 통증 예방 및 4주 삼두 특화 가이드'}
-                {selectedBodyPart === 'arms' && '🦾 팔 전체 집중 분석: 이두/삼두 슈퍼세트 펌핑 및 4주 팔 볼륨 극대화 루틴 가이드'}
-                {selectedBodyPart === 'core' && '🧱 복근/코어 집중 분석: 복압 브레이싱, 상/하복부 밸런스 및 4주 코어 가이드'}
-                {selectedBodyPart === 'all' && exportScope === 'day' && '⚡ 당일 원데이 피로도 분석: 오늘의 실질 부하 진단 및 내일 운동 회복 가이드'}
-                {selectedBodyPart === 'all' && exportScope === 'week' && '📊 주간 볼륨 밸런스 분석: 부위별 빈도 및 주간 누적 볼륨 적정성 분석'}
-                {selectedBodyPart === 'all' && (exportScope === 'month' || exportScope === 'custom' || exportScope === 'all') && '🏆 중장기 주기화 분석: 점진적 과부하 달성도, 디로딩 판정 및 블록 주기화 가이드'}
+              <span className="truncate">{exportLabels.feedback} · {exportLabels[selectedBodyPart]} · {exportScope === 'all' ? exportLabels.allTime : exportLabels[exportScope]}
               </span>
             </div>
 
@@ -1051,17 +1022,17 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 }`}
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
-                <span>{copied ? '클립보드에 복사 완료!' : '클립보드에 복사 (ChatGPT용)'}</span>
+                <span>{copied ? t("클립보드에 복사 완료!") : t("클립보드에 복사 (ChatGPT용)")}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleDownloadMarkdown}
                 className="px-4 py-3.5 bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-black/10 text-[#1D1D1F] dark:text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-98"
-                title="Markdown (.md) 파일 다운로드"
+                title={t("Markdown (.md) 파일 다운로드")}
               >
                 <Download size={16} />
-                <span>.md 다운로드</span>
+                <span>{t(".md 다운로드")}</span>
               </button>
             </div>
           </div>

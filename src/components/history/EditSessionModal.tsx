@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useState } from 'react';
 import { 
   X, Save, Trash2, Plus, Calendar, Clock, Dumbbell, 
@@ -357,10 +358,10 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                     <div className="grid grid-cols-12 gap-1.5 text-[10px] font-bold text-gray-400 px-1 text-center">
                       <span className="col-span-1">#</span>
                       <span className="col-span-3">무게({exItem.weightUnit || 'kg'})</span>
-                      <span className="col-span-3">횟수</span>
+                      <span className="col-span-3">{t("횟수")}</span>
                       <span className="col-span-2">RPE</span>
                       <span className="col-span-2">휴식(s)</span>
-                      <span className="col-span-1">삭제</span>
+                      <span className="col-span-1">{t("삭제")}</span>
                     </div>
 
                     {/* 세트 행 리스트 */}
@@ -453,9 +454,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                       onClick={() => handleAddSet(eIdx)}
                       className="w-full py-1.5 rounded-xl border border-dashed border-black/15 dark:border-white/15 text-gray-500 hover:text-black dark:hover:text-white hover:border-black/30 text-[11px] font-bold flex items-center justify-center gap-1 transition"
                     >
-                      <Plus size={12} />
-                      세트 추가
-                    </button>
+                      <Plus size={12} />{t("세트 추가")}</button>
                   </div>
                 );
               })
@@ -469,9 +468,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
             type="button"
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 font-bold transition"
-          >
-            취소
-          </button>
+          >{t("취소")}</button>
           <button
             type="button"
             onClick={handleSave}

@@ -1,3 +1,5 @@
+import { displayExercise, getLanguage as exerciseLanguage } from '../../i18n';
+import { t } from '../../i18n';
 import React, { useState, useEffect } from 'react';
 import { X, Search, Dumbbell, ChevronRight, Plus, Sparkles } from 'lucide-react';
 import { Exercise, Category, EquipmentType } from '../../types/workout';
@@ -278,7 +280,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white border border-black/5 dark:border-white/5'
                 }`}
               >
-                {c.label}
+                {t(c.label)}
               </button>
             ))}
           </div>
@@ -297,7 +299,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 border-black/5 dark:border-white/5'
                 }`}
               >
-                {eq.label}
+                {t(eq.label)}
               </button>
             ))}
           </div>
@@ -336,7 +338,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                 {ex.images && ex.images.length > 0 ? (
                   <img
                     src={ex.images[0]}
-                    alt={ex.name}
+                    alt={displayExercise(ex)}
                     loading="lazy"
                     className="w-10 h-10 rounded-xl object-cover bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 shrink-0"
                     onError={(e) => {
@@ -352,10 +354,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                 <div className="flex-1 min-w-0 pr-1">
                   <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                     <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white group-hover:text-[#0F766E] transition truncate">
-                      {ex.name}
+                      {displayExercise(ex)}
                     </span>
                     <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
-                      {ex.equipment === 'machine' ? '머신' : ex.equipment === 'barbell' ? '바벨' : ex.equipment === 'dumbbell' ? '덤벨' : ex.equipment === 'cable' ? '케이블' : '맨몸/소도구'}
+                      {ex.equipment === 'machine' ? t("머신") : ex.equipment === 'barbell' ? t("바벨") : ex.equipment === 'dumbbell' ? t("덤벨") : ex.equipment === 'cable' ? t("케이블") : '맨몸/소도구'}
                     </span>
                     {ex.id.startsWith('custom_') ? (
                       <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">

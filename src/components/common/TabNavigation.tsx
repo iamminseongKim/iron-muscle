@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React from 'react';
 import { Dumbbell, Calendar, BarChart2, Search } from 'lucide-react';
 import packageJson from '../../../package.json';
@@ -40,7 +41,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
               <span className={`text-[11px] font-bold tracking-tight ${
                 isActive ? 'text-[#1D1D1F] dark:text-white' : 'text-gray-400'
               }`}>
-                {tab.label}
+                {t(tab.label)}
               </span>
             </button>
           );

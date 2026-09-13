@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React from 'react';
 import { Flame, Sun, Moon, Play, Pause } from 'lucide-react';
 
@@ -63,15 +64,13 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             )}
             <span className={`text-[11px] font-bold ${isWorkoutTimerRunning ? 'text-gray-400' : 'text-[#FF9500]'}`}>
-              {isWorkoutTimerRunning ? '총운동' : '일시정지'}
+              {isWorkoutTimerRunning ? t("총운동") : t("일시정지")}
             </span>
             <span className={`font-mono font-extrabold text-xs tracking-tight ${isWorkoutTimerRunning ? 'text-[#1D1D1F] dark:text-white' : 'text-[#FF9500]'}`}>
               {formatDuration(totalWorkoutSeconds)}
             </span>
             {!isWorkoutTimerRunning && (
-              <span className="text-[10px] font-black px-1.5 py-0.2 bg-[#FF9500] text-white rounded-md animate-pulse">
-                재개
-              </span>
+              <span className="text-[10px] font-black px-1.5 py-0.2 bg-[#FF9500] text-white rounded-md animate-pulse">{t("재개")}</span>
             )}
           </button>
         )}
@@ -86,12 +85,12 @@ export const Header: React.FC<HeaderProps> = ({
             {isDark ? (
               <>
                 <Sun size={13} className="text-amber-400" />
-                <span className="text-[11px]">라이트</span>
+                <span className="text-[11px]">{t("라이트")}</span>
               </>
             ) : (
               <>
                 <Moon size={13} className="text-indigo-500" />
-                <span className="text-[11px]">다크</span>
+                <span className="text-[11px]">{t("다크")}</span>
               </>
             )}
           </button>
