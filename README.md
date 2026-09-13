@@ -185,3 +185,6 @@ cd android && ./gradlew assembleRelease
 
 이슈, 버그 리포트, 기능 제안은 [GitHub Issues](https://github.com/iamminseongKim/iron-muscle/issues)를 이용해 주세요.
 Pull Request도 언제든지 환영합니다! 🎉
+
+- 신규 기능, UI 텍스트, 운동 종목 추가 시 다국어 지원을 위해 [언어 팩 개발 가이드](docs/language-packs-guide.md)를 참고하여 각 언어 팩을 함께 업데이트해 주시기 바랍니다.
+
