@@ -1,3 +1,5 @@
+import { getLanguage, Language } from '../i18n';
+import { localizedAiExport } from './localizedAiExport';
 import { WorkoutSession, WorkoutExercise } from '../types/workout';
 import { resolveRecordedExercise } from './exerciseResolver';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from './calculations';
@@ -16,6 +18,7 @@ export type TargetBodyPart =
   | 'core';
 
 export interface AiExportOptions {
+  language?: Language;
   scope: AiExportScope;
   selectedDate: string; // YYYY-MM-DD
   customStartDate?: string; // YYYY-MM-DD
@@ -254,6 +257,8 @@ export function generateAiCoachingMarkdown(
   targetSessions: WorkoutSession[],
   options: AiExportOptions
 ): string {
+  const language = options.language || getLanguage();
+  if (language !== 'ko') return localizedAiExport(targetSessions, options, language);
   const { scope, selectedBodyPart = 'all' } = options;
 
   if (targetSessions.length === 0) {

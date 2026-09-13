@@ -1,3 +1,5 @@
+import { MeshoptDecoder } from 'meshoptimizer/meshopt_decoder.module.js';
+import { gunzipSync } from 'fflate';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -34,15 +36,25 @@ export function disposeAnatomy(group: THREE.Object3D) {
 }
 
 export async function loadAnatomyModel(): Promise<{ group: THREE.Group; parts: AnatomyPart[] }> {
-  const loader = new GLTFLoader();
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  const loadModel = async (name: string) => {
+    const url = `${import.meta.env.BASE_URL}anatomy/${name}.glb`;
+    if (!import.meta.env.PROD) return loader.loadAsync(url);
+    const response = await fetch(`${url}.gz`);
+    if (!response.ok) throw new Error(`Model load failed: ${response.status}`);
+    const payload = new Uint8Array(await response.arrayBuffer());
+    // Some web servers transparently decompress .gz responses; native assets do not.
+    const bytes = payload[0] === 0x1f && payload[1] === 0x8b ? gunzipSync(payload) : payload;
+    return loader.parseAsync(bytes.buffer as ArrayBuffer, '');
+  };
   // allSettled ensures a successful half-load is disposed if the other file fails.
   const results = await Promise.allSettled([
-    loader.loadAsync(`${import.meta.env.BASE_URL}anatomy/anatomy.glb`),
-    loader.loadAsync(`${import.meta.env.BASE_URL}anatomy/skeleton.glb`),
+    loadModel('anatomy'),
+    loadModel('skeleton'),
   ]);
   if (results.some(result => result.status === 'rejected')) {
     results.forEach(result => { if (result.status === 'fulfilled') disposeAnatomy(result.value.scene); });
-    throw new Error('Anatomy model load failed');
+    throw new Error(`Anatomy model load failed: ${results.filter(result => result.status === 'rejected').map(result => (result as PromiseRejectedResult).reason).join('; ')}`);
   }
   const roots = results.map(result => (result as PromiseFulfilledResult<Awaited<ReturnType<typeof loader.loadAsync>>>).value.scene);
   const box = new THREE.Box3().setFromObject(roots[0]);

@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useState, useMemo } from 'react';
 import { X, FileText, Sparkles, Wand2, Target, Check } from 'lucide-react';
 import { WorkoutExercise, TARGET_BODY_PARTS } from '../../types/workout';
@@ -217,7 +218,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                       </span>
                     )}
                     <BodyPartIcon part={part.id} />
-                    <span className="text-[11px] font-black tracking-tight">{part.label}</span>
+                    <span className="text-[11px] font-black tracking-tight">{t(part.label)}</span>
                   </button>
                 );
               })}
@@ -282,9 +283,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
             type="button"
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-200 dark:bg-[#2C2C2E] hover:bg-gray-300 dark:hover:bg-gray-700 transition"
-          >
-            취소
-          </button>
+          >{t("취소")}</button>
           <button
             type="button"
             onClick={handleSave}

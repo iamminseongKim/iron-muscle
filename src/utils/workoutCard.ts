@@ -1,3 +1,5 @@
+import exportMessages from '../i18n/exportMessages.json';
+import { t, getLanguage, displayExercise } from '../i18n';
 import { ANATOMY_REGIONS } from '../data/anatomyRegions';
 import { WorkoutSession, WeightUnit } from '../types/workout';
 import { resolveRecordedExercise } from './exerciseResolver';
@@ -24,11 +26,11 @@ export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, un
       if (groupKey && !groupLabels.has(groupKey)) {
         let number = groupLabels.size + 1, letter = '';
         while (number > 0) { number--; letter = String.fromCharCode(65 + number % 26) + letter; number = Math.floor(number / 26); }
-        const kind = exercise.groupType === 'superset' ? '슈퍼' : exercise.groupType === 'compound' ? '컴파운드' : '자이언트';
+        const kind = exportMessages[getLanguage()][exercise.groupType as 'superset' | 'compound' | 'giant'];
         groupLabels.set(groupKey, `${kind} ${letter}`);
       }
       const rowKey = JSON.stringify([resolved.id, groupKey]);
-      const row = rows.get(rowKey) || { name: resolved.name, sets: 0, reps: 0, maxWeight: 0, groupLabel: groupLabels.get(groupKey) };
+      const row = rows.get(rowKey) || { name: displayExercise(resolved), sets: 0, reps: 0, maxWeight: 0, groupLabel: groupLabels.get(groupKey) };
       for (const set of sets) {
         const kg = Math.max(0, set.weight) / (exercise.weightUnit === 'lbs' ? KG_TO_LBS : 1);
         row.sets++;
@@ -48,8 +50,8 @@ export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, un
 export const WORKOUT_CARD_QUOTES = ['오늘의 나를 기록하다.', '조금씩, 더 강하게.', '꾸준함이 만드는 변화.', '나만의 속도로, 한 걸음 더.', '오늘의 노력은 남는다.', '어제보다 한 세트 더.'];
 
 export function recommendWorkoutQuote(previous = ''): string {
-  const choices = WORKOUT_CARD_QUOTES.filter(quote => quote !== previous);
-  return choices[Math.floor(Math.random() * choices.length)];
+  const choices = WORKOUT_CARD_QUOTES.filter(quote => t(quote) !== previous);
+  return t(choices[Math.floor(Math.random() * choices.length)]);
 }
 
 export interface WorkoutCardStyle {
@@ -88,6 +90,8 @@ export async function loadWorkoutPhoto(file: File): Promise<HTMLImageElement> {
 
 export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay>, style: WorkoutCardStyle): string {
   const { light, photo } = style;
+  const language = getLanguage(), m = exportMessages[language];
+  const number = (value: number) => value.toLocaleString(language, { maximumFractionDigits: 1 });
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('이미지를 만들 수 없는 환경입니다.');
@@ -103,11 +107,13 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
     if (line) lines.push(line);
     return lines;
   };
-  const rows = summary.exercises.map(row => ({ ...row, lines: wrap(row.name) }));
-  const titleLines = wrap(style.title.trim() || '오늘의 운동', 64, 944);
+  const rows = summary.exercises.map(row => ({ ...row, lines: wrap(row.name),
+    details: wrap(`${row.groupLabel ? `[${row.groupLabel}] · ` : ''}${number(row.sets)} ${m.sets} · ${number(row.reps)} ${m.reps} · ${row.maxWeight > 0 ? `${m.best} ${number(row.maxWeight)} ${summary.unit}` : m.bodyweight}`, 27, 860)
+  }));
+  const titleLines = wrap(style.title.trim() || t('오늘의 운동'), 64, 944);
   const extraHeight = Math.max(0, titleLines.length - 1) * 76;
   canvas.width = 1080;
-  canvas.height = Math.max(1630 + extraHeight, 930 + extraHeight + rows.reduce((sum, row) => sum + 100 + row.lines.length * 44, 0));
+  canvas.height = Math.max(1630 + extraHeight, 930 + extraHeight + rows.reduce((sum, row) => sum + 66 + row.lines.length * 44 + row.details.length * 34, 0));
   const darkText = style.textColor === 'black' || (style.textColor === 'auto' && !photo && light);
   const bg = light ? '#F2F2F7' : '#000000';
   const fg = darkText ? '#1D1D1F' : '#FFFFFF';
@@ -125,23 +131,27 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
   const text = (value: string, x: number, y: number, size: number, color = fg, bold = false) => {
-    ctx.font = `${bold ? 'bold' : 'normal'} ${size}px ${font}`; ctx.fillStyle = color; ctx.fillText(value, x, y);
+    const maxWidth = y > canvas.height - 110 && x === 68 ? 640 : x === 68 || x === 398 || x === 728 ? (y === 410 + extraHeight ? 290 : canvas.width - x - 64) : canvas.width - x - 48;
+    ctx.font = `${bold ? 'bold' : 'normal'} ${size}px ${font}`;
+    const measured = ctx.measureText(value).width;
+    if (measured > maxWidth) ctx.font = `${bold ? 'bold' : 'normal'} ${size * maxWidth / measured}px ${font}`;
+    ctx.fillStyle = color; ctx.fillText(value, x, y);
   };
   ctx.fillStyle = accent; ctx.fillRect(64, 64, 10, 32);
-  text('IRON MUSCLE / WORKOUT LOG', 94, 89, 25, accent, true);
+  text(`IRON MUSCLE / ${t('운동 기록')}`, 94, 89, 25, accent, true);
   titleLines.forEach((line, index) => text(line, 64, 202 + index * 76, 64, fg, true));
   text(summary.date.replace(/-/g, '.'), 68, 261 + extraHeight, 30, muted);
-  const stats = [[String(summary.exerciseCount), '운동 종목'], [String(summary.sets), '완료 세트'], [String(Math.round(summary.seconds / 60)), '운동 시간 (분)']];
+  const stats = [[String(summary.exerciseCount), t('운동 종목')], [String(summary.sets), t('완료 세트')], [String(Math.round(summary.seconds / 60)), t('운동 시간 (분)')]];
   stats.forEach(([value, label], i) => {
     text(value, 68 + i * 330, 366 + extraHeight, 68, accent, true); text(label, 68 + i * 330, 410 + extraHeight, 26, muted); });
-  text(`총 ${summary.reps.toLocaleString()}회  /  ${summary.volume.toLocaleString()} ${summary.unit} 볼륨`, 68, 476 + extraHeight, 30, fg, true);
+  text(`${m.reps}: ${number(summary.reps)}  /  ${m.volume}: ${number(summary.volume)} ${summary.unit}`, 68, 476 + extraHeight, 30, fg, true);
   let y = 525 + extraHeight;
   rows.forEach((row, index) => {
     ctx.fillStyle = darkText ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.22)'; ctx.fillRect(64, y, 952, 1);
     text(String(index + 1).padStart(2, '0'), 68, y + 59, 27, accent, true);
     row.lines.forEach((line, n) => text(line, 140, y + 60 + n * 44, 36, fg, true));
-    text(`${row.groupLabel ? `[${row.groupLabel}] · ` : ''}${row.sets}세트 · ${row.reps}회 · ${row.maxWeight > 0 ? `최고 ${Number(row.maxWeight.toFixed(1))}${summary.unit}` : '맨몸'}`, 140, y + 60 + row.lines.length * 44, 27, muted);
-    y += 100 + row.lines.length * 44;
+    row.details.forEach((line, n) => text(line, 140, y + 60 + row.lines.length * 44 + n * 34, 27, muted));
+    y += 66 + row.lines.length * 44 + row.details.length * 34;
   });
   if (style.anatomy) {
     ctx.save();
@@ -157,12 +167,12 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
       if (region.mirror) { ctx.save(); ctx.translate(region.mirror, 0); ctx.scale(-1, 1); ctx.fill(new Path2D(region.d)); ctx.restore(); }
     }
     ctx.restore();
-    text('오늘 운동한 부위', 68, canvas.height - 246, 28, fg, true);
-    text('● 주동근', 68, canvas.height - 201, 24, '#FF2D55');
-    text('● 협응근', 68, canvas.height - 163, 24, '#FF9500');
-    if (!summary.primaryMuscles.length && !summary.secondaryMuscles.length) text('등록된 부위 정보 없음', 68, canvas.height - 122, 23, muted);
+    text(t('오늘 운동한 부위'), 68, canvas.height - 246, 28, fg, true);
+    text(`● ${t('주동근')}`, 68, canvas.height - 201, 24, '#FF2D55');
+    text(`● ${t('협응근')}`, 68, canvas.height - 163, 24, '#FF9500');
+    if (!summary.primaryMuscles.length && !summary.secondaryMuscles.length) text(m.noMuscles, 68, canvas.height - 122, 23, muted);
   }
-  text('완료 세트 기준 · 볼륨은 기록 중량 × 반복수', 68, canvas.height - 76, 23, muted);
-  text('IRON MUSCLE  /  나의 운동 기록', 68, canvas.height - 36, 22, accent, true);
+  text(m.volumeNote, 68, canvas.height - 76, 23, muted);
+  text(`IRON MUSCLE / ${t('나의 운동 기록')}`, 68, canvas.height - 36, 22, accent, true);
   return canvas.toDataURL('image/png');
 }

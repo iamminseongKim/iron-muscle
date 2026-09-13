@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useEffect, useState, useRef } from 'react';
 import { Play, Pause, RotateCcw, Plus, Minus, X, Check, Bell, Minimize2, GripHorizontal } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
@@ -342,7 +343,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             type="button"
             onClick={handleDismiss}
             className="p-2 rounded-xl text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 transition"
-            title="닫기"
+            title={t("닫기")}
           >
             <X size={18} />
           </button>

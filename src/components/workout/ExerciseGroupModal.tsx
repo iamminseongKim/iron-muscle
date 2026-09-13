@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useState } from 'react';
 import { Zap, Flame, X, Check, Link2, Unlink } from 'lucide-react';
 import { WorkoutExercise, ExerciseGroupType } from '../../types/workout';
@@ -171,7 +172,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                         }`}
                       >
                         <div className="text-xs font-bold truncate">
-                          {base?.name || '운동 종목'}
+                          {base?.name || t("운동 종목")}
                           {target.groupLabel && (
                             <span className="ml-1.5 text-[10px] text-gray-400">
                               ({target.groupLabel})
@@ -204,7 +205,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
               }`}
             >
               <Link2 size={16} />
-              선택한 종목과 {selectedGroupType === 'superset' ? '슈퍼세트' : '컴파운드세트'} 묶기
+              선택한 종목과 {selectedGroupType === 'superset' ? t("슈퍼세트") : t("컴파운드세트")} 묶기
             </button>
           </div>
         )}

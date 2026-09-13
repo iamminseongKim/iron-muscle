@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -152,7 +153,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       group = model.group; parts = model.parts; scene.add(group); paint(); if (!contextLost) setStatus('ready');
       container.dataset.model = 'bodyparts3d-z-anatomy';
       container.dataset.targetCount = String(parts.filter(part => part.target).length);
-    }).catch(() => { if (!disposed) setStatus('error'); });
+    }).catch(error => { console.warn('3D model load failed', error); if (!disposed) setStatus('error'); });
     return () => {
       disposed = true; cancelAnimationFrame(frame); observer.disconnect(); intersection.disconnect(); controls.removeEventListener('change', changed); controls.dispose();
       renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointerup', up);
@@ -170,7 +171,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
   return (
     <section aria-label="통합 3D 근육 해부도" className="rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-[#F3F5F8] dark:bg-[#151519]">
       <div className="px-3 pt-3 flex flex-wrap gap-3 text-xs text-gray-600 dark:text-gray-300">
-        <span><span className="text-[#FF2D55]">●</span> 주동근</span><span><span className="text-[#FF9500]">●</span> 협응근</span><span><span className="text-[#328bff]">●</span> 선택 근육</span>
+        <span><span className="text-[#FF2D55]">●</span>{t("주동근")}</span><span><span className="text-[#FF9500]">●</span>{t("협응근")}</span><span><span className="text-[#328bff]">●</span> 선택 근육</span>
       </div>
       <div className="relative" style={{ height }}>
         <div ref={containerRef} role="img" aria-label={view === 'both' ? '동일한 3D 인체의 전면과 후면' : '드래그로 회전하고 두 손가락으로 확대하는 인체'} className="absolute inset-0 touch-none" />

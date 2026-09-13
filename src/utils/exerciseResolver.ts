@@ -1,6 +1,8 @@
 import { Exercise, WorkoutSession, WorkoutExercise } from '../types/workout';
 import { EXERCISES_DATABASE } from '../data/exercises';
 
+const exerciseIndex = new Map(EXERCISES_DATABASE.map(exercise => [exercise.id, exercise]));
+
 // 레거시 또는 오타 ID에 대한 스마트 매핑 사전
 const LEGACY_ID_MAP: Record<string, string> = {
   'deadlift-sumo': 'sumo-deadlift',
@@ -36,13 +38,13 @@ export function resolveExercise(exerciseId?: string | null): Exercise {
   } catch {}
 
   // 1. 정확한 ID 일치 검사
-  const exact = EXERCISES_DATABASE.find((e) => e.id === exerciseId);
+  const exact = exerciseIndex.get(exerciseId);
   if (exact) return exact;
 
   // 2. 레거시 별칭 매핑 검사
   const mappedId = LEGACY_ID_MAP[exerciseId];
   if (mappedId) {
-    const mapped = EXERCISES_DATABASE.find((e) => e.id === mappedId);
+    const mapped = exerciseIndex.get(mappedId);
     if (mapped) return mapped;
   }
 

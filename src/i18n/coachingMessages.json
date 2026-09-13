@@ -1,0 +1,394 @@
+{
+  "en": {
+    "chest": [
+      "Assess upper, middle and lower chest balance across incline presses, flat presses, dips and flyes.",
+      "Evaluate press progression and estimated 1RM, respecting per-hand dumbbell loads and possible shoulder or triceps limitations.",
+      "Assess eccentric tempo, stretch and rest intervals without assuming technique from the log alone.",
+      "Propose a four-week chest plan with target loads, sets, reps and accessory exercises."
+    ],
+    "back": [
+      "Compare vertical pulls with horizontal rows for lat width and upper-back thickness.",
+      "Discuss biceps and grip limitations, strap use and whether the records support the intended back emphasis.",
+      "Assess cumulative lower-back and erector fatigue from deadlifts and rows.",
+      "Propose a four-week back plan with main pulling movements, target loads and accessories."
+    ],
+    "legs": [
+      "Compare quadriceps work with hamstring and glute work across squats, leg presses, extensions, hinges and curls.",
+      "Assess RPE and rest periods for heavy compound lifts and recovery.",
+      "Discuss controlled eccentric tempo and joint-friendly execution while identifying information missing from the log.",
+      "Propose a four-week leg strength and volume plan with target loads and sets."
+    ],
+    "shoulders": [
+      "Compare anterior, lateral and posterior deltoid volume from presses, raises and rear-delt work.",
+      "Discuss excessive loading, trap compensation and shoulder comfort without diagnosing from records.",
+      "Assess lateral and rear-delt isolation volume, repetitions and RPE.",
+      "Propose a four-week shoulder plan with exercise selection and target loads."
+    ],
+    "arms": [
+      "Assess target arm-muscle isolation volume, accounting for pressing and pulling work.",
+      "Evaluate controlled eccentric and concentric tempo, peak contraction and potential momentum.",
+      "Discuss elbow and wrist load management and grip choices without diagnosing pain.",
+      "Propose a four-week arm plan using suitable supersets or drop sets; do not promise a specific size increase."
+    ],
+    "core": [
+      "Compare trunk flexion, leg raises and rotational work for balanced abdominal training.",
+      "Discuss bracing and how the core work supports heavier lifts.",
+      "Evaluate progression through repetitions and added load in bodyweight and weighted exercises.",
+      "Propose a four-week core plan without promising visible abs from training alone."
+    ],
+    "day": [
+      "Assess session intensity using RPE trends and training-to-failure frequency; distinguish evidence from uncertainty.",
+      "Review rest intervals and tempo for compound and isolation exercises.",
+      "Review exercise order, pre-fatigue, main lifts and finishing isolation work.",
+      "Suggest recovery, nutrition priorities and adjustments for the next session."
+    ],
+    "week": [
+      "Compare weekly muscle-group frequency and set volume; identify underrepresented or overloaded areas.",
+      "Assess accumulated weekly fatigue and recovery using volume and RPE.",
+      "Review balance across vertical pulls, rows, presses, hinges and squats.",
+      "Separate exercises to progress next week from those whose volume should stay stable."
+    ],
+    "long": [
+      "Assess long-term progression in estimated 1RM, working weights and repetitions.",
+      "Identify plateaus and discuss possible contributions from fatigue, volume and rest.",
+      "Evaluate whether a deload is warranted from the available volume and RPE trends.",
+      "Propose the next training block with hypertrophy or strength emphasis and concrete load targets."
+    ]
+  },
+  "ja": {
+    "chest": [
+      "インクライン・フラットプレス、ディップス、フライの配分から胸上部・中部・下部のバランスを評価してください。",
+      "片手のダンベル重量を考慮し、プレス重量と推定1RMの進歩、肩・三頭筋の制限要因を検討してください。",
+      "記録だけでフォームを断定せず、伸張局面のテンポと休憩時間を評価してください。",
+      "目標重量、セット数、回数、補助種目を含む4週間の胸トレーニングを提案してください。"
+    ],
+    "back": [
+      "垂直方向のプルと水平ロウの配分から、広背筋の広がりと背中の厚みを評価してください。",
+      "二頭筋や握力の制限、ストラップの使用、背中への狙いを記録から検討してください。",
+      "デッドリフトとロウによる腰部・脊柱起立筋の疲労蓄積を評価してください。",
+      "主なプル種目、目標重量、補助種目を含む4週間の背中の計画を提案してください。"
+    ],
+    "legs": [
+      "スクワット、レッグプレス、伸展、ヒンジ、カールから大腿四頭筋とハムストリングス・臀筋の配分を比較してください。",
+      "高重量の多関節種目におけるRPE、休憩、回復を評価してください。",
+      "記録に不足する情報を明示し、制御された下降テンポと関節に配慮した動作を検討してください。",
+      "目標重量とセット数を含む4週間の脚の筋力・ボリューム計画を提案してください。"
+    ],
+    "shoulders": [
+      "プレス、レイズ、リアデルト種目から三角筋前部・中部・後部の配分を比較してください。",
+      "記録から診断せず、過大な負荷、僧帽筋の代償、肩の快適さを検討してください。",
+      "側部・後部の単関節種目のボリューム、回数、RPEを評価してください。",
+      "種目と目標重量を含む4週間の肩の計画を提案してください。"
+    ],
+    "arms": [
+      "プレスとプルの負荷も考慮し、対象となる腕の筋肉の単関節ボリュームを評価してください。",
+      "伸張・収縮テンポ、最大収縮、反動の可能性を検討してください。",
+      "痛みを診断せず、肘・手首への負荷管理とグリップを検討してください。",
+      "適切なスーパーセットやドロップセットを含む4週間の腕の計画を提案し、特定のサイズ増加を保証しないでください。"
+    ],
+    "core": [
+      "体幹屈曲、レッグレイズ、回旋運動のバランスを比較してください。",
+      "ブレーシングと、高重量種目への体幹トレーニングの寄与を検討してください。",
+      "自重・加重種目の回数と負荷の進歩を評価してください。",
+      "運動だけで腹筋の見た目を保証せず、4週間の体幹計画を提案してください。"
+    ],
+    "day": [
+      "RPE推移と限界まで行った頻度から強度を評価し、確実な情報と不確実性を分けてください。",
+      "多関節・単関節種目の休憩とテンポを評価してください。",
+      "事前疲労、メイン種目、仕上げ種目の順序を評価してください。",
+      "回復、栄養の優先事項、次回への調整を提案してください。"
+    ],
+    "week": [
+      "週間の部位別頻度とセット数を比較し、不足・過剰な部位を示してください。",
+      "ボリュームとRPEから週間の疲労と回復を評価してください。",
+      "垂直プル、ロウ、プレス、ヒンジ、スクワットの配分を検討してください。",
+      "来週負荷を増やす種目と維持する種目を分けて提案してください。"
+    ],
+    "long": [
+      "推定1RM、作業重量、回数の長期的進歩を評価してください。",
+      "停滞を特定し、疲労、ボリューム、休憩の影響を検討してください。",
+      "ボリュームとRPE推移からディロードの必要性を評価してください。",
+      "筋肥大または筋力を重視した次のブロックと具体的な目標重量を提案してください。"
+    ]
+  },
+  "zh-CN": {
+    "chest": [
+      "比较上斜推、平板推、双杠臂屈伸和飞鸟的分配，评估胸部上中下区域的平衡。",
+      "考虑哑铃按单手计重，评估推举重量及估算1RM的进步，讨论肩部或肱三头肌的限制。",
+      "不要仅凭记录判断技术，评估离心节奏、伸展阶段和休息时间。",
+      "提出四周胸部计划，列出目标重量、组数、次数和辅助动作。"
+    ],
+    "back": [
+      "比较垂直下拉与水平划船，评估背阔肌宽度与上背厚度的平衡。",
+      "讨论肱二头肌和握力限制、拉力带使用及背部刺激是否得到记录支持。",
+      "评估硬拉与划船导致的下背和竖脊肌疲劳累积。",
+      "提出四周背部计划，列出主要拉类动作、目标重量及辅助动作。"
+    ],
+    "legs": [
+      "通过深蹲、腿推、腿伸展、髋铰链和腿弯举，比较股四头肌与腘绳肌、臀肌的训练分配。",
+      "评估大重量复合动作的RPE、休息及恢复。",
+      "指出记录缺失的信息，讨论可控的离心节奏和关节友好的动作执行。",
+      "提出四周腿部力量和训练量计划，列出目标重量及组数。"
+    ],
+    "shoulders": [
+      "比较推举、侧平举和后束动作中的三角肌前中后束训练量。",
+      "不要根据记录作出诊断，讨论负荷过大、斜方肌代偿及肩部舒适度。",
+      "评估中后束孤立动作的训练量、次数及RPE。",
+      "提出四周肩部计划，列出动作选择及目标重量。"
+    ],
+    "arms": [
+      "结合推类和拉类动作，评估目标手臂肌群的孤立训练量。",
+      "评估离心与向心控制、顶峰收缩及借力的可能性。",
+      "不要诊断疼痛，讨论肘腕负荷管理及握法。",
+      "提出四周手臂计划，合理使用超级组或递减组，不承诺具体围度增长。"
+    ],
+    "core": [
+      "比较躯干屈曲、举腿及旋转动作，评估腹部训练平衡。",
+      "讨论核心收紧及核心训练对大重量动作的支持。",
+      "评估自重和负重动作中次数与负荷的进步。",
+      "提出四周核心计划，不承诺仅靠训练获得清晰腹肌。"
+    ],
+    "day": [
+      "根据RPE趋势和力竭频率评估强度，区分证据与不确定性。",
+      "评估复合及孤立动作的休息和节奏。",
+      "评估预疲劳、主要动作和收尾孤立动作的顺序。",
+      "提出恢复、营养重点及下次训练的调整建议。"
+    ],
+    "week": [
+      "比较每周各肌群的频率和组数，指出训练不足或过量的部位。",
+      "根据训练量和RPE评估每周累积疲劳及恢复。",
+      "评估垂直拉、划船、推、髋铰链和深蹲的平衡。",
+      "区分下周应增加负荷和应维持训练量的动作。"
+    ],
+    "long": [
+      "评估估算1RM、工作重量和次数的长期进步。",
+      "识别平台期，讨论疲劳、训练量和休息的可能影响。",
+      "根据训练量及RPE趋势评估是否需要减量。",
+      "提出下一个增肌或力量训练周期及具体目标重量。"
+    ]
+  },
+  "zh-TW": {
+    "chest": [
+      "比較上斜推、平板推、雙槓撐體和飛鳥的分配，評估胸部上中下區域的平衡。",
+      "考慮啞鈴按單手計重，評估推舉重量及估算1RM的進步，討論肩部或肱三頭肌的限制。",
+      "不要僅憑記錄判斷技術，評估離心節奏、伸展階段和休息時間。",
+      "提出四週胸部計畫，列出目標重量、組數、次數和輔助動作。"
+    ],
+    "back": [
+      "比較垂直下拉與水平划船，評估背闊肌寬度與上背厚度的平衡。",
+      "討論肱二頭肌和握力限制、拉力帶使用及背部刺激是否得到記錄支持。",
+      "評估硬舉與划船導致的下背和豎脊肌疲勞累積。",
+      "提出四週背部計畫，列出主要拉類動作、目標重量及輔助動作。"
+    ],
+    "legs": [
+      "透過深蹲、腿推、腿伸展、髖鉸鏈和腿彎舉，比較股四頭肌與腿後肌、臀肌的訓練分配。",
+      "評估大重量複合動作的RPE、休息及恢復。",
+      "指出記錄缺少的資訊，討論可控的離心節奏和關節友善的動作執行。",
+      "提出四週腿部力量和訓練量計畫，列出目標重量及組數。"
+    ],
+    "shoulders": [
+      "比較推舉、側平舉和後束動作中的三角肌前中後束訓練量。",
+      "不要根據記錄作出診斷，討論負荷過大、斜方肌代償及肩部舒適度。",
+      "評估中後束孤立動作的訓練量、次數及RPE。",
+      "提出四週肩部計畫，列出動作選擇及目標重量。"
+    ],
+    "arms": [
+      "結合推類和拉類動作，評估目標手臂肌群的孤立訓練量。",
+      "評估離心與向心控制、頂峰收縮及借力的可能性。",
+      "不要診斷疼痛，討論肘腕負荷管理及握法。",
+      "提出四週手臂計畫，合理使用超級組或遞減組，不承諾具體圍度成長。"
+    ],
+    "core": [
+      "比較軀幹屈曲、舉腿及旋轉動作，評估腹部訓練平衡。",
+      "討論核心收緊及核心訓練對大重量動作的支持。",
+      "評估自重和負重動作中次數與負荷的進步。",
+      "提出四週核心計畫，不承諾僅靠訓練獲得清晰腹肌。"
+    ],
+    "day": [
+      "根據RPE趨勢和力竭頻率評估強度，區分證據與不確定性。",
+      "評估複合及孤立動作的休息和節奏。",
+      "評估預疲勞、主要動作和收尾孤立動作的順序。",
+      "提出恢復、營養重點及下次訓練的調整建議。"
+    ],
+    "week": [
+      "比較每週各肌群的頻率和組數，指出訓練不足或過量的部位。",
+      "根據訓練量和RPE評估每週累積疲勞及恢復。",
+      "評估垂直拉、划船、推、髖鉸鏈和深蹲的平衡。",
+      "區分下週應增加負荷和應維持訓練量的動作。"
+    ],
+    "long": [
+      "評估估算1RM、工作重量和次數的長期進步。",
+      "識別停滯期，討論疲勞、訓練量和休息的可能影響。",
+      "根據訓練量及RPE趨勢評估是否需要減量。",
+      "提出下一個增肌或力量訓練週期及具體目標重量。"
+    ]
+  },
+  "es": {
+    "chest": [
+      "Compara el trabajo de pecho superior, medio e inferior en press inclinado, plano, fondos y aperturas.",
+      "Evalúa la progresión del press y el 1RM estimado, respetando el peso por mano y posibles limitaciones de hombros o tríceps.",
+      "Evalúa tempo excéntrico, estiramiento y descansos sin asumir la técnica solo por el registro.",
+      "Propón un plan de pecho de cuatro semanas con cargas, series, repeticiones y accesorios."
+    ],
+    "back": [
+      "Compara tirones verticales y remos horizontales para equilibrar anchura dorsal y grosor de la espalda.",
+      "Comenta limitaciones de bíceps y agarre, uso de correas y énfasis dorsal respaldado por los datos.",
+      "Evalúa la fatiga lumbar y de erectores acumulada por peso muerto y remos.",
+      "Propón cuatro semanas de espalda con tirones principales, cargas y accesorios."
+    ],
+    "legs": [
+      "Compara cuádriceps con isquios y glúteos en sentadillas, prensa, extensiones, bisagras y curls.",
+      "Evalúa RPE, descansos y recuperación en ejercicios compuestos pesados.",
+      "Comenta el control excéntrico y la ejecución tolerable para las articulaciones, indicando la información que falta.",
+      "Propón cuatro semanas de fuerza y volumen de piernas con cargas y series."
+    ],
+    "shoulders": [
+      "Compara el volumen de deltoides anterior, lateral y posterior en presses y elevaciones.",
+      "Comenta cargas excesivas, compensación del trapecio y comodidad del hombro sin diagnosticar.",
+      "Evalúa volumen, repeticiones y RPE del trabajo aislado lateral y posterior.",
+      "Propón cuatro semanas de hombros con ejercicios y cargas objetivo."
+    ],
+    "arms": [
+      "Evalúa el volumen aislado del músculo del brazo seleccionado, considerando presses y tirones.",
+      "Evalúa tempo excéntrico y concéntrico, contracción máxima y posible impulso.",
+      "Comenta carga de codos y muñecas y elección de agarres sin diagnosticar dolor.",
+      "Propón cuatro semanas de brazos con superseries o series descendentes apropiadas, sin prometer un aumento concreto de tamaño."
+    ],
+    "core": [
+      "Compara flexión de tronco, elevaciones de piernas y rotaciones para equilibrar el abdomen.",
+      "Comenta la estabilización abdominal y su apoyo a levantamientos pesados.",
+      "Evalúa progresión de repeticiones y carga en ejercicios con peso corporal y añadido.",
+      "Propón cuatro semanas de zona media sin prometer abdominales visibles solo con entrenamiento."
+    ],
+    "day": [
+      "Evalúa intensidad mediante RPE y frecuencia de fallo, separando evidencia e incertidumbre.",
+      "Revisa descansos y tempo de ejercicios compuestos y aislados.",
+      "Revisa orden, prefatiga, levantamientos principales y aislamiento final.",
+      "Sugiere recuperación, prioridades nutricionales y ajustes para la siguiente sesión."
+    ],
+    "week": [
+      "Compara frecuencia y series semanales por músculo e identifica excesos o carencias.",
+      "Evalúa fatiga acumulada y recuperación a partir de volumen y RPE.",
+      "Revisa el equilibrio entre tirones verticales, remos, presses, bisagras y sentadillas.",
+      "Distingue qué ejercicios deben progresar y cuáles mantener su volumen la próxima semana."
+    ],
+    "long": [
+      "Evalúa la progresión a largo plazo del 1RM estimado, cargas y repeticiones.",
+      "Identifica estancamientos y posibles causas en fatiga, volumen y descanso.",
+      "Evalúa la necesidad de descarga según las tendencias de volumen y RPE.",
+      "Propón el próximo bloque de hipertrofia o fuerza con cargas concretas."
+    ]
+  },
+  "fr": {
+    "chest": [
+      "Évaluez l’équilibre du haut, du milieu et du bas des pectoraux entre développés inclinés, couchés, dips et écartés.",
+      "Évaluez la progression et le 1RM estimé en tenant compte de la charge par main et des limites possibles des épaules ou triceps.",
+      "Évaluez tempo excentrique, étirement et repos sans déduire la technique du seul carnet.",
+      "Proposez quatre semaines de pectoraux avec charges, séries, répétitions et exercices complémentaires."
+    ],
+    "back": [
+      "Comparez tirages verticaux et horizontaux pour équilibrer largeur et épaisseur du dos.",
+      "Discutez des limites des biceps et de la prise, des sangles et du ciblage dorsal étayé par les données.",
+      "Évaluez la fatigue lombaire et des érecteurs liée aux soulevés de terre et aux tirages.",
+      "Proposez quatre semaines de dos avec tirages principaux, charges et exercices complémentaires."
+    ],
+    "legs": [
+      "Comparez quadriceps, ischio-jambiers et fessiers entre squats, presses, extensions, charnières de hanche et flexions.",
+      "Évaluez RPE, repos et récupération lors des mouvements polyarticulaires lourds.",
+      "Discutez du contrôle excentrique et du confort articulaire en précisant les informations manquantes.",
+      "Proposez quatre semaines de force et de volume des jambes avec charges et séries."
+    ],
+    "shoulders": [
+      "Comparez le volume des deltoïdes antérieurs, latéraux et postérieurs entre développés et élévations.",
+      "Discutez des charges excessives, de la compensation des trapèzes et du confort de l’épaule sans diagnostic.",
+      "Évaluez volume, répétitions et RPE de l’isolation latérale et postérieure.",
+      "Proposez quatre semaines d’épaules avec exercices et charges cibles."
+    ],
+    "arms": [
+      "Évaluez le volume d’isolation du muscle du bras ciblé en tenant compte des développés et tirages.",
+      "Évaluez tempos excentrique et concentrique, contraction maximale et élan éventuel.",
+      "Discutez des contraintes des coudes et poignets et des prises sans diagnostiquer de douleur.",
+      "Proposez quatre semaines de bras avec supersets ou séries dégressives adaptés, sans promettre de gain de taille précis."
+    ],
+    "core": [
+      "Comparez flexions du tronc, relevés de jambes et rotations pour équilibrer le travail abdominal.",
+      "Discutez du gainage et de son soutien aux charges lourdes.",
+      "Évaluez la progression en répétitions et en charge avec le poids du corps ou une charge ajoutée.",
+      "Proposez quatre semaines de tronc sans promettre des abdominaux visibles par le seul entraînement."
+    ],
+    "day": [
+      "Évaluez l’intensité avec les tendances du RPE et la fréquence de l’échec, en distinguant faits et incertitudes.",
+      "Examinez repos et tempo des exercices polyarticulaires et d’isolation.",
+      "Examinez l’ordre, la préfatigue, les mouvements principaux et l’isolation finale.",
+      "Suggérez récupération, priorités nutritionnelles et ajustements pour la prochaine séance."
+    ],
+    "week": [
+      "Comparez fréquence et séries hebdomadaires par muscle et identifiez excès ou manques.",
+      "Évaluez fatigue accumulée et récupération à partir du volume et du RPE.",
+      "Examinez l’équilibre entre tirages verticaux, horizontaux, développés, charnières et squats.",
+      "Distinguez les exercices à faire progresser de ceux dont le volume doit rester stable la semaine prochaine."
+    ],
+    "long": [
+      "Évaluez l’évolution à long terme du 1RM estimé, des charges et des répétitions.",
+      "Identifiez les plateaux et les rôles possibles de la fatigue, du volume et du repos.",
+      "Évaluez le besoin d’une semaine allégée selon les tendances de volume et de RPE.",
+      "Proposez le prochain bloc d’hypertrophie ou de force avec des charges cibles précises."
+    ]
+  },
+  "de": {
+    "chest": [
+      "Bewerte das Verhältnis von oberer, mittlerer und unterer Brust bei Schrägbankdrücken, Flachbankdrücken, Dips und Flys.",
+      "Bewerte Fortschritt und geschätztes 1RM beim Drücken unter Beachtung des Kurzhantelgewichts pro Hand und möglicher Schulter- oder Trizepsgrenzen.",
+      "Bewerte exzentrisches Tempo, Dehnung und Pausen, ohne die Technik allein aus dem Protokoll abzuleiten.",
+      "Schlage vier Wochen Brusttraining mit Zielgewichten, Sätzen, Wiederholungen und Ergänzungsübungen vor."
+    ],
+    "back": [
+      "Vergleiche vertikales Ziehen und horizontales Rudern für Rückenbreite und -dicke.",
+      "Besprich Bizeps- und Griffkraftgrenzen, Zughilfen und den durch die Daten belegten Rückenfokus.",
+      "Bewerte angesammelte Ermüdung von unterem Rücken und Rückenstreckern durch Kreuzheben und Rudern.",
+      "Schlage vier Wochen Rückentraining mit Hauptübungen, Zielgewichten und Ergänzungen vor."
+    ],
+    "legs": [
+      "Vergleiche Quadrizeps mit Beinbeugern und Gesäß bei Kniebeugen, Beinpresse, Strecken, Hüftbeugen und Curls.",
+      "Bewerte RPE, Pausen und Erholung bei schweren Mehrgelenksübungen.",
+      "Besprich kontrolliertes Absenken und gelenkverträgliche Ausführung und benenne fehlende Informationen.",
+      "Schlage vier Wochen Beinkraft und Trainingsvolumen mit Zielgewichten und Sätzen vor."
+    ],
+    "shoulders": [
+      "Vergleiche vordere, seitliche und hintere Schulteranteile bei Drück- und Hebeübungen.",
+      "Besprich überhöhte Last, Kompensation durch den Trapezmuskel und Schulterverträglichkeit ohne Diagnose.",
+      "Bewerte Volumen, Wiederholungen und RPE der seitlichen und hinteren Isolation.",
+      "Schlage vier Wochen Schultertraining mit Übungen und Zielgewichten vor."
+    ],
+    "arms": [
+      "Bewerte das Isolationsvolumen des gewählten Armmuskels unter Berücksichtigung von Drück- und Zugübungen.",
+      "Bewerte exzentrisches und konzentrisches Tempo, Spitzenkontraktion und möglichen Schwung.",
+      "Besprich Ellbogen- und Handgelenkbelastung sowie Griffvarianten ohne Schmerzdiagnose.",
+      "Schlage vier Wochen Armtraining mit passenden Super- oder Reduktionssätzen vor, ohne einen bestimmten Umfangszuwachs zu versprechen."
+    ],
+    "core": [
+      "Vergleiche Rumpfbeugung, Beinheben und Rotation für ausgewogenes Bauchtraining.",
+      "Besprich Rumpfspannung und die Unterstützung schwerer Grundübungen.",
+      "Bewerte Fortschritt über Wiederholungen und Zusatzgewicht bei Eigengewichts- und belasteten Übungen.",
+      "Schlage vier Wochen Rumpftraining vor, ohne sichtbare Bauchmuskeln allein durch Training zu versprechen."
+    ],
+    "day": [
+      "Bewerte die Intensität anhand von RPE-Verlauf und Muskelversagen und trenne Belege von Unsicherheit.",
+      "Prüfe Pausen und Tempo bei Mehrgelenks- und Isolationsübungen.",
+      "Prüfe Reihenfolge, Vorermüdung, Hauptübungen und abschließende Isolation.",
+      "Empfiehl Erholung, Ernährungsschwerpunkte und Anpassungen für die nächste Einheit."
+    ],
+    "week": [
+      "Vergleiche wöchentliche Häufigkeit und Satzvolumen je Muskel und benenne unter- oder überbetonte Bereiche.",
+      "Bewerte angesammelte Ermüdung und Erholung anhand von Volumen und RPE.",
+      "Prüfe das Verhältnis von vertikalem Ziehen, Rudern, Drücken, Hüftbeugen und Kniebeugen.",
+      "Unterscheide Übungen für eine Steigerung von solchen mit gleichbleibendem Volumen in der nächsten Woche."
+    ],
+    "long": [
+      "Bewerte langfristige Fortschritte bei geschätztem 1RM, Arbeitsgewichten und Wiederholungen.",
+      "Erkenne Plateaus und bespreche mögliche Einflüsse von Ermüdung, Volumen und Pausen.",
+      "Bewerte den Bedarf einer Entlastungsphase anhand von Volumen- und RPE-Verläufen.",
+      "Schlage den nächsten Muskelaufbau- oder Kraftblock mit konkreten Zielgewichten vor."
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useState } from 'react';
 import { WorkoutExercise, WeightUnit } from '../../types/workout';
 import { applyQuickSets, buildQuickSets, QuickSetPlan } from '../../utils/quickSets';
@@ -35,7 +36,7 @@ export function QuickSetEditor({ item, unit, onApply, onClose }: {
   const pending = item.sets.filter(s => !s.completed).length;
   return (
     <section aria-label="세트 퀵 설정" className="m-2 p-3 rounded-xl bg-[#F2F2F7] dark:bg-[#151516] space-y-3">
-      <div className="flex justify-between items-center"><h4 className="font-bold text-sm dark:text-white">세트 퀵 설정</h4><button type="button" onClick={onClose} className="text-xs p-2 text-gray-500">닫기</button></div>
+      <div className="flex justify-between items-center"><h4 className="font-bold text-sm dark:text-white">세트 퀵 설정</h4><button type="button" onClick={onClose} className="text-xs p-2 text-gray-500">{t("닫기")}</button></div>
       <div className="grid grid-cols-3 gap-1">
         {([['same', '동일 반복'], ['top', '탑 + 백오프'], ['pyramid', '피라미드']] as const).map(([mode, label]) => <button type="button" key={mode} aria-pressed={plan.mode === mode} onClick={() => change({ mode })} className={`rounded-lg py-2 text-xs font-bold ${plan.mode === mode ? 'bg-[#0F766E] text-white' : 'bg-white dark:bg-[#2C2C2E] text-gray-500'}`}>{label}</button>)}
       </div>

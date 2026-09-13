@@ -1,0 +1,1472 @@
+{
+  "운동 기록": [
+    "운동 기록",
+    "Workout",
+    "ワークアウト",
+    "训练",
+    "訓練",
+    "Entrenamiento",
+    "Entraînement",
+    "Training"
+  ],
+  "운동 탐색": [
+    "운동 탐색",
+    "Exercises",
+    "種目を探す",
+    "动作库",
+    "動作庫",
+    "Ejercicios",
+    "Exercices",
+    "Übungen"
+  ],
+  "기록 조회": [
+    "기록 조회",
+    "History",
+    "履歴",
+    "历史记录",
+    "歷史記錄",
+    "Historial",
+    "Historique",
+    "Verlauf"
+  ],
+  "통계 & 성장": [
+    "통계 & 성장",
+    "Progress",
+    "成長と統計",
+    "统计与进步",
+    "統計與進步",
+    "Progreso",
+    "Progression",
+    "Fortschritt"
+  ],
+  "다크": [
+    "다크",
+    "Dark",
+    "ダーク",
+    "深色",
+    "深色",
+    "Oscuro",
+    "Sombre",
+    "Dunkel"
+  ],
+  "라이트": [
+    "라이트",
+    "Light",
+    "ライト",
+    "浅色",
+    "淺色",
+    "Claro",
+    "Clair",
+    "Hell"
+  ],
+  "오늘의 운동 시작하기": [
+    "오늘의 운동 시작하기",
+    "Start today's workout",
+    "今日のトレーニング",
+    "开始今日训练",
+    "開始今日訓練",
+    "Entrenar hoy",
+    "Entraînement du jour",
+    "Heutiges Training"
+  ],
+  "오늘의 목표 부위 (다중 선택)": [
+    "오늘의 목표 부위 (다중 선택)",
+    "Target muscles (select multiple)",
+    "対象部位（複数選択）",
+    "目标部位（多选）",
+    "目標部位（多選）",
+    "Músculos objetivo (selección múltiple)",
+    "Muscles ciblés (choix multiples)",
+    "Zielmuskeln (Mehrfachauswahl)"
+  ],
+  "가슴": [
+    "가슴",
+    "Chest",
+    "胸",
+    "胸部",
+    "胸部",
+    "Pecho",
+    "Pectoraux",
+    "Brust"
+  ],
+  "등": [
+    "등",
+    "Back",
+    "背中",
+    "背部",
+    "背部",
+    "Espalda",
+    "Dos",
+    "Rücken"
+  ],
+  "하체": [
+    "하체",
+    "Legs",
+    "脚",
+    "腿部",
+    "腿部",
+    "Piernas",
+    "Jambes",
+    "Beine"
+  ],
+  "어깨": [
+    "어깨",
+    "Shoulders",
+    "肩",
+    "肩部",
+    "肩部",
+    "Hombros",
+    "Épaules",
+    "Schultern"
+  ],
+  "이두": [
+    "이두",
+    "Biceps",
+    "上腕二頭筋",
+    "肱二头肌",
+    "肱二頭肌",
+    "Bíceps",
+    "Biceps",
+    "Bizeps"
+  ],
+  "삼두": [
+    "삼두",
+    "Triceps",
+    "上腕三頭筋",
+    "肱三头肌",
+    "肱三頭肌",
+    "Tríceps",
+    "Triceps",
+    "Trizeps"
+  ],
+  "복근": [
+    "복근",
+    "Abs",
+    "腹筋",
+    "腹肌",
+    "腹肌",
+    "Abdominales",
+    "Abdominaux",
+    "Bauch"
+  ],
+  "전신": [
+    "전신",
+    "Full body",
+    "全身",
+    "全身",
+    "全身",
+    "Cuerpo completo",
+    "Corps entier",
+    "Ganzkörper"
+  ],
+  "루틴 이름 (자동 생성 또는 직접 입력)": [
+    "루틴 이름 (자동 생성 또는 직접 입력)",
+    "Routine name (automatic or custom)",
+    "ルーティン名（自動・手入力）",
+    "训练名称（自动或自定义）",
+    "訓練名稱（自動或自訂）",
+    "Nombre de rutina (automático o personalizado)",
+    "Nom de routine (automatique ou personnalisé)",
+    "Routinenname (automatisch oder selbst gewählt)"
+  ],
+  "오늘의 컨디션": [
+    "오늘의 컨디션",
+    "How do you feel?",
+    "今日の調子",
+    "今日状态",
+    "今日狀態",
+    "¿Cómo te sientes?",
+    "Comment vous sentez-vous ?",
+    "Wie fühlst du dich?"
+  ],
+  "새 운동 시작하기": [
+    "새 운동 시작하기",
+    "Start workout",
+    "トレーニング開始",
+    "开始训练",
+    "開始訓練",
+    "Iniciar entrenamiento",
+    "Commencer",
+    "Training starten"
+  ],
+  "디로딩 주간 (저강도 회복 훈련)": [
+    "디로딩 주간 (저강도 회복 훈련)",
+    "Deload week (recovery training)",
+    "ディロード週（回復トレーニング）",
+    "减量周（恢复训练）",
+    "減量週（恢復訓練）",
+    "Semana de descarga",
+    "Semaine de récupération",
+    "Entlastungswoche"
+  ],
+  "피로 누적 방지 및 신경계 회복을 위한 감량 세션": [
+    "피로 누적 방지 및 신경계 회복을 위한 감량 세션",
+    "Reduced load for recovery",
+    "疲労回復のための軽いセッション",
+    "减轻负荷以促进恢复",
+    "減輕負荷以促進恢復",
+    "Sesión ligera para recuperarte",
+    "Séance allégée pour récupérer",
+    "Leichte Einheit zur Erholung"
+  ],
+  "닫기": [
+    "닫기",
+    "Close",
+    "閉じる",
+    "关闭",
+    "關閉",
+    "Cerrar",
+    "Fermer",
+    "Schließen"
+  ],
+  "취소": [
+    "취소",
+    "Cancel",
+    "キャンセル",
+    "取消",
+    "取消",
+    "Cancelar",
+    "Annuler",
+    "Abbrechen"
+  ],
+  "저장": [
+    "저장",
+    "Save",
+    "保存",
+    "保存",
+    "儲存",
+    "Guardar",
+    "Enregistrer",
+    "Speichern"
+  ],
+  "삭제": [
+    "삭제",
+    "Delete",
+    "削除",
+    "删除",
+    "刪除",
+    "Eliminar",
+    "Supprimer",
+    "Löschen"
+  ],
+  "수정": [
+    "수정",
+    "Edit",
+    "編集",
+    "编辑",
+    "編輯",
+    "Editar",
+    "Modifier",
+    "Bearbeiten"
+  ],
+  "완료": [
+    "완료",
+    "Done",
+    "完了",
+    "完成",
+    "完成",
+    "Listo",
+    "Terminé",
+    "Fertig"
+  ],
+  "검색": [
+    "검색",
+    "Search",
+    "検索",
+    "搜索",
+    "搜尋",
+    "Buscar",
+    "Rechercher",
+    "Suchen"
+  ],
+  "운동 추가": [
+    "운동 추가",
+    "Add exercise",
+    "種目追加",
+    "添加动作",
+    "新增動作",
+    "Añadir ejercicio",
+    "Ajouter un exercice",
+    "Übung hinzufügen"
+  ],
+  "세트 추가": [
+    "세트 추가",
+    "Add set",
+    "セット追加",
+    "添加组",
+    "新增組",
+    "Añadir serie",
+    "Ajouter une série",
+    "Satz hinzufügen"
+  ],
+  "운동 완료": [
+    "운동 완료",
+    "Finish workout",
+    "トレーニング終了",
+    "完成训练",
+    "完成訓練",
+    "Finalizar entrenamiento",
+    "Terminer la séance",
+    "Training beenden"
+  ],
+  "운동 종료": [
+    "운동 종료",
+    "End workout",
+    "トレーニング終了",
+    "结束训练",
+    "結束訓練",
+    "Terminar entrenamiento",
+    "Fin de séance",
+    "Training beenden"
+  ],
+  "운동 기록 조회": [
+    "운동 기록 조회",
+    "Workout history",
+    "トレーニング履歴",
+    "训练记录",
+    "訓練記錄",
+    "Historial de entrenamiento",
+    "Historique des séances",
+    "Trainingsverlauf"
+  ],
+  "일간 (날짜별)": [
+    "일간 (날짜별)",
+    "Daily",
+    "日別",
+    "按日",
+    "每日",
+    "Diario",
+    "Par jour",
+    "Täglich"
+  ],
+  "월간 (월별)": [
+    "월간 (월별)",
+    "Monthly",
+    "月別",
+    "按月",
+    "每月",
+    "Mensual",
+    "Par mois",
+    "Monatlich"
+  ],
+  "연간 (년별)": [
+    "연간 (년별)",
+    "Yearly",
+    "年別",
+    "按年",
+    "每年",
+    "Anual",
+    "Par an",
+    "Jährlich"
+  ],
+  "AI 분석 추출": [
+    "AI 분석 추출",
+    "Export for AI",
+    "AI分析用出力",
+    "导出AI分析",
+    "匯出AI分析",
+    "Exportar para IA",
+    "Exporter pour IA",
+    "KI-Export"
+  ],
+  "운동 인증 카드 만들기": [
+    "운동 인증 카드 만들기",
+    "Create workout card",
+    "ワークアウトカード作成",
+    "生成训练卡片",
+    "建立訓練卡片",
+    "Crear tarjeta",
+    "Créer une carte",
+    "Trainingskarte erstellen"
+  ],
+  "운동 인증 카드": [
+    "운동 인증 카드",
+    "Workout card",
+    "ワークアウトカード",
+    "训练卡片",
+    "訓練卡片",
+    "Tarjeta de entrenamiento",
+    "Carte d’entraînement",
+    "Trainingskarte"
+  ],
+  "인증 문구": [
+    "인증 문구",
+    "Caption",
+    "キャプション",
+    "文案",
+    "文案",
+    "Texto",
+    "Légende",
+    "Beschriftung"
+  ],
+  "다른 문구 추천": [
+    "다른 문구 추천",
+    "Suggest another caption",
+    "別の文を提案",
+    "换一句文案",
+    "換一句文案",
+    "Sugerir otro texto",
+    "Autre suggestion",
+    "Anderen Text vorschlagen"
+  ],
+  "배경 사진": [
+    "배경 사진",
+    "Background photo",
+    "背景写真",
+    "背景照片",
+    "背景照片",
+    "Foto de fondo",
+    "Photo de fond",
+    "Hintergrundfoto"
+  ],
+  "사진 제거": [
+    "사진 제거",
+    "Remove photo",
+    "写真を削除",
+    "移除照片",
+    "移除照片",
+    "Quitar foto",
+    "Retirer la photo",
+    "Foto entfernen"
+  ],
+  "글자 색": [
+    "글자 색",
+    "Text color",
+    "文字色",
+    "文字颜色",
+    "文字顏色",
+    "Color del texto",
+    "Couleur du texte",
+    "Textfarbe"
+  ],
+  "자동": [
+    "자동",
+    "Automatic",
+    "自動",
+    "自动",
+    "自動",
+    "Automático",
+    "Automatique",
+    "Automatisch"
+  ],
+  "흰색": [
+    "흰색",
+    "White",
+    "白",
+    "白色",
+    "白色",
+    "Blanco",
+    "Blanc",
+    "Weiß"
+  ],
+  "검정": [
+    "검정",
+    "Black",
+    "黒",
+    "黑色",
+    "黑色",
+    "Negro",
+    "Noir",
+    "Schwarz"
+  ],
+  "이미지 저장 / 공유": [
+    "이미지 저장 / 공유",
+    "Save / share image",
+    "画像保存・共有",
+    "保存／分享图片",
+    "儲存／分享圖片",
+    "Guardar / compartir imagen",
+    "Enregistrer / partager",
+    "Bild speichern / teilen"
+  ],
+  "저장 중…": [
+    "저장 중…",
+    "Saving…",
+    "保存中…",
+    "保存中…",
+    "儲存中…",
+    "Guardando…",
+    "Enregistrement…",
+    "Speichern…"
+  ],
+  "최대 60자": [
+    "최대 60자",
+    "Up to 60 characters",
+    "最大60文字",
+    "最多60字",
+    "最多60字",
+    "Máximo 60 caracteres",
+    "60 caractères maximum",
+    "Maximal 60 Zeichen"
+  ],
+  "모든 종목이 PNG 한 장에 저장됩니다.": [
+    "모든 종목이 PNG 한 장에 저장됩니다.",
+    "All exercises are saved in one PNG.",
+    "全種目を1枚のPNGに保存します。",
+    "所有动作保存为一张PNG。",
+    "所有動作儲存為一張PNG。",
+    "Todos los ejercicios en un PNG.",
+    "Tous les exercices dans un PNG.",
+    "Alle Übungen in einer PNG-Datei."
+  ],
+  "사진은 카드 중앙에 맞춰 잘립니다.": [
+    "사진은 카드 중앙에 맞춰 잘립니다.",
+    "Photo is cropped to fill the card.",
+    "写真は中央で切り抜かれます。",
+    "照片居中裁切以填满卡片。",
+    "照片置中裁切以填滿卡片。",
+    "La foto se recorta al centro.",
+    "La photo est recadrée au centre.",
+    "Das Foto wird mittig zugeschnitten."
+  ],
+  "전체": [
+    "전체",
+    "All",
+    "すべて",
+    "全部",
+    "全部",
+    "Todo",
+    "Tout",
+    "Alle"
+  ],
+  "세트": [
+    "세트",
+    "Sets",
+    "セット",
+    "组",
+    "組",
+    "Series",
+    "Séries",
+    "Sätze"
+  ],
+  "횟수": [
+    "횟수",
+    "Reps",
+    "回数",
+    "次数",
+    "次數",
+    "Repeticiones",
+    "Répétitions",
+    "Wiederholungen"
+  ],
+  "중량": [
+    "중량",
+    "Weight",
+    "重量",
+    "重量",
+    "重量",
+    "Peso",
+    "Charge",
+    "Gewicht"
+  ],
+  "휴식": [
+    "휴식",
+    "Rest",
+    "休憩",
+    "休息",
+    "休息",
+    "Descanso",
+    "Repos",
+    "Pause"
+  ],
+  "메모": [
+    "메모",
+    "Notes",
+    "メモ",
+    "备注",
+    "備註",
+    "Notas",
+    "Notes",
+    "Notizen"
+  ],
+  "총운동": [
+    "총운동",
+    "Total",
+    "合計",
+    "总计",
+    "總計",
+    "Total",
+    "Total",
+    "Gesamt"
+  ],
+  "일시정지": [
+    "일시정지",
+    "Paused",
+    "一時停止",
+    "暂停",
+    "暫停",
+    "Pausa",
+    "En pause",
+    "Pausiert"
+  ],
+  "재개": [
+    "재개",
+    "Resume",
+    "再開",
+    "继续",
+    "繼續",
+    "Continuar",
+    "Reprendre",
+    "Fortsetzen"
+  ],
+  "슈퍼세트": [
+    "슈퍼세트",
+    "Superset",
+    "スーパーセット",
+    "超级组",
+    "超級組",
+    "Superserie",
+    "Superset",
+    "Supersatz"
+  ],
+  "컴파운드세트": [
+    "컴파운드세트",
+    "Compound set",
+    "コンパウンドセット",
+    "复合组",
+    "複合組",
+    "Serie compuesta",
+    "Série composée",
+    "Verbundsatz"
+  ],
+  "자이언트세트": [
+    "자이언트세트",
+    "Giant set",
+    "ジャイアントセット",
+    "巨型组",
+    "巨型組",
+    "Serie gigante",
+    "Série géante",
+    "Riesensatz"
+  ],
+  "맨몸": [
+    "맨몸",
+    "Bodyweight",
+    "自重",
+    "自重",
+    "自重",
+    "Peso corporal",
+    "Poids du corps",
+    "Körpergewicht"
+  ],
+  "바벨": [
+    "바벨",
+    "Barbell",
+    "バーベル",
+    "杠铃",
+    "槓鈴",
+    "Barra",
+    "Barre",
+    "Langhantel"
+  ],
+  "덤벨": [
+    "덤벨",
+    "Dumbbell",
+    "ダンベル",
+    "哑铃",
+    "啞鈴",
+    "Mancuerna",
+    "Haltère",
+    "Kurzhantel"
+  ],
+  "머신": [
+    "머신",
+    "Machine",
+    "マシン",
+    "器械",
+    "器械",
+    "Máquina",
+    "Machine",
+    "Maschine"
+  ],
+  "케이블": [
+    "케이블",
+    "Cable",
+    "ケーブル",
+    "绳索",
+    "滑輪",
+    "Polea",
+    "Poulie",
+    "Kabelzug"
+  ],
+  "오늘의 운동": [
+    "오늘의 운동",
+    "Today's workout",
+    "今日のトレーニング",
+    "今日训练",
+    "今日訓練",
+    "Entrenamiento de hoy",
+    "Séance du jour",
+    "Heutiges Training"
+  ],
+  "주동근": [
+    "주동근",
+    "Primary muscles",
+    "主働筋",
+    "主要肌群",
+    "主要肌群",
+    "Músculos principales",
+    "Muscles principaux",
+    "Hauptmuskeln"
+  ],
+  "협응근": [
+    "협응근",
+    "Secondary muscles",
+    "補助筋",
+    "辅助肌群",
+    "輔助肌群",
+    "Músculos secundarios",
+    "Muscles secondaires",
+    "Hilfsmuskeln"
+  ],
+  "오늘 운동한 부위": [
+    "오늘 운동한 부위",
+    "Muscles trained today",
+    "今日鍛えた部位",
+    "今日训练部位",
+    "今日訓練部位",
+    "Músculos entrenados",
+    "Muscles travaillés",
+    "Heute trainierte Muskeln"
+  ],
+  "운동 종목": [
+    "운동 종목",
+    "Exercises",
+    "種目",
+    "动作",
+    "動作",
+    "Ejercicios",
+    "Exercices",
+    "Übungen"
+  ],
+  "완료 세트": [
+    "완료 세트",
+    "Completed sets",
+    "完了セット",
+    "已完成组",
+    "完成組數",
+    "Series completadas",
+    "Séries terminées",
+    "Abgeschlossene Sätze"
+  ],
+  "운동 시간 (분)": [
+    "운동 시간 (분)",
+    "Duration (min)",
+    "時間（分）",
+    "时长（分钟）",
+    "時間（分鐘）",
+    "Duración (min)",
+    "Durée (min)",
+    "Dauer (Min.)"
+  ],
+  "나의 운동 기록": [
+    "나의 운동 기록",
+    "My workout log",
+    "私のトレーニング記録",
+    "我的训练记录",
+    "我的訓練記錄",
+    "Mi registro",
+    "Mon carnet",
+    "Mein Trainingslog"
+  ],
+  "오늘 운동할 부위를 선택하면 첫 운동 추가 시 해당 부위가 자동 추천됩니다.": [
+    "오늘 운동할 부위를 선택하면 첫 운동 추가 시 해당 부위가 자동 추천됩니다.",
+    "Select target muscles to prioritize matching exercises.",
+    "対象部位を選ぶと関連種目を優先表示します。",
+    "选择目标部位，优先显示相关动作。",
+    "選擇目標部位，優先顯示相關動作。",
+    "Selecciona músculos para priorizar ejercicios.",
+    "Choisissez les muscles pour filtrer les exercices.",
+    "Zielmuskeln wählen, um passende Übungen zuerst zu sehen."
+  ],
+  "개 선택됨": [
+    "개 선택됨",
+    "selected",
+    "選択中",
+    "已选",
+    "已選",
+    "seleccionados",
+    "sélectionnés",
+    "ausgewählt"
+  ],
+  "부위를 선택해 주세요.": [
+    "부위를 선택해 주세요.",
+    "Select target muscles.",
+    "部位を選んでください。",
+    "请选择部位。",
+    "請選擇部位。",
+    "Selecciona músculos.",
+    "Choisissez les muscles.",
+    "Zielmuskeln auswählen."
+  ],
+  "부위가 첫 운동 라이브러리 탭에 최우선 노출됩니다.": [
+    "부위가 첫 운동 라이브러리 탭에 최우선 노출됩니다.",
+    "Matching exercises appear first.",
+    "関連種目を優先表示します。",
+    "优先显示相关动作。",
+    "優先顯示相關動作。",
+    "Los ejercicios relacionados aparecen primero.",
+    "Les exercices correspondants apparaissent en premier.",
+    "Passende Übungen werden zuerst angezeigt."
+  ],
+  "자유 루틴": [
+    "자유 루틴",
+    "Freestyle routine",
+    "自由ルーティン",
+    "自由训练",
+    "自由訓練",
+    "Rutina libre",
+    "Routine libre",
+    "Freies Training"
+  ],
+  "루틴": [
+    "루틴",
+    "Routine",
+    "ルーティン",
+    "训练计划",
+    "訓練計畫",
+    "Rutina",
+    "Routine",
+    "Routine"
+  ],
+  "최상 (100%)": [
+    "최상 (100%)",
+    "Excellent (100%)",
+    "最高 (100%)",
+    "极佳 (100%)",
+    "極佳 (100%)",
+    "Excelente (100%)",
+    "Excellent (100%)",
+    "Ausgezeichnet (100%)"
+  ],
+  "좋음 (80%)": [
+    "좋음 (80%)",
+    "Good (80%)",
+    "良好 (80%)",
+    "良好 (80%)",
+    "良好 (80%)",
+    "Bien (80%)",
+    "Bien (80%)",
+    "Gut (80%)"
+  ],
+  "보통 (60%)": [
+    "보통 (60%)",
+    "Normal (60%)",
+    "普通 (60%)",
+    "一般 (60%)",
+    "一般 (60%)",
+    "Normal (60%)",
+    "Normal (60%)",
+    "Normal (60%)"
+  ],
+  "피곤 (40%)": [
+    "피곤 (40%)",
+    "Tired (40%)",
+    "疲労 (40%)",
+    "疲惫 (40%)",
+    "疲憊 (40%)",
+    "Cansado (40%)",
+    "Fatigué (40%)",
+    "Müde (40%)"
+  ],
+  "가볍게 회복": [
+    "가볍게 회복",
+    "Light recovery",
+    "軽い回復",
+    "轻度恢复",
+    "輕度恢復",
+    "Recuperación ligera",
+    "Récupération légère",
+    "Leichte Erholung"
+  ],
+  "체험용 샘플 기록 불러오기": [
+    "체험용 샘플 기록 불러오기",
+    "Load sample workouts",
+    "サンプルを読み込む",
+    "加载示例记录",
+    "載入範例記錄",
+    "Cargar ejemplos",
+    "Charger des exemples",
+    "Beispieltraining laden"
+  ],
+  "언어 안내": [
+    "언어 안내",
+    "Exercise names and detailed guidance use English when translations are unavailable. Your notes stay unchanged.",
+    "未翻訳の種目名・説明は英語で表示されます。メモは変更されません。",
+    "未翻译的动作名称及说明使用英语。您的备注保持原样。",
+    "未翻譯的動作名稱及說明使用英語。您的備註保持原樣。",
+    "Los nombres y guías sin traducción usan inglés. Tus notas no cambian.",
+    "Les noms et guides non traduits sont en anglais. Vos notes restent inchangées.",
+    "Nicht übersetzte Übungsnamen und Anleitungen erscheinen auf Englisch. Eigene Notizen bleiben unverändert."
+  ],
+  "저장된 운동 일지": [
+    "저장된 운동 일지",
+    "Saved workouts",
+    "保存済みの記録",
+    "已保存训练",
+    "已儲存訓練",
+    "Entrenamientos guardados",
+    "Séances enregistrées",
+    "Gespeicherte Trainings"
+  ],
+  "운동 검색": [
+    "운동 검색",
+    "Search exercises",
+    "種目を検索",
+    "搜索动作",
+    "搜尋動作",
+    "Buscar ejercicios",
+    "Rechercher des exercices",
+    "Übungen suchen"
+  ],
+  "운동 선택": [
+    "운동 선택",
+    "Select exercise",
+    "種目を選択",
+    "选择动作",
+    "選擇動作",
+    "Elegir ejercicio",
+    "Choisir un exercice",
+    "Übung auswählen"
+  ],
+  "선택 근육": [
+    "선택 근육",
+    "Selected muscle",
+    "選択した筋肉",
+    "选中肌肉",
+    "選取肌肉",
+    "Músculo seleccionado",
+    "Muscle sélectionné",
+    "Ausgewählter Muskel"
+  ],
+  "앞뒤 함께": [
+    "앞뒤 함께",
+    "Front and back",
+    "前後表示",
+    "正面与背面",
+    "正面與背面",
+    "Frente y espalda",
+    "Face et dos",
+    "Vorne und hinten"
+  ],
+  "전면·회전": [
+    "전면·회전",
+    "Front · rotate",
+    "前面・回転",
+    "正面·旋转",
+    "正面·旋轉",
+    "Frente · girar",
+    "Face · tourner",
+    "Vorne · drehen"
+  ],
+  "후면·회전": [
+    "후면·회전",
+    "Back · rotate",
+    "背面・回転",
+    "背面·旋转",
+    "背面·旋轉",
+    "Espalda · girar",
+    "Dos · tourner",
+    "Hinten · drehen"
+  ],
+  "분": [
+    "분",
+    "min",
+    "分",
+    "分钟",
+    "分鐘",
+    "min",
+    "min",
+    "Min."
+  ],
+  "초": [
+    "초",
+    "sec",
+    "秒",
+    "秒",
+    "秒",
+    "s",
+    "s",
+    "Sek."
+  ],
+  "오늘의 나를 기록하다.": [
+    "오늘의 나를 기록하다.",
+    "A record of my effort.",
+    "今日の努力を記録。",
+    "记录今日的努力。",
+    "記錄今日的努力。",
+    "Mi esfuerzo de hoy.",
+    "Mon effort du jour.",
+    "Mein Einsatz heute."
+  ],
+  "조금씩, 더 강하게.": [
+    "조금씩, 더 강하게.",
+    "Stronger, step by step.",
+    "少しずつ、強く。",
+    "一点一点，更加强大。",
+    "一點一點，更加強大。",
+    "Más fuerte, paso a paso.",
+    "Plus fort, pas à pas.",
+    "Schritt für Schritt stärker."
+  ],
+  "꾸준함이 만드는 변화.": [
+    "꾸준함이 만드는 변화.",
+    "Consistency brings change.",
+    "継続が生む変化。",
+    "坚持带来改变。",
+    "堅持帶來改變。",
+    "La constancia transforma.",
+    "La régularité transforme.",
+    "Beständigkeit verändert."
+  ],
+  "나만의 속도로, 한 걸음 더.": [
+    "나만의 속도로, 한 걸음 더.",
+    "One more step at my pace.",
+    "自分のペースで、もう一歩。",
+    "按自己的节奏，再迈一步。",
+    "按自己的節奏，再邁一步。",
+    "Un paso más a mi ritmo.",
+    "Un pas de plus à mon rythme.",
+    "Ein Schritt mehr in meinem Tempo."
+  ],
+  "오늘의 노력은 남는다.": [
+    "오늘의 노력은 남는다.",
+    "Today’s effort counts.",
+    "今日の努力は残る。",
+    "今日的努力不会白费。",
+    "今日的努力不會白費。",
+    "El esfuerzo de hoy cuenta.",
+    "L’effort du jour compte.",
+    "Der Einsatz von heute zählt."
+  ],
+  "어제보다 한 세트 더.": [
+    "어제보다 한 세트 더.",
+    "One more set than yesterday.",
+    "昨日より1セット多く。",
+    "比昨天多一组。",
+    "比昨天多一組。",
+    "Una serie más que ayer.",
+    "Une série de plus qu’hier.",
+    "Ein Satz mehr als gestern."
+  ],
+  "하루의 노력을 한 장으로": [
+    "하루의 노력을 한 장으로",
+    "Your effort in one image",
+    "今日の努力を1枚に",
+    "用一张图记录努力",
+    "用一張圖記錄努力",
+    "Tu esfuerzo en una imagen",
+    "Votre effort en une image",
+    "Dein Einsatz in einem Bild"
+  ],
+  "배경 사진 선택": [
+    "배경 사진 선택",
+    "Choose background photo",
+    "背景写真を選択",
+    "选择背景照片",
+    "選擇背景照片",
+    "Elegir foto de fondo",
+    "Choisir une photo de fond",
+    "Hintergrundfoto wählen"
+  ],
+  "사진을 불러오는 중…": [
+    "사진을 불러오는 중…",
+    "Loading photo…",
+    "写真を読み込み中…",
+    "正在加载照片…",
+    "正在載入照片…",
+    "Cargando foto…",
+    "Chargement de la photo…",
+    "Foto wird geladen…"
+  ],
+  "가독성 보정": [
+    "가독성 보정",
+    "Readability overlay",
+    "読みやすさの補正",
+    "可读性调整",
+    "可讀性調整",
+    "Ajuste de legibilidad",
+    "Réglage de lisibilité",
+    "Lesbarkeit anpassen"
+  ],
+  "완료한 세트가 있는 날에 인증 카드를 만들 수 있어요.": [
+    "완료한 세트가 있는 날에 인증 카드를 만들 수 있어요.",
+    "Complete at least one set to create a workout card.",
+    "完了したセットがある日にカードを作成できます。",
+    "至少完成一组后即可生成训练卡片。",
+    "至少完成一組後即可建立訓練卡片。",
+    "Completa al menos una serie para crear la tarjeta.",
+    "Terminez au moins une série pour créer la carte.",
+    "Schließe mindestens einen Satz ab, um eine Karte zu erstellen."
+  ],
+  "이미지를 준비하고 있어요.": [
+    "이미지를 준비하고 있어요.",
+    "Preparing image…",
+    "画像を準備中…",
+    "正在生成图片…",
+    "正在產生圖片…",
+    "Preparando imagen…",
+    "Préparation de l’image…",
+    "Bild wird vorbereitet…"
+  ],
+  "이미지 생성에 실패했습니다. 다시 열어 주세요.": [
+    "이미지 생성에 실패했습니다. 다시 열어 주세요.",
+    "Image generation failed. Please reopen the card.",
+    "画像を生成できませんでした。開き直してください。",
+    "图片生成失败，请重新打开卡片。",
+    "圖片產生失敗，請重新開啟卡片。",
+    "No se pudo generar la imagen. Abre la tarjeta de nuevo.",
+    "Échec de génération. Rouvrez la carte.",
+    "Bild konnte nicht erstellt werden. Karte erneut öffnen."
+  ],
+  "해부도 이미지를 불러오지 못했습니다. 다시 열어 주세요.": [
+    "해부도 이미지를 불러오지 못했습니다. 다시 열어 주세요.",
+    "Could not load the anatomy image. Please reopen the card.",
+    "解剖図を読み込めませんでした。開き直してください。",
+    "无法加载解剖图，请重新打开卡片。",
+    "無法載入解剖圖，請重新開啟卡片。",
+    "No se pudo cargar la anatomía. Abre la tarjeta de nuevo.",
+    "Impossible de charger l’anatomie. Rouvrez la carte.",
+    "Anatomiebild konnte nicht geladen werden. Karte erneut öffnen."
+  ],
+  "이미지를 저장하지 못했습니다. 다시 시도해 주세요.": [
+    "이미지를 저장하지 못했습니다. 다시 시도해 주세요.",
+    "Could not save the image. Please try again.",
+    "画像を保存できませんでした。再試行してください。",
+    "无法保存图片，请重试。",
+    "無法儲存圖片，請重試。",
+    "No se pudo guardar la imagen. Inténtalo de nuevo.",
+    "Impossible d’enregistrer l’image. Réessayez.",
+    "Bild konnte nicht gespeichert werden. Bitte erneut versuchen."
+  ],
+  "30MB 이하의 사진을 골라 주세요.": [
+    "30MB 이하의 사진을 골라 주세요.",
+    "Choose a photo smaller than 30 MB.",
+    "30MB以下の写真を選んでください。",
+    "请选择小于30MB的照片。",
+    "請選擇小於30MB的照片。",
+    "Elige una foto de menos de 30 MB.",
+    "Choisissez une photo de moins de 30 Mo.",
+    "Wähle ein Foto unter 30 MB."
+  ],
+  "사진을 열 수 없습니다. JPG 또는 PNG 사진으로 다시 골라 주세요.": [
+    "사진을 열 수 없습니다. JPG 또는 PNG 사진으로 다시 골라 주세요.",
+    "Cannot open this photo. Choose a JPG or PNG.",
+    "写真を開けません。JPGまたはPNGを選んでください。",
+    "无法打开照片，请选择JPG或PNG。",
+    "無法開啟照片，請選擇JPG或PNG。",
+    "No se puede abrir. Elige una foto JPG o PNG.",
+    "Impossible d’ouvrir la photo. Choisissez un JPG ou PNG.",
+    "Foto kann nicht geöffnet werden. JPG oder PNG wählen."
+  ],
+  "저장을 취소했습니다.": [
+    "저장을 취소했습니다.",
+    "Save cancelled.",
+    "保存をキャンセルしました。",
+    "已取消保存。",
+    "已取消儲存。",
+    "Guardado cancelado.",
+    "Enregistrement annulé.",
+    "Speichern abgebrochen."
+  ],
+  "공유를 취소했습니다.": [
+    "공유를 취소했습니다.",
+    "Sharing cancelled.",
+    "共有をキャンセルしました。",
+    "已取消分享。",
+    "已取消分享。",
+    "Compartir cancelado.",
+    "Partage annulé.",
+    "Teilen abgebrochen."
+  ],
+  "운동 인증 이미지를 기기에 저장하고 확인했습니다.": [
+    "운동 인증 이미지를 기기에 저장하고 확인했습니다.",
+    "Workout image saved and verified on your device.",
+    "画像を端末に保存し確認しました。",
+    "训练图片已保存并验证。",
+    "訓練圖片已儲存並驗證。",
+    "Imagen guardada y verificada en tu dispositivo.",
+    "Image enregistrée et vérifiée sur votre appareil.",
+    "Trainingsbild auf dem Gerät gespeichert und geprüft."
+  ],
+  "공유 창으로 이미지를 전달했습니다.": [
+    "공유 창으로 이미지를 전달했습니다.",
+    "Image sent to the share sheet.",
+    "画像を共有画面へ送りました。",
+    "图片已发送至分享窗口。",
+    "圖片已傳送至分享視窗。",
+    "Imagen enviada al menú de compartir.",
+    "Image transmise au menu de partage.",
+    "Bild an das Freigabemenü übergeben."
+  ],
+  "PNG 이미지 다운로드를 시작했습니다.": [
+    "PNG 이미지 다운로드를 시작했습니다.",
+    "PNG download started.",
+    "PNGのダウンロードを開始しました。",
+    "已开始下载PNG图片。",
+    "已開始下載PNG圖片。",
+    "Descarga de PNG iniciada.",
+    "Téléchargement du PNG lancé.",
+    "PNG-Download gestartet."
+  ],
+  "직접 지정": [
+    "직접 지정",
+    "Custom range",
+    "期間指定",
+    "自定义范围",
+    "自訂範圍",
+    "Periodo personalizado",
+    "Période personnalisée",
+    "Eigener Zeitraum"
+  ],
+  "당일": [
+    "당일",
+    "Daily",
+    "当日",
+    "当日",
+    "當日",
+    "Diario",
+    "Par jour",
+    "Täglich"
+  ],
+  "주간": [
+    "주간",
+    "Weekly",
+    "週間",
+    "每周",
+    "每週",
+    "Semanal",
+    "Par semaine",
+    "Wöchentlich"
+  ],
+  "월간": [
+    "월간",
+    "Monthly",
+    "月間",
+    "每月",
+    "每月",
+    "Mensual",
+    "Par mois",
+    "Monatlich"
+  ],
+  "오늘": [
+    "오늘",
+    "Today",
+    "今日",
+    "今天",
+    "今天",
+    "Hoy",
+    "Aujourd’hui",
+    "Heute"
+  ],
+  "어제": [
+    "어제",
+    "Yesterday",
+    "昨日",
+    "昨天",
+    "昨天",
+    "Ayer",
+    "Hier",
+    "Gestern"
+  ],
+  "대상 날짜:": [
+    "대상 날짜:",
+    "Date:",
+    "対象日:",
+    "日期：",
+    "日期：",
+    "Fecha:",
+    "Date :",
+    "Datum:"
+  ],
+  "기준일:": [
+    "기준일:",
+    "Reference date:",
+    "基準日:",
+    "基准日：",
+    "基準日：",
+    "Fecha de referencia:",
+    "Date de référence :",
+    "Bezugsdatum:"
+  ],
+  "대상 월:": [
+    "대상 월:",
+    "Month:",
+    "対象月:",
+    "月份：",
+    "月份：",
+    "Mes:",
+    "Mois :",
+    "Monat:"
+  ],
+  "(기준일 포함 직전 7일간 분석)": [
+    "(기준일 포함 직전 7일간 분석)",
+    "(7 days ending on this date)",
+    "(基準日までの7日間)",
+    "(截至该日期的7天)",
+    "(截至該日期的7天)",
+    "(7 días hasta esta fecha)",
+    "(7 jours jusqu’à cette date)",
+    "(7 Tage bis zu diesem Datum)"
+  ],
+  "(해당 월 전체 세션 분석)": [
+    "(해당 월 전체 세션 분석)",
+    "(All sessions in this month)",
+    "(対象月の全セッション)",
+    "(该月全部训练)",
+    "(該月全部訓練)",
+    "(Todas las sesiones del mes)",
+    "(Toutes les séances du mois)",
+    "(Alle Einheiten dieses Monats)"
+  ],
+  "운동 부위 필터:": [
+    "운동 부위 필터:",
+    "Muscle filter:",
+    "部位フィルター:",
+    "肌群筛选：",
+    "肌群篩選：",
+    "Filtro muscular:",
+    "Filtre musculaire :",
+    "Muskelfilter:"
+  ],
+  "클립보드에 복사 완료!": [
+    "클립보드에 복사 완료!",
+    "Copied to clipboard!",
+    "コピーしました！",
+    "已复制到剪贴板！",
+    "已複製到剪貼簿！",
+    "¡Copiado!",
+    "Copié !",
+    "Kopiert!"
+  ],
+  "클립보드에 복사 (ChatGPT용)": [
+    "클립보드에 복사 (ChatGPT용)",
+    "Copy for ChatGPT",
+    "ChatGPT用にコピー",
+    "复制到ChatGPT",
+    "複製到ChatGPT",
+    "Copiar para ChatGPT",
+    "Copier pour ChatGPT",
+    "Für ChatGPT kopieren"
+  ],
+  "Markdown (.md) 파일 다운로드": [
+    "Markdown (.md) 파일 다운로드",
+    "Download Markdown (.md)",
+    "Markdown (.md)を保存",
+    "下载Markdown (.md)",
+    "下載Markdown (.md)",
+    "Descargar Markdown (.md)",
+    "Télécharger Markdown (.md)",
+    "Markdown (.md) herunterladen"
+  ],
+  ".md 다운로드": [
+    ".md 다운로드",
+    "Download .md",
+    ".mdを保存",
+    "下载.md",
+    "下載.md",
+    "Descargar .md",
+    "Télécharger .md",
+    ".md herunterladen"
+  ],
+  "웜업": [
+    "웜업",
+    "Warm-up",
+    "ウォームアップ",
+    "热身",
+    "熱身",
+    "Calentamiento",
+    "Échauffement",
+    "Aufwärmen"
+  ],
+  "탑세트": [
+    "탑세트",
+    "Top set",
+    "トップセット",
+    "顶组",
+    "頂組",
+    "Serie principal",
+    "Série principale",
+    "Schwerster Satz"
+  ],
+  "백오프": [
+    "백오프",
+    "Back-off",
+    "バックオフ",
+    "回退组",
+    "回退組",
+    "Serie de descarga",
+    "Série allégée",
+    "Reduzierter Satz"
+  ],
+  "드롭세트": [
+    "드롭세트",
+    "Drop set",
+    "ドロップセット",
+    "递减组",
+    "遞減組",
+    "Serie descendente",
+    "Série dégressive",
+    "Reduktionssatz"
+  ],
+  "실패지점": [
+    "실패지점",
+    "Failure",
+    "限界",
+    "力竭",
+    "力竭",
+    "Fallo",
+    "Échec",
+    "Muskelversagen"
+  ],
+  "스트랩 착용": [
+    "스트랩 착용",
+    "Straps",
+    "ストラップ使用",
+    "使用拉力带",
+    "使用拉力帶",
+    "Correas",
+    "Sangles",
+    "Zughilfen"
+  ],
+  "벨트 착용": [
+    "벨트 착용",
+    "Belt",
+    "ベルト使用",
+    "使用腰带",
+    "使用腰帶",
+    "Cinturón",
+    "Ceinture",
+    "Gürtel"
+  ],
+  "자세 불안": [
+    "자세 불안",
+    "Unstable technique",
+    "フォーム不安定",
+    "动作不稳定",
+    "動作不穩定",
+    "Técnica inestable",
+    "Technique instable",
+    "Unsichere Technik"
+  ],
+  "치팅 1회": [
+    "치팅 1회",
+    "One assisted rep",
+    "反動1回",
+    "借力1次",
+    "借力1次",
+    "Una repetición con impulso",
+    "Une répétition avec élan",
+    "Eine Wiederholung mit Schwung"
+  ],
+  "자극 최고": [
+    "자극 최고",
+    "Great muscle engagement",
+    "刺激良好",
+    "肌肉刺激良好",
+    "肌肉刺激良好",
+    "Gran estímulo muscular",
+    "Bonne sollicitation",
+    "Gute Muskelansprache"
+  ]
+}

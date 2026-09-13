@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useRef, useState, useEffect } from 'react';
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import { createBackup, parseBackup, restoreBackup, WorkoutBackup } from '../../utils/backup';
@@ -143,9 +144,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
             >
               기존 기록에 합쳐 복원
             </button>
-            <button className="py-1.5 px-3" onClick={() => setPending(null)}>
-              취소
-            </button>
+            <button className="py-1.5 px-3" onClick={() => setPending(null)}>{t("취소")}</button>
           </div>
         </div>
       )}

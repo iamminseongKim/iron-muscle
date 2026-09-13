@@ -1,3 +1,6 @@
+import { displayExercise, getLanguage as exerciseLanguage } from '../../i18n';
+import { t } from '../../i18n';
+import { lazy, Suspense } from 'react';
 import React, { useState, useEffect } from 'react';
 import { 
   ChevronDown, ChevronRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
@@ -8,7 +11,7 @@ import { EXERCISES_DATABASE } from '../../data/exercises';
 import { SetRow } from './SetRow';
 import { QuickSetEditor } from './QuickSetEditor';
 import { getExerciseRecords, convertWeight } from '../../utils/calculations';
-import { HumanMuscle3DViewer } from '../3d/HumanMuscle3DViewer';
+const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 
@@ -67,7 +70,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
   const baseExercise: Exercise = resolveRecordedExercise(exerciseItem);
   const currentLoadType = exerciseItem.loadType || baseExercise.loadType || 'plate-loaded';
-  const exerciseName = baseExercise.name;
+  const exerciseName = displayExercise(baseExercise);
   const exerciseNameEn = baseExercise.nameEn || '';
 
   // ID가 보정된 경우 부모 상태 자동 동기화
@@ -157,7 +160,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         }`}>
           <span className="flex items-center gap-1.5 tracking-tight">
             {exerciseItem.groupType === 'superset' ? <Zap size={13} /> : <Flame size={13} />}
-            {exerciseItem.groupLabel || (exerciseItem.groupType === 'superset' ? '슈퍼세트' : '컴파운드세트')}
+            {exerciseItem.groupLabel || (exerciseItem.groupType === 'superset' ? t("슈퍼세트") : t("컴파운드세트"))}
           </span>
           <button
             type="button"
@@ -184,7 +187,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
           <div className="flex items-center gap-2 flex-wrap mt-0.5">
             <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}세트 완료{records.maxWeight > 0 ? ` · 최고 ${records.maxWeight}${currentUnit}` : ''}</span>
-            {(!collapsed && (exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes('덤벨') || exerciseNameEn.toLowerCase().includes('dumbbell'))) && (
+            {(!collapsed && (exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes(t("덤벨")) || exerciseNameEn.toLowerCase().includes('dumbbell'))) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
                 💡 덤벨: 한쪽(편측) 무게 기준
               </span>
@@ -261,9 +264,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 className={`px-2.5 py-0.5 rounded-lg transition-all ${
                   exerciseItem.equipmentType === 'machine' ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-sm' : 'text-gray-400'
                 }`}
-              >
-                머신
-              </button>
+              >{t("머신")}</button>
             </div>
         </div>
       {/* 🚀 퀵 듀얼 토글 바: [편측성: 투암 ⇋ 원암] & [부하방식: 플레이트 ⇋ 핀로드] */}
@@ -471,13 +472,13 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           {/* 뷰어 컴포넌트 렌더링 */}
           {viewerMode === '3d' ? (
             <div className="rounded-3xl overflow-hidden shadow-lg border border-black/5 dark:border-white/10">
-              <HumanMuscle3DViewer
+              <Suspense fallback={<div className="h-48 flex items-center justify-center" role="status">3D…</div>}><HumanMuscle3DViewer
                 primaryMuscles={baseExercise.primaryMuscles || []}
                 secondaryMuscles={baseExercise.secondaryMuscles || []}
                 height="380px"
                 showControls={true}
                 isDark={isDark}
-              />
+              /></Suspense>
             </div>
           ) : (
             <div className="space-y-2.5">
@@ -538,7 +539,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <button type="button" onClick={() => setShowQuickSets(v => !v)} aria-expanded={showQuickSets} className="m-2 px-3 py-2 rounded-lg text-xs font-bold text-[#0F766E] bg-[#0F766E]/10 flex items-center gap-1"><Zap size={14} />세트 퀵 설정</button>
       {showQuickSets && <QuickSetEditor key={currentUnit} item={exerciseItem} unit={currentUnit} onApply={onUpdate} onClose={() => setShowQuickSets(false)} />}
       <div className="px-[15px] py-1 flex items-center gap-1.5 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
-        <span className="w-6 shrink-0 text-center">세트</span>
+        <span className="w-6 shrink-0 text-center">{t("세트")}</span>
         <span className="w-12 shrink-0 text-center">이전</span>
         <button
           type="button"
@@ -549,8 +550,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <span>무게 ({currentUnit})</span>
 
         </button>
-        <span className="flex-1 text-center font-bold">횟수</span>
-        <span className="w-9 shrink-0 text-center">완료</span>
+        <span className="flex-1 text-center font-bold">{t("횟수")}</span>
+        <span className="w-9 shrink-0 text-center">{t("완료")}</span>
         <span className="w-7 shrink-0 text-center">옵션</span>
       </div>
 
@@ -579,7 +580,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           className="w-full py-1.5 mt-0.5 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] text-xs font-bold text-[#0F766E] rounded-lg flex items-center justify-center gap-1 transition active:scale-98"
         >
           <Plus size={14} />
-          <span>세트 추가</span>
+          <span>{t("세트 추가")}</span>
         </button>
       </div>
 

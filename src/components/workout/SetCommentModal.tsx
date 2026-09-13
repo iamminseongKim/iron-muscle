@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import React, { useState } from 'react';
 import { X, MessageSquare, Tag, Check } from 'lucide-react';
 
@@ -111,16 +112,12 @@ export const SetCommentModal: React.FC<SetCommentModalProps> = ({
             type="button"
             onClick={onClose}
             className="flex-1 py-3 rounded-2xl text-xs font-bold text-gray-600 dark:text-gray-300 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-[#3A3A3C] transition shadow-xs"
-          >
-            취소
-          </button>
+          >{t("취소")}</button>
           <button
             type="button"
             onClick={handleSave}
             className="flex-1 py-3 rounded-2xl text-xs font-black text-white bg-[#0F766E] hover:bg-blue-600 transition shadow-md shadow-teal-900/20 active:scale-98"
-          >
-            저장
-          </button>
+          >{t("저장")}</button>
         </div>
       </div>
     </div>
