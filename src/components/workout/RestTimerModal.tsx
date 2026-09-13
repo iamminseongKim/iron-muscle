@@ -24,6 +24,12 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(true);
   const [isMinimized, setIsMinimized] = useState<boolean>(false);
+  const [undoBackup, setUndoBackup] = useState<{
+    remainingSeconds: number;
+    targetSeconds: number;
+    elapsedSeconds: number;
+    isActive: boolean;
+  } | null>(null);
 
   // 1. 최소화 상태 플로팅 캡슐의 드래그 위치 (화면 우측 하단 기본)
   const [floatingPos, setFloatingPos] = useState<{ x: number; y: number } | null>(null);
@@ -50,6 +56,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
       setIsActive(true);
       setIsMinimized(false);
       setDragOffsetVisualY(0);
+      setUndoBackup(null);
     }
   }, [isOpen, initialSeconds]);
 
@@ -88,9 +95,27 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   const togglePlay = () => setIsActive(!isActive);
 
   const resetTimer = () => {
+    // 쉰 시간(elapsedSeconds)이 있는 경우 실수 리셋 복구를 위해 직전 상태 백업
+    if (elapsedSeconds > 0) {
+      setUndoBackup({
+        remainingSeconds,
+        targetSeconds,
+        elapsedSeconds,
+        isActive,
+      });
+    }
     setRemainingSeconds(targetSeconds);
     setElapsedSeconds(0);
     setIsActive(true);
+  };
+
+  const handleUndoReset = () => {
+    if (!undoBackup) return;
+    setRemainingSeconds(undoBackup.remainingSeconds);
+    setTargetSeconds(undoBackup.targetSeconds);
+    setElapsedSeconds(undoBackup.elapsedSeconds);
+    setIsActive(undoBackup.isActive);
+    setUndoBackup(null);
   };
 
   const adjustRemaining = (delta: number) => {
@@ -118,6 +143,8 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   const circumference = 2 * Math.PI * radius;
   const progress = targetSeconds > 0 ? Math.min(1, (targetSeconds - remainingSeconds) / targetSeconds) : 0;
   const strokeDashoffset = circumference - progress * circumference;
+  const isCompleted = remainingSeconds === 0;
+  const overtimeSeconds = elapsedSeconds > targetSeconds ? elapsedSeconds - targetSeconds : 0;
 
   // ----------------------------------------------------
   // 👉 1) 대형 모달 아래로 쓸어내리기 (Swipe Down) 핸들러
@@ -224,15 +251,19 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             className="flex items-center gap-2 text-left shrink-0 outline-none"
             title="탭하여 크게 보기"
           >
-            <div className="w-6 h-6 rounded-full bg-[#FF9500]/15 flex items-center justify-center text-[#FF9500] shrink-0">
-              <Bell size={13} />
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+              isCompleted ? 'bg-[#34C759]/20 text-[#34C759]' : 'bg-[#FF9500]/15 text-[#FF9500]'
+            }`}>
+              <Bell size={13} className={isCompleted ? 'animate-bounce' : ''} />
             </div>
             <div className="leading-tight">
-              <span className="text-[13px] font-black font-mono text-[#1D1D1F] dark:text-white block">
-                {formatTime(remainingSeconds)}
+              <span className={`text-[13px] font-black font-mono block ${
+                isCompleted ? 'text-[#34C759]' : 'text-[#1D1D1F] dark:text-white'
+              }`}>
+                {isCompleted ? `완료! ${elapsedSeconds}s` : formatTime(remainingSeconds)}
               </span>
               <span className="text-[10px] font-bold text-gray-400 block -mt-0.5 truncate max-w-[80px]">
-                {exerciseName} #{setNumber}
+                {isCompleted ? '휴식 완료' : `${exerciseName} #${setNumber}`}
               </span>
             </div>
           </button>
@@ -322,6 +353,20 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
           💡 창을 아래로 쓸어내리면 작은 플로팅 타이머로 변경됩니다
         </p>
 
+        {/* 리셋 실수 방지용 직전 시간 복구 (Undo) 배너 */}
+        {undoBackup && (
+          <div className="mb-2 animate-fade-in">
+            <button
+              type="button"
+              onClick={handleUndoReset}
+              className="w-full py-2 px-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-indigo-500/15 transition active:scale-98 shadow-xs"
+            >
+              <RotateCcw size={13} className="rotate-180 text-indigo-500 shrink-0" />
+              <span>실수로 리셋하셨나요? <strong>방금 전 {undoBackup.elapsedSeconds}초 복구</strong></span>
+            </button>
+          </div>
+        )}
+
         {/* 대형 원형 프로그레스 링 & 타이머 디스플레이 */}
         <div className="relative my-2 flex items-center justify-center">
           <svg width="240" height="240" className="transform -rotate-90">
@@ -340,26 +385,45 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               cx="120"
               cy="120"
               r={radius}
-              stroke="#FF9500"
+              stroke={isCompleted ? '#34C759' : '#FF9500'}
               strokeWidth="10"
               strokeLinecap="round"
               fill="transparent"
               style={{
                 strokeDasharray: circumference,
-                strokeDashoffset: strokeDashoffset,
-                transition: 'stroke-dashoffset 0.5s ease',
+                strokeDashoffset: isCompleted ? 0 : strokeDashoffset,
+                transition: 'stroke-dashoffset 0.5s ease, stroke 0.3s ease',
               }}
             />
           </svg>
 
           {/* 중앙 거대한 숫자 */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-5xl font-black font-mono tracking-tighter text-[#1D1D1F] dark:text-white">
-              {formatTime(remainingSeconds)}
-            </span>
-            <span className="text-xs font-semibold text-gray-400 mt-1">
-              실제 쉰 시간: <strong className="text-[#FF9500] font-bold">{elapsedSeconds}초</strong>
-            </span>
+            {isCompleted ? (
+              <div className="flex flex-col items-center justify-center animate-fade-in">
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#34C759] mb-1 animate-pulse">
+                  🎉 목표 휴식 완료
+                </span>
+                <span className="text-4xl font-black font-mono tracking-tighter text-[#34C759]">
+                  {formatTime(targetSeconds)}
+                </span>
+                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">
+                  총 쉰 시간: <strong className="text-[#0F766E] dark:text-[#2DD4BF] font-bold">{elapsedSeconds}초</strong>
+                  {overtimeSeconds > 0 && (
+                    <span className="text-[#FF9500] font-bold ml-1">(+{overtimeSeconds}초)</span>
+                  )}
+                </span>
+              </div>
+            ) : (
+              <>
+                <span className="text-5xl font-black font-mono tracking-tighter text-[#1D1D1F] dark:text-white">
+                  {formatTime(remainingSeconds)}
+                </span>
+                <span className="text-xs font-semibold text-gray-400 mt-1">
+                  실제 쉰 시간: <strong className="text-[#FF9500] font-bold">{elapsedSeconds}초</strong>
+                </span>
+              </>
+            )}
           </div>
         </div>
 
@@ -413,7 +477,9 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
           <button
             type="button"
             onClick={handleFinish}
-            className="flex-1 py-3.5 bg-[#34C759] hover:opacity-90 active:scale-98 text-white rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 transition"
+            className={`flex-1 py-3.5 bg-[#34C759] hover:opacity-90 active:scale-98 text-white rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition ${
+              isCompleted ? 'shadow-green-500/30 ring-2 ring-[#34C759]/40' : 'shadow-green-500/20'
+            }`}
           >
             <Check size={18} strokeWidth={2.5} />
             휴식 종료 & {elapsedSeconds}초 세트에 기록

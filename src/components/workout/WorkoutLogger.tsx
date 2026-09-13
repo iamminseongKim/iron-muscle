@@ -14,6 +14,7 @@ import { SessionNotesModal } from './SessionNotesModal';
 import { RpeGuideModal } from './RpeGuideModal';
 import { RestTimerModal } from './RestTimerModal';
 import { ExerciseGroupModal } from './ExerciseGroupModal';
+import { HoldToCompleteButton } from './HoldToCompleteButton';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, convertWeight } from '../../utils/calculations';
 import { saveActiveSession, loadActiveSession, saveSessions, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { soundManager } from '../../utils/audio';
@@ -731,7 +732,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       </div>
 
       {/* 액션 버튼들 */}
-      <div className="pt-2 flex flex-col gap-2.5">
+      <div className="pt-2 flex flex-col gap-3">
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
@@ -741,14 +742,13 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           운동 종목 추가하기
         </button>
 
-        <button
-          type="button"
-          onClick={handleCompleteWorkout}
-          className="w-full mt-3 py-3 bg-[#0F766E] hover:opacity-95 text-white rounded-2xl text-sm font-black flex items-center justify-center gap-2 shadow-md shadow-teal-900/20 transition active:scale-98"
-        >
-          <CheckCircle2 size={18} />
-          오늘 운동 완료 & 기록 저장
-        </button>
+        {/* 오터치 방지를 위한 구분선 및 2초 롱프레스 운동 완료 버튼 */}
+        <div className="pt-3 border-t border-black/5 dark:border-white/5">
+          <HoldToCompleteButton
+            onComplete={handleCompleteWorkout}
+            holdDurationMs={2000}
+          />
+        </div>
       </div>
 
       {/* 대형 원형 스마트 휴식 타이머 모달 */}

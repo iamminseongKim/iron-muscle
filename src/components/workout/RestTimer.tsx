@@ -19,6 +19,10 @@ export const RestTimer: React.FC<RestTimerProps> = ({
   const [remainingSeconds, setRemainingSeconds] = useState<number>(initialSeconds);
   const [isActive, setIsActive] = useState<boolean>(initialRunning);
   const [isFlashing, setIsFlashing] = useState<boolean>(false);
+  const [undoBackup, setUndoBackup] = useState<{
+    remainingSeconds: number;
+    targetSeconds: number;
+  } | null>(null);
 
   useEffect(() => {
     let interval: any = null;
@@ -49,9 +53,17 @@ export const RestTimer: React.FC<RestTimerProps> = ({
   const togglePlay = () => setIsActive(!isActive);
 
   const resetTimer = () => {
+    setUndoBackup({ remainingSeconds, targetSeconds });
     setRemainingSeconds(targetSeconds);
     setIsActive(true);
     setIsFlashing(false);
+  };
+
+  const handleUndoReset = () => {
+    if (!undoBackup) return;
+    setRemainingSeconds(undoBackup.remainingSeconds);
+    setTargetSeconds(undoBackup.targetSeconds);
+    setUndoBackup(null);
   };
 
   const adjustTime = (delta: number) => {
@@ -133,6 +145,17 @@ export const RestTimer: React.FC<RestTimerProps> = ({
             >
               <RotateCcw size={16} />
             </button>
+            {undoBackup && (
+              <button
+                type="button"
+                onClick={handleUndoReset}
+                className="px-2 py-1 bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-indigo-500/25 transition animate-fade-in"
+                title="직전 시간 복구"
+              >
+                <RotateCcw size={12} className="rotate-180" />
+                복구
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}
