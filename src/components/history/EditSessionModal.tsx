@@ -68,6 +68,17 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
     setExercises(newExs);
   };
 
+  // 종목 내 모든 세트 휴식 시간 일괄 적용
+  const handleBatchApplyRest = (exerciseIndex: number, seconds: number) => {
+    const newExs = [...exercises];
+    const targetEx = newExs[exerciseIndex];
+    newExs[exerciseIndex] = {
+      ...targetEx,
+      sets: targetEx.sets.map((s) => ({ ...s, restSeconds: seconds })),
+    };
+    setExercises(newExs);
+  };
+
   // 세트 삭제
   const handleDeleteSet = (exerciseIndex: number, setIndex: number) => {
     const newExs = [...exercises];
@@ -321,6 +332,27 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                       </div>
                     </div>
 
+                    {/* 휴식 시간 일괄 적용 퀵 칩 */}
+                    <div className="flex items-center justify-between text-[11px] bg-white/70 dark:bg-black/30 px-2.5 py-1.5 rounded-xl border border-black/5 dark:border-white/5 flex-wrap gap-1">
+                      <span className="font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1 shrink-0">
+                        <Clock size={11} className="text-[#0F766E]" />
+                        휴식 일괄 적용:
+                      </span>
+                      <div className="flex items-center gap-1 font-bold flex-wrap">
+                        {[30, 60, 90, 120, 180].map((sec) => (
+                          <button
+                            key={sec}
+                            type="button"
+                            onClick={() => handleBatchApplyRest(eIdx, sec)}
+                            className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-[#0F766E] hover:text-white text-gray-700 dark:text-gray-300 text-[10px] transition active:scale-95 shadow-xs"
+                            title={`모든 세트의 휴식 시간을 ${sec >= 60 ? `${Math.floor(sec / 60)}분${sec % 60 ? ` ${sec % 60}초` : ''}` : `${sec}초`}로 일괄 변경`}
+                          >
+                            {sec >= 60 ? `${Math.floor(sec / 60)}분${sec % 60 ? `${sec % 60}s` : ''}` : `${sec}s`}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* 세트 헤더 */}
                     <div className="grid grid-cols-12 gap-1.5 text-[10px] font-bold text-gray-400 px-1 text-center">
                       <span className="col-span-1">#</span>
@@ -387,13 +419,22 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             className="col-span-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-1 py-1 rounded-lg text-center font-bold text-amber-500 outline-none"
                           />
 
-                          <input
-                            type="number"
-                            placeholder="초"
-                            value={set.restSeconds || ''}
-                            onChange={(e) => handleUpdateSet(eIdx, sIdx, 'restSeconds', parseInt(e.target.value) || undefined)}
-                            className="col-span-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-1 py-1 rounded-lg text-center font-medium text-gray-500 dark:text-gray-400 outline-none"
-                          />
+                          <div className="col-span-2 relative flex flex-col items-center">
+                            <input
+                              type="number"
+                              min="0"
+                              step="5"
+                              placeholder="초"
+                              value={set.restSeconds ?? ''}
+                              onChange={(e) => handleUpdateSet(eIdx, sIdx, 'restSeconds', e.target.value === '' ? undefined : Math.max(0, parseInt(e.target.value) || 0))}
+                              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] px-1 py-1 rounded-lg text-center font-medium text-gray-700 dark:text-gray-300 outline-none focus:ring-1 focus:ring-[#0F766E]"
+                            />
+                            {set.restSeconds !== undefined && set.restSeconds >= 60 && (
+                              <span className="text-[9px] font-bold text-[#0F766E] leading-none mt-0.5 pointer-events-none">
+                                {Math.floor(set.restSeconds / 60)}분{set.restSeconds % 60 ? ` ${set.restSeconds % 60}초` : ''}
+                              </span>
+                            )}
+                          </div>
 
                           <button
                             type="button"
