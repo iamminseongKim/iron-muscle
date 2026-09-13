@@ -298,7 +298,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
   };
 
   return (
-    <div className="pb-32 max-w-lg mx-auto px-4 space-y-4">
+    <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4">
       {/* 상단 헤더 & AI 마크다운 추출 버튼 */}
       <div className="flex items-center justify-between pt-1">
         <div>
@@ -318,43 +318,46 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
         </button>
       </div>
 
-      <BackupPanel onRestored={(restored,date) => {setSessions(restored);if(date){setSelectedDate(date);setCurrentMonth(date.slice(0,7));setCurrentYear(Number(date.slice(0,4)));setViewScope('daily');}}} />
+      <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
+        {/* 좌측 패널 (조회 컨트롤, 캘린더, 통계 요약) */}
+        <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">
+          <BackupPanel onRestored={(restored,date) => {setSessions(restored);if(date){setSelectedDate(date);setCurrentMonth(date.slice(0,7));setCurrentYear(Number(date.slice(0,4)));setViewScope('daily');}}} />
 
-      {/* 뷰 모드 스위처 (일간 / 월간 / 연간) */}
-      <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-1 rounded-2xl text-xs font-bold">
-        <button
-          type="button"
-          onClick={() => setViewScope('daily')}
-          className={`flex-1 py-1.5 rounded-xl transition ${
-            viewScope === 'daily'
-              ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
-              : 'text-gray-500 hover:text-black dark:hover:text-white'
-          }`}
-        >{t("일간 (날짜별)")}</button>
-        <button
-          type="button"
-          onClick={() => setViewScope('monthly')}
-          className={`flex-1 py-1.5 rounded-xl transition ${
-            viewScope === 'monthly'
-              ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
-              : 'text-gray-500 hover:text-black dark:hover:text-white'
-          }`}
-        >{t("월간 (월별)")}</button>
-        <button
-          type="button"
-          onClick={() => setViewScope('yearly')}
-          className={`flex-1 py-1.5 rounded-xl transition ${
-            viewScope === 'yearly'
-              ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
-              : 'text-gray-500 hover:text-black dark:hover:text-white'
-          }`}
-        >{t("연간 (년별)")}</button>
-      </div>
+          {/* 뷰 모드 스위처 (일간 / 월간 / 연간) */}
+          <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-1 rounded-2xl text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setViewScope('daily')}
+              className={`flex-1 py-1.5 rounded-xl transition ${
+                viewScope === 'daily'
+                  ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
+                  : 'text-gray-500 hover:text-black dark:hover:text-white'
+              }`}
+            >{t("일간 (날짜별)")}</button>
+            <button
+              type="button"
+              onClick={() => setViewScope('monthly')}
+              className={`flex-1 py-1.5 rounded-xl transition ${
+                viewScope === 'monthly'
+                  ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
+                  : 'text-gray-500 hover:text-black dark:hover:text-white'
+              }`}
+            >{t("월간 (월별)")}</button>
+            <button
+              type="button"
+              onClick={() => setViewScope('yearly')}
+              className={`flex-1 py-1.5 rounded-xl transition ${
+                viewScope === 'yearly'
+                  ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-xs'
+                  : 'text-gray-500 hover:text-black dark:hover:text-white'
+              }`}
+            >{t("연간 (년별)")}</button>
+          </div>
 
-      {/* ================= 1. 일간 (날짜별 뷰) ================= */}
-      {viewScope === 'daily' && (
-        <div className="space-y-3">
-          {/* 날짜 네비게이터 */}
+          {/* 일간 컨트롤 */}
+          {viewScope === 'daily' && (
+            <div className="space-y-3">
+              {/* 날짜 네비게이터 */}
           <div className="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3 rounded-2xl border border-black/5 dark:border-white/5 shadow-xs">
             <button
               onClick={handlePrevDay}
@@ -419,8 +422,139 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               {mergeFeedback}
             </div>
           )}
+            </div>
+          )}
 
-          {/* 해당 일자의 운동 목록 */}
+          {/* 월간 컨트롤 */}
+          {viewScope === 'monthly' && (
+            <div className="space-y-3">
+              {/* 월 네비게이터 */}
+          <div className="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3 rounded-2xl border border-black/5 dark:border-white/5 shadow-xs">
+            <button
+              onClick={handlePrevMonth}
+              className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
+              {formatYearMonthHeader(currentMonth, language)}
+            </span>
+            <button
+              onClick={handleNextMonth}
+              className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+
+          {/* 월간 요약 카드 */}
+          <div className="grid grid-cols-3 gap-2 text-center bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
+            <div>
+              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 운동 횟수")}</span>
+              <span className="text-xl font-black text-[#1D1D1F] dark:text-white">{monthlySessions.length} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
+            </div>
+            <div>
+              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 누적 볼륨")}</span>
+              <span className="text-xl font-black text-[#0F766E]">
+                {monthlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0).toLocaleString()} <span className="text-xs font-normal text-gray-400">kg</span>
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("평균 운동시간")}</span>
+              <span className="text-xl font-black text-[#0F766E]">
+                {monthlySessions.length > 0
+                  ? Math.round(monthlySessions.reduce((s, x) => s + x.durationSeconds, 0) / monthlySessions.length / 60)
+                  : 0} <span className="text-xs font-normal text-gray-400">{t("분")}</span>
+              </span>
+            </div>
+          </div>
+
+          {/* 월간 출석 체크 캘린더 히트맵 (잔디 달력) */}
+          <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold text-gray-500 mb-2">
+              <span>{t("월간 출석 캘린더")}</span>
+              <span className="text-[11px] text-gray-400">{t("날짜 클릭 시 해당 일지 조회")}</span>
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 text-center">
+              {['일', '월', '화', '수', '목', '금', '토'].map((w) => (
+                <span key={w} className="text-[10px] text-gray-400 font-bold py-1">{t(w)}</span>
+              ))}
+
+              {/* Day cells (1-31) */}
+              {Array.from({ length: 31 }, (_, i) => {
+                const dayNum = i + 1;
+                const dayStr = `${currentMonth}-${dayNum < 10 ? '0' : ''}${dayNum}`;
+                const hasSession = workoutDates.has(dayStr);
+                const isSelected = selectedDate === dayStr;
+
+                return (
+                  <button
+                    key={dayStr}
+                    type="button"
+                    onClick={() => {
+                      setSelectedDate(dayStr);
+                      setViewScope('daily');
+                    }}
+                    className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-bold transition ${
+                      hasSession
+                        ? 'bg-[#34C759] text-white shadow-xs'
+                        : isSelected
+                        ? 'border border-[#0F766E] text-[#0F766E]'
+                        : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-400 hover:bg-black/10'
+                    }`}
+                  >
+                    <span>{dayNum}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+            </div>
+          )}
+
+          {/* 연간 컨트롤 */}
+          {viewScope === 'yearly' && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3 rounded-2xl border border-black/5 dark:border-white/5 shadow-xs">
+            <button
+              onClick={() => setCurrentYear(currentYear - 1)}
+              className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
+              {formatYearAllWorkouts(currentYear, language)}
+            </span>
+            <button
+              onClick={() => setCurrentYear(currentYear + 1)}
+              className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
+              <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 총 운동 일수")}</span>
+              <span className="text-2xl font-black text-[#1D1D1F] dark:text-white">{yearlySessions.length} <span className="text-xs font-normal text-gray-400">{t("일")}</span></span>
+            </div>
+            <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
+              <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 누적 볼륨")}</span>
+              <span className="text-2xl font-black text-[#0F766E]">
+                {Math.round(yearlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0) / 1000).toLocaleString()} <span className="text-xs font-normal text-gray-400">{t("톤")}</span>
+              </span>
+            </div>
+          </div>
+            </div>
+          )}
+        </div>
+
+        {/* 우측 패널 (세션 상세 목록 및 피드) */}
+        <div className="space-y-4 md:col-span-7 lg:col-span-7 mt-4 md:mt-0">
+          {viewScope === 'daily' && (
+            <div className="space-y-3">
+                        {/* 해당 일자의 운동 목록 */}
           {dailySessions.length === 0 ? (
             <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-3">
               <Dumbbell size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
@@ -609,96 +743,13 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               );
             })
           )}
-        </div>
-      )}
 
-      {/* ================= 2. 월간 (월별 뷰) ================= */}
-      {viewScope === 'monthly' && (
-        <div className="space-y-3">
-          {/* 월 네비게이터 */}
-          <div className="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3 rounded-2xl border border-black/5 dark:border-white/5 shadow-xs">
-            <button
-              onClick={handlePrevMonth}
-              className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
-              {formatYearMonthHeader(currentMonth, language)}
-            </span>
-            <button
-              onClick={handleNextMonth}
-              className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-
-          {/* 월간 요약 카드 */}
-          <div className="grid grid-cols-3 gap-2 text-center bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
-            <div>
-              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 운동 횟수")}</span>
-              <span className="text-xl font-black text-[#1D1D1F] dark:text-white">{monthlySessions.length} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
             </div>
-            <div>
-              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 누적 볼륨")}</span>
-              <span className="text-xl font-black text-[#0F766E]">
-                {monthlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0).toLocaleString()} <span className="text-xs font-normal text-gray-400">kg</span>
-              </span>
-            </div>
-            <div>
-              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("평균 운동시간")}</span>
-              <span className="text-xl font-black text-[#0F766E]">
-                {monthlySessions.length > 0
-                  ? Math.round(monthlySessions.reduce((s, x) => s + x.durationSeconds, 0) / monthlySessions.length / 60)
-                  : 0} <span className="text-xs font-normal text-gray-400">{t("분")}</span>
-              </span>
-            </div>
-          </div>
+          )}
 
-          {/* 월간 출석 체크 캘린더 히트맵 (잔디 달력) */}
-          <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2">
-            <div className="flex items-center justify-between text-xs font-bold text-gray-500 mb-2">
-              <span>{t("월간 출석 캘린더")}</span>
-              <span className="text-[11px] text-gray-400">{t("날짜 클릭 시 해당 일지 조회")}</span>
-            </div>
-
-            <div className="grid grid-cols-7 gap-1 text-center">
-              {['일', '월', '화', '수', '목', '금', '토'].map((w) => (
-                <span key={w} className="text-[10px] text-gray-400 font-bold py-1">{t(w)}</span>
-              ))}
-
-              {/* Day cells (1-31) */}
-              {Array.from({ length: 31 }, (_, i) => {
-                const dayNum = i + 1;
-                const dayStr = `${currentMonth}-${dayNum < 10 ? '0' : ''}${dayNum}`;
-                const hasSession = workoutDates.has(dayStr);
-                const isSelected = selectedDate === dayStr;
-
-                return (
-                  <button
-                    key={dayStr}
-                    type="button"
-                    onClick={() => {
-                      setSelectedDate(dayStr);
-                      setViewScope('daily');
-                    }}
-                    className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-bold transition ${
-                      hasSession
-                        ? 'bg-[#34C759] text-white shadow-xs'
-                        : isSelected
-                        ? 'border border-[#0F766E] text-[#0F766E]'
-                        : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-400 hover:bg-black/10'
-                    }`}
-                  >
-                    <span>{dayNum}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 월간 세션 피드 리스트 */}
+          {viewScope === 'monthly' && (
+            <div className="space-y-2">
+                        {/* 월간 세션 피드 리스트 */}
           <div className="space-y-2 pt-1">
             <h3 className="text-xs font-bold text-gray-400 px-1">{t("이번 달 수행 세션 피드")}</h3>
             {monthlySessions.map((s) => (
@@ -742,44 +793,13 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               </div>
             ))}
           </div>
-        </div>
-      )}
 
-      {/* ================= 3. 연간 (년별 뷰) ================= */}
-      {viewScope === 'yearly' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3 rounded-2xl border border-black/5 dark:border-white/5 shadow-xs">
-            <button
-              onClick={() => setCurrentYear(currentYear - 1)}
-              className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
-              {formatYearAllWorkouts(currentYear, language)}
-            </span>
-            <button
-              onClick={() => setCurrentYear(currentYear + 1)}
-              className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 text-center">
-            <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
-              <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 총 운동 일수")}</span>
-              <span className="text-2xl font-black text-[#1D1D1F] dark:text-white">{yearlySessions.length} <span className="text-xs font-normal text-gray-400">{t("일")}</span></span>
             </div>
-            <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
-              <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 누적 볼륨")}</span>
-              <span className="text-2xl font-black text-[#0F766E]">
-                {Math.round(yearlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0) / 1000).toLocaleString()} <span className="text-xs font-normal text-gray-400">{t("톤")}</span>
-              </span>
-            </div>
-          </div>
+          )}
 
-          {/* 월별 운동 횟수 바 차트 */}
+          {viewScope === 'yearly' && (
+            <div className="space-y-4">
+                        {/* 월별 운동 횟수 바 차트 */}
           <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2">
             <span className="text-xs font-bold text-gray-500 block mb-3">{t("월별 운동 빈도")}</span>
             <div className="flex items-end justify-between h-32 pt-2 px-1">
@@ -809,8 +829,62 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               })}
             </div>
           </div>
+
+              {/* 연간 세션 피드 리스트 */}
+              <div className="space-y-2 pt-1">
+                <h3 className="text-xs font-bold text-gray-400 px-1">{currentYear}{t("년 수행 세션 피드")} ({yearlySessions.length}{t("회")})</h3>
+                {yearlySessions.length === 0 ? (
+                  <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-2">
+                    <Dumbbell size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
+                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{t("기록된 운동이 없습니다.")}</p>
+                  </div>
+                ) : (
+                  yearlySessions.map((s) => (
+                    <div
+                      key={s.id}
+                      onClick={() => {
+                        setSelectedDate(s.date);
+                        setViewScope('daily');
+                      }}
+                      className="p-3 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-between hover:border-[#0F766E] transition cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-lg">{s.conditionEmoji || '💪'}</span>
+                        <div>
+                          <h4 className="text-xs font-bold text-[#1D1D1F] dark:text-white">{s.title || t("오늘의 운동")}</h4>
+                          <span className="text-[11px] text-gray-400">{s.date} · {s.exercises.length}{t("개 종목")}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-black text-[#0F766E]">{calculateSessionVolume(s).toLocaleString()}kg</span>
+                        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditSession(s)}
+                            className="p-1 rounded-lg hover:bg-black/10 text-gray-400 hover:text-[#0F766E] transition"
+                            title={t("수정")}
+                          >
+                            <Edit3 size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteSession(s.id, s.date)}
+                            className="p-1 rounded-lg hover:bg-red-500/15 text-gray-400 hover:text-red-500 transition"
+                            title={t("삭제")}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                        <ChevronRight size={14} className="text-gray-400" />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* ================= 4. AI 분석용 Markdown 추출 모달 ================= */}
       {isAiExportOpen && (

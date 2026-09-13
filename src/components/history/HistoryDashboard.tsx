@@ -41,162 +41,174 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
   const cumulativeReps = history.reduce((sum, s) => sum + calculateSessionReps(s), 0);
 
   return (
-    <div className="pb-32 max-w-lg mx-auto px-4 space-y-4">
-      {/* 상단 누적 통계 카드 (애플 헬스케어 스타일) */}
-      <div className="p-5 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("나의 트레이닝 통계")}</span>
-          <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/10 text-[#34C759] text-[11px] font-extrabold">
-            {t("총")} {totalWorkouts}{t("회 완료")}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 text-center pt-1">
-          <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
-            <span className="text-[10px] text-gray-400 font-bold block">{t("운동 횟수")}</span>
-            <span className="text-xl font-black text-[#1D1D1F] dark:text-white">{totalWorkouts} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
-          </div>
-
-          <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
-            <span className="text-[10px] text-gray-400 font-bold block">{t("누적 볼륨")}</span>
-            <span className="text-xl font-black text-[#0F766E]">{cumulativeVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{weightUnit}</span></span>
-          </div>
-
-          <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
-            <span className="text-[10px] text-gray-400 font-bold block">{t("누적 반복")}</span>
-            <span className="text-xl font-black text-[#FF9500]">{cumulativeReps.toLocaleString()} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
-          </div>
-        </div>
-      </div>
-
-      {/* 🔄 디로딩 피로도 분석 */}
-      <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-xl bg-indigo-500/10 text-indigo-500">
-              <Sparkles size={16} />
+    <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4">
+      <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
+        {/* 좌측 패널: 누적 통계, 디로딩 주기화, 종목별 성장 지표 (고정) */}
+        <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">
+          {/* 상단 누적 통계 카드 (애플 헬스케어 스타일) */}
+          <div className="p-5 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("나의 트레이닝 통계")}</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/10 text-[#34C759] text-[11px] font-extrabold">
+                {t("총")} {totalWorkouts}{t("회 완료")}
+              </span>
             </div>
+
+            <div className="grid grid-cols-3 gap-2 text-center pt-1">
+              <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
+                <span className="text-[10px] text-gray-400 font-bold block">{t("운동 횟수")}</span>
+                <span className="text-xl font-black text-[#1D1D1F] dark:text-white">{totalWorkouts} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
+              </div>
+
+              <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
+                <span className="text-[10px] text-gray-400 font-bold block">{t("누적 볼륨")}</span>
+                <span className="text-xl font-black text-[#0F766E]">{cumulativeVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{weightUnit}</span></span>
+              </div>
+
+              <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
+                <span className="text-[10px] text-gray-400 font-bold block">{t("누적 반복")}</span>
+                <span className="text-xl font-black text-[#FF9500]">{cumulativeReps.toLocaleString()} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
+              </div>
+            </div>
+          </div>
+
+          {/* 🔄 디로딩 피로도 분석 */}
+          <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-xl bg-indigo-500/10 text-indigo-500">
+                  <Sparkles size={16} />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white">{t("디로딩 & 피로도 주기화")}</h3>
+                  <p className="text-[11px] text-gray-400">{t("신경계 회복 및 초회복 관리")}</p>
+                </div>
+              </div>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                deloadAnalysis.shouldDeload
+                  ? 'bg-red-500/10 text-[#0F766E]'
+                  : 'bg-indigo-500/10 text-indigo-500'
+              }`}>
+                {deloadAnalysis.shouldDeload ? t("⚠️ 디로딩 권장") : t("⚡ 컨디션 최적")}
+              </span>
+            </div>
+
+            <div className="bg-[#F9F9FB] dark:bg-[#252528] p-3.5 rounded-2xl text-xs leading-relaxed space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] text-gray-400">
+                <span>{t("최근 평균 강도:")}</span>
+                <span className="font-bold text-[#FF9500]">{t("평균 RPE")} {deloadAnalysis.recentAvgRpe} / 10</span>
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 text-xs">
+                {t(deloadAnalysis.message)}
+              </p>
+            </div>
+          </div>
+
+          {/* 🚀 종목별 통합 성장 지표 (Cross-Brand Growth) */}
+          <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
+                  <TrendingUp size={16} />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white">{t("종목별 통합 근력 성장 지표")}</h3>
+                  <p className="text-[11px] text-gray-400">{t("머신 브랜드가 달라도 종목 전체 1RM 성장 추적")}</p>
+                </div>
+              </div>
+            </div>
+
             <div>
-              <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white">{t("디로딩 & 피로도 주기화")}</h3>
-              <p className="text-[11px] text-gray-400">{t("신경계 회복 및 초회복 관리")}</p>
+              <button type="button" aria-haspopup="dialog" onClick={() => setIsPickerOpen(true)}
+                className="w-full flex items-center gap-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white rounded-2xl p-3 text-sm text-left">
+                <Search size={18} className="shrink-0 text-[#0F766E]" />
+                <span className="flex-1 font-bold">{targetExercise ? displayExercise(targetExercise) : t('성장을 확인할 종목 검색')}</span>
+                <span className="text-xs text-[#0F766E] shrink-0">{t("종목 변경")}</span>
+              </button>
             </div>
-          </div>
-          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-            deloadAnalysis.shouldDeload
-              ? 'bg-red-500/10 text-[#0F766E]'
-              : 'bg-indigo-500/10 text-indigo-500'
-          }`}>
-            {deloadAnalysis.shouldDeload ? t("⚠️ 디로딩 권장") : t("⚡ 컨디션 최적")}
-          </span>
-        </div>
 
-        <div className="bg-[#F9F9FB] dark:bg-[#252528] p-3.5 rounded-2xl text-xs leading-relaxed space-y-1.5">
-          <div className="flex items-center justify-between text-[11px] text-gray-400">
-            <span>{t("최근 평균 강도:")}</span>
-            <span className="font-bold text-[#FF9500]">{t("평균 RPE")} {deloadAnalysis.recentAvgRpe} / 10</span>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 text-xs">
-            {t(deloadAnalysis.message)}
-          </p>
-        </div>
-      </div>
+            <div className="bg-[#F9F9FB] dark:bg-[#252528] p-3.5 rounded-2xl space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{targetExercise ? `${displayExercise(targetExercise)} ${t("성장률")}` : t('종목별 성장 기록')}</span>
+                <span className={`text-sm font-black ${
+                  progression.records.length < 2
+                    ? 'text-gray-400'
+                    : progression.growthRate > 0
+                    ? 'text-[#34C759]'
+                    : progression.growthRate === 0
+                    ? 'text-gray-400'
+                    : 'text-[#FF9500]'
+                }`}>
+                  {progression.records.length < 2
+                    ? t('기록 측정 중')
+                    : progression.growthRate > 0
+                    ? `+${progression.growthRate}% ${t("성장 🚀")}`
+                    : progression.growthRate === 0
+                    ? `0.0% (${t("유지")})`
+                    : `${progression.growthRate}%`}
+                </span>
+              </div>
 
-      {/* 🚀 종목별 통합 성장 지표 (Cross-Brand Growth) */}
-      <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
-              <TrendingUp size={16} />
-            </div>
-            <div>
-              <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white">{t("종목별 통합 근력 성장 지표")}</h3>
-              <p className="text-[11px] text-gray-400">{t("머신 브랜드가 달라도 종목 전체 1RM 성장 추적")}</p>
-            </div>
-          </div>
-        </div>
+              {progression.records.length === 0 ? (
+                <div className="py-3 text-center text-xs text-gray-400">
+                  {selectedExerciseId ? t('해당 종목은 완료한 세트의 1RM 데이터가 아직 없습니다.') : t('운동을 기록하면 데이터가 있는 종목을 먼저 보여드려요.')}
+                </div>
+              ) : (
+                <div className="space-y-1.5 pt-1">
+                  {progression.records.map((rec, i) => {
+                    const recUnit = rec.weightUnit || 'kg';
+                    const converted1RM = recUnit !== weightUnit
+                      ? convertWeight(rec.max1RM, recUnit, weightUnit)
+                      : null;
 
-        <div>
-          <button type="button" aria-haspopup="dialog" onClick={() => setIsPickerOpen(true)}
-            className="w-full flex items-center gap-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white rounded-2xl p-3 text-sm text-left">
-            <Search size={18} className="shrink-0 text-[#0F766E]" />
-            <span className="flex-1 font-bold">{targetExercise ? displayExercise(targetExercise) : t('성장을 확인할 종목 검색')}</span>
-            <span className="text-xs text-[#0F766E] shrink-0">{t("종목 변경")}</span>
-          </button>
-        </div>
-
-        <div className="bg-[#F9F9FB] dark:bg-[#252528] p-3.5 rounded-2xl space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{targetExercise ? `${displayExercise(targetExercise)} ${t("성장률")}` : t('종목별 성장 기록')}</span>
-            <span className={`text-sm font-black ${
-              progression.records.length < 2
-                ? 'text-gray-400'
-                : progression.growthRate > 0
-                ? 'text-[#34C759]'
-                : progression.growthRate === 0
-                ? 'text-gray-400'
-                : 'text-[#FF9500]'
-            }`}>
-              {progression.records.length < 2
-                ? t('기록 측정 중')
-                : progression.growthRate > 0
-                ? `+${progression.growthRate}% ${t("성장 🚀")}`
-                : progression.growthRate === 0
-                ? `0.0% (${t("유지")})`
-                : `${progression.growthRate}%`}
-            </span>
-          </div>
-
-          {progression.records.length === 0 ? (
-            <div className="py-3 text-center text-xs text-gray-400">
-              {selectedExerciseId ? t('해당 종목은 완료한 세트의 1RM 데이터가 아직 없습니다.') : t('운동을 기록하면 데이터가 있는 종목을 먼저 보여드려요.')}
-            </div>
-          ) : (
-            <div className="space-y-1.5 pt-1">
-              {progression.records.map((rec, i) => {
-                const recUnit = rec.weightUnit || 'kg';
-                const converted1RM = recUnit !== weightUnit
-                  ? convertWeight(rec.max1RM, recUnit, weightUnit)
-                  : null;
-
-                return (
-                  <div key={i} className="flex items-center justify-between p-2.5 bg-white dark:bg-[#1C1C1E] rounded-xl text-xs shadow-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-semibold text-gray-400">{rec.date}</span>
-                      {rec.brand && (
-                        <span className="px-1.5 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-semibold">
-                          {rec.brand.split(' ')[0]}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-500">{rec.weight}{recUnit} × {rec.reps}{t("회")}</span>
-                      <span className="font-bold text-[#0F766E]">
-                        {t("추정 1RM")} {rec.max1RM}{recUnit}
-                        {converted1RM !== null && (
-                          <span className="text-[11px] font-normal text-gray-400 dark:text-gray-400 ml-1">
-                            (≈{converted1RM}{weightUnit})
+                    return (
+                      <div key={i} className="flex items-center justify-between p-2.5 bg-white dark:bg-[#1C1C1E] rounded-xl text-xs shadow-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-semibold text-gray-400">{rec.date}</span>
+                          {rec.brand && (
+                            <span className="px-1.5 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-semibold">
+                              {rec.brand.split(' ')[0]}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">{rec.weight}{recUnit} × {rec.reps}{t("회")}</span>
+                          <span className="font-bold text-[#0F766E]">
+                            {t("추정 1RM")} {rec.max1RM}{recUnit}
+                            {converted1RM !== null && (
+                              <span className="text-[11px] font-normal text-gray-400 dark:text-gray-400 ml-1">
+                                (≈{converted1RM}{weightUnit})
+                              </span>
+                            )}
                           </span>
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
 
-      {isPickerOpen && <GrowthExercisePicker options={exerciseOptions} selectedId={selectedExerciseId}
-        onClose={() => setIsPickerOpen(false)} onSelect={id => { setSelectedExerciseId(id); setIsPickerOpen(false); }} />}
-      {/* 과거 운동 히스토리 목록 */}
-      <div className="space-y-2.5">
-        <h3 className="text-sm font-extrabold text-[#1D1D1F] dark:text-white px-1 flex items-center gap-1.5">
-          <Calendar size={15} className="text-[#0F766E]" />
-          {t("과거 운동 일지")} ({history.length}{t("회")})
-        </h3>
+        {isPickerOpen && <GrowthExercisePicker options={exerciseOptions} selectedId={selectedExerciseId}
+          onClose={() => setIsPickerOpen(false)} onSelect={id => { setSelectedExerciseId(id); setIsPickerOpen(false); }} />}
 
-        {history.map((sess) => {
+        {/* 우측 패널: 과거 운동 히스토리 목록 */}
+        <div className="space-y-4 md:col-span-7 lg:col-span-7 mt-4 md:mt-0">
+          <div className="space-y-2.5">
+            <h3 className="text-sm font-extrabold text-[#1D1D1F] dark:text-white px-1 flex items-center gap-1.5">
+              <Calendar size={15} className="text-[#0F766E]" />
+              {t("과거 운동 일지")} ({history.length}{t("회")})
+            </h3>
+
+            {history.length === 0 ? (
+              <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-2">
+                <Calendar size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
+                <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{t("기록된 운동이 없습니다.")}</p>
+              </div>
+            ) : (
+              history.map((sess) => {
           const vol = calculateSessionVolume(sess, weightUnit);
           const completedExercises = sess.exercises;
 
@@ -248,7 +260,10 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
               </div>
             </div>
           );
-        })}
+        })
+      )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -69,137 +69,143 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
   };
 
   return (
-    <div className="pb-32 max-w-lg mx-auto px-4 space-y-4">
-      {/* 3D 인체 해부학 뷰어 섹션 */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between px-1">
-          <div>
-            <h2 className="text-base font-extrabold text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
-              <Sparkles size={16} className="text-[#0F766E]" />
-              {t("해부학 근육 시각화")}
-            </h2>
-            <p className="text-xs text-gray-400">
-              {selectedExercise ? `${displayExercise(selectedExercise)} ${t("주동근·협응근")}` : t("인체를 터치하여 운동 찾기")}
-            </p>
-          </div>
-        </div>
+    <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4">
+      <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
+        {/* 좌측 패널 (3D 해부학 모델 & 선택된 운동 상세 정보) */}
+        <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">
+          {/* 3D 인체 해부학 뷰어 섹션 */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <div>
+                <h2 className="text-base font-extrabold text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
+                  <Sparkles size={16} className="text-[#0F766E]" />
+                  {t("해부학 근육 시각화")}
+                </h2>
+                <p className="text-xs text-gray-400">
+                  {selectedExercise ? `${displayExercise(selectedExercise)} ${t("주동근·협응근")}` : t("인체를 터치하여 운동 찾기")}
+                </p>
+              </div>
+            </div>
 
-        {activeMuscleFilter && (
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs text-blue-500 font-bold">
-              {t("선택된 근육:")} {displayMuscle(activeMuscleFilter)}
-            </span>
-            <button
-              onClick={() => setActiveMuscleFilter(null)}
-              className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-[#0F766E] text-[11px] font-bold flex items-center gap-1"
-            >
-              <span>{t("필터 해제")}</span>
-              <RotateCcw size={10} />
-            </button>
-          </div>
-        )}
-
-        {/* 뷰어 컴포넌트 렌더링 */}
-        <Suspense fallback={<div className="h-48 flex items-center justify-center" role="status">3D…</div>}><HumanMuscle3DViewer
-          primaryMuscles={selectedExercise?.primaryMuscles || []}
-          secondaryMuscles={selectedExercise?.secondaryMuscles || []}
-          activeMuscleFilter={activeMuscleFilter}
-          onSelectMuscle={handleMuscleClickOn3D}
-          height="440px"
-          isDark={isDark}
-        /></Suspense>
-      </div>
-
-      {/* 선택된 운동 상세 카드 */}
-      {selectedExercise && (
-        <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-black text-[#1D1D1F] dark:text-white">{displayExercise(selectedExercise)}</h3>
-                <span className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 text-[10px] font-bold">
-                  {getEquipmentLabel(selectedExercise.equipment)}
+            {activeMuscleFilter && (
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs text-blue-500 font-bold">
+                  {t("선택된 근육:")} {displayMuscle(activeMuscleFilter)}
                 </span>
-                {selectedExercise.defaultBrand && (
-                  <span className="px-2 py-0.5 rounded-lg bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-bold">
-                    {selectedExercise.defaultBrand.split(' ')[0]}
-                  </span>
+                <button
+                  onClick={() => setActiveMuscleFilter(null)}
+                  className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-[#0F766E] text-[11px] font-bold flex items-center gap-1"
+                >
+                  <span>{t("필터 해제")}</span>
+                  <RotateCcw size={10} />
+                </button>
+              </div>
+            )}
+
+            {/* 뷰어 컴포넌트 렌더링 */}
+            <Suspense fallback={<div className="h-48 flex items-center justify-center" role="status">3D…</div>}><HumanMuscle3DViewer
+              primaryMuscles={selectedExercise?.primaryMuscles || []}
+              secondaryMuscles={selectedExercise?.secondaryMuscles || []}
+              activeMuscleFilter={activeMuscleFilter}
+              onSelectMuscle={handleMuscleClickOn3D}
+              height="440px"
+              isDark={isDark}
+            /></Suspense>
+          </div>
+
+          {/* 선택된 운동 상세 카드 */}
+          {selectedExercise && (
+            <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-black text-[#1D1D1F] dark:text-white">{displayExercise(selectedExercise)}</h3>
+                    <span className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 text-[10px] font-bold">
+                      {getEquipmentLabel(selectedExercise.equipment)}
+                    </span>
+                    {selectedExercise.defaultBrand && (
+                      <span className="px-2 py-0.5 rounded-lg bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-bold">
+                        {selectedExercise.defaultBrand.split(' ')[0]}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-gray-400">{selectedExercise.nameEn}</span>
+                </div>
+
+                {onSelectForWorkout && (
+                  <button
+                    type="button"
+                    onClick={() => onSelectForWorkout(selectedExercise)}
+                    className="px-3.5 py-1.5 bg-[#0F766E] text-white text-xs font-bold rounded-xl shadow-sm hover:opacity-90 transition active:scale-98"
+                  >
+                    + {t("기록에 담기")}
+                  </button>
                 )}
               </div>
-              <span className="text-xs text-gray-400">{selectedExercise.nameEn}</span>
-            </div>
 
-            {onSelectForWorkout && (
-              <button
-                type="button"
-                onClick={() => onSelectForWorkout(selectedExercise)}
-                className="px-3.5 py-1.5 bg-[#0F766E] text-white text-xs font-bold rounded-xl shadow-sm hover:opacity-90 transition active:scale-98"
-              >
-                + {t("기록에 담기")}
-              </button>
-            )}
-          </div>
-
-          {/* 주동근 & 협응근 배지 */}
-          <div className="space-y-1.5 text-xs">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] font-bold text-[11px]">
-                {t("주동근 (Primary)")}
-              </span>
-              {selectedExercise.primaryMuscles.map((m) => (
-                <span key={m} className="font-bold text-gray-800 dark:text-gray-200">
-                  {displayMuscle(m)}
-                </span>
-              ))}
-            </div>
-
-            {selectedExercise.secondaryMuscles.length > 0 && (
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] font-bold text-[11px]">
-                  {t("협응근 (Secondary)")}
-                </span>
-                {selectedExercise.secondaryMuscles.map((m) => (
-                  <span key={m} className="text-gray-500 dark:text-gray-400">
-                    {displayMuscle(m)}
+              {/* 주동근 & 협응근 배지 */}
+              <div className="space-y-1.5 text-xs">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] font-bold text-[11px]">
+                    {t("주동근 (Primary)")}
                   </span>
-                ))}
+                  {selectedExercise.primaryMuscles.map((m) => (
+                    <span key={m} className="font-bold text-gray-800 dark:text-gray-200">
+                      {displayMuscle(m)}
+                    </span>
+                  ))}
+                </div>
+
+                {selectedExercise.secondaryMuscles.length > 0 && (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] font-bold text-[11px]">
+                      {t("협응근 (Secondary)")}
+                    </span>
+                    {selectedExercise.secondaryMuscles.map((m) => (
+                      <span key={m} className="text-gray-500 dark:text-gray-400">
+                        {displayMuscle(m)}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {displayExerciseDescription(selectedExercise) && (
-            <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed pt-1">
-              {displayExerciseDescription(selectedExercise)}
-            </p>
-          )}
+              {displayExerciseDescription(selectedExercise) && (
+                <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed pt-1">
+                  {displayExerciseDescription(selectedExercise)}
+                </p>
+              )}
 
-          {/* 가이드 */}
-          {displayExerciseInstructions(selectedExercise).length > 0 && (
-            <div className="bg-[#F9F9FB] dark:bg-[#222225] p-3 rounded-2xl space-y-1.5 border border-black/5 dark:border-white/5">
-              <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 block flex items-center gap-1">
-                <BookOpen size={12} className="text-[#FF9500]" />
-                {t("올바른 자세 가이드")}
-              </span>
-              <ol className="list-decimal list-inside space-y-1 text-xs text-gray-700 dark:text-gray-300">
-                {displayExerciseInstructions(selectedExercise).map((inst, i) => (
-                  <li key={i} className="leading-snug">{inst}</li>
-                ))}
-              </ol>
+              {/* 가이드 */}
+              {displayExerciseInstructions(selectedExercise).length > 0 && (
+                <div className="bg-[#F9F9FB] dark:bg-[#222225] p-3 rounded-2xl space-y-1.5 border border-black/5 dark:border-white/5">
+                  <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 block flex items-center gap-1">
+                    <BookOpen size={12} className="text-[#FF9500]" />
+                    {t("올바른 자세 가이드")}
+                  </span>
+                  <ol className="list-decimal list-inside space-y-1 text-xs text-gray-700 dark:text-gray-300">
+                    {displayExerciseInstructions(selectedExercise).map((inst, i) => (
+                      <li key={i} className="leading-snug">{inst}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
 
-      {/* 검색 & 카테고리 필터 */}
-      <div className="space-y-2 pt-1">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{t("운동 종목")} ({filteredExercises.length})</span>
-          {(searchQuery || selectedCategory !== 'all' || selectedLoadType !== 'all' || activeMuscleFilter) && (
-            <button onClick={clearFilters} className="text-xs text-[#0F766E] hover:underline">
-              {t("필터 초기화")}
-            </button>
-          )}
-        </div>
+        {/* 우측 패널 (검색 필터 & 종목 리스트) */}
+        <div className="space-y-4 md:col-span-7 lg:col-span-7 mt-4 md:mt-0">
+          {/* 검색 & 카테고리 필터 */}
+          <div className="space-y-2 pt-1">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{t("운동 종목")} ({filteredExercises.length})</span>
+              {(searchQuery || selectedCategory !== 'all' || selectedLoadType !== 'all' || activeMuscleFilter) && (
+                <button onClick={clearFilters} className="text-xs text-[#0F766E] hover:underline">
+                  {t("필터 초기화")}
+                </button>
+              )}
+            </div>
 
         <div className="relative">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -272,7 +278,9 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               type="button"
               onClick={() => {
                 setSelectedExercise(ex);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (window.innerWidth < 768) {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
               }}
               className={`w-full text-left p-3.5 rounded-3xl border transition-all flex items-center justify-between ${
                 isCurrent
@@ -317,6 +325,8 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
             {t("더 보기")} ({visibleCount} / {filteredExercises.length})
           </button>
         )}
+        </div>
+        </div>
       </div>
     </div>
   );

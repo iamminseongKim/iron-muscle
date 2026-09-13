@@ -17,8 +17,12 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
   ] as const;
 
   return (
-    <nav data-bottom-navigation className="fixed bottom-0 left-0 right-0 z-30 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-xl border-t border-black/5 dark:border-white/10 pb-safe">
-      <div className="max-w-lg mx-auto flex items-center justify-around py-2 px-4">
+    <nav
+      data-bottom-navigation
+      className="fixed bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-30 pointer-events-auto select-none"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
+      <div className="flex items-center gap-1 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 bg-white/85 dark:bg-[#1C1C1E]/85 backdrop-blur-2xl rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.16)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] border border-black/10 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -27,19 +31,15 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className={`flex-1 py-1.5 flex flex-col items-center gap-1 transition-all ${
+              className={`relative px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full flex flex-col items-center gap-0.5 transition-all duration-200 ${
                 isActive
-                  ? 'text-[#0F766E] scale-105'
+                  ? 'bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] font-black shadow-xs scale-105'
                   : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
-              <div className={`p-1.5 rounded-xl transition ${
-                isActive ? 'bg-[#0F766E]/10' : ''
-              }`}>
-                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-              </div>
-              <span className={`text-[11px] font-bold tracking-tight ${
-                isActive ? 'text-[#1D1D1F] dark:text-white' : 'text-gray-400'
+              <Icon size={19} strokeWidth={isActive ? 2.5 : 2} />
+              <span className={`text-[10px] sm:text-[11px] font-bold tracking-tight ${
+                isActive ? 'text-[#0F766E] dark:text-[#2DD4BF]' : 'text-gray-400 dark:text-gray-400'
               }`}>
                 {t(tab.label)}
               </span>
@@ -47,8 +47,8 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
           );
         })}
       </div>
-      <div className="text-center pb-1 text-[9px] text-gray-400/60 dark:text-gray-600 font-medium">
-        v{packageJson.version} - minseongkimim@gmail.com
+      <div className="text-center pt-1 text-[8px] text-gray-400/50 dark:text-gray-600 font-medium">
+        v{packageJson.version}
       </div>
     </nav>
   );
