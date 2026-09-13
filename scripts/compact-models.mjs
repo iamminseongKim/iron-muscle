@@ -23,6 +23,7 @@ for (const name of ['anatomy', 'skeleton']) {
      if(a){assert.equal(a.length,b.length);for(let k=0;k<a.length;k+=3)assert.ok([0,1,2].some(offset=>[0,1,2].every(n=>a[k+n]===b[k+(n+offset)%3])));}
    });
  });
- fs.writeFileSync(`dist/anatomy/${name}.glb.gz`,gzipSync(encoded,{level:9}));
- console.log(`Verified ${name}: ${originalMeshes.length} meshes, exact attributes and triangle topology; ${fs.statSync(`dist/anatomy/${name}.glb.gz`).size} bytes`);
+  fs.writeFileSync(`dist/anatomy/${name}.glb`, encoded);
+  fs.writeFileSync(`dist/anatomy/${name}.glb.gz`, gzipSync(encoded, {level:9}));
+  console.log(`Verified ${name}: ${originalMeshes.length} meshes, exact attributes and triangle topology; glb: ${fs.statSync(`dist/anatomy/${name}.glb`).size} bytes, gz: ${fs.statSync(`dist/anatomy/${name}.glb.gz`).size} bytes`);
 }

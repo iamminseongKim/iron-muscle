@@ -13,7 +13,6 @@ export default defineConfig({
       for (const name of ['anatomy', 'skeleton']) {
         const file = resolve(`dist/anatomy/${name}.glb`)
         writeFileSync(`${file}.gz`, gzipSync(readFileSync(file), { level: 9 }))
-        rmSync(file)
       }
       rmSync(resolve('dist/screenshots'), { recursive: true, force: true })
       rmSync(resolve('dist/anatomy/mesh_mapping.json'), { force: true })

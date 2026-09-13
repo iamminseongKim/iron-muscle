@@ -102,11 +102,11 @@ export const RestTimer: React.FC<RestTimerProps> = ({
               <Bell size={18} className={isFlashing ? 'animate-spin' : ''} />
             </div>
             <div>
-              <span className="text-[11px] text-gray-400 font-bold block">휴식 시간</span>
+              <span className="text-[11px] text-gray-400 font-bold block">{t("휴식 시간")}</span>
               <span className={`text-xl font-black font-mono tracking-tight ${
                 remainingSeconds === 0 ? 'text-red-500 animate-pulse' : 'text-[#1D1D1F] dark:text-white'
               }`}>
-                {remainingSeconds === 0 ? '휴식 완료!' : formatTime(remainingSeconds)}
+                {remainingSeconds === 0 ? t('휴식 완료!') : formatTime(remainingSeconds)}
               </span>
             </div>
           </div>
@@ -117,7 +117,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
               type="button"
               onClick={() => adjustTime(-10)}
               className="px-2 py-1 bg-gray-100 dark:bg-[#2C2C2E] hover:opacity-80 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-lg transition"
-              title="-10초"
+              title="-10s"
             >
               -10
             </button>
@@ -125,7 +125,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
               type="button"
               onClick={() => adjustTime(10)}
               className="px-2 py-1 bg-gray-100 dark:bg-[#2C2C2E] hover:opacity-80 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-lg transition"
-              title="+10초"
+              title="+10s"
             >
               +10
             </button>
@@ -142,7 +142,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({
               type="button"
               onClick={resetTimer}
               className="p-2 bg-gray-100 dark:bg-[#2C2C2E] hover:opacity-80 text-gray-500 dark:text-gray-400 rounded-xl transition"
-              title="리셋"
+              title={t("초기화")}
             >
               <RotateCcw size={16} />
             </button>
@@ -151,10 +151,10 @@ export const RestTimer: React.FC<RestTimerProps> = ({
                 type="button"
                 onClick={handleUndoReset}
                 className="px-2 py-1 bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-indigo-500/25 transition animate-fade-in"
-                title="직전 시간 복구"
+                title={t("복구")}
               >
                 <RotateCcw size={12} className="rotate-180" />
-                복구
+                {t("복구")}
               </button>
             )}
             <button

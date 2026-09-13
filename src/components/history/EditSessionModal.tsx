@@ -150,9 +150,9 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-black text-[#1D1D1F] dark:text-white">
-                운동 기록 수정
+                {t("운동 일지 수정")}
               </h3>
-              <p className="text-[11px] text-gray-400">날짜, 메모 및 세트 기록을 수정합니다.</p>
+              <p className="text-[11px] text-gray-400">{t("세션 상세 내용 및 기록 편집")}</p>
             </div>
           </div>
           <button
@@ -171,7 +171,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
             <div>
               <label className="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1">
                 <Calendar size={12} className="text-[#0F766E]" />
-                운동 일자
+                {t("날짜")}
               </label>
               <input
                 type="date"
@@ -184,7 +184,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
             <div>
               <label className="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1">
                 <Clock size={12} className="text-[#FF9500]" />
-                소요 시간 (분)
+                {t("운동 시간(분)")}
               </label>
               <input
                 type="number"
@@ -201,7 +201,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
             <div className="flex items-center gap-2">
               <div className="flex-1">
                 <label className="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1">
-                  운동 제목
+                  {t("루틴 제목")}
                 </label>
                 <input
                   type="text"
@@ -214,7 +214,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
 
               <div>
                 <label className="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1 text-center">
-                  컨디션
+                  {t("오늘의 신체 컨디션")}
                 </label>
                 <div className="flex gap-1 bg-white dark:bg-[#1C1C1E] p-1 rounded-xl border border-black/10 dark:border-white/10">
                   {EMOJI_OPTIONS.map((em) => (
@@ -242,7 +242,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                 className="w-4 h-4 rounded text-[#0F766E] accent-[#0F766E]"
               />
               <span className="font-bold text-[11px] text-gray-600 dark:text-gray-300">
-                디로딩 (Deload) 주간 운동으로 표시
+                {t("디로딩 세션으로 기록 (강도/볼륨 조절 주간)")}
               </span>
             </label>
           </div>
@@ -251,12 +251,12 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           <div>
             <label className="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1">
               <MessageSquare size={12} className="text-[#30D158]" />
-              세션 메모 (자세, 피로도, 팁)
+              {t("운동 일지 메모 (식단, 통증, 집중도 등)")}
             </label>
             <textarea
               rows={2}
               value={notes}
-              placeholder="오늘 운동에 대한 피드백이나 느낀 점을 입력하세요."
+              placeholder={t("오늘 운동 일지 및 특이사항 입력...")}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] p-2.5 rounded-xl border border-black/5 dark:border-white/5 text-gray-800 dark:text-gray-200 outline-none resize-none"
             />
@@ -267,7 +267,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
             <div className="flex items-center justify-between">
               <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
                 <Dumbbell size={14} className="text-[#0F766E]" />
-                운동 종목 및 세트 ({exercises.length}종목)
+                {t("운동 종목")} ({exercises.length})
               </span>
               <button
                 type="button"
@@ -275,13 +275,13 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                 className="px-2.5 py-1 bg-[#0F766E] hover:bg-[#0062CC] text-white font-bold rounded-xl flex items-center gap-1 text-[11px] transition shadow-xs"
               >
                 <Plus size={13} />
-                <span>종목 추가</span>
+                <span>{t("종목 추가")}</span>
               </button>
             </div>
 
             {exercises.length === 0 ? (
               <div className="text-center py-6 border-2 border-dashed border-black/10 dark:border-white/10 rounded-2xl text-gray-400">
-                기록된 운동 종목이 없습니다.
+                {t("기록된 운동이 없습니다")}
               </div>
             ) : (
               exercises.map((exItem, eIdx) => {
@@ -303,7 +303,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                           {exName}
                         </span>
                         <span className="text-[10px] text-gray-400">
-                          {exItem.loadType === 'plate-loaded' ? '플레이트' : exItem.loadType === 'pin-loaded' ? '핀머신' : exItem.equipmentType}
+                          {exItem.loadType === 'plate-loaded' ? t('플레이트') : exItem.loadType === 'pin-loaded' ? t('핀머신') : t(exItem.equipmentType)}
                         </span>
                       </div>
 
@@ -318,15 +318,15 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             setExercises(newExs);
                           }}
                           className="px-2 py-0.5 rounded-lg bg-black/5 dark:bg-white/10 text-[10px] font-bold text-[#0F766E] hover:bg-[#0F766E]/10 transition"
-                          title="중량 단위 전환"
+                          title={t("중량 단위")}
                         >
-                          단위: {exItem.weightUnit || 'kg'}
+                          {t("단위")}: {exItem.weightUnit || 'kg'}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteExercise(eIdx)}
                           className="p-1 text-gray-400 hover:text-red-500 rounded-lg transition"
-                          title="종목 삭제"
+                          title={t("종목 삭제")}
                         >
                           <Trash2 size={15} />
                         </button>
@@ -337,7 +337,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                     <div className="flex items-center justify-between text-[11px] bg-white/70 dark:bg-black/30 px-2.5 py-1.5 rounded-xl border border-black/5 dark:border-white/5 flex-wrap gap-1">
                       <span className="font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1 shrink-0">
                         <Clock size={11} className="text-[#0F766E]" />
-                        휴식 일괄 적용:
+                        {t("휴식 시간")}:
                       </span>
                       <div className="flex items-center gap-1 font-bold flex-wrap">
                         {[30, 60, 90, 120, 180].map((sec) => (
@@ -346,9 +346,9 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             type="button"
                             onClick={() => handleBatchApplyRest(eIdx, sec)}
                             className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-[#0F766E] hover:text-white text-gray-700 dark:text-gray-300 text-[10px] transition active:scale-95 shadow-xs"
-                            title={`모든 세트의 휴식 시간을 ${sec >= 60 ? `${Math.floor(sec / 60)}분${sec % 60 ? ` ${sec % 60}초` : ''}` : `${sec}초`}로 일괄 변경`}
+                            title={`${sec}s`}
                           >
-                            {sec >= 60 ? `${Math.floor(sec / 60)}분${sec % 60 ? `${sec % 60}s` : ''}` : `${sec}s`}
+                            {sec}s
                           </button>
                         ))}
                       </div>
@@ -357,10 +357,10 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                     {/* 세트 헤더 */}
                     <div className="grid grid-cols-12 gap-1.5 text-[10px] font-bold text-gray-400 px-1 text-center">
                       <span className="col-span-1">#</span>
-                      <span className="col-span-3">무게({exItem.weightUnit || 'kg'})</span>
+                      <span className="col-span-3">{t("무게")}({exItem.weightUnit || 'kg'})</span>
                       <span className="col-span-3">{t("횟수")}</span>
                       <span className="col-span-2">RPE</span>
-                      <span className="col-span-2">휴식(s)</span>
+                      <span className="col-span-2">{t("휴식")}(s)</span>
                       <span className="col-span-1">{t("삭제")}</span>
                     </div>
 
@@ -475,7 +475,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
             className="px-5 py-2 rounded-xl bg-[#0F766E] hover:bg-[#0062CC] text-white font-extrabold flex items-center gap-1.5 transition shadow-sm"
           >
             <Save size={15} />
-            <span>수정사항 저장</span>
+            <span>{t("수정 완료 저장")}</span>
           </button>
         </div>
 

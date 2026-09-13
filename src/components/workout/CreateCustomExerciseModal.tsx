@@ -79,7 +79,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
     e.preventDefault();
     const cleanName = name.trim();
     if (!cleanName) {
-      alert('운동 종목 이름을 입력해 주세요.');
+      alert(t('운동 종목 이름을 입력해 주세요.'));
       return;
     }
 
@@ -113,7 +113,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
     };
 
     if (!saveCustomExercise(newEx)) {
-      alert('종목을 저장하지 못했습니다. 저장 공간이나 브라우저 저장 권한을 확인한 뒤 다시 시도해 주세요.');
+      alert(t('종목을 저장하지 못했습니다. 저장 공간이나 브라우저 저장 권한을 확인한 뒤 다시 시도해 주세요.'));
       return;
     }
     onCreated(newEx);

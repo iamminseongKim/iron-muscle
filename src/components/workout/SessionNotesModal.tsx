@@ -107,8 +107,8 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
               <FileText size={18} />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">오늘의 운동 일지 & 코멘트</h3>
-              <p className="text-xs text-gray-400">몸 상태, 운동 부위, 컨디션, 특이사항 기록</p>
+              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">{t("오늘의 운동 일지 & 코멘트")}</h3>
+              <p className="text-xs text-gray-400">{t("몸 상태, 운동 부위, 컨디션, 특이사항 기록")}</p>
             </div>
           </div>
           <button 
@@ -123,7 +123,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
         <div className="p-4 space-y-4 overflow-y-auto flex-1">
           {/* 1. 컨디션 이모지 선택 */}
           <div>
-            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2">오늘의 신체 컨디션</span>
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2">{t("오늘의 신체 컨디션")}</span>
             <div className="grid grid-cols-5 gap-2">
               {CONDITION_EMOJIS.map((item) => {
                 const isSelected = selectedEmoji === item.emoji;
@@ -142,7 +142,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                     <span className={`text-[10px] text-center leading-tight font-medium ${
                       isSelected ? 'text-[#0F766E] font-bold' : 'text-gray-500 dark:text-gray-400'
                     }`}>
-                      {item.label.split(' ')[0]}
+                      {t(item.label)}
                     </span>
                   </button>
                 );
@@ -155,8 +155,8 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
                 <Target size={14} className="text-[#0F766E]" />
-                운동 부위 재설정
-                <span className="text-[11px] font-normal text-gray-400">({selectedPartIds.length}개 선택)</span>
+                {t("운동 부위 재설정")}
+                <span className="text-[11px] font-normal text-gray-400">({selectedPartIds.length})</span>
               </span>
 
               {/* 현재 종목 기반 자동 감지 버튼 */}
@@ -165,10 +165,10 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                   type="button"
                   onClick={handleAutoDetect}
                   className="px-2 py-1 bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 hover:border-[#0F766E] text-[#0F766E] dark:text-[#2DD4BF] rounded-lg text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-xs"
-                  title="현재 등록된 운동 종목들로부터 운동 부위를 자동 감지하여 선택합니다"
+                  title={t("종목 기반으로 부위가 자동 체크됩니다")}
                 >
                   <Wand2 size={12} />
-                  <span>종목 기반 자동 감지</span>
+                  <span>{t("자동 감지")}</span>
                 </button>
               )}
             </div>
@@ -182,10 +182,10 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                 <div className="flex items-center gap-1.5 truncate">
                   <Sparkles size={13} className="shrink-0" />
                   <span className="truncate">
-                    세션에 <strong>[{unselectedDetectedLabels.join(', ')}]</strong> 종목이 있습니다.
+                    [{unselectedDetectedLabels.map((l) => t(l || '')).join(', ')}]
                   </span>
                 </div>
-                <span className="underline font-bold text-[10px] shrink-0">추가 반영</span>
+                <span className="underline font-bold text-[10px] shrink-0">{t("추가 반영")}</span>
               </div>
             )}
 
@@ -233,7 +233,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                 className="rounded text-[#0F766E] focus:ring-[#0F766E]"
               />
               <span className="text-[11px]">
-                루틴 제목도 함께 갱신: <strong className="text-[#0F766E] dark:text-[#2DD4BF] font-semibold">{recommendedTitle}</strong>
+                {t("루틴 제목 자동 동기화")}: <strong className="text-[#0F766E] dark:text-[#2DD4BF] font-semibold">{recommendedTitle}</strong>
               </span>
             </label>
           </div>
@@ -245,8 +245,8 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                 <Sparkles size={16} />
               </div>
               <div>
-                <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">디로딩 세션 (Deload)</span>
-                <span className="text-[11px] text-gray-400">신경계 회복을 위해 가볍게 진행한 운동</span>
+                <span className="text-xs font-bold text-[#1D1D1F] dark:text-white block">{t("디로딩 세션")}</span>
+                <span className="text-[11px] text-gray-400">{t("신경계 회복을 위해 가볍게 진행한 운동")}</span>
               </div>
             </div>
             <button
@@ -266,12 +266,12 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
 
           {/* 자유 텍스트 일지 */}
           <div>
-            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-1.5">운동 총평 메모</span>
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-1.5">{t("세션 메모")}</span>
             <textarea
               rows={4}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="예: 오늘은 하체 스트렝스 훈련. 스모 데드리프트 140kg 성공해서 뿌듯함. 다음엔 무릎 보호대 챙겨올 것."
+              placeholder={t("오늘 운동 일지 및 특이사항 입력...")}
               className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition resize-none leading-relaxed"
             />
           </div>
@@ -289,7 +289,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
             onClick={handleSave}
             className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#0F766E] to-[#115E59] hover:opacity-95 transition shadow-sm"
           >
-            기록 저장
+            {t("저장하기")}
           </button>
         </div>
       </div>

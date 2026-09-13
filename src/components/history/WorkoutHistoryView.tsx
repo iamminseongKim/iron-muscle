@@ -1,6 +1,5 @@
 import exportMessages from '../../i18n/exportMessages.json';
-import { useLanguage } from '../../i18n';
-import { t } from '../../i18n';
+import { useLanguage, t, displayExercise } from '../../i18n';
 import React, { useState, useMemo } from 'react';
 import { 
   Calendar, ChevronLeft, ChevronRight, Download, Copy, Check, 
@@ -78,7 +77,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
   // 과거 운동 삭제 핸들러
   const handleDeleteSession = (sessionId: string, sessionDate: string) => {
-    if (window.confirm(`${sessionDate}의 운동 기록을 정말 삭제하시겠습니까?`)) {
+    if (window.confirm(`${sessionDate} ${t("의 운동 기록을 정말 삭제하시겠습니까?")}`)) {
       const updated = sessions.filter((s) => s.id !== sessionId);
       setSessions(updated);
       saveSessions(updated);
@@ -115,7 +114,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
     );
 
     const confirmed = window.confirm(
-      `[오늘 운동 기록 합치기]\n\n${selectedDate}에 기록된 ${dailySessions.length}개의 세션을 하나로 합치시겠습니까?\n\n• 총 종목: ${totalExCount}개\n• 총 세트: ${totalSetCount}세트\n• 총 소요 시간: ${totalMinutes}분\n\n모든 종목과 세트, 무게 기록이 손상 없이 순서대로 통합됩니다.`
+      `[${t("오늘 운동 기록 합치기")}]\n\n${selectedDate} - ${dailySessions.length}${t("개의 세션을 하나로 합치시겠습니까?")}\n\n• ${t("총 종목:")} ${totalExCount}${t("개")}\n• ${t("총 세트:")} ${totalSetCount}${t("세트")}\n• ${t("총 소요 시간:")} ${totalMinutes}${t("분")}\n\n${t("모든 종목과 세트, 무게 기록이 손상 없이 순서대로 통합됩니다.")}`
     );
 
     if (!confirmed) return;
@@ -127,7 +126,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
       const updated = [merged, ...restSessions];
       setSessions(updated);
       saveSessions(updated);
-      setMergeFeedback(`오늘의 운동 기록 ${dailySessions.length}개가 하나로 깔끔하게 합쳐졌습니다!`);
+      setMergeFeedback(`${t("오늘의 운동 기록 ")}${dailySessions.length}${t("개가 하나로 깔끔하게 합쳐졌습니다!")}`);
       setTimeout(() => setMergeFeedback(''), 4000);
     } catch (e) {
       alert((e as Error).message);
@@ -142,7 +141,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
   // 전체 기록 초기화
   const handleClearAllHistory = () => {
-    if (window.confirm('저장된 모든 운동 기록을 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+    if (window.confirm(t('저장된 모든 운동 기록을 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))) {
       clearAllSessions();
       setSessions([]);
     }
@@ -275,7 +274,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
         <div>
           <h2 className="text-xl font-black text-[#1D1D1F] dark:text-white tracking-tight flex items-center gap-2">
             <Calendar size={20} className="text-[#0F766E]" />{t("운동 기록 조회")}</h2>
-          <p className="text-xs text-gray-400">날짜별, 월별, 연별 운동 일지 및 AI 분석 추출</p>
+          <p className="text-xs text-gray-400">{t("날짜별, 월별, 연별 운동 일지 및 AI 분석 추출")}</p>
         </div>
 
         {/* 🤖 AI 분석용 Markdown 추출 버튼 */}
@@ -383,7 +382,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 onClick={handleMergeDaySessions}
                 className="px-3 py-2 rounded-xl bg-[#0F766E] hover:bg-[#0d635c] text-white font-black text-xs shrink-0 shadow-sm active:scale-95 transition flex items-center gap-1"
               >
-                <span>기록 합치기</span>
+                <span>{t("기록 합치기")}</span>
               </button>
             </div>
           )}
@@ -452,7 +451,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
                     <div className="flex items-center gap-2.5">
                       <div className="text-right">
-                        <span className="text-xs text-gray-400 block font-semibold">총 볼륨</span>
+                        <span className="text-xs text-gray-400 block font-semibold">{t("총 볼륨")}</span>
                         <span className="text-sm font-black text-[#0F766E]">
                           {sessionVol.toLocaleString()} <span className="text-[10px] font-normal text-gray-400">kg</span>
                         </span>
@@ -464,7 +463,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                           type="button"
                           onClick={() => handleOpenEditSession(session)}
                           className="p-1.5 rounded-lg hover:bg-black/10 text-gray-600 dark:text-gray-300 transition"
-                          title="이 운동 기록 수정"
+                          title={t("이 운동 기록 수정")}
                         >
                           <Edit3 size={14} className="text-[#0F766E]" />
                         </button>
@@ -472,7 +471,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                           type="button"
                           onClick={() => handleDeleteSession(session.id, session.date)}
                           className="p-1.5 rounded-lg hover:bg-red-500/15 text-gray-400 hover:text-red-500 transition"
-                          title="이 운동 기록 삭제"
+                          title={t("이 운동 기록 삭제")}
                         >
                           <Trash2 size={14} />
                         </button>
@@ -492,7 +491,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                   <div className="space-y-3 pt-1">
                     {session.exercises.map((exItem, eIdx) => {
                       const base = resolveRecordedExercise(exItem);
-                      const exName = base.name;
+                      const exName = displayExercise(base);
                       const isGrouped = Boolean(exItem.groupId);
 
                       return (
@@ -519,11 +518,11 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                                 </span>
                               )}
                               <span className="px-1.5 py-0.2 rounded bg-black/5 dark:bg-white/10 text-gray-500 text-[10px] font-semibold">
-                                {exItem.loadType === 'plate-loaded' ? '플레이트' : exItem.loadType === 'pin-loaded' ? '핀머신' : exItem.equipmentType}
+                                {exItem.loadType === 'plate-loaded' ? t('플레이트') : exItem.loadType === 'pin-loaded' ? t('핀머신') : t(exItem.equipmentType)}
                               </span>
                               {exItem.executionMode === 'unilateral' && (
                                 <span className="px-1.5 py-0.2 rounded bg-blue-500/10 text-[#0F766E] text-[10px] font-bold">
-                                  원암(편측)
+                                  {t("원암(편측)")}
                                 </span>
                               )}
                             </div>
@@ -548,11 +547,11 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                                     <span className={`px-1 rounded text-[9px] font-black ${
                                       set.side === 'left' ? 'bg-blue-500 text-white' : set.side === 'right' ? 'bg-red-500 text-white' : 'text-gray-400'
                                     }`}>
-                                      {set.side === 'left' ? '좌' : set.side === 'right' ? '우' : '양쪽'}
+                                      {set.side === 'left' ? t('좌') : set.side === 'right' ? t('우') : t('양쪽')}
                                     </span>
                                   )}
                                   <span className="font-extrabold text-[#1D1D1F] dark:text-white">
-                                    {set.weight}{exItem.weightUnit || 'kg'} × {set.reps}회
+                                    {set.weight}{exItem.weightUnit || 'kg'} × {set.reps}{t("회")}
                                   </span>
                                 </div>
 
@@ -611,17 +610,17 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           {/* 월간 요약 카드 */}
           <div className="grid grid-cols-3 gap-2 text-center bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
             <div>
-              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">월 운동 횟수</span>
-              <span className="text-xl font-black text-[#1D1D1F] dark:text-white">{monthlySessions.length} <span className="text-xs font-normal text-gray-400">회</span></span>
+              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 운동 횟수")}</span>
+              <span className="text-xl font-black text-[#1D1D1F] dark:text-white">{monthlySessions.length} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
             </div>
             <div>
-              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">월 누적 볼륨</span>
+              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 누적 볼륨")}</span>
               <span className="text-xl font-black text-[#0F766E]">
                 {monthlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0).toLocaleString()} <span className="text-xs font-normal text-gray-400">kg</span>
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">평균 운동시간</span>
+              <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("평균 운동시간")}</span>
               <span className="text-xl font-black text-[#0F766E]">
                 {monthlySessions.length > 0
                   ? Math.round(monthlySessions.reduce((s, x) => s + x.durationSeconds, 0) / monthlySessions.length / 60)
@@ -633,8 +632,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           {/* 월간 출석 체크 캘린더 히트맵 (잔디 달력) */}
           <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-gray-500 mb-2">
-              <span>월간 출석 캘린더</span>
-              <span className="text-[11px] text-gray-400">날짜 클릭 시 해당 일지 조회</span>
+              <span>{t("월간 출석 캘린더")}</span>
+              <span className="text-[11px] text-gray-400">{t("날짜 클릭 시 해당 일지 조회")}</span>
             </div>
 
             <div className="grid grid-cols-7 gap-1 text-center">
@@ -674,7 +673,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
           {/* 월간 세션 피드 리스트 */}
           <div className="space-y-2 pt-1">
-            <h3 className="text-xs font-bold text-gray-400 px-1">이번 달 수행 세션 피드</h3>
+            <h3 className="text-xs font-bold text-gray-400 px-1">{t("이번 달 수행 세션 피드")}</h3>
             {monthlySessions.map((s) => (
               <div
                 key={s.id}
@@ -742,20 +741,20 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
           <div className="grid grid-cols-2 gap-2 text-center">
             <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
-              <span className="text-[11px] text-gray-400 font-bold block mb-1">연간 총 운동 일수</span>
-              <span className="text-2xl font-black text-[#1D1D1F] dark:text-white">{yearlySessions.length} <span className="text-xs font-normal text-gray-400">일</span></span>
+              <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 총 운동 일수")}</span>
+              <span className="text-2xl font-black text-[#1D1D1F] dark:text-white">{yearlySessions.length} <span className="text-xs font-normal text-gray-400">{t("일")}</span></span>
             </div>
             <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
-              <span className="text-[11px] text-gray-400 font-bold block mb-1">연간 누적 볼륨</span>
+              <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 누적 볼륨")}</span>
               <span className="text-2xl font-black text-[#0F766E]">
-                {Math.round(yearlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0) / 1000).toLocaleString()} <span className="text-xs font-normal text-gray-400">톤</span>
+                {Math.round(yearlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0) / 1000).toLocaleString()} <span className="text-xs font-normal text-gray-400">{t("톤")}</span>
               </span>
             </div>
           </div>
 
           {/* 월별 운동 횟수 바 차트 */}
           <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2">
-            <span className="text-xs font-bold text-gray-500 block mb-3">월별 운동 빈도</span>
+            <span className="text-xs font-bold text-gray-500 block mb-3">{t("월별 운동 빈도")}</span>
             <div className="flex items-end justify-between h-32 pt-2 px-1">
               {Array.from({ length: 12 }, (_, i) => {
                 const mStr = `${currentYear}-${(i + 1) < 10 ? '0' : ''}${i + 1}`;

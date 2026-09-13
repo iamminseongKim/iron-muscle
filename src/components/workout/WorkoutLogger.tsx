@@ -163,7 +163,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   // 운동 취소 (확인 팝업 후 초기화)
   const handleCancelWorkout = () => {
-    if (window.confirm('현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.')) {
+    if (window.confirm(t('현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.'))) {
       saveActiveSession(null);
       setSession(null);
     }
@@ -385,7 +385,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const handleCompleteWorkout = () => {
     if (!session) return;
     if (session.exercises.length === 0) {
-      if (!window.confirm('등록된 운동 종목이 없습니다. 그래도 운동을 완료하시겠습니까?')) {
+      if (!window.confirm(t('등록된 운동 종목이 없습니다. 그래도 운동을 완료하시겠습니까?'))) {
         return;
       }
     }
@@ -408,9 +408,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
     const mins = Math.floor(finalDuration / 60);
     const secs = finalDuration % 60;
-    const timeStr = `${mins > 0 ? `${mins}분 ` : ''}${secs}초`;
+    const timeStr = `${mins > 0 ? `${mins}m ` : ''}${secs}s`;
 
-    alert(`🎉 오늘 운동 완료!\n⏱️ 총 운동 시간: ${timeStr}\n총 볼륨: ${calculateSessionVolume(finalSession).toLocaleString()}kg\n총 횟수: ${calculateSessionReps(finalSession)}회\n기록이 성공적으로 저장되었습니다.`);
+    alert(`🎉 ${t('오늘 운동 완료!')}\n⏱️ ${t('총 운동 시간:')} ${timeStr}\n${t('총 볼륨:')} ${calculateSessionVolume(finalSession).toLocaleString()}kg\n${t('총 횟수:')} ${calculateSessionReps(finalSession)}${t('회')}\n${t('기록이 성공적으로 저장되었습니다.')}`);
 
     if (onWorkoutCompleted) {
       onWorkoutCompleted();
@@ -566,7 +566,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               type="button"
               onClick={() => {
                 loadSampleDataForDemo();
-                alert('체험용 샘플 운동 일지가 불러와졌습니다. [기록 조회] 탭에서 확인해 보세요!');
+                alert(t('체험용 샘플 운동 일지가 불러와졌습니다. [기록 조회] 탭에서 확인해 보세요!'));
                 window.location.reload();
               }}
               className="text-[#0F766E] hover:underline font-bold mt-1 inline-block"
