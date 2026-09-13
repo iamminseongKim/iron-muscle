@@ -13,6 +13,7 @@ import { BackupPanel } from './BackupPanel';
 import { EditSessionModal } from './EditSessionModal';
 import { saveFileToDevice } from '../../utils/nativeFile';
 import { adService } from '../../services/adService';
+import { mergeDaySessions } from '../../utils/sessionMerge';
 
 interface WorkoutHistoryViewProps {
   weightUnit?: WeightUnit;
@@ -69,6 +70,42 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
     const updated = sessions.map((s) => (s.id === updatedSession.id ? updatedSession : s));
     setSessions(updated);
     saveSessions(updated);
+  };
+
+  // 오늘 운동 기록 합치기 피드백
+  const [mergeFeedback, setMergeFeedback] = useState<string>('');
+
+  // 오늘 날짜의 2개 이상 운동 세션을 하나로 통합
+  const handleMergeDaySessions = () => {
+    if (dailySessions.length < 2) return;
+
+    const totalExCount = dailySessions.reduce((acc, s) => acc + (s.exercises?.length || 0), 0);
+    const totalSetCount = dailySessions.reduce(
+      (acc, s) => acc + (s.exercises || []).reduce((sum, e) => sum + (e.sets?.length || 0), 0),
+      0
+    );
+    const totalMinutes = Math.round(
+      dailySessions.reduce((acc, s) => acc + (s.durationSeconds || 0), 0) / 60
+    );
+
+    const confirmed = window.confirm(
+      `[오늘 운동 기록 합치기]\n\n${selectedDate}에 기록된 ${dailySessions.length}개의 세션을 하나로 합치시겠습니까?\n\n• 총 종목: ${totalExCount}개\n• 총 세트: ${totalSetCount}세트\n• 총 소요 시간: ${totalMinutes}분\n\n모든 종목과 세트, 무게 기록이 손상 없이 순서대로 통합됩니다.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const merged = mergeDaySessions(dailySessions);
+      const daySessionIds = new Set(dailySessions.map((s) => s.id));
+      const restSessions = sessions.filter((s) => !daySessionIds.has(s.id));
+      const updated = [merged, ...restSessions];
+      setSessions(updated);
+      saveSessions(updated);
+      setMergeFeedback(`오늘의 운동 기록 ${dailySessions.length}개가 하나로 깔끔하게 합쳐졌습니다!`);
+      setTimeout(() => setMergeFeedback(''), 4000);
+    } catch (e) {
+      alert((e as Error).message);
+    }
   };
 
   // 샘플 데이터 불러오기 (데모용)
@@ -343,6 +380,42 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           </div>
 
           {dailySessions.length > 0 && <button type="button" onClick={() => setIsShareCardOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#0F766E]/10 text-[#0F766E] font-black text-sm"><Share2 size={18}/>운동 인증 카드 만들기</button>}
+
+          {/* 오늘 운동 기록이 2개 이상일 때 나타나는 합치기 배너 */}
+          {dailySessions.length > 1 && (
+            <div className="bg-gradient-to-r from-[#0F766E]/10 to-indigo-500/10 border border-[#0F766E]/20 dark:border-[#0F766E]/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-xs animate-fade-in">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="p-2 rounded-xl bg-[#0F766E] text-white shrink-0">
+                  <Layers size={16} />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-xs font-black text-gray-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                    <span>오늘 {dailySessions.length}개의 운동 기록이 있습니다</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#0F766E]/20 text-[#0F766E] font-extrabold">
+                      {dailySessions.length}개 세션
+                    </span>
+                  </h4>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                    실수로 나눠졌거나 2차 운동을 하나의 일지로 통합합니다.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleMergeDaySessions}
+                className="px-3 py-2 rounded-xl bg-[#0F766E] hover:bg-[#0d635c] text-white font-black text-xs shrink-0 shadow-sm active:scale-95 transition flex items-center gap-1"
+              >
+                <span>기록 합치기</span>
+              </button>
+            </div>
+          )}
+
+          {mergeFeedback && (
+            <div className="p-2.5 rounded-xl bg-teal-500/15 text-[#0F766E] dark:text-teal-400 text-xs font-bold text-center animate-fade-in">
+              {mergeFeedback}
+            </div>
+          )}
+
           {/* 해당 일자의 운동 목록 */}
           {dailySessions.length === 0 ? (
             <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-3">
