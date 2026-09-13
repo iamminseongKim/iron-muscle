@@ -1,4 +1,4 @@
-import { displayExercise, getLanguage as exerciseLanguage } from '../../i18n';
+import { displayExercise, displayMuscle, displayExerciseInstructions, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
 import { lazy, Suspense } from 'react';
 import React, { useState, useEffect } from 'react';
@@ -13,7 +13,6 @@ import { QuickSetEditor } from './QuickSetEditor';
 import { getExerciseRecords, convertWeight } from '../../utils/calculations';
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
-import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 
 interface ExerciseCardProps {
   exerciseItem: WorkoutExercise;
@@ -492,15 +491,15 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                       loading="lazy"
                     />
                     <span className="absolute bottom-1.5 left-2 px-2 py-0.5 rounded-md bg-black/70 text-white text-[10px] font-bold">
-                      {i === 0 ? '1. 시작 자세' : '2. 정점 수축'}
+                      {i === 0 ? t('1. 시작 자세') : t('2. 정점 수축')}
                     </span>
                   </div>
                 ))}
               </div>
-              {baseExercise.instructions && baseExercise.instructions.length > 0 && (
+              {displayExerciseInstructions(baseExercise).length > 0 && (
                 <div className="p-3 rounded-2xl bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/5 text-xs space-y-1.5">
-                  <span className="font-bold text-gray-700 dark:text-gray-300 block">📋 올바른 운동 순서</span>
-                  {baseExercise.instructions.slice(0, 4).map((step, idx) => (
+                  <span className="font-bold text-gray-700 dark:text-gray-300 block">📋 {t("올바른 운동 순서")}</span>
+                  {displayExerciseInstructions(baseExercise).slice(0, 4).map((step, idx) => (
                     <p key={idx} className="text-gray-600 dark:text-gray-400 text-[11px] leading-relaxed flex items-start gap-1.5">
                       <span className="w-4 h-4 rounded-full bg-red-500/15 text-[#0F766E] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                         {idx + 1}
@@ -513,21 +512,21 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </div>
           )}
 
-          {/* 타겟 근육 한국어 안내 */}
+          {/* 타겟 근육 안내 */}
           <div className="bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-md rounded-2xl p-2.5 border border-black/5 dark:border-white/5 text-xs space-y-1">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="w-2 h-2 rounded-full bg-[#0F766E] shadow-xs shrink-0" />
-              <span className="font-bold text-gray-700 dark:text-gray-300">주동근:</span>
+              <span className="font-bold text-gray-700 dark:text-gray-300">{t("주동근")}:</span>
               <span className="text-[#0F766E] font-semibold">
-                {baseExercise.primaryMuscles?.map((m) => MUSCLE_INFO_MAP[m]?.nameKo || m).join(', ') || '전신 협응'}
+                {baseExercise.primaryMuscles?.map(displayMuscle).join(', ') || displayMuscle('full_body')}
               </span>
             </div>
             {baseExercise.secondaryMuscles && baseExercise.secondaryMuscles.length > 0 && (
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="w-2 h-2 rounded-full bg-[#FF9F0A] shadow-xs shrink-0" />
-                <span className="font-bold text-gray-700 dark:text-gray-300">협응근:</span>
+                <span className="font-bold text-gray-700 dark:text-gray-300">{t("협응근")}:</span>
                 <span className="text-[#FF9F0A] font-semibold">
-                  {baseExercise.secondaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo || m).join(', ')}
+                  {baseExercise.secondaryMuscles.map(displayMuscle).join(', ')}
                 </span>
               </div>
             )}
@@ -536,11 +535,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Set Header */}
-      <button type="button" onClick={() => setShowQuickSets(v => !v)} aria-expanded={showQuickSets} className="m-2 px-3 py-2 rounded-lg text-xs font-bold text-[#0F766E] bg-[#0F766E]/10 flex items-center gap-1"><Zap size={14} />세트 퀵 설정</button>
+      <button type="button" onClick={() => setShowQuickSets(v => !v)} aria-expanded={showQuickSets} className="m-2 px-3 py-2 rounded-lg text-xs font-bold text-[#0F766E] bg-[#0F766E]/10 flex items-center gap-1"><Zap size={14} />{t("세트 퀵 설정")}</button>
       {showQuickSets && <QuickSetEditor key={currentUnit} item={exerciseItem} unit={currentUnit} onApply={onUpdate} onClose={() => setShowQuickSets(false)} />}
       <div className="px-[15px] py-1 flex items-center gap-1.5 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
         <span className="w-6 shrink-0 text-center">{t("세트")}</span>
-        <span className="w-12 shrink-0 text-center">이전</span>
+        <span className="w-12 shrink-0 text-center">{t("이전")}</span>
         <button
           type="button"
           onClick={handleToggleExerciseUnit}

@@ -1,9 +1,8 @@
-import { t } from '../../i18n';
+import { t, displayMuscle } from '../../i18n';
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MuscleTarget } from '../../types/workout';
-import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 import { loadAnatomyModel, disposeAnatomy, AnatomyPart } from './anatomyModel';
 import { RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
 
@@ -191,7 +190,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
             <button type="button" aria-label={t("시점 초기화")} onClick={() => apiRef.current?.reset()} className="p-2"><RotateCcw size={18} /></button>
           </div>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400" role="status">{displayedTarget ? MUSCLE_INFO_MAP[displayedTarget].nameKo : view === 'both' ? t('앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.') : t('드래그하여 회전 · 두 손가락으로 확대 · 근육을 눌러 이름 확인')}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400" role="status">{displayedTarget ? displayMuscle(displayedTarget) : view === 'both' ? t('앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.') : t('드래그하여 회전 · 두 손가락으로 확대 · 근육을 눌러 이름 확인')}</p>
       </div>}
       <div className="px-3 pb-3 text-[10px] text-gray-500"><a href={`${import.meta.env.BASE_URL}anatomy/NOTICE.html`} target="_blank" rel="noreferrer" className="underline">{t("3D 모델 출처")} · BodyParts3D / Z-Anatomy · CC BY-SA</a></div>
     </section>

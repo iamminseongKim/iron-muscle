@@ -1,4 +1,4 @@
-import { displayExercise, getLanguage as exerciseLanguage } from '../../i18n';
+import { displayExercise, displayMuscle, displayExerciseDescription, displayExerciseInstructions } from '../../i18n';
 import { t } from '../../i18n';
 import { lazy, Suspense } from 'react';
 import React, { useState, useCallback, useEffect } from 'react';
@@ -8,7 +8,6 @@ import {
 import { Exercise, MuscleTarget, Category, LoadType, LOAD_TYPE_LABELS, MOVEMENT_PLANE_LABELS } from '../../types/workout';
 import { matchesExerciseSearch } from '../../utils/exerciseSearch';
 import { EXERCISES_DATABASE } from '../../data/exercises';
-import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 
 interface ExerciseExplorerProps {
@@ -88,7 +87,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
         {activeMuscleFilter && (
           <div className="flex items-center justify-between px-1">
             <span className="text-xs text-blue-500 font-bold">
-              {t("선택된 근육:")} {MUSCLE_INFO_MAP[activeMuscleFilter]?.nameKo}
+              {t("선택된 근육:")} {displayMuscle(activeMuscleFilter)}
             </span>
             <button
               onClick={() => setActiveMuscleFilter(null)}
@@ -149,7 +148,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               </span>
               {selectedExercise.primaryMuscles.map((m) => (
                 <span key={m} className="font-bold text-gray-800 dark:text-gray-200">
-                  {MUSCLE_INFO_MAP[m]?.nameKo || m}
+                  {displayMuscle(m)}
                 </span>
               ))}
             </div>
@@ -161,26 +160,28 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                 </span>
                 {selectedExercise.secondaryMuscles.map((m) => (
                   <span key={m} className="text-gray-500 dark:text-gray-400">
-                    {MUSCLE_INFO_MAP[m]?.nameKo || m}
+                    {displayMuscle(m)}
                   </span>
                 ))}
               </div>
             )}
           </div>
 
-          <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed pt-1">
-            {exerciseLanguage() === 'ko' ? selectedExercise.description : selectedExercise.descriptionEn || selectedExercise.description}
-          </p>
+          {displayExerciseDescription(selectedExercise) && (
+            <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed pt-1">
+              {displayExerciseDescription(selectedExercise)}
+            </p>
+          )}
 
           {/* 가이드 */}
-          {selectedExercise.instructions.length > 0 && (
+          {displayExerciseInstructions(selectedExercise).length > 0 && (
             <div className="bg-[#F9F9FB] dark:bg-[#222225] p-3 rounded-2xl space-y-1.5 border border-black/5 dark:border-white/5">
               <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 block flex items-center gap-1">
                 <BookOpen size={12} className="text-[#FF9500]" />
                 {t("올바른 자세 가이드")}
               </span>
               <ol className="list-decimal list-inside space-y-1 text-xs text-gray-700 dark:text-gray-300">
-                {(exerciseLanguage() === 'ko' ? selectedExercise.instructions : selectedExercise.instructionsEn || selectedExercise.instructions).map((inst, i) => (
+                {displayExerciseInstructions(selectedExercise).map((inst, i) => (
                   <li key={i} className="leading-snug">{inst}</li>
                 ))}
               </ol>
@@ -252,7 +253,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
 
       {activeMuscleFilter && (
         <button type="button" onClick={() => setActiveMuscleFilter(null)} className="text-xs text-[#0F766E]">
-          {MUSCLE_INFO_MAP[activeMuscleFilter]?.nameKo} {t("필터 해제")} ×
+          {displayMuscle(activeMuscleFilter)} {t("필터 해제")} ×
         </button>
       )}
       {filteredExercises.length === 0 && (
@@ -295,11 +296,11 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-gray-400">
                   <span className="text-[#0F766E] font-semibold">
-                    {ex.primaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0]).join(', ')}
+                    {ex.primaryMuscles.map(displayMuscle).join(', ')}
                   </span>
                   {ex.secondaryMuscles.length > 0 && (
                     <span className="text-gray-400">
-                      | {ex.secondaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0]).join(', ')}
+                      | {ex.secondaryMuscles.map(displayMuscle).join(', ')}
                     </span>
                   )}
                 </div>

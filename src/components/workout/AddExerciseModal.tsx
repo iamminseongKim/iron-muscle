@@ -1,11 +1,10 @@
-import { displayExercise, getLanguage as exerciseLanguage } from '../../i18n';
+import { displayExercise, displayMuscle, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
 import React, { useState, useEffect } from 'react';
 import { X, Search, Dumbbell, ChevronRight, Plus, Sparkles } from 'lucide-react';
 import { Exercise, Category, EquipmentType } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { matchesExerciseSearch, normalizeSearch } from '../../utils/exerciseSearch';
-import { MUSCLE_INFO_MAP } from '../../data/muscleMap';
 import { loadCustomExercises } from '../../utils/storage';
 import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
 
@@ -377,7 +376,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
                   <div className="flex flex-wrap items-center gap-1 text-[11px]">
                     <span className="text-[#0F766E] font-semibold text-[11px]">
-                      {ex.primaryMuscles.map((m) => MUSCLE_INFO_MAP[m]?.nameKo.split(' ')[0] || m).join(', ')}
+                      {ex.primaryMuscles.map(displayMuscle).join(', ')}
                     </span>
 
                   </div>
@@ -391,7 +390,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           )}
           {filteredExercises.length > visibleCount && (
             <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full p-3 rounded-xl bg-blue-500/10 text-[#0F766E] text-sm font-bold">
-              더 보기 ({Math.min(visibleCount, filteredExercises.length)} / {filteredExercises.length})
+              {t("더 보기")} ({Math.min(visibleCount, filteredExercises.length)} / {filteredExercises.length})
             </button>
           )}
         </div>
