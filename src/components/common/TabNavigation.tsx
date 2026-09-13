@@ -1,7 +1,6 @@
 import { t } from '../../i18n';
 import React from 'react';
 import { Dumbbell, Calendar, BarChart2, Search, User } from 'lucide-react';
-import packageJson from '../../../package.json';
 
 interface TabNavigationProps {
   activeTab: 'workout' | 'history' | 'analytics' | 'explore' | 'my';
@@ -23,7 +22,8 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
       className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto select-none w-[calc(100%-24px)] max-w-md"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      <div className="flex items-center px-1.5 py-1.5 bg-white/70 dark:bg-[#1C1C1E]/75 backdrop-blur-3xl rounded-[28px] shadow-[0_8px_32px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.55)] border border-white/60 dark:border-white/8 ring-1 ring-black/6 dark:ring-white/6">
+      <div className="glass-dock" style={{ '--dock-active-index': tabs.findIndex(tab => tab.id === activeTab) } as React.CSSProperties}>
+        <span className="glass-dock-selection" aria-hidden="true" />
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -33,24 +33,15 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
               type="button"
               onClick={() => onTabChange(tab.id)}
               aria-current={isActive ? 'page' : undefined}
-              className={`flex-1 py-2 px-1 rounded-[20px] flex flex-col items-center gap-0.5 transition-all duration-200 ${
-                isActive
-                  ? 'bg-[#0F766E]/12 text-[#0F766E] dark:text-[#2DD4BF] font-black'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
-              }`}
+              className="glass-dock-tab"
             >
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
-              <span className={`text-[10px] font-bold tracking-tight leading-tight text-center ${
-                isActive ? 'text-[#0F766E] dark:text-[#2DD4BF]' : 'text-gray-400 dark:text-gray-500'
-              }`}>
+              <Icon size={23} strokeWidth={isActive ? 2.4 : 1.9} aria-hidden="true" />
+              <span className="text-[10px] font-semibold tracking-tight leading-tight text-center">
                 {t(tab.label)}
               </span>
             </button>
           );
         })}
-      </div>
-      <div className="text-center pt-0.5 text-[8px] text-gray-400/40 dark:text-gray-600/50 font-medium">
-        v{packageJson.version}
       </div>
     </nav>
   );

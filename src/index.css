@@ -97,3 +97,75 @@ html[data-keyboard-open="true"] [data-bottom-navigation] { display: none; }
 input, textarea, select { scroll-margin-block: 72px; }
 /* Parent stack spacing must not offset viewport-fixed dialogs. */
 .keyboard-aware-modal { margin: 0 !important; }
+
+/* Translucent floating dock: the page supplies the color through the glass. */
+.glass-dock {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, .78);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .025) 45%, rgba(255, 255, 255, .09));
+  -webkit-backdrop-filter: blur(7px) saturate(160%);
+  backdrop-filter: blur(7px) saturate(160%);
+  box-shadow: 0 8px 28px rgba(25, 35, 45, .13), 0 2px 5px rgba(25, 35, 45, .05), inset 0 1px 1px rgba(255, 255, 255, .95), inset 0 -1px 2px rgba(255, 255, 255, .55);
+}
+.glass-dock::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 2px 0 3px rgba(255, 255, 255, .52), inset -2px 0 3px rgba(255, 255, 255, .4);
+  pointer-events: none;
+}
+.glass-dock-selection {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: calc((100% - 12px) / 5);
+  border-radius: 999px;
+  background: rgba(65, 72, 78, .10);
+  box-shadow: inset 0 1px 2px rgba(30, 40, 50, .045), 0 1px 1px rgba(255, 255, 255, .45);
+  transform: translateX(calc(var(--dock-active-index) * 100%));
+  transition: transform 260ms cubic-bezier(.2, .8, .2, 1);
+  pointer-events: none;
+}
+.glass-dock-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 5px 2px;
+  border-radius: 999px;
+  color: #66696d;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 160ms ease;
+}
+.glass-dock-tab[aria-current="page"] { color: #0b756d; }
+.glass-dock-tab:focus-visible { outline: 2px solid #0f766e; outline-offset: -2px; }
+.dark .glass-dock {
+  border-color: rgba(255, 255, 255, .26);
+  background: linear-gradient(135deg, rgba(70, 73, 79, .20), rgba(25, 27, 32, .10) 50%, rgba(50, 54, 61, .16));
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .28), inset 0 1px 1px rgba(255, 255, 255, .24), inset 0 -1px 1px rgba(255, 255, 255, .09);
+}
+.dark .glass-dock::before { box-shadow: inset 1px 0 2px rgba(255, 255, 255, .12), inset -1px 0 2px rgba(255, 255, 255, .1); }
+.dark .glass-dock-selection { background: rgba(255, 255, 255, .14); box-shadow: inset 0 1px 1px rgba(255, 255, 255, .12); }
+.dark .glass-dock-tab { color: #c0c2c7; }
+.dark .glass-dock-tab[aria-current="page"] { color: #5eead4; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-dock { background: rgba(245, 245, 248, .96); }
+  .dark .glass-dock { background: rgba(30, 32, 37, .96); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass-dock { background: #f2f2f7; }
+  .dark .glass-dock { background: #25272c; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glass-dock-selection, .glass-dock-tab { transition: none; }
+}

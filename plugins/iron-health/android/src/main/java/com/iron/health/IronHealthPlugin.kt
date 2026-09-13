@@ -9,6 +9,7 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.metadata.Metadata
+import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import com.getcapacitor.*
@@ -85,7 +86,7 @@ class IronHealthPlugin : Plugin() {
             startTime = start, startZoneOffset = null, endTime = end, endZoneOffset = null,
             exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING,
             title = "Iron Muscle",
-            metadata = Metadata.activelyRecorded(clientRecordId = "iron-muscle:$id", clientRecordVersion = 1)
+            metadata = Metadata.activelyRecorded(device = Device(type = Device.TYPE_PHONE), clientRecordId = "iron-muscle:$id", clientRecordVersion = 1)
         )
         client().insertRecords(listOf(record))
         call.resolve()
