@@ -1,4 +1,5 @@
 import { ADDITIONAL_MACHINES } from './additionalMachines';
+import { ADDITIONAL_POPULAR_EXERCISES } from './additionalExercises';
 import { Exercise } from '../types/workout';
 
 /**
@@ -6,6 +7,7 @@ import { Exercise } from '../types/workout';
  * Powered by free-exercise-db (876 exercises) with 100% Korean translations, aliases & CDN images
  */
 export const EXERCISES_DATABASE: Exercise[] = [
+  ...ADDITIONAL_POPULAR_EXERCISES,
   ...ADDITIONAL_MACHINES,
   {
     "id": "v_squat_machine",
