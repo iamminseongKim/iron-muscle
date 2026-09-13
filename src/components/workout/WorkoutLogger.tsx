@@ -742,11 +742,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           운동 종목 추가하기
         </button>
 
-        {/* 오터치 방지를 위한 구분선 및 2초 롱프레스 운동 완료 버튼 */}
+        {/* 오터치 방지를 위한 구분선 및 1.5초 롱프레스 운동 완료 버튼 */}
         <div className="pt-3 border-t border-black/5 dark:border-white/5">
           <HoldToCompleteButton
             onComplete={handleCompleteWorkout}
-            holdDurationMs={2000}
+            holdDurationMs={1500}
           />
         </div>
       </div>
