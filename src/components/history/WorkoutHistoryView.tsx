@@ -14,6 +14,14 @@ import { EditSessionModal } from './EditSessionModal';
 import { saveFileToDevice } from '../../utils/nativeFile';
 import { adService } from '../../services/adService';
 import { mergeDaySessions } from '../../utils/sessionMerge';
+import {
+  filterSessionsForAiExport,
+  extractAvailableBodyParts,
+  generateAiCoachingMarkdown,
+  AiExportScope,
+  TargetBodyPart,
+  BODY_PART_OPTIONS,
+} from '../../utils/aiPromptGenerator';
 
 interface WorkoutHistoryViewProps {
   weightUnit?: WeightUnit;
@@ -46,9 +54,22 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
   // AI Export Modal State
   const [isAiExportOpen, setIsAiExportOpen] = useState(false);
-  const [exportScope, setExportScope] = useState<'selected' | 'month' | 'all'>('selected');
+  const [exportScope, setExportScope] = useState<AiExportScope>('day');
+  const [exportDate, setExportDate] = useState<string>(() => selectedDate);
+  const [exportCustomStart, setExportCustomStart] = useState<string>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 14);
+    return d.toISOString().slice(0, 10);
+  });
+  const [exportCustomEnd, setExportCustomEnd] = useState<string>(() => new Date().toISOString().slice(0, 10));
+  const [selectedBodyPart, setSelectedBodyPart] = useState<TargetBodyPart>('all');
   const [copied, setCopied] = useState(false);
   const [downloadFeedback, setDownloadFeedback] = useState<string | null>(null);
+
+  const handleOpenAiExport = () => {
+    setExportDate(selectedDate);
+    setIsAiExportOpen(true);
+  };
 
   // 과거 운동 삭제 핸들러
   const handleDeleteSession = (sessionId: string, sessionDate: string) => {
@@ -165,88 +186,41 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
     setCurrentMonth(next.toISOString().slice(0, 7));
   };
 
-  // Generate Markdown for AI analysis
-  const generateAiMarkdown = (targetSessions: WorkoutSession[]) => {
-    if (targetSessions.length === 0) {
-      return '# 🏋️‍♂️ [Iron Muscle Tracker] 운동 기록 없음\n선택한 기간에 등록된 운동 세션이 없습니다.';
-    }
-
-    const totalVol = targetSessions.reduce((sum, s) => sum + calculateSessionVolume(s), 0);
-    const totalReps = targetSessions.reduce((sum, s) => sum + calculateSessionReps(s), 0);
-    const startDate = targetSessions[targetSessions.length - 1].date;
-    const endDate = targetSessions[0].date;
-
-    let md = `# 🏋️‍♂️ [Iron Muscle Tracker] 전문 운동 일지 분석 요청서\n\n`;
-    md += `> **분석 기간**: ${startDate} ~ ${endDate} (총 ${targetSessions.length}회 세션)\n`;
-    md += `> **총 누적 볼륨**: ${totalVol.toLocaleString()} kg | **총 반복수**: ${totalReps.toLocaleString()} 회\n\n`;
-    md += `### ⚠️ 중량 기록 및 장비별 측정 원칙 (AI 코치 필수 준수 사항)\n`;
-    md += `1. **덤벨(Dumbbell) 운동**: 기록된 중량은 **모두 한쪽(편측, Single-Arm/Per-Hand) 무게**입니다. (예: 덤벨 벤치프레스 20kg은 한 손에 20kg씩 양손 총 40kg의 중량을 다룬 것이므로, 볼륨 계산 및 부하 분석 시 편측 기준 특성을 정확히 반영해야 합니다).\n`;
-    md += `2. **스미스머신(Smith Machine) 운동**: 머신 자체의 기본 봉 무게를 **완전 제외한 순수 원판(Plate) 무게만 기록**된 값입니다. (예: 스미스 60kg는 봉 무게를 가산하지 않은 순수 추가 원판 무게 기준입니다).\n\n`;
-    md += `---\n\n`;
-
-    targetSessions.forEach((s, sIdx) => {
-      const vol = calculateSessionVolume(s);
-      const reps = calculateSessionReps(s);
-      const avgRpe = calculateAverageRPE(s);
-      const durMins = Math.round(s.durationSeconds / 60);
-
-      md += `## 📅 세션 ${sIdx + 1}: ${s.date} (${s.title || '오늘의 운동'})\n`;
-      md += `- **소요 시간**: ${durMins}분 | **컨디션**: ${s.conditionEmoji || '💪'} | **총 볼륨**: ${vol.toLocaleString()}kg | **평균 RPE**: ${avgRpe || '-'}\n`;
-      if (s.isDeload) md += `- **특이사항**: 🔄 디로딩(Deload) 세션\n`;
-      if (s.notes) md += `- **운동 메모/소감**: "${s.notes}"\n`;
-      md += `\n`;
-
-      s.exercises.forEach((ex, eIdx) => {
-        const base = resolveRecordedExercise(ex);
-        const name = base.name;
-        const loadLabel = ex.loadType === 'plate-loaded' ? '플레이트(원판)' : ex.loadType === 'pin-loaded' ? '핀머신' : ex.equipmentType;
-        const modeLabel = ex.executionMode === 'unilateral' ? '원암(편측)' : '투암(양측)';
-        const groupLabel = ex.groupLabel ? ` [${ex.groupLabel}]` : '';
-
-        const isDumbbell = ex.equipmentType === 'dumbbell' || base?.equipment === 'dumbbell' || name.includes('덤벨');
-        const isSmith = (ex.equipmentType === 'machine' || base?.equipment === 'machine') && (name.includes('스미스') || base?.nameEn.toLowerCase().includes('smith'));
-        const weightStandardNote = isDumbbell ? ' [💡 한쪽 무게 기준]' : isSmith ? ' [💡 봉 제외 원판만 기록]' : '';
-
-        md += `### ${eIdx + 1}. ${name}${groupLabel}${weightStandardNote} (${loadLabel} / ${modeLabel})\n`;
-        if (ex.machineBrand) md += `- **기구 브랜드**: ${ex.machineBrand}${ex.machineSetting ? ` (세팅: ${ex.machineSetting})` : ''}\n`;
-
-        const exUnit = ex.weightUnit || 'kg';
-        md += `| 세트 | 중량(${exUnit}) | 횟수 | 1RM 추정 | RPE | 템포 | 휴식시간 | 편측 | 메모/태그 |\n`;
-        md += `|---|---|---|---|---|---|---|---|---|\n`;
-
-        ex.sets.forEach((set) => {
-          const e1rm = Math.round(set.weight * (1 + set.reps / 30));
-          const tempoStr = set.tempo ? `${set.tempo.eccentric}-${set.tempo.pause}-${set.tempo.concentric}s` : '-';
-          const restStr = set.restSeconds ? `${set.restSeconds}초` : '-';
-          const sideStr = set.side === 'left' ? '좌(L)' : set.side === 'right' ? '우(R)' : set.side === 'both' ? '양쪽' : '-';
-          const tagsStr = [...(set.tags || []), set.comment].filter(Boolean).join(', ') || '-';
-
-          md += `| #${set.setNumber} | ${set.weight}${exUnit} | ${set.reps}회 | ${e1rm}${exUnit} | ${set.rpe || '-'} | ${tempoStr} | ${restStr} | ${sideStr} | ${tagsStr} |\n`;
-        });
-        md += `\n`;
-      });
-      md += `---\n\n`;
+  // AI 내보내기용 대상 세션 및 마크다운 계산
+  const dateScopedSessions = useMemo(() => {
+    return filterSessionsForAiExport(sessions, {
+      scope: exportScope,
+      selectedDate: exportDate,
+      customStartDate: exportCustomStart,
+      customEndDate: exportCustomEnd,
+      selectedBodyPart: 'all',
     });
+  }, [sessions, exportScope, exportDate, exportCustomStart, exportCustomEnd]);
 
-    md += `## 🤖 AI 코치 분석 및 피드백 요청 (프롬프트 가이드)\n`;
-    md += `위의 운동 일지를 바탕으로 다음 4가지 핵심 질문에 대해 전문 스트렝스/보디빌딩 코치 관점에서 정밀하게 답변해 주세요:\n\n`;
-    md += `1. **점진적 과부하(Progressive Overload) 달성도**: 덤벨(한쪽 무게 기준) 및 스미스머신(봉 제외 원판 무게만 기준)의 특성을 감안하여, 주요 종목들의 세트별 실질 부하와 반복수 추이가 상승 곡선을 그리고 있는가?\n`;
-    md += `2. **RPE 및 휴식 시간 기반 신경계 피로도(CNS Fatigue)**: 세트 후반 RPE 9.0~10.0 빈도와 세트 간 실제 쉰 시간, 템포(이완/수축)를 볼 때 피로 누적이 과도한가, 혹은 디로딩(Deload)이 필요한 시점인가?\n`;
-    md += `3. **편측성(원암/투암) 및 슈퍼/컴파운드세트 평가**: 덤벨 및 원암 운동 시 좌/우 중량 및 횟수 밸런스, 그리고 슈퍼세트/컴파운드세트 종목 배치가 목표 근육 펌핑과 회복에 효율적인가?\n`;
-    md += `4. **다음 주차 운동 처방 가이드**: 각 종목별로 다음 세션에 시도해야 할 권장 목표 중량(kg, 덤벨은 한쪽 기준)과 타겟 횟수(Reps)를 구체적으로 처방해 주세요.\n`;
+  const availableBodyParts = useMemo(() => {
+    return extractAvailableBodyParts(dateScopedSessions);
+  }, [dateScopedSessions]);
 
-    return md;
-  };
-
-  const getExportTargetSessions = () => {
-    if (exportScope === 'selected') return dailySessions;
-    if (exportScope === 'month') return monthlySessions;
-    return sessions;
-  };
+  const exportTargetSessions = useMemo(() => {
+    if (selectedBodyPart === 'all') return dateScopedSessions;
+    return filterSessionsForAiExport(sessions, {
+      scope: exportScope,
+      selectedDate: exportDate,
+      customStartDate: exportCustomStart,
+      customEndDate: exportCustomEnd,
+      selectedBodyPart,
+    });
+  }, [sessions, exportScope, exportDate, exportCustomStart, exportCustomEnd, selectedBodyPart, dateScopedSessions]);
 
   const currentMarkdown = useMemo(() => {
-    return generateAiMarkdown(getExportTargetSessions());
-  }, [exportScope, dailySessions, monthlySessions, sessions]);
+    return generateAiCoachingMarkdown(exportTargetSessions, {
+      scope: exportScope,
+      selectedDate: exportDate,
+      customStartDate: exportCustomStart,
+      customEndDate: exportCustomEnd,
+      selectedBodyPart,
+    });
+  }, [exportTargetSessions, exportScope, exportDate, exportCustomStart, exportCustomEnd, selectedBodyPart]);
 
   const handleCopyMarkdown = async () => {
     try {
@@ -267,12 +241,18 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
   };
 
   const handleDownloadMarkdown = async () => {
-    const datePart = exportScope === 'selected'
-      ? selectedDate.replace(/-/g, '')
-      : exportScope === 'month'
-      ? currentMonth.replace(/-/g, '')
-      : `${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_all`;
-    const filename = `_${datePart}.md`;
+    const partSuffix = selectedBodyPart !== 'all' ? `_${selectedBodyPart}` : '';
+    const datePart =
+      exportScope === 'day'
+        ? exportDate.replace(/-/g, '')
+        : exportScope === 'week'
+        ? `${exportDate.replace(/-/g, '')}_week`
+        : exportScope === 'month'
+        ? `${exportDate.slice(0, 7).replace(/-/g, '')}`
+        : exportScope === 'custom'
+        ? `${exportCustomStart.replace(/-/g, '')}_${exportCustomEnd.replace(/-/g, '')}`
+        : `${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_all`;
+    const filename = `IronMuscle_${datePart}${partSuffix}.md`;
 
     // 💡 사용자가 다운로드 시 클립보드 복사는 수행하지 않고, 실제 파일 다운로드/저장만 실행
     const res = await saveFileToDevice(filename, currentMarkdown, 'text/markdown');
@@ -299,7 +279,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           type="button"
           onClick={async () => {
             await adService.showInterstitialAd('ai_markdown');
-            setIsAiExportOpen(true);
+            handleOpenAiExport();
           }}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#0F766E] to-[#5856D6] hover:opacity-95 text-white rounded-full text-xs font-black shadow-md shadow-teal-900/20 active:scale-98 transition"
         >
@@ -833,44 +813,223 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               </button>
             </div>
 
-            {/* Scope Selection */}
-            <div className="px-4 py-2.5 bg-[#F9F9FB] dark:bg-[#18181A] border-b border-black/5 dark:border-white/5 flex items-center justify-between text-xs">
-              <span className="font-bold text-gray-500">추출 범위:</span>
-              <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl font-bold text-[11px]">
-                <button
-                  type="button"
-                  onClick={() => setExportScope('selected')}
-                  className={`px-2.5 py-1 rounded-lg transition ${
-                    exportScope === 'selected'
-                      ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
-                      : 'text-gray-500'
-                  }`}
-                >
-                  선택한 날 ({selectedDate})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setExportScope('month')}
-                  className={`px-2.5 py-1 rounded-lg transition ${
-                    exportScope === 'month'
-                      ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
-                      : 'text-gray-500'
-                  }`}
-                >
-                  이번 달 전체
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setExportScope('all')}
-                  className={`px-2.5 py-1 rounded-lg transition ${
-                    exportScope === 'all'
-                      ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
-                      : 'text-gray-500'
-                  }`}
-                >
-                  전체 기록
-                </button>
+            {/* 1. 분석 기간 모드 탭 (Scope Selection) */}
+            <div className="px-4 pt-3 pb-2 bg-[#F9F9FB] dark:bg-[#18181A] border-b border-black/5 dark:border-white/5 space-y-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-gray-500">분석 기간:</span>
+                <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl font-bold text-[11px] overflow-x-auto">
+                  <button
+                    type="button"
+                    onClick={() => setExportScope('day')}
+                    className={`px-2 py-1 rounded-lg transition whitespace-nowrap ${
+                      exportScope === 'day'
+                        ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    하루 (1일)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExportScope('week')}
+                    className={`px-2 py-1 rounded-lg transition whitespace-nowrap ${
+                      exportScope === 'week'
+                        ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    최근 1주일
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExportScope('month')}
+                    className={`px-2 py-1 rounded-lg transition whitespace-nowrap ${
+                      exportScope === 'month'
+                        ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    월간
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExportScope('custom')}
+                    className={`px-2 py-1 rounded-lg transition whitespace-nowrap ${
+                      exportScope === 'custom'
+                        ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    직접 지정
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExportScope('all')}
+                    className={`px-2 py-1 rounded-lg transition whitespace-nowrap ${
+                      exportScope === 'all'
+                        ? 'bg-white dark:bg-[#1C1C1E] text-black dark:text-white shadow-xs'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    전체
+                  </button>
+                </div>
               </div>
+
+              {/* 2. 날짜 / 기간 세부 컨트롤 */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+                {exportScope === 'day' && (
+                  <div className="flex items-center gap-2 w-full">
+                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">대상 날짜:</span>
+                    <input
+                      type="date"
+                      value={exportDate}
+                      onChange={(e) => setExportDate(e.target.value)}
+                      className="flex-1 bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-[#0F766E]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const today = new Date().toISOString().slice(0, 10);
+                        setExportDate(today);
+                      }}
+                      className="px-2 py-1 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-lg text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:text-[#0F766E]"
+                    >
+                      오늘
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const yest = new Date();
+                        yest.setDate(yest.getDate() - 1);
+                        setExportDate(yest.toISOString().slice(0, 10));
+                      }}
+                      className="px-2 py-1 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-lg text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:text-[#0F766E]"
+                    >
+                      어제
+                    </button>
+                  </div>
+                )}
+
+                {exportScope === 'week' && (
+                  <div className="flex items-center gap-2 w-full">
+                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">기준일:</span>
+                    <input
+                      type="date"
+                      value={exportDate}
+                      onChange={(e) => setExportDate(e.target.value)}
+                      className="bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-[#0F766E]"
+                    />
+                    <span className="text-[11px] text-gray-400 font-medium truncate">
+                      (기준일 포함 직전 7일간 분석)
+                    </span>
+                  </div>
+                )}
+
+                {exportScope === 'month' && (
+                  <div className="flex items-center gap-2 w-full">
+                    <span className="text-gray-400 text-[11px] shrink-0 font-medium">대상 월:</span>
+                    <input
+                      type="month"
+                      value={exportDate.slice(0, 7)}
+                      onChange={(e) => setExportDate(`${e.target.value}-01`)}
+                      className="bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-[#0F766E]"
+                    />
+                    <span className="text-[11px] text-gray-400 font-medium">
+                      (해당 월 전체 세션 분석)
+                    </span>
+                  </div>
+                )}
+
+                {exportScope === 'custom' && (
+                  <div className="flex items-center gap-1.5 w-full">
+                    <input
+                      type="date"
+                      value={exportCustomStart}
+                      onChange={(e) => setExportCustomStart(e.target.value)}
+                      className="flex-1 min-w-0 bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white"
+                    />
+                    <span className="text-gray-400 text-xs">~</span>
+                    <input
+                      type="date"
+                      value={exportCustomEnd}
+                      onChange={(e) => setExportCustomEnd(e.target.value)}
+                      className="flex-1 min-w-0 bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white"
+                    />
+                  </div>
+                )}
+
+                {exportScope === 'all' && (
+                  <div className="w-full text-gray-400 text-[11px] font-medium py-0.5">
+                    등록된 모든 운동 세션 (총 {sessions.length}일)을 바탕으로 장기 주기화 및 성장 추이를 분석합니다.
+                  </div>
+                )}
+              </div>
+
+              {/* 3. 운동 부위 필터링 칩 (Target Body Part Filter) */}
+              <div className="pt-1">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-bold text-gray-500 flex items-center gap-1">
+                    <Dumbbell size={12} className="text-[#0F766E]" />
+                    운동 부위 필터:
+                  </span>
+                  <span className="text-[10px] text-gray-400">
+                    해당 기간 {exportTargetSessions.length}회 세션 선택됨
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                  {availableBodyParts.map((part) => {
+                    const isSelected = selectedBodyPart === part.id;
+                    const hasSets = part.totalSets > 0 || part.id === 'all';
+                    return (
+                      <button
+                        key={part.id}
+                        type="button"
+                        onClick={() => setSelectedBodyPart(part.id)}
+                        className={`shrink-0 px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 transition ${
+                          isSelected
+                            ? 'bg-[#0F766E] text-white shadow-xs'
+                            : hasSets
+                            ? 'bg-white dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-200 border border-black/5 dark:border-white/5 hover:border-[#0F766E]/40'
+                            : 'bg-white/50 dark:bg-[#2C2C2E]/40 text-gray-400 dark:text-gray-500 border border-dashed border-black/5 dark:border-white/5 opacity-60'
+                        }`}
+                      >
+                        <span>{part.icon}</span>
+                        <span>{part.label.split(' ')[0]}</span>
+                        {part.totalSets > 0 && (
+                          <span
+                            className={`text-[10px] px-1 py-0.2 rounded-full font-black ${
+                              isSelected
+                                ? 'bg-white/20 text-white'
+                                : 'bg-black/5 dark:bg-white/10 text-[#0F766E] dark:text-[#2DD4BF]'
+                            }`}
+                          >
+                            {part.totalSets}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* 4. AI 맞춤 프롬프트 안내 배지 */}
+            <div className="px-4 py-2 bg-[#0F766E]/10 dark:bg-[#0F766E]/20 border-b border-black/5 dark:border-white/5 flex items-center gap-2 text-xs text-[#0F766E] dark:text-[#2DD4BF] font-semibold">
+              <Sparkles size={14} className="shrink-0 text-[#0F766E] dark:text-[#2DD4BF]" />
+              <span className="truncate">
+                {selectedBodyPart === 'chest' && '🛡️ 가슴 집중 분석: 각도별(상/중/하부) 밸런스 및 4주 가슴 특화 루틴 가이드'}
+                {selectedBodyPart === 'back' && '🦅 등 집중 분석: 수직/수평 당기기 밸런스, 악력 피로 및 4주 등 특화 루틴 가이드'}
+                {selectedBodyPart === 'legs' && '🦵 하체 집중 분석: 사두/햄스트링 비율, CNS 신경계 피로 및 4주 하체 특화 루틴 가이드'}
+                {selectedBodyPart === 'shoulders' && '🥥 어깨 집중 분석: 3D 삼각근 입체 밸런스, 승모근 보상 방지 및 4주 어깨 특화 루틴'}
+                {selectedBodyPart === 'biceps' && '💪 이두근 집중 분석: 장두/단두 고립 자극, 템포 및 4주 이두 특화 루틴 가이드'}
+                {selectedBodyPart === 'triceps' && '⚡ 삼두근 집중 분석: 외측두/장두 자극, 엘보우 통증 예방 및 4주 삼두 특화 가이드'}
+                {selectedBodyPart === 'arms' && '🦾 팔 전체 집중 분석: 이두/삼두 슈퍼세트 펌핑 및 4주 팔 볼륨 극대화 루틴 가이드'}
+                {selectedBodyPart === 'core' && '🧱 복근/코어 집중 분석: 복압 브레이싱, 상/하복부 밸런스 및 4주 코어 가이드'}
+                {selectedBodyPart === 'all' && exportScope === 'day' && '⚡ 당일 원데이 피로도 분석: 오늘의 실질 부하 진단 및 내일 운동 회복 가이드'}
+                {selectedBodyPart === 'all' && exportScope === 'week' && '📊 주간 볼륨 밸런스 분석: 부위별 빈도 및 주간 누적 볼륨 적정성 분석'}
+                {selectedBodyPart === 'all' && (exportScope === 'month' || exportScope === 'custom' || exportScope === 'all') && '🏆 중장기 주기화 분석: 점진적 과부하 달성도, 디로딩 판정 및 블록 주기화 가이드'}
+              </span>
             </div>
 
             {/* Markdown Preview Area */}
