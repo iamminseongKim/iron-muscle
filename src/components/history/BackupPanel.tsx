@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import { createBackup, parseBackup, restoreBackup, WorkoutBackup } from '../../utils/backup';
 import { WorkoutSession } from '../../types/workout';
+import { isAdFreeUser, saveUserSettings } from '../../utils/storage';
 
 const nativeBackup = registerPlugin<{ save(options: { filename: string; data: string }): Promise<{ cancelled: boolean }> }>('WorkoutBackup');
 
@@ -11,6 +12,21 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
   const [message, setMessage] = useState('');
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
+  const [isAdFree, setIsAdFree] = useState(() => isAdFreeUser());
+
+  useEffect(() => {
+    const handleSettingsChange = () => {
+      setIsAdFree(isAdFreeUser());
+    };
+    window.addEventListener('iron_user_settings_change', handleSettingsChange);
+    return () => window.removeEventListener('iron_user_settings_change', handleSettingsChange);
+  }, []);
+
+  const toggleAdFree = () => {
+    const next = !isAdFree;
+    setIsAdFree(next);
+    saveUserSettings({ isAdFree: next, adFreeActivatedAt: next ? new Date().toISOString() : undefined });
+  };
 
   const preview = (raw: string) => {
     try {
@@ -134,6 +150,51 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         </div>
       )}
       {message && <p role="status" className="text-gray-500 pt-1 font-medium">{message}</p>}
+
+      {/* 🌟 광고 설정 & 개인정보처리방침 */}
+      <div className="pt-3 border-t border-gray-100 dark:border-white/5 space-y-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+              <span>⭐ 광고 없는 버전 (Ad-Free)</span>
+              {isAdFree && (
+                <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-600 font-extrabold">PRO</span>
+              )}
+            </span>
+            <p className="text-[11px] text-gray-400 mt-0.5">
+              활성화 시 인증샷 저장 및 AI 분석 추출 시 광고가 나타나지 않습니다.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={toggleAdFree}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+              isAdFree ? 'bg-[#0F766E]' : 'bg-gray-300 dark:bg-gray-600'
+            }`}
+            role="switch"
+            aria-checked={isAdFree}
+            aria-label="광고 없는 버전 토글"
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                isAdFree ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
+
+        <div className="flex justify-between items-center pt-1 text-[11px] text-gray-400">
+          <span>스토어 출시 대비 1안(단일 앱 + 광고 제거) 탑재 완료</span>
+          <a
+            href="/privacy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#0F766E] hover:underline font-bold"
+          >
+            개인정보처리방침 ↗
+          </a>
+        </div>
+      </div>
     </section>
   );
 }

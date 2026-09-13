@@ -6,6 +6,7 @@ import { ExerciseExplorer } from './components/explore/ExerciseExplorer';
 import { WorkoutLogger } from './components/workout/WorkoutLogger';
 import { WorkoutHistoryView } from './components/history/WorkoutHistoryView';
 import { HistoryDashboard } from './components/history/HistoryDashboard';
+import { AdSimulationModal } from './components/common/AdSimulationModal';
 import { loadActiveSession, saveActiveSession } from './utils/storage';
 import { WeightUnit } from './types/workout';
 
@@ -147,6 +148,9 @@ export const App: React.FC = () => {
 
       {/* 하단 탭 네비게이션 */}
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* 광고 시뮬레이터 모달 (AdMob 연동 전 및 웹/테스트 모드) */}
+      <AdSimulationModal />
     </div>
   );
 };

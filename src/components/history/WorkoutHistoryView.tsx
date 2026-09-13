@@ -12,6 +12,7 @@ import { WorkoutShareCard } from './WorkoutShareCard';
 import { BackupPanel } from './BackupPanel';
 import { EditSessionModal } from './EditSessionModal';
 import { saveFileToDevice } from '../../utils/nativeFile';
+import { adService } from '../../services/adService';
 
 interface WorkoutHistoryViewProps {
   weightUnit?: WeightUnit;
@@ -259,7 +260,10 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
         {/* 🤖 AI 분석용 Markdown 추출 버튼 */}
         <button
           type="button"
-          onClick={() => setIsAiExportOpen(true)}
+          onClick={async () => {
+            await adService.showInterstitialAd('ai_markdown');
+            setIsAiExportOpen(true);
+          }}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#0F766E] to-[#5856D6] hover:opacity-95 text-white rounded-full text-xs font-black shadow-md shadow-teal-900/20 active:scale-98 transition"
         >
           <Bot size={14} />

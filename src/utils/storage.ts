@@ -1,6 +1,7 @@
 import { WorkoutSession, Exercise } from '../types/workout';
 import { INITIAL_SAMPLE_HISTORY } from '../data/sampleHistory';
 import { sanitizeSessionExercises } from './exerciseResolver';
+import { UserSettings, DEFAULT_USER_SETTINGS } from '../types/settings';
 
 const STORAGE_KEYS = {
   SESSIONS: 'iron_workout_sessions_v1',
@@ -134,3 +135,39 @@ export function deleteCustomExercise(exerciseId: string): void {
     console.error('Failed to delete custom exercise', e);
   }
 }
+
+// ----------------------------------------------------
+// 🌟 사용자 설정 및 광고 제거 (Ad-Free) 상태 관리
+// ----------------------------------------------------
+
+export function loadUserSettings(): UserSettings {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+    if (!raw) return { ...DEFAULT_USER_SETTINGS };
+    const parsed = JSON.parse(raw);
+    return { ...DEFAULT_USER_SETTINGS, ...parsed };
+  } catch (e) {
+    console.error('Failed to load user settings', e);
+    return { ...DEFAULT_USER_SETTINGS };
+  }
+}
+
+export function saveUserSettings(settings: Partial<UserSettings>): UserSettings {
+  try {
+    const current = loadUserSettings();
+    const updated: UserSettings = { ...current, ...settings };
+    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('iron_user_settings_change', { detail: updated }));
+    }
+    return updated;
+  } catch (e) {
+    console.error('Failed to save user settings', e);
+    return loadUserSettings();
+  }
+}
+
+export function isAdFreeUser(): boolean {
+  return loadUserSettings().isAdFree;
+}
+

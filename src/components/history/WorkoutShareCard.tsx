@@ -3,6 +3,7 @@ import { Download, X } from 'lucide-react';
 import { WorkoutSession, WeightUnit } from '../../types/workout';
 import { summarizeWorkoutDay, renderWorkoutCard, recommendWorkoutQuote, loadWorkoutPhoto } from '../../utils/workoutCard';
 import { saveWorkoutImage } from '../../utils/nativeFile';
+import { adService } from '../../services/adService';
 
 export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: WorkoutSession[]; date: string; unit: WeightUnit; onClose: () => void }) {
   const summary = useMemo(() => summarizeWorkoutDay(sessions, date, unit), [sessions, date, unit]);
@@ -81,7 +82,11 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
         {message && <p role="status" className="text-xs mb-3">{message}</p>}
         <button type="button" disabled={busy || photoBusy || !image || !summary.sets} className="w-full py-3 rounded-xl bg-[#0F766E] text-white font-black flex justify-center items-center gap-2 disabled:opacity-40" onClick={async () => {
           setBusy(true); setMessage('');
-          try { const result = await saveWorkoutImage(`iron-muscle-${date}.png`, image); setMessage(result.message); }
+          try {
+            await adService.showInterstitialAd('workout_share');
+            const result = await saveWorkoutImage(`iron-muscle-${date}.png`, image);
+            setMessage(result.message);
+          }
           catch { setMessage('이미지를 저장하지 못했습니다. 다시 시도해 주세요.'); }
           finally { setBusy(false); }
         }}><Download size={18}/>{busy ? '저장 중…' : '이미지 저장 / 공유'}</button>
