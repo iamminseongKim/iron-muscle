@@ -16,6 +16,15 @@ export function convertWeight(weight: number, from: WeightUnit, to: WeightUnit):
   return weight;
 }
 
+// 어시스티드(머신/밴드 보조) 종목 판별
+export function isAssistedExercise(exercise?: { name?: string; nameEn?: string; isAssisted?: boolean }): boolean {
+  if (!exercise) return false;
+  if (exercise.isAssisted) return true;
+  const name = exercise.name || '';
+  const nameEn = (exercise.nameEn || '').toLowerCase();
+  return name.includes('어시스티드') || name.includes('어시스트') || nameEn.includes('assisted');
+}
+
 // 1. 추정 1RM 계산 (Brzycki 공식 및 RPE 반영)
 export function calculate1RM(weight: number, reps: number, rpe?: number): number {
   if (weight <= 0 || reps <= 0) return 0;

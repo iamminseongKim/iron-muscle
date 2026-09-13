@@ -36,8 +36,8 @@ assert.equal(atlasBytes.subarray(1,4).toString(),'PNG');
 assert.equal(spawnSync('git',['check-ignore','--no-index','-q',atlasPath]).status,1,'Runtime atlas must not be ignored by Git');
 console.log('PASS: runtime atlas exists and is not excluded from Git');
 
-assert.equal(db.length, 1025);
-assert.equal(db.filter(e => e.equipment === 'machine').length, 144);
+assert.equal(db.length, 1032);
+assert.equal(db.filter(e => e.equipment === 'machine').length, 149);
 assert.ok(db.every(e => !e.defaultBrand), 'Built-in exercises must not assign a brand');
 for (const [query, id] of [
  ['인클라인 트라이셉스', 'incline-dumbbell-triceps-extension'],
@@ -49,6 +49,10 @@ for (const [query, id] of [
  ['허리머신', 'seated-back-extension-machine'],
  ['독립암 풀다운', 'iso-lateral-pulldown-machine'],
  ['독립암 삼두', 'iso-lateral-triceps-machine'],
+ ['어시스트 풀업', 'machine_assisted_pull_up'],
+ ['어시스트 딥스', 'machine_assisted_dips'],
+ ['ㅇㅅㅅㅌㅍㅇ', 'machine_assisted_pull_up'],
+ ['밴드 딥스', 'band_assisted_dips'],
 ]) assert.ok(matchesExerciseSearch(db.find(e => e.id === id), query), query);
 console.log('PASS: new machine search and brand-neutral catalog');
 
@@ -103,3 +107,19 @@ for (const muscle of ['biceps','triceps','lats','deltoid_front','chest','quads',
  assert.ok(db.some(e=>e.equipment==='machine' && e.primaryMuscles.includes(muscle)), muscle);
 }
 console.log('PASS: 121 machines, arm curl aliases and all requested muscle groups');
+
+// Assisted exercise detection and safety tests
+const calcBuild = await build({entryPoints:['src/utils/calculations.ts'],bundle:true,write:false,platform:'node',format:'esm'});
+const {isAssistedExercise, calculate1RM, calculateSessionVolume} = await import(`data:text/javascript;base64,${Buffer.from(calcBuild.outputFiles[0].text).toString('base64')}`);
+assert.ok(isAssistedExercise(db.find(e=>e.id==='machine_assisted_pull_up')));
+assert.ok(isAssistedExercise(db.find(e=>e.id==='machine_assisted_dips')));
+assert.ok(isAssistedExercise(db.find(e=>e.id==='band_assisted_dips')));
+assert.ok(!isAssistedExercise(db.find(e=>e.id==='viking_press_machine')));
+assert.equal(calculate1RM(-30, 10), 0, 'Negative assisted weights must not produce invalid 1RM');
+const testSession = {
+  id: 's1', title: 'T', date: '2026-09-13', startTime: '2026-09-13T10:00:00Z',
+  exercises: [{ id: 'e1', exerciseId: 'machine_assisted_pull_up', equipmentType: 'machine', sets: [{ id: 's1', setNumber: 1, weight: -30, reps: 10, completed: true }] }]
+};
+assert.equal(calculateSessionVolume(testSession), 0, 'Assisted negative counterweight must not corrupt total session volume');
+console.log('PASS: assisted exercises detection, safety, and negative counterweight handling');
+

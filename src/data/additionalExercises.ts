@@ -2,6 +2,341 @@ import { Exercise } from "../types/workout";
 
 export const ADDITIONAL_POPULAR_EXERCISES: Exercise[] = [
   {
+    "id": "machine_assisted_pull_up",
+    "name": "머신 어시스티드 풀업",
+    "nameEn": "Machine Assisted Pull-Up",
+    "category": "back",
+    "categories": [
+      "back"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "movementPlane": "vertical-pull",
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "forearms",
+      "traps"
+    ],
+    "isAssisted": true,
+    "isPopular": true,
+    "aliases": [
+      "어시스트풀업",
+      "어시스티드풀업",
+      "머신풀업",
+      "풀업머신",
+      "친앤딥머신",
+      "친딥머신",
+      "보조풀업",
+      "어시스트턱걸이",
+      "MachineAssistedPullUp",
+      "AssistedPullUp"
+    ],
+    "description": "머신의 카운터웨이트(보조 추) 지원을 받아 체중 부담을 줄이고 정확한 광배근 수축과 완전한 가동 범위를 훈련할 수 있는 전문 등 운동입니다.",
+    "instructions": [
+      "머신의 어시스트 핀을 본인 수준에 맞는 보조 중량으로 설정하고 무릎(또는 발) 패드를 내립니다.",
+      "풀업 바를 어깨너비보다 넓게 오버핸드(회내) 그립으로 쥐고 무릎 패드 위에 올라섭니다.",
+      "견갑골을 하강 및 후인하며 가슴을 바 쪽으로 끌어올려 광배근을 강하게 수축합니다.",
+      "최고점에서 광배근의 긴장을 느끼며 천천히 통제하면서 시작 자세로 내려옵니다."
+    ],
+    "tips": [
+      "보조 중량이 가벼울수록(음수 무게가 0에 가까울수록) 본인의 힘을 더 많이 사용하는 것입니다.",
+      "팔 힘으로만 당기지 말고 팔꿈치를 옆구리 쪽으로 내리찍는 느낌으로 당기세요."
+    ],
+    "descriptionEn": "An assisted compound upper-body pulling exercise utilizing a counterweight stack to offset bodyweight, allowing lifters to train strict pull-up mechanics with full range of motion.",
+    "instructionsEn": [
+      "Set the counterweight pin to your desired assist load and lower the knee or foot pad.",
+      "Grasp the pull-up bar with an overhand grip wider than shoulder width and step or kneel onto the assist pad.",
+      "Depress and retract your scapulae, driving your elbows down toward your hips to pull your chest up to the bar.",
+      "Control the eccentric descent smoothly back to full arm extension while keeping tension on your lats."
+    ]
+  },
+  {
+    "id": "machine_assisted_chin_up",
+    "name": "머신 어시스티드 친업",
+    "nameEn": "Machine Assisted Chin-Up",
+    "category": "back",
+    "categories": [
+      "back",
+      "arms"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "movementPlane": "vertical-pull",
+    "primaryMuscles": [
+      "lats",
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms",
+      "traps"
+    ],
+    "isAssisted": true,
+    "isPopular": true,
+    "aliases": [
+      "어시스트친업",
+      "어시스티드친업",
+      "머신친업",
+      "언더그립어시스트풀업",
+      "보조친업",
+      "친업머신",
+      "MachineAssistedChinUp",
+      "AssistedChinUp"
+    ],
+    "description": "언더핸드(수피네이티드) 그립을 잡고 머신의 추 보조를 받아 상완이두근과 하부 광배근을 안전하고 깊게 자극하는 등/팔 복합 운동입니다.",
+    "instructions": [
+      "어시스트 핀을 조절하여 적절한 보조 중량을 설정합니다.",
+      "손바닥이 몸쪽을 향하도록 언더핸드 그립으로 핸들을 어깨너비 정도로 잡고 패드에 올라섭니다.",
+      "가슴을 위로 열면서 턱이 바 높이에 닿을 때까지 몸을 끌어올립니다.",
+      "이두근과 광배근에 긴장을 유지한 채 천천히 시작 자세로 돌아옵니다."
+    ],
+    "tips": [
+      "이두근 개입이 풀업보다 높으므로 팔과 등 하부를 동시에 강화하기에 적합합니다.",
+      "몸이 앞뒤로 흔들리지 않도록 복압을 단단히 유지하세요."
+    ],
+    "descriptionEn": "An assisted compound pull-up variation using a supinated underhand grip with counterweight assistance, emphasizing the lower lats and biceps brachii.",
+    "instructionsEn": [
+      "Select an appropriate counterweight pin and step or kneel onto the assist pad.",
+      "Take an underhand (palms facing you) grip at roughly shoulder width.",
+      "Pull yourself upward with your chest proud until your chin clears the bar height.",
+      "Slowly lower yourself back down with controlled eccentric tension on the biceps and lats."
+    ]
+  },
+  {
+    "id": "machine_assisted_neutral_grip_pull_up",
+    "name": "머신 어시스티드 뉴트럴 그립 풀업",
+    "nameEn": "Machine Assisted Neutral Grip Pull-Up",
+    "category": "back",
+    "categories": [
+      "back",
+      "arms"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "movementPlane": "vertical-pull",
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "forearms"
+    ],
+    "isAssisted": true,
+    "isPopular": true,
+    "aliases": [
+      "어시스트뉴트럴풀업",
+      "어시스트패럴렐풀업",
+      "패럴렐풀업머신",
+      "뉴트럴풀업머신",
+      "머신뉴트럴풀업",
+      "MachineAssistedNeutralGripPullUp",
+      "AssistedNeutralGripPullUp"
+    ],
+    "description": "손바닥이 마주 보는 뉴트럴(패럴렐) 그립과 머신 보조를 활용하여 어깨 관절의 부담을 최소화하면서 광배근과 상완근에 깊은 자극을 주는 운동입니다.",
+    "instructions": [
+      "적절한 보조 핀 무게를 선택하고 패드 위에 무릎을 올립니다.",
+      "서로 마주 보는 손잡이(뉴트럴 그립)를 단단히 잡습니다.",
+      "어깨를 내리고 팔꿈치를 아래로 당기며 가슴 상부를 핸들 높이까지 끌어올립니다.",
+      "광배근의 긴장감을 유지하며 천천히 통제하면서 이완합니다."
+    ],
+    "tips": [
+      "어깨 충돌이나 손목 통증이 있는 분들에게 가장 안전한 풀업 변형입니다."
+    ],
+    "descriptionEn": "A shoulder-friendly assisted pull-up using parallel grips and a counterweight stack, optimizing lat activation while minimizing shoulder impingement.",
+    "instructionsEn": [
+      "Select your counterweight setting and place your knees on the assist platform.",
+      "Grasp the parallel neutral-grip handles firmly with palms facing each other.",
+      "Drive your elbows down and back to lift your body smoothly toward the handles.",
+      "Lower under control to full elbow extension without dropping suddenly."
+    ]
+  },
+  {
+    "id": "machine_assisted_dips",
+    "name": "머신 어시스티드 딥스",
+    "nameEn": "Machine Assisted Dips",
+    "category": "chest",
+    "categories": [
+      "chest",
+      "arms"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "movementPlane": "flat-press",
+    "primaryMuscles": [
+      "triceps",
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "deltoid_front"
+    ],
+    "isAssisted": true,
+    "isPopular": true,
+    "aliases": [
+      "어시스트딥스",
+      "어시스티드딥스",
+      "머신딥스",
+      "딥스보조",
+      "보조딥스",
+      "친앤딥딥스",
+      "MachineAssistedDips",
+      "AssistedDips"
+    ],
+    "description": "카운터웨이트 패드의 보조를 받아 상완삼두근과 하부 가슴(대흉근 하부)을 안전한 가동 범위로 단련할 수 있는 전문 보조 운동입니다.",
+    "instructions": [
+      "어시스트 핀을 선택하고 패드 위에 무릎(또는 발)을 얹습니다.",
+      "딥스 핸들을 단단히 잡고 팔을 펴서 지지합니다.",
+      "상체를 살짝 앞으로 숙이며 팔꿈치가 약 90도가 될 때까지 천천히 몸을 내립니다.",
+      "삼두근과 가슴 하부의 힘으로 핸들을 강하게 아래로 밀어 시작 자세로 복귀합니다."
+    ],
+    "tips": [
+      "상체를 앞으로 숙이면 가슴 개입이 커지고, 상체를 수직으로 세우면 삼두근 개입이 극대화됩니다.",
+      "어깨가 귀 쪽으로 솟아오르지 않도록 견갑골을 단단히 눌러주세요."
+    ],
+    "descriptionEn": "An assisted compound pushing exercise utilizing a counterweight stack to offload bodyweight, targeting the triceps brachii and lower pectorals.",
+    "instructionsEn": [
+      "Set your counterweight assist pin and place your knees or feet securely on the assist pad.",
+      "Grip the parallel dip bars and support your bodyweight with arms extended.",
+      "Inhale and lower yourself until your elbows reach approximately 90 degrees.",
+      "Press firmly down through the handles to extend your elbows and return to the start."
+    ]
+  },
+  {
+    "id": "machine_assisted_single_arm_pull_up",
+    "name": "머신 어시스티드 원암 풀업",
+    "nameEn": "Machine Assisted Single-Arm Pull-Up",
+    "category": "back",
+    "categories": [
+      "back"
+    ],
+    "equipment": "machine",
+    "loadType": "pin-loaded",
+    "movementPlane": "vertical-pull",
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "forearms"
+    ],
+    "isAssisted": true,
+    "isPopular": false,
+    "aliases": [
+      "어시스트원암풀업",
+      "머신원암풀업",
+      "한손어시스트풀업",
+      "원암풀업머신",
+      "MachineAssistedSingleArmPullUp"
+    ],
+    "description": "머신의 무게 보조를 받아 한 팔로 수행함으로써 좌우 광배근의 불균형을 해소하고 편측 광배근 고립도를 극대화하는 상급 보조 훈련입니다.",
+    "instructions": [
+      "체중의 절반 이상의 충분한 보조 무게를 핀으로 설정합니다.",
+      "한 손으로 풀업 핸들을 잡고 무릎 패드에 올라섭니다. 반대 손은 코어나 기둥을 가볍게 지지합니다.",
+      "동작 측 광배근과 견갑골을 아래로 강하게 끌어내리며 몸을 들어올립니다.",
+      "최고점에서 광배근을 1초간 수축한 뒤 천천히 통제하며 내려옵니다."
+    ],
+    "tips": [
+      "몸이 과도하게 회전하지 않도록 코어를 단단히 조이고 수직 궤적을 유지하세요."
+    ],
+    "descriptionEn": "An advanced unilateral assisted pull-up using counterweight support to address bilateral strength imbalances and develop unilateral lat recruitment.",
+    "instructionsEn": [
+      "Select a generous counterweight assist load on the weight stack.",
+      "Grip one side of the pull-up handle with a single arm and place your knees on the assist pad.",
+      "Depress the working shoulder blade and drive your elbow down to pull yourself up.",
+      "Pause briefly at top contraction and lower under strict control."
+    ]
+  },
+  {
+    "id": "band_assisted_dips",
+    "name": "밴드 어시스티드 딥스",
+    "nameEn": "Band-Assisted Dips",
+    "category": "chest",
+    "categories": [
+      "chest",
+      "arms"
+    ],
+    "equipment": "other",
+    "loadType": "bodyweight",
+    "movementPlane": "flat-press",
+    "primaryMuscles": [
+      "triceps",
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "deltoid_front"
+    ],
+    "isAssisted": true,
+    "isPopular": true,
+    "aliases": [
+      "밴드딥스",
+      "밴드보조딥스",
+      "탄성밴드딥스",
+      "BandAssistedDips"
+    ],
+    "description": "딥스 바에 탄성 루프 밴드를 걸고 무릎이나 발로 밟아 바닥 최하단 지점에서 가장 큰 탄성 보조를 받는 가변 저항 운동입니다.",
+    "instructions": [
+      "딥스 바 양쪽에 탄성 저항 밴드를 걸어 U자 형태로 만듭니다.",
+      "밴드 가운데에 무릎이나 발을 올려놓고 핸들을 잡은 상태로 지지합니다.",
+      "팔꿈치를 구부리며 천천히 몸을 내리고, 최하단에서 밴드의 탄성 보조를 느끼며 다시 밀어 올립니다.",
+      "삼두근과 가슴을 수축하며 시작 자세로 돌아옵니다."
+    ],
+    "tips": [
+      "가장 힘든 최하단 구간에서 밴드가 강하게 밀어 올려주므로 어깨 관절 부담을 줄여줍니다."
+    ],
+    "descriptionEn": "A bodyweight dip variation using an elastic resistance band looped across the dip handles to reduce bottom-position shoulder strain and assist the ascent.",
+    "instructionsEn": [
+      "Loop a resistance band across both dip bars forming a support sling.",
+      "Place your knees or feet into the loop and lock out your arms on the bars.",
+      "Lower smoothly until elbows reach a 90 degree angle, feeling the band stretch.",
+      "Drive through your triceps and pecs to push back up to the lockout position."
+    ]
+  },
+  {
+    "id": "band_assisted_chin_up",
+    "name": "밴드 어시스티드 친업",
+    "nameEn": "Band-Assisted Chin-Up",
+    "category": "back",
+    "categories": [
+      "back",
+      "arms"
+    ],
+    "equipment": "other",
+    "loadType": "bodyweight",
+    "movementPlane": "vertical-pull",
+    "primaryMuscles": [
+      "lats",
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "isAssisted": true,
+    "isPopular": true,
+    "aliases": [
+      "밴드친업",
+      "밴드보조친업",
+      "BandAssistedChinUp"
+    ],
+    "description": "풀업 바에 탄성 밴드를 걸고 언더핸드(수피네이티드) 그립으로 당겨 이두근과 하부 광배근을 탄성 보조와 함께 발달시키는 운동입니다.",
+    "instructions": [
+      "풀업 바 중앙에 저항 밴드를 묶고 한쪽 발 또는 무릎을 밴드 루프에 겁니다.",
+      "손바닥이 얼굴을 향하도록 언더그립으로 바를 잡습니다.",
+      "팔꿈치를 당겨 턱이 바 높이에 이를 때까지 몸을 들어 올립니다.",
+      "천천히 저항을 느끼며 팔을 펴 원래 자세로 복귀합니다."
+    ],
+    "tips": [
+      "밴드가 튕겨나가지 않도록 발끝을 아래로 뻗거나 발목을 교차하여 고정하세요."
+    ],
+    "descriptionEn": "An underhand chin-up variation using an elastic loop band to provide variable assistance through the bottom sticking point.",
+    "instructionsEn": [
+      "Girth hitch a resistance band to the center of a pull-up bar and step a foot or knee into the loop.",
+      "Grasp the bar with a shoulder-width supinated grip (palms toward face).",
+      "Pull yourself up until your chin clears the bar.",
+      "Lower under control to a dead hang while keeping tension on the band."
+    ]
+  },
+  {
     "id": "incline-dumbbell-triceps-extension",
     "name": "인클라인 덤벨 트라이셉스 익스텐션",
     "nameEn": "Incline Dumbbell Triceps Extension",

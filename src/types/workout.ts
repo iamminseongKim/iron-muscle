@@ -137,6 +137,7 @@ export interface Exercise {
   tipsEn?: string[];
   defaultBrand?: string;
   isPopular?: boolean;
+  isAssisted?: boolean;
   images?: string[];
   level?: 'beginner' | 'intermediate' | 'expert';
   aliases?: string[]; // 검색용 별칭, 은어 및 줄임말 (예: ['불스스', '스스', '사레레', '라트익'])

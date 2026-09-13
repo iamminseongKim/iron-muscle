@@ -5538,5 +5538,485 @@
     "Ejercicio personalizado por el usuario:",
     "Exercice personnalisé par l'utilisateur :",
     "Benutzerdefinierte Übung:"
+  ],
+  "사진 선택": [
+    "사진 선택",
+    "Select Photo",
+    "写真を選択",
+    "选择照片",
+    "選擇相片",
+    "Seleccionar foto",
+    "Choisir une photo",
+    "Foto auswählen"
+  ],
+  "사진 변경": [
+    "사진 변경",
+    "Change Photo",
+    "写真を変更",
+    "更换照片",
+    "變更相片",
+    "Cambiar foto",
+    "Changer de photo",
+    "Foto ändern"
+  ],
+  "선택된 사진 없음": [
+    "선택된 사진 없음",
+    "No photo selected",
+    "写真が選択されていません",
+    "未选择照片",
+    "未選擇相片",
+    "Ninguna foto seleccionada",
+    "Aucune photo sélectionnée",
+    "Kein Foto ausgewählt"
+  ],
+  "사진 등록됨": [
+    "사진 등록됨",
+    "Photo attached",
+    "写真が添付されました",
+    "已附加照片",
+    "已附加相片",
+    "Foto adjunta",
+    "Photo jointe",
+    "Foto angehängt"
+  ],
+  "운동 종목 검색...": [
+    "운동 종목 검색...",
+    "Search exercises...",
+    "種目を検索...",
+    "搜索动作...",
+    "搜尋動作...",
+    "Buscar ejercicios...",
+    "Rechercher des exercices...",
+    "Übungen suchen..."
+  ],
+  "조건에 맞는 운동이 없어요. 검색어를 줄이거나 필터를 초기화해 보세요.": [
+    "조건에 맞는 운동이 없어요. 검색어를 줄이거나 필터를 초기화해 보세요.",
+    "No exercises match your criteria. Try shortening your search or resetting filters.",
+    "条件に一致する種目がありません。検索文字を減らすかフィルターをリセットしてください。",
+    "没有符合条件的动作。请尝试缩短搜索词或重置筛选条件。",
+    "沒有符合條件的動作。請嘗試縮短搜尋詞或重設篩選條件。",
+    "No hay ejercicios que coincidan. Intente acortar la búsqueda o restablecer los filtros.",
+    "Aucun exercice ne correspond. Essayez de raccourcir la recherche ou de réinitialiser les filtres.",
+    "Keine passenden Übungen gefunden. Kürzen Sie die Suche oder setzen Sie die Filter zurück."
+  ],
+  "인체 확대": [
+    "인체 확대",
+    "Zoom in",
+    "ズームイン",
+    "放大",
+    "放大",
+    "Acercar",
+    "Zoom avant",
+    "Vergrößern"
+  ],
+  "인체 축소": [
+    "인체 축소",
+    "Zoom out",
+    "ズームアウト",
+    "缩小",
+    "縮小",
+    "Alejar",
+    "Zoom arrière",
+    "Verkleinern"
+  ],
+  "시점 초기화": [
+    "시점 초기화",
+    "Reset view",
+    "視点をリセット",
+    "重置视角",
+    "重設視角",
+    "Restablecer vista",
+    "Réinitialiser la vue",
+    "Ansicht zurücksetzen"
+  ],
+  "기타": [
+    "기타",
+    "Other",
+    "その他",
+    "其他",
+    "其他",
+    "Otro",
+    "Autre",
+    "Sonstiges"
+  ],
+  "운동 기록 백업": [
+    "운동 기록 백업",
+    "Backup Workout Records",
+    "ワークアウト記録のバックアップ",
+    "备份锻炼记录",
+    "備份訓練紀錄",
+    "Copia de seguridad del entrenamiento",
+    "Sauvegarde des entraînements",
+    "Workout-Aufzeichnungen sichern"
+  ],
+  "복원할 백업 또는 마크다운 파일": [
+    "복원할 백업 또는 마크다운 파일",
+    "Backup or Markdown file to restore",
+    "復元するバックアップまたはMarkdownファイル",
+    "要恢复的备份或Markdown文件",
+    "要還原的備份或Markdown檔案",
+    "Archivo de copia de seguridad o Markdown para restaurar",
+    "Fichier de sauvegarde ou Markdown à restaurer",
+    "Backup- oder Markdown-Datei zum Wiederherstellen"
+  ],
+  "운동": [
+    "운동",
+    "Workouts",
+    "ワークアウト",
+    "锻炼",
+    "訓練",
+    "Entrenamientos",
+    "Entraînements",
+    "Workouts"
+  ],
+  "회 확인됨": [
+    "회 확인됨",
+    " found",
+    "件確認",
+    "次已确认",
+    "次已確認",
+    " encontrados",
+    " trouvés",
+    " gefunden"
+  ],
+  "볼륨": [
+    "볼륨",
+    "Volume",
+    "ボリューム",
+    "容量",
+    "總量",
+    "Volumen",
+    "Volume",
+    "Volumen"
+  ],
+  "사용자 운동": [
+    "사용자 운동",
+    "Custom exercises",
+    "カスタム種目",
+    "自定义动作",
+    "自訂動作",
+    "Ejercicios personalizados",
+    "Exercices personnalisés",
+    "Benutzerdefinierte Übungen"
+  ],
+  "종": [
+    "종",
+    " types",
+    "種",
+    "种",
+    "種",
+    " tipos",
+    " types",
+    " Arten"
+  ],
+  "진행 중인 운동 포함": [
+    "진행 중인 운동 포함",
+    "Include workout in progress",
+    "進行中のワークアウトを含む",
+    "包括进行中的锻炼",
+    "包含進行中的訓練",
+    "Incluir entrenamiento en curso",
+    "Inclure l'entraînement en cours",
+    "Laufendes Workout einbeziehen"
+  ],
+  "기록 복원 완료": [
+    "기록 복원 완료",
+    "Restore complete",
+    "復元完了",
+    "恢复完成",
+    "還原完成",
+    "Restauración completada",
+    "Restauration terminée",
+    "Wiederherstellung abgeschlossen"
+  ],
+  "회 추가됨": [
+    "회 추가됨",
+    " added",
+    "件追加",
+    "次已添加",
+    "次已新增",
+    " añadidos",
+    " ajoutés",
+    " hinzugefügt"
+  ],
+  "기존 중복": [
+    "기존 중복",
+    "Existing duplicates",
+    "既存の重複",
+    "现有重复",
+    "現有重複",
+    "Duplicados existentes",
+    "Doublons existants",
+    "Bestehende Duplikate"
+  ],
+  "회 건너뜀": [
+    "회 건너뜀",
+    " skipped",
+    "件スキップ",
+    "次已跳过",
+    "次已略過",
+    " omitidos",
+    " ignorés",
+    " übersprungen"
+  ],
+  "날짜": [
+    "날짜",
+    "Date",
+    "日付",
+    "日期",
+    "日期",
+    "Fecha",
+    "Date",
+    "Datum"
+  ],
+  "기록된 운동이 없습니다": [
+    "기록된 운동이 없습니다",
+    "No recorded exercises",
+    "記録された種目がありません",
+    "没有记录的动作",
+    "沒有紀錄的動作",
+    "No hay ejercicios registrados",
+    "Aucun exercice enregistré",
+    "Keine Übungen aufgezeichnet"
+  ],
+  "중량 단위": [
+    "중량 단위",
+    "Weight Unit",
+    "重量単位",
+    "重量单位",
+    "重量單位",
+    "Unidad de peso",
+    "Unité de poids",
+    "Gewichtseinheit"
+  ],
+  "단위": [
+    "단위",
+    "Unit",
+    "単位",
+    "单位",
+    "單位",
+    "Unidad",
+    "Unité",
+    "Einheit"
+  ],
+  "종목 삭제": [
+    "종목 삭제",
+    "Delete Exercise",
+    "種目を削除",
+    "删除动作",
+    "刪除動作",
+    "Eliminar ejercicio",
+    "Supprimer l'exercice",
+    "Übung löschen"
+  ],
+  "이름·별칭·초성 검색 (예: 레그컬, ㄹㄱ)": [
+    "이름·별칭·초성 검색 (예: 레그컬, ㄹㄱ)",
+    "Search by name, alias, or acronym",
+    "名前・別名・略称で検索",
+    "按名称、别名或缩写搜索",
+    "按名稱、別名或縮寫搜尋",
+    "Buscar por nombre o alias",
+    "Rechercher par nom ou alias",
+    "Nach Name oder Alias suchen"
+  ],
+  "검색어 지우기": [
+    "검색어 지우기",
+    "Clear search",
+    "検索語を消去",
+    "清除搜索",
+    "清除搜尋",
+    "Borrar búsqueda",
+    "Effacer la recherche",
+    "Suche löschen"
+  ],
+  "디로딩": [
+    "디로딩",
+    "Deload",
+    "ディロード",
+    "减载",
+    "減載",
+    "Descarga (Deload)",
+    "Deload",
+    "Deload"
+  ],
+  "이 운동 기록 수정": [
+    "이 운동 기록 수정",
+    "Edit this workout record",
+    "このワークアウト記録を編集",
+    "编辑此锻炼记录",
+    "編輯此訓練紀錄",
+    "Editar este registro de entrenamiento",
+    "Modifier cet enregistrement",
+    "Diesen Workout-Eintrag bearbeiten"
+  ],
+  "이 운동 기록 삭제": [
+    "이 운동 기록 삭제",
+    "Delete this workout record",
+    "このワークアウト記録を削除",
+    "删除此锻炼记录",
+    "刪除此訓練紀錄",
+    "Eliminar este registro de entrenamiento",
+    "Supprimer cet enregistrement",
+    "Diesen Workout-Eintrag löschen"
+  ],
+  "주요 타겟 근육": [
+    "주요 타겟 근육",
+    "Primary Target Muscles",
+    "主動筋",
+    "主要目标肌肉",
+    "主要目標肌肉",
+    "Músculos principales",
+    "Muscles cibles principaux",
+    "Hauptzielmuskeln"
+  ],
+  "운동 설정": [
+    "운동 설정",
+    "Exercise Settings",
+    "種目の設定",
+    "动作设置",
+    "動作設定",
+    "Configuración del ejercicio",
+    "Paramètres de l'exercice",
+    "Übungseinstellungen"
+  ],
+  "📸 실물 사진": [
+    "📸 실물 사진",
+    "📸 Real Photo",
+    "📸 実物写真",
+    "📸 实物照片",
+    "📸 實物相片",
+    "📸 Foto real",
+    "📸 Photo réelle",
+    "📸 Reales Foto"
+  ],
+  "⚡ 슈퍼세트": [
+    "⚡ 슈퍼세트",
+    "⚡ Superset",
+    "⚡ スーパーセット",
+    "⚡ 超级组",
+    "⚡ 超級組",
+    "⚡ Superset",
+    "⚡ Superset",
+    "⚡ Superset"
+  ],
+  "🔥 컴파운드세트": [
+    "🔥 컴파운드세트",
+    "🔥 Compound Set",
+    "🔥 コンパウンドセット",
+    "🔥 复合组",
+    "🔥 複合組",
+    "🔥 Serie compuesta",
+    "🔥 Série composée",
+    "🔥 Verbundsatz"
+  ],
+  "초기화": [
+    "초기화",
+    "Reset",
+    "リセット",
+    "重置",
+    "重設",
+    "Restablecer",
+    "Réinitialiser",
+    "Zurücksetzen"
+  ],
+  "탭하여 크게 보기": [
+    "탭하여 크게 보기",
+    "Tap to expand",
+    "タップして拡大表示",
+    "点击放大查看",
+    "點擊放大檢視",
+    "Tocar para ampliar",
+    "Appuyer pour agrandir",
+    "Tippen zum Vergrößern"
+  ],
+  "타이머 닫기": [
+    "타이머 닫기",
+    "Close timer",
+    "タイマーを閉じる",
+    "关闭计时器",
+    "關閉計時器",
+    "Cerrar temporizador",
+    "Fermer le minuteur",
+    "Timer schließen"
+  ],
+  "추가 반영": [
+    "추가 반영",
+    "Apply Additional",
+    "追加反映",
+    "附加应用",
+    "附加套用",
+    "Aplicar adicional",
+    "Appliquer l'ajout",
+    "Zusätzlich anwenden"
+  ],
+  "신경계 회복을 위해 가볍게 진행한 운동": [
+    "신경계 회복을 위해 가볍게 진행한 운동",
+    "Light workout for neural recovery",
+    "神経系の回復のために軽く行ったワークアウト",
+    "为促进神经系统恢复而进行的轻度锻炼",
+    "為促進神經系統恢復而進行的輕度訓練",
+    "Entrenamiento ligero para recuperación",
+    "Entraînement léger pour la récupération",
+    "Leichtes Training zur Erholung des Nervensystems"
+  ],
+  "템포": [
+    "템포",
+    "Tempo",
+    "テンポ",
+    "节奏",
+    "節奏",
+    "Tempo",
+    "Tempo",
+    "Tempo"
+  ],
+  "종목": [
+    "종목",
+    "Exercises",
+    "種目",
+    "动作",
+    "動作",
+    "Ejercicios",
+    "Exercices",
+    "Übungen"
+  ],
+  "보조": [
+    "보조",
+    "Assist",
+    "アシスト",
+    "辅助",
+    "輔助",
+    "Asistido",
+    "Assisté",
+    "Unterstützt"
+  ],
+  "보조 중량": [
+    "보조 중량",
+    "Assist Weight",
+    "アシスト重量",
+    "辅助重量",
+    "輔助重量",
+    "Peso asistido",
+    "Poids assisté",
+    "Unterstützungsgewicht"
+  ],
+  "보조 무게": [
+    "보조 무게",
+    "Assist Weight",
+    "アシ스트重量",
+    "辅助重量",
+    "輔助重量",
+    "Peso asistido",
+    "Poids assisté",
+    "Unterstützungsgewicht"
+  ],
+  "체중 차감": [
+    "체중 차감",
+    "Counterweight",
+    "カウンターウェイト",
+    "自重抵消",
+    "體重抵銷",
+    "Contrapeso",
+    "Contrepoids",
+    "Gegengewicht"
   ]
 }

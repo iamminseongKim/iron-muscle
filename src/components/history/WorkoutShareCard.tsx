@@ -20,6 +20,7 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const dialog = useRef<HTMLDivElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
     const overflow = document.body.style.overflow;
@@ -59,16 +60,37 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
           <label className="block text-xs font-bold">{t("인증 문구")}<input aria-label={t("인증 문구")} value={title} maxLength={60} onChange={e => setTitle(e.target.value)} className="mt-2 w-full rounded-xl p-3 bg-white dark:bg-[#1C1C1E] text-sm outline-none focus:ring-2 focus:ring-[#0F766E]"/>
           </label>
           <div className="flex justify-between text-xs"><span className="text-gray-500">{t("최대 60자")}</span><button type="button" onClick={() => setTitle(recommendWorkoutQuote(title))} className="font-bold text-[#0F766E]">{t("다른 문구 추천")}</button></div>
-          <label className="block text-xs font-bold">{t("배경 사진")}<input type="file" accept="image/*" aria-label={t("배경 사진 선택")} className="block mt-2 w-full text-xs file:mr-2 file:border-0 file:rounded-lg file:px-3 file:py-2 file:bg-white file:text-[#0F766E]" onChange={async e => {
-              const file = e.target.files?.[0]; e.target.value = '';
-              if (!file) return;
-              const request = ++photoRequest.current;
-              setPhotoBusy(true); setMessage('');
-              try { const next = await loadWorkoutPhoto(file); if (request === photoRequest.current) setPhoto(next); }
-              catch (error) { if (request === photoRequest.current) setMessage((error as Error).message); }
-              finally { if (request === photoRequest.current) setPhotoBusy(false); }
-            }}/>
-          </label>
+          <div>
+            <span className="block text-xs font-bold mb-2">{t("배경 사진")}</span>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              aria-label={t("배경 사진 선택")}
+              className="hidden"
+              onChange={async e => {
+                const file = e.target.files?.[0]; e.target.value = '';
+                if (!file) return;
+                const request = ++photoRequest.current;
+                setPhotoBusy(true); setMessage('');
+                try { const next = await loadWorkoutPhoto(file); if (request === photoRequest.current) setPhoto(next); }
+                catch (error) { if (request === photoRequest.current) setMessage((error as Error).message); }
+                finally { if (request === photoRequest.current) setPhotoBusy(false); }
+              }}
+            />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => photoInputRef.current?.click()}
+                className="px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-[#1C1C1E] text-[#0F766E] border border-black/10 dark:border-white/10 shadow-xs hover:bg-gray-50 dark:hover:bg-white/5 transition"
+              >
+                {photo ? t("사진 변경") : t("사진 선택")}
+              </button>
+              <span className="text-xs text-gray-500 truncate">
+                {photo ? t("사진 등록됨") : t("선택된 사진 없음")}
+              </span>
+            </div>
+          </div>
           {photoBusy && <p role="status" className="text-xs text-gray-500">{t("사진을 불러오는 중…")}</p>}
           {photo && <><button type="button" className="text-xs text-[#FF3B30]" onClick={() => { photoRequest.current++; setPhotoBusy(false); setPhoto(undefined); }}>{t("사진 제거")}</button><p className="text-[11px] text-gray-500">{t("사진은 카드 중앙에 맞춰 잘립니다.")}</p></>}
           <label className="flex items-center justify-between text-xs font-bold">{t("글자 색")}<select aria-label={t("글자 색")} value={textColor} onChange={e => setTextColor(e.target.value as typeof textColor)} className="p-2 rounded-lg bg-white dark:bg-[#1C1C1E]"><option value="auto">{t("자동")}</option><option value="white">{t("흰색")}</option><option value="black">{t("검정")}</option></select>

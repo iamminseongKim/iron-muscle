@@ -10,7 +10,7 @@ import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, Equipmen
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { SetRow } from './SetRow';
 import { QuickSetEditor } from './QuickSetEditor';
-import { getExerciseRecords, convertWeight } from '../../utils/calculations';
+import { getExerciseRecords, convertWeight, isAssistedExercise } from '../../utils/calculations';
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 
@@ -68,6 +68,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
   const baseExercise: Exercise = resolveRecordedExercise(exerciseItem);
+  const isAssisted = isAssistedExercise(baseExercise);
   const currentLoadType = exerciseItem.loadType || baseExercise.loadType || 'plate-loaded';
   const exerciseName = displayExercise(baseExercise);
   const exerciseNameEn = baseExercise.nameEn || '';
@@ -83,10 +84,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
   const handleAddSet = () => {
     const lastSet = exerciseItem.sets[exerciseItem.sets.length - 1];
+    const defaultWeight = isAssisted ? -20 : 20;
     const newSet: WorkoutSet = {
       id: 'set-' + Date.now(),
       setNumber: exerciseItem.sets.length + 1,
-      weight: lastSet ? lastSet.weight : 20,
+      weight: lastSet ? lastSet.weight : defaultWeight,
       reps: lastSet ? lastSet.reps : 10,
       completed: false,
       rpe: lastSet?.rpe,
@@ -546,7 +548,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           className="flex-1 text-center font-bold text-gray-500 dark:text-gray-400 hover:opacity-80 transition flex items-center justify-center gap-1"
           title={t("클릭하여 이 종목의 중량 단위(kg ⇋ lb) 즉시 전환")}
         >
-          <span>{t("무게")} ({currentUnit})</span>
+          <span>{isAssisted ? `${t("보조 무게")} (-${currentUnit})` : `${t("무게")} (${currentUnit})`}</span>
 
         </button>
         <span className="flex-1 text-center font-bold">{t("횟수")}</span>
@@ -563,6 +565,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             index={idx}
             executionMode={exerciseItem.executionMode || 'bilateral'}
             weightUnit={currentUnit}
+            isAssisted={isAssisted}
             onUpdate={(updated) => handleUpdateSet(idx, updated)}
             onDelete={() => handleDeleteSet(idx)}
             onCompleteToggle={(_comp, setId, setNum) =>

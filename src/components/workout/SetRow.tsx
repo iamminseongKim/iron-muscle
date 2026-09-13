@@ -11,6 +11,7 @@ interface SetRowProps {
   index: number;
   executionMode?: ExecutionMode;
   weightUnit?: WeightUnit;
+  isAssisted?: boolean;
   onUpdate: (updated: WorkoutSet) => void;
   onDelete: () => void;
   onCompleteToggle: (completed: boolean, setId: string, setNumber: number) => void;
@@ -22,6 +23,7 @@ export const SetRow: React.FC<SetRowProps> = ({
   index,
   executionMode = 'bilateral',
   weightUnit = 'kg',
+  isAssisted = false,
   onUpdate,
   onDelete,
   onCompleteToggle,
@@ -74,27 +76,28 @@ export const SetRow: React.FC<SetRowProps> = ({
   const handleWeightChange = (rawVal: string) => {
     if (isWeightFresh) {
       setIsWeightFresh(false);
-      const prevStr = String(set.weight || '');
+      const prevDisplay = isAssisted && set.weight !== 0 ? String(Math.abs(set.weight)) : String(set.weight || '');
       // 백스페이스로 길이가 줄어든 경우 전체 삭제
-      if (rawVal.length < prevStr.length) {
+      if (rawVal.length < prevDisplay.length) {
         onUpdate({ ...set, weight: 0 });
         return;
       }
       // 새로운 숫자 입력 시 기존 값을 덮어쓰고 새로 입력된 숫자만 채택
       let newlyTyped = rawVal;
-      if (prevStr && rawVal.startsWith(prevStr)) {
-        newlyTyped = rawVal.slice(prevStr.length);
-      } else if (prevStr && rawVal.endsWith(prevStr)) {
-        newlyTyped = rawVal.slice(0, rawVal.length - prevStr.length);
+      if (prevDisplay && rawVal.startsWith(prevDisplay)) {
+        newlyTyped = rawVal.slice(prevDisplay.length);
+      } else if (prevDisplay && rawVal.endsWith(prevDisplay)) {
+        newlyTyped = rawVal.slice(0, rawVal.length - prevDisplay.length);
       }
-      // "." 등 아직 숫자로 완성되지 않은 입력이면 값을 0으로 날리지 않고 기존 값을 유지
-      // (예: 100 -> "." 입력 시 100.5로 이어서 입력할 수 있도록)
       const parsedWeight = parseFloat(newlyTyped);
-      const num = Number.isNaN(parsedWeight) ? (set.weight || 0) : parsedWeight;
+      let num = Number.isNaN(parsedWeight) ? (set.weight || 0) : parsedWeight;
+      if (isAssisted && num > 0) num = -num;
       onUpdate({ ...set, weight: num });
       return;
     }
-    const num = parseFloat(rawVal) || 0;
+    const parsed = parseFloat(rawVal);
+    let num = Number.isNaN(parsed) ? 0 : parsed;
+    if (isAssisted && num > 0) num = -num;
     onUpdate({ ...set, weight: num });
   };
 
@@ -213,14 +216,19 @@ export const SetRow: React.FC<SetRowProps> = ({
 
           {/* 중량 (kg/lbs) 입력 */}
           <div className="flex-1 min-w-0 relative">
+            {isAssisted && (
+              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-black text-[#0F766E] pointer-events-none select-none">
+                -
+              </span>
+            )}
             <input
               aria-label={`${index + 1}${t("세트 무게")}`}
               ref={weightInputRef}
               type="text"
-              pattern="[0-9]*[.]?[0-9]*"
+              pattern="^-?[0-9]*[.]?[0-9]*"
               step={weightUnit === 'lbs' ? '1' : '0.5'}
               inputMode="decimal"
-              value={set.weight || ''}
+              value={isAssisted ? (set.weight !== 0 ? Math.abs(set.weight) : '') : (set.weight || '')}
               placeholder="0"
               autoComplete="off"
               autoCorrect="off"
@@ -233,7 +241,9 @@ export const SetRow: React.FC<SetRowProps> = ({
                 }
               }}
               onChange={(e) => handleWeightChange(e.target.value)}
-              className={`numeric-set-input w-full text-center rounded-lg h-9 py-1 px-1 pr-7 text-sm font-extrabold transition outline-none border ${
+              className={`numeric-set-input w-full text-center rounded-lg h-9 py-1 px-1 ${
+                isAssisted ? 'pl-4 pr-7' : 'pr-7'
+              } text-sm font-extrabold transition outline-none border ${
                 isWeightFresh
                   ? 'bg-[#0F766E]/10 dark:bg-[#0F766E]/15 text-[#0F766E] border-[#0F766E] ring-2 ring-[#0F766E]/10'
                   : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E]'
