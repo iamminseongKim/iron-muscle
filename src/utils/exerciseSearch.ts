@@ -1,4 +1,5 @@
 import { Exercise } from '../types/workout';
+import { getAllExerciseTranslations } from '../i18n';
 
 const CHOSUNG = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
 export const normalizeSearch = (text: string): string => text.toLowerCase().replace(/[\s\-_/()·, .]/g, '');
@@ -8,7 +9,8 @@ const initialConsonants = (text: string): string => [...text].map(char => {
 }).join('');
 
 export function matchesExerciseSearch(exercise: Exercise, query: string): boolean {
-  const fields = [exercise.name, exercise.nameEn, exercise.defaultBrand || '', ...(exercise.aliases || [])];
+  const translations = getAllExerciseTranslations(exercise);
+  const fields = [exercise.name, exercise.nameEn, exercise.defaultBrand || '', ...(exercise.aliases || []), ...translations];
   const normalized = fields.map(normalizeSearch);
   const trimmed = query.trim();
   if (!trimmed) return true;
