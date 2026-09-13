@@ -291,7 +291,7 @@
   ],
   "세트 추가": [
     "세트 추가",
-    "Add set",
+    "Add Set",
     "セット追加",
     "添加组",
     "新增組",
@@ -361,12 +361,12 @@
   ],
   "AI 분석 추출": [
     "AI 분석 추출",
-    "Export for AI",
-    "AI分析用出力",
-    "导出AI分析",
-    "匯出AI分析",
-    "Exportar para IA",
-    "Exporter pour IA",
+    "AI Export",
+    "AI分析抽出",
+    "AI分析导出",
+    "AI分析匯出",
+    "Exportar con IA",
+    "Exportation IA",
     "KI-Export"
   ],
   "운동 인증 카드 만들기": [
@@ -889,15 +889,15 @@
     "Charger des exemples",
     "Beispieltraining laden"
   ],
-  "언어 안내": [
-    "언어 안내",
-    "Exercise names and detailed guidance use English when translations are unavailable. Your notes stay unchanged.",
+  "미번역된 종목명·설명은 영어로 표시됩니다. 메모는 변경되지 않습니다.": [
+    "미번역된 종목명·설명은 영어로 표시됩니다. 메모는 변경되지 않습니다.",
+    "Untranslated exercises/descriptions appear in English. Personal notes are preserved.",
     "未翻訳の種目名・説明は英語で表示されます。メモは変更されません。",
-    "未翻译的动作名称及说明使用英语。您的备注保持原样。",
-    "未翻譯的動作名稱及說明使用英語。您的備註保持原樣。",
-    "Los nombres y guías sin traducción usan inglés. Tus notas no cambian.",
-    "Les noms et guides non traduits sont en anglais. Vos notes restent inchangées.",
-    "Nicht übersetzte Übungsnamen und Anleitungen erscheinen auf Englisch. Eigene Notizen bleiben unverändert."
+    "未翻译的动作名及说明将以英文显示。备注内容保持不变。",
+    "未翻譯的動作名稱及說明將以英文顯示。備註內容保持不變。",
+    "Los ejercicios no traducidos se muestran en inglés. Las notas se conservan.",
+    "Les exercices non traduits s'affichent en anglais. Vos notes restent inchangées.",
+    "Nicht übersetzte Übungen werden auf Englisch angezeigt. Notizen bleiben unverändert."
   ],
   "저장된 운동 일지": [
     "저장된 운동 일지",
@@ -915,9 +915,9 @@
     "種目を検索",
     "搜索动作",
     "搜尋動作",
-    "Buscar ejercicios",
-    "Rechercher des exercices",
-    "Übungen suchen"
+    "Buscar ejercicio",
+    "Rechercher un exercice",
+    "Übung suchen"
   ],
   "운동 선택": [
     "운동 선택",
@@ -931,43 +931,43 @@
   ],
   "선택 근육": [
     "선택 근육",
-    "Selected muscle",
-    "選択した筋肉",
-    "选中肌肉",
-    "選取肌肉",
+    "Selected",
+    "選択筋肉",
+    "选定肌肉",
+    "選定肌肉",
     "Músculo seleccionado",
     "Muscle sélectionné",
     "Ausgewählter Muskel"
   ],
   "앞뒤 함께": [
     "앞뒤 함께",
-    "Front and back",
-    "前後表示",
-    "正面与背面",
-    "正面與背面",
-    "Frente y espalda",
+    "Front & Back",
+    "前後両方",
+    "正背双视",
+    "正背雙視",
+    "Frente y dorso",
     "Face et dos",
-    "Vorne und hinten"
+    "Vorder- & Rückseite"
   ],
   "전면·회전": [
     "전면·회전",
-    "Front · rotate",
+    "Front · Rotate",
     "前面・回転",
     "正面·旋转",
     "正面·旋轉",
-    "Frente · girar",
-    "Face · tourner",
-    "Vorne · drehen"
+    "Frontal · Girar",
+    "Face · Rotation",
+    "Vorne · Drehen"
   ],
   "후면·회전": [
     "후면·회전",
-    "Back · rotate",
-    "背面・回転",
+    "Back · Rotate",
+    "後面・回転",
     "背面·旋转",
     "背面·旋轉",
-    "Espalda · girar",
-    "Dos · tourner",
-    "Hinten · drehen"
+    "Dorsal · Girar",
+    "Dos · Rotation",
+    "Hinten · Drehen"
   ],
   "분": [
     "분",
@@ -981,13 +981,13 @@
   ],
   "초": [
     "초",
-    "sec",
+    "s",
     "秒",
     "秒",
     "秒",
     "s",
     "s",
-    "Sek."
+    "s"
   ],
   "오늘의 나를 기록하다.": [
     "오늘의 나를 기록하다.",
@@ -1468,5 +1468,1615 @@
     "Gran estímulo muscular",
     "Bonne sollicitation",
     "Gute Muskelansprache"
+  ],
+  "언어 설정": [
+    "언어 설정",
+    "Language Settings",
+    "言語設定",
+    "语言设置",
+    "語言設定",
+    "Ajustes de idioma",
+    "Paramètres de langue",
+    "Spracheinstellungen"
+  ],
+  "나의 트레이닝 통계": [
+    "나의 트레이닝 통계",
+    "My Training Stats",
+    "私のトレーニング統計",
+    "我的训练统计",
+    "我的訓練統計",
+    "Mis estadísticas de entrenamiento",
+    "Mes statistiques d'entraînement",
+    "Meine Trainingsstatistiken"
+  ],
+  "총": [
+    "총",
+    "Total",
+    "総",
+    "总共",
+    "總共",
+    "Total",
+    "Total",
+    "Gesamt"
+  ],
+  "회 완료": [
+    "회 완료",
+    "completed",
+    "回完了",
+    "次完成",
+    "次完成",
+    "completados",
+    "terminées",
+    "abgeschlossen"
+  ],
+  "운동 횟수": [
+    "운동 횟수",
+    "Workouts",
+    "ワークアウト数",
+    "训练次数",
+    "訓練次數",
+    "Entrenamientos",
+    "Séances",
+    "Workouts"
+  ],
+  "누적 볼륨": [
+    "누적 볼륨",
+    "Total Volume",
+    "累積ボリューム",
+    "累计容量",
+    "累積容量",
+    "Volumen total",
+    "Volume total",
+    "Gesamtvolumen"
+  ],
+  "누적 반복": [
+    "누적 반복",
+    "Total Reps",
+    "累積レップ数",
+    "累计次数",
+    "累積次數",
+    "Reps totales",
+    "Répétitions totales",
+    "Gesamtwiederholungen"
+  ],
+  "회": [
+    "회",
+    "reps",
+    "回",
+    "次",
+    "次",
+    "reps",
+    "reps",
+    "Wdh."
+  ],
+  "디로딩 & 피로도 주기화": [
+    "디로딩 & 피로도 주기화",
+    "Deload & Fatigue Periodization",
+    "ディロード＆疲労度周期化",
+    "减载与疲劳周期化",
+    "減載與疲勞週期化",
+    "Descarga y periodización de fatiga",
+    "Deload & périodisation de la fatigue",
+    "Deload & Ermüdungsperiodisierung"
+  ],
+  "신경계 회복 및 초회복 관리": [
+    "신경계 회복 및 초회복 관리",
+    "CNS Recovery & Supercompensation",
+    "神経系の回復と超回復の管理",
+    "神经系统恢复与超量恢复管理",
+    "神經系統恢復與超量恢復管理",
+    "Recuperación del SNC y supercompensación",
+    "Récupération du SNC et surcompensation",
+    "ZNS-Erholung & Superkompensation"
+  ],
+  "⚠️ 디로딩 권장": [
+    "⚠️ 디로딩 권장",
+    "⚠️ Deload Recommended",
+    "⚠️ ディロード推奨",
+    "⚠️ 建议减载",
+    "⚠️ 建議減載",
+    "⚠️ Descarga recomendada",
+    "⚠️ Deload recommandé",
+    "⚠️ Deload empfohlen"
+  ],
+  "⚡ 컨디션 최적": [
+    "⚡ 컨디션 최적",
+    "⚡ Prime Condition",
+    "⚡ コンディション最適",
+    "⚡ 状态极佳",
+    "⚡ 狀態極佳",
+    "⚡ Condición óptima",
+    "⚡ Condition optimale",
+    "⚡ Optimale Verfassung"
+  ],
+  "최근 평균 강도:": [
+    "최근 평균 강도:",
+    "Recent Avg Intensity:",
+    "最近の平均強度:",
+    "近期平均强度:",
+    "近期平均強度:",
+    "Intensidad media reciente:",
+    "Intensité moyenne récente :",
+    "Kürzliche Durchschnittsintensität:"
+  ],
+  "평균 RPE": [
+    "평균 RPE",
+    "Avg RPE",
+    "平均RPE",
+    "平均RPE",
+    "平均RPE",
+    "RPE medio",
+    "RPE moyen",
+    "Durchschnitts-RPE"
+  ],
+  "종목별 통합 근력 성장 지표": [
+    "종목별 통합 근력 성장 지표",
+    "Unified Strength Growth Index",
+    "種目別統合筋力成長指標",
+    "动作综合力量增长指标",
+    "動作綜合力量增長指標",
+    "Índice unificado de fuerza",
+    "Indice de progression de force unifié",
+    "Einheitlicher Kraftzuwachs-Index"
+  ],
+  "머신 브랜드가 달라도 종목 전체 1RM 성장 추적": [
+    "머신 브랜드가 달라도 종목 전체 1RM 성장 추적",
+    "Track overall 1RM growth across machine brands",
+    "マシンブランドが違っても種目全体の1RM成長を追跡",
+    "跨器械品牌追踪动作整体1RM增长",
+    "跨器材品牌追蹤動作整體1RM增長",
+    "Sigue el 1RM global en distintas marcas de máquinas",
+    "Suivez le 1RM global quelle que soit la marque de machine",
+    "Verfolgen Sie das 1RM markenübergreifend"
+  ],
+  "성장을 확인할 종목 검색": [
+    "성장을 확인할 종목 검색",
+    "Search exercise to check growth",
+    "成長を確認する種目を検索",
+    "搜索查看增长的动作",
+    "搜尋查看成長的動作",
+    "Buscar ejercicio para ver progreso",
+    "Rechercher un exercice pour voir la progression",
+    "Übung zur Fortschrittsanzeige suchen"
+  ],
+  "종목 변경": [
+    "종목 변경",
+    "Change",
+    "種目変更",
+    "更换动作",
+    "更換動作",
+    "Cambiar",
+    "Changer",
+    "Ändern"
+  ],
+  "성장률": [
+    "성장률",
+    "Growth Rate",
+    "成長率",
+    "增长率",
+    "增長率",
+    "Tasa de crecimiento",
+    "Taux de progression",
+    "Zuwachsrate"
+  ],
+  "종목별 성장 기록": [
+    "종목별 성장 기록",
+    "Exercise Growth History",
+    "種目別成長記録",
+    "各动作增长记录",
+    "各動作增長記錄",
+    "Historial de crecimiento por ejercicio",
+    "Historique de progression par exercice",
+    "Fortschrittsverlauf nach Übung"
+  ],
+  "기록 측정 중": [
+    "기록 측정 중",
+    "Tracking in progress",
+    "記録測定中",
+    "数据记录中",
+    "數據記錄中",
+    "Midiendo registros",
+    "Mesure en cours",
+    "Aufzeichnung läuft"
+  ],
+  "성장 🚀": [
+    "성장 🚀",
+    "Growth 🚀",
+    "成長 🚀",
+    "增长 🚀",
+    "增長 🚀",
+    "Crecimiento 🚀",
+    "Progression 🚀",
+    "Zuwachs 🚀"
+  ],
+  "유지": [
+    "유지",
+    "Maintained",
+    "維持",
+    "维持",
+    "維持",
+    "Mantenido",
+    "Maintenu",
+    "Gehalten"
+  ],
+  "해당 종목은 완료한 세트의 1RM 데이터가 아직 없습니다.": [
+    "해당 종목은 완료한 세트의 1RM 데이터가 아직 없습니다.",
+    "No 1RM data for completed sets in this exercise yet.",
+    "この種目は完了したセットの1RMデータがまだありません。",
+    "该动作尚无已完成组的1RM数据。",
+    "該動作尚無已完成組的1RM數據。",
+    "Aún no hay datos de 1RM para series completadas en este ejercicio.",
+    "Aucune donnée de 1RM pour les séries terminées pour cet exercice.",
+    "Noch keine 1RM-Daten für abgeschlossene Sätze in dieser Übung."
+  ],
+  "운동을 기록하면 데이터가 있는 종목을 먼저 보여드려요.": [
+    "운동을 기록하면 데이터가 있는 종목을 먼저 보여드려요.",
+    "Log workouts to prioritize exercises with historical data.",
+    "運動を記録すると、データのある種目を優先して表示します。",
+    "记录训练后，将优先显示有数据的动作。",
+    "記錄訓練後，將優先顯示有數據的動作。",
+    "Registra entrenamientos para ver primero los ejercicios con datos.",
+    "Enregistrez vos séances pour afficher en priorité les exercices avec des données.",
+    "Zeichnen Sie Trainings auf, um Übungen mit Daten zuerst zu sehen."
+  ],
+  "추정 1RM": [
+    "추정 1RM",
+    "Est. 1RM",
+    "推定1RM",
+    "预估1RM",
+    "預估1RM",
+    "1RM est.",
+    "1RM est.",
+    "Geschätztes 1RM"
+  ],
+  "과거 운동 일지": [
+    "과거 운동 일지",
+    "Past Workout Logs",
+    "過去のワークアウト記録",
+    "历史训练日志",
+    "歷史訓練日誌",
+    "Registros de entrenamientos anteriores",
+    "Historique des entraînements passés",
+    "Vergangene Trainingstagebücher"
+  ],
+  "세트 완료": [
+    "세트 완료",
+    "sets completed",
+    "セット完了",
+    "组完成",
+    "組完成",
+    "series completadas",
+    "séries terminées",
+    "Sätze abgeschlossen"
+  ],
+  "현재 훈련 강도가 적절한 피로도 범위 내에서 진행되고 있습니다. 좋은 컨디션을 유지하며 점진적 과부하를 이어가세요!": [
+    "현재 훈련 강도가 적절한 피로도 범위 내에서 진행되고 있습니다. 좋은 컨디션을 유지하며 점진적 과부하를 이어가세요!",
+    "Training intensity is currently well within fatigue tolerance. Keep up the good work and maintain progressive overload!",
+    "現在のトレーニング強度は適切な疲労度範囲内で進められています。良好なコンディションを保ち、漸進的過負荷を続けましょう！",
+    "当前的训练强度处于合理的疲劳范围内。请保持良好状态并继续坚持渐进式超负荷！",
+    "當前的訓練強度處於合理的疲勞範圍內。請保持良好狀態並繼續堅持漸進式超負荷！",
+    "La intensidad del entrenamiento está dentro de un rango óptimo de fatiga. ¡Sigue así y mantén la sobrecarga progresiva!",
+    "L'intensité d'entraînement se situe dans une fourchette de fatigue adéquate. Maintenez le cap et poursuivez la surcharge progressive !",
+    "Die Trainingsintensität liegt im optimalen Ermüdungsbereich. Behalten Sie die gute Form bei und setzen Sie die progressive Überlastung fort!"
+  ],
+  "훈련 데이터 수집 중입니다. 꾸준히 기록을 남겨보세요!": [
+    "훈련 데이터 수집 중입니다. 꾸준히 기록을 남겨보세요!",
+    "Collecting training data. Keep logging your workouts consistently!",
+    "トレーニングデータを収集中です。継続して記録を残しましょう！",
+    "训练数据采集中。请继续坚持记录！",
+    "訓練數據採集中。請繼續堅持記錄！",
+    "Recopilando datos de entrenamiento. ¡Sigue registrando con constancia!",
+    "Collecte des données en cours. Continuez d'enregistrer vos séances !",
+    "Trainingsdaten werden erfasst. Protokollieren Sie weiter fleißig!"
+  ],
+  "최근 훈련 강도가 매우 높습니다! 신경계 회복과 근비대 초회복을 위해 이번 주는 중량/볼륨을 50~60%로 줄인 디로딩 주간을 강력히 권장합니다.": [
+    "최근 훈련 강도가 매우 높습니다! 신경계 회복과 근비대 초회복을 위해 이번 주는 중량/볼륨을 50~60%로 줄인 디로딩 주간을 강력히 권장합니다.",
+    "Recent training intensity is very high! A deload week reducing weight/volume to 50-60% is strongly recommended for CNS recovery and supercompensation.",
+    "最近のトレーニング強度が非常に高いです！神経系の回復と筋肥大の超回復のため、今週は重量/ボリュームを50〜60%に抑えたディロード週を強く推奨します。",
+    "近期训练强度非常高！为了神经系统恢复和肌肥大超量恢复，强烈建议本周将重量/容量降低至50~60%进行减载训练。",
+    "近期訓練強度非常高！為了神經系統恢復和肌肥大超量恢復，強烈建議本週將重量/容量降低至50~60%進行減載訓練。",
+    "¡La intensidad reciente es muy alta! Se recomienda una semana de descarga reduciendo carga/volumen al 50-60% para recuperar el SNC.",
+    "L'intensité récente est très élevée ! Une semaine de décharge (50-60% de volume/charge) est vivement recommandée pour récupérer.",
+    "Die kürzliche Intensität ist sehr hoch! Eine Deload-Woche mit 50-60% Gewicht/Volumen wird zur ZNS-Erholung dringend empfohlen."
+  ],
+  "성장 지표 종목 찾기": [
+    "성장 지표 종목 찾기",
+    "Find Exercise for Growth",
+    "成長指標の種目を検索",
+    "查找成长指标动作",
+    "查找成長指標動作",
+    "Buscar ejercicio de progreso",
+    "Trouver un exercice de progression",
+    "Übung für Fortschrittsindex suchen"
+  ],
+  "종목 선택 닫기": [
+    "종목 선택 닫기",
+    "Close exercise selection",
+    "種目選択を閉じる",
+    "关闭动作选择",
+    "關閉動作選擇",
+    "Cerrar selección de ejercicio",
+    "Fermer la sélection",
+    "Übungsauswahl schließen"
+  ],
+  "1RM 데이터가 있는 종목부터 최근 기록순으로 보여드려요.": [
+    "1RM 데이터가 있는 종목부터 최근 기록순으로 보여드려요.",
+    "Exercises with 1RM data are sorted by recent activity first.",
+    "1RMデータがある種目を直近の記録順に表示します。",
+    "优先按近期记录展示拥有1RM数据的动作。",
+    "優先按近期記錄展示擁有1RM數據的動作。",
+    "Los ejercicios con datos de 1RM se muestran según los registros recientes.",
+    "Les exercices avec données 1RM sont triés par récence.",
+    "Übungen mit 1RM-Daten werden nach Aktualität sortiert."
+  ],
+  "성장 지표 종목 검색": [
+    "성장 지표 종목 검색",
+    "Search growth exercise",
+    "成長指標の種目を検索",
+    "搜索成长指标动作",
+    "搜尋成長指標動作",
+    "Buscar ejercicio de progreso",
+    "Rechercher un exercice de progression",
+    "Fortschrittsübung suchen"
+  ],
+  "기록 있는 종목": [
+    "기록 있는 종목",
+    "With Records",
+    "記録ありの種目",
+    "有记录的动作",
+    "有記錄的動作",
+    "Con registros",
+    "Avec historique",
+    "Mit Aufzeichnungen"
+  ],
+  "전체 종목": [
+    "전체 종목",
+    "All Exercises",
+    "全種目",
+    "全部动作",
+    "全部動作",
+    "Todos los ejercicios",
+    "Tous les exercices",
+    "Alle Übungen"
+  ],
+  "검색 결과": [
+    "검색 결과",
+    "Search Results",
+    "検索結果",
+    "搜索结果",
+    "搜尋結果",
+    "Resultados de búsqueda",
+    "Résultats de recherche",
+    "Suchergebnisse"
+  ],
+  "개": [
+    "개",
+    "items",
+    "件",
+    "个",
+    "個",
+    "resultados",
+    "résultats",
+    "Einträge"
+  ],
+  "회 기록": [
+    "회 기록",
+    "records",
+    "回記録",
+    "次记录",
+    "次記錄",
+    "registros",
+    "enregistrements",
+    "Einträge"
+  ],
+  "최근:": [
+    "최근:",
+    "Recent:",
+    "最近:",
+    "最近:",
+    "最近:",
+    "Reciente:",
+    "Récent :",
+    "Kürzlich:"
+  ],
+  "날짜별, 월별, 연별 운동 일지 및 AI 분석 추출": [
+    "날짜별, 월별, 연별 운동 일지 및 AI 분석 추출",
+    "Daily, monthly, yearly logs & AI analysis export",
+    "日別・月別・年別の記録とAI分析のエクスポート",
+    "按日/月/年查看训练日志及AI分析导出",
+    "按日/月/年查看訓練日誌及AI分析匯出",
+    "Registros por día, mes y año y exportación de análisis de IA",
+    "Journaux par jour, mois, an et export d'analyse IA",
+    "Tägliche, monatliche, jährliche Protokolle & KI-Export"
+  ],
+  "기록 합치기": [
+    "기록 합치기",
+    "Merge Logs",
+    "記録を統合",
+    "合并记录",
+    "合併記錄",
+    "Combinar registros",
+    "Fusionner les séances",
+    "Einträge zusammenführen"
+  ],
+  "총 볼륨": [
+    "총 볼륨",
+    "Total Volume",
+    "総ボリューム",
+    "总容量",
+    "總容量",
+    "Volumen total",
+    "Volume total",
+    "Gesamtvolumen"
+  ],
+  "플레이트": [
+    "플레이트",
+    "Plate-Loaded",
+    "プレート",
+    "挂片",
+    "掛片",
+    "Discos",
+    "Disques",
+    "Scheiben"
+  ],
+  "플레이트(원판)": [
+    "플레이트(원판)",
+    "Plate-Loaded",
+    "プレート（円盤）",
+    "挂片(杠铃片)",
+    "掛片(槓鈴片)",
+    "Discos",
+    "Disques",
+    "Hantelscheiben"
+  ],
+  "핀머신": [
+    "핀머신",
+    "Pin-Loaded",
+    "ピンマシン",
+    "插销式",
+    "插銷式",
+    "Selectorizada",
+    "Charge guidée",
+    "Steckgewichte"
+  ],
+  "원암(편측)": [
+    "원암(편측)",
+    "Single-Arm (Unilateral)",
+    "片手(片側)",
+    "单臂(单侧)",
+    "單臂(單側)",
+    "Unilateral",
+    "Unilatéral",
+    "Einseitig"
+  ],
+  "좌": [
+    "좌",
+    "L",
+    "左",
+    "左",
+    "左",
+    "I",
+    "G",
+    "L"
+  ],
+  "우": [
+    "우",
+    "R",
+    "右",
+    "右",
+    "右",
+    "D",
+    "D",
+    "R"
+  ],
+  "양쪽": [
+    "양쪽",
+    "Both",
+    "両方",
+    "双侧",
+    "雙側",
+    "Ambos",
+    "Deux côtés",
+    "Beide"
+  ],
+  "월 운동 횟수": [
+    "월 운동 횟수",
+    "Monthly Workouts",
+    "月間ワークアウト数",
+    "月训练次数",
+    "月訓練次數",
+    "Entrenamientos del mes",
+    "Séances du mois",
+    "Monatliche Workouts"
+  ],
+  "월 누적 볼륨": [
+    "월 누적 볼륨",
+    "Monthly Volume",
+    "月間累積ボリューム",
+    "月累计容量",
+    "月累積容量",
+    "Volumen mensual",
+    "Volume mensuel",
+    "Monatliches Volumen"
+  ],
+  "평균 운동시간": [
+    "평균 운동시간",
+    "Avg Duration",
+    "平均運動時間",
+    "平均训练时长",
+    "平均訓練時長",
+    "Duración media",
+    "Durée moyenne",
+    "Durchschnittsdauer"
+  ],
+  "월간 출석 캘린더": [
+    "월간 출석 캘린더",
+    "Monthly Attendance Calendar",
+    "月間カレンダー",
+    "月度出勤日历",
+    "月度出勤日曆",
+    "Calendario mensual",
+    "Calendrier mensuel",
+    "Monatskalender"
+  ],
+  "날짜 클릭 시 해당 일지 조회": [
+    "날짜 클릭 시 해당 일지 조회",
+    "Click date to view log",
+    "日付をクリックして記録を表示",
+    "点击日期查看当日日志",
+    "點擊日期查看當日日誌",
+    "Toca una fecha para ver el registro",
+    "Cliquez sur une date pour voir la séance",
+    "Datum anklicken für Details"
+  ],
+  "이번 달 수행 세션 피드": [
+    "이번 달 수행 세션 피드",
+    "This Month's Sessions",
+    "今月のワークアウト履歴",
+    "本月训练记录流",
+    "本月訓練記錄流",
+    "Sesiones de este mes",
+    "Séances de ce mois",
+    "Workouts dieses Monats"
+  ],
+  "연간 총 운동 일수": [
+    "연간 총 운동 일수",
+    "Yearly Active Days",
+    "年間総運動日数",
+    "年总训练天数",
+    "年總訓練天數",
+    "Días activos al año",
+    "Jours actifs par an",
+    "Aktive Tage im Jahr"
+  ],
+  "일": [
+    "일",
+    "days",
+    "日",
+    "天",
+    "天",
+    "días",
+    "jours",
+    "Tage"
+  ],
+  "연간 누적 볼륨": [
+    "연간 누적 볼륨",
+    "Yearly Total Volume",
+    "年間累積ボリューム",
+    "年度累计容量",
+    "年度累積容量",
+    "Volumen anual total",
+    "Volume annuel total",
+    "Jährliches Gesamtvolumen"
+  ],
+  "톤": [
+    "톤",
+    "tons",
+    "トン",
+    "吨",
+    "噸",
+    "toneladas",
+    "tonnes",
+    "Tonnen"
+  ],
+  "월별 운동 빈도": [
+    "월별 운동 빈도",
+    "Monthly Workout Frequency",
+    "月別ワークアウト頻度",
+    "每月训练频次",
+    "每月訓練頻次",
+    "Frecuencia mensual de entrenamiento",
+    "Fréquence d'entraînement mensuelle",
+    "Monatliche Trainingshäufigkeit"
+  ],
+  "기록 백업 · 복원 (마크다운 / JSON)": [
+    "기록 백업 · 복원 (마크다운 / JSON)",
+    "Backup & Restore (Markdown / JSON)",
+    "記録バックアップ・復元（Markdown / JSON）",
+    "记录备份与恢复 (Markdown / JSON)",
+    "記錄備份與恢復 (Markdown / JSON)",
+    "Copia y restauración (Markdown / JSON)",
+    "Sauvegarde et restauration (Markdown / JSON)",
+    "Sicherung & Wiederherstellung (Markdown / JSON)"
+  ],
+  "앱 삭제 전 파일로 백업하거나, 기존에 추출했던 마크다운 일지(.md) 및 백업 파일을 불러와 기록을 온전히 복원할 수 있습니다.": [
+    "앱 삭제 전 파일로 백업하거나, 기존에 추출했던 마크다운 일지(.md) 및 백업 파일을 불러와 기록을 온전히 복원할 수 있습니다.",
+    "Backup your data before deleting the app, or restore your complete workout history from exported Markdown (.md) or JSON files.",
+    "アプリ削除前にファイルへバックアップするか、以前エクスポートしたMarkdown(.md)やバックアップファイルを読み込んで記録を完全に復元できます。",
+    "在删除应用前可备份到文件，或导入之前导出的Markdown日记(.md)及备份文件完整恢复训练记录。",
+    "在刪除應用前可備份至檔案，或匯入之前匯出的Markdown日記(.md)及備份檔案完整恢復訓練記錄。",
+    "Haz una copia de seguridad antes de desinstalar, o restaura tu historial importando archivos Markdown (.md) o JSON.",
+    "Sauvegardez vos données avant suppression de l'application, ou restaurez votre historique à partir de fichiers Markdown (.md) ou JSON.",
+    "Sichern Sie Ihre Daten vor dem Löschen der App oder stellen Sie den Trainingsverlauf über Markdown- (.md) oder JSON-Dateien wieder her."
+  ],
+  "파일로 백업": [
+    "파일로 백업",
+    "Backup to File",
+    "ファイルにバックアップ",
+    "备份到文件",
+    "備份至檔案",
+    "Guardar copia en archivo",
+    "Sauvegarder dans un fichier",
+    "In Datei sichern"
+  ],
+  "일지 / 백업 파일 복원 (.md, .json)": [
+    "일지 / 백업 파일 복원 (.md, .json)",
+    "Restore File (.md, .json)",
+    "ファイル復元 (.md, .json)",
+    "恢复文件 (.md, .json)",
+    "恢復檔案 (.md, .json)",
+    "Restaurar archivo (.md, .json)",
+    "Restaurer un fichier (.md, .json)",
+    "Datei wiederherstellen (.md, .json)"
+  ],
+  "마크다운 일지 / 백업 텍스트 직접 붙여넣기": [
+    "마크다운 일지 / 백업 텍스트 직접 붙여넣기",
+    "Paste Markdown / Backup text directly",
+    "Markdown・バックアップテキストを直接貼り付け",
+    "直接粘贴Markdown日记/备份文本",
+    "直接貼上Markdown日記/備份文字",
+    "Pegar texto de Markdown o copia de seguridad directamente",
+    "Coller directement le texte Markdown ou de sauvegarde",
+    "Markdown- / Backup-Text direkt einfügen"
+  ],
+  "앱에서 추출했던 마크다운 일지(_YYYYMMDD.md) 내용이나 백업 JSON을 여기에 붙여넣으세요.": [
+    "앱에서 추출했던 마크다운 일지(_YYYYMMDD.md) 내용이나 백업 JSON을 여기에 붙여넣으세요.",
+    "Paste your exported Markdown workout log (_YYYYMMDD.md) content or backup JSON here.",
+    "アプリからエクスポートしたMarkdown日誌（_YYYYMMDD.md）の内容やバックアップJSONをここに貼り付けてください。",
+    "请在此粘贴从应用导出的Markdown日志(_YYYYMMDD.md)内容或备份JSON。",
+    "請在此貼上從應用匯出的Markdown日誌(_YYYYMMDD.md)內容或備份JSON。",
+    "Pega aquí el contenido del diario Markdown (_YYYYMMDD.md) exportado o el JSON de respaldo.",
+    "Collez ici le contenu de votre journal Markdown (_YYYYMMDD.md) ou le JSON de sauvegarde.",
+    "Fügen Sie den exportierten Markdown-Inhalt (_YYYYMMDD.md) oder das Backup-JSON hier ein."
+  ],
+  "일지 내용 확인": [
+    "일지 내용 확인",
+    "Verify Log Content",
+    "日誌内容を確認",
+    "检查日志内容",
+    "檢查日誌內容",
+    "Verificar contenido",
+    "Vérifier le contenu",
+    "Inhalt prüfen"
+  ],
+  "새 기록으로 교체 (이전 기록 덮어쓰기)": [
+    "새 기록으로 교체 (이전 기록 덮어쓰기)",
+    "Replace All (Overwrite existing)",
+    "新しい記録に置換（既存記録を上書き）",
+    "替换为新记录（覆盖旧数据）",
+    "替換為新記錄（覆蓋舊數據）",
+    "Reemplazar todo (Sobrescribir datos anteriores)",
+    "Tout remplacer (Écraser les données existantes)",
+    "Alles ersetzen (Bestehende Daten überschreiben)"
+  ],
+  "기존 기록과 합치기 (중복 제외 병합)": [
+    "기존 기록과 합치기 (중복 제외 병합)",
+    "Merge with Existing (Deduplicate)",
+    "既存の記録と統合（重複を除外して結合）",
+    "与现有记录合并（去除重复）",
+    "與現有記錄合併（去除重複）",
+    "Combinar con registros existentes (Sin duplicados)",
+    "Fusionner avec l'existant (Sans doublons)",
+    "Mit vorhandenen zusammenführen (Ohne Duplikate)"
+  ],
+  "백업 파일을 저장했습니다. 앱 삭제 전 파일이 있는지 확인하세요.": [
+    "백업 파일을 저장했습니다. 앱 삭제 전 파일이 있는지 확인하세요.",
+    "Backup file saved. Please confirm the file exists before deleting the app.",
+    "バックアップファイルを保存しました。アプリ削除前にファイルをご確認ください。",
+    "备份文件已保存。删除应用前请确认文件是否存在。",
+    "備份檔案已儲存。刪除應用前請確認檔案是否存在。",
+    "Copia de seguridad guardada. Verifica el archivo antes de desinstalar.",
+    "Fichier de sauvegarde enregistré. Vérifiez sa présence avant désinstallation.",
+    "Sicherungsdatei gespeichert. Bitte vor App-Deinstallation prüfen."
+  ],
+  "선택한 앱에서 파일 저장을 완료해 주세요.": [
+    "선택한 앱에서 파일 저장을 완료해 주세요.",
+    "Please complete saving the file in the selected app.",
+    "選択したアプリでファイルの保存を完了してください。",
+    "请在所选应用中完成文件保存。",
+    "請在所選應用程式中完成檔案儲存。",
+    "Completa el guardado en la aplicación seleccionada.",
+    "Veuillez finaliser l'enregistrement dans l'application sélectionnée.",
+    "Bitte schließen Sie das Speichern in der gewählten App ab."
+  ],
+  "파일 다운로드를 요청했습니다. 저장되지 않으면 아래 백업 텍스트를 복사해 별도로 보관하세요.": [
+    "파일 다운로드를 요청했습니다. 저장되지 않으면 아래 백업 텍스트를 복사해 별도로 보관하세요.",
+    "Download requested. If not saved, copy the backup text below and store it safely.",
+    "ファイルのダウンロードを要求しました。保存されない場合は下記のテキストをコピーして保管してください。",
+    "已请求下载文件。如果未保存，请复制下方的备份文本另行保存。",
+    "已請求下載檔案。如果未儲存，請複製下方的備份文字另行保存。",
+    "Descarga solicitada. Si no se guarda, copia el texto siguiente y guárdalo por separado.",
+    "Téléchargement demandé. Si non enregistré, copiez le texte ci-dessous pour le conserver.",
+    "Download angefordert. Falls nicht gespeichert, kopieren Sie den Text unten."
+  ],
+  "10MB 이하 파일을 선택하세요.": [
+    "10MB 이하 파일을 선택하세요.",
+    "Please select a file under 10MB.",
+    "10MB以下のファイルを選択してください。",
+    "请选择小于10MB的文件。",
+    "請選擇小於10MB的檔案。",
+    "Selecciona un archivo de menos de 10 MB.",
+    "Veuillez sélectionner un fichier de moins de 10 Mo.",
+    "Bitte eine Datei unter 10 MB auswählen."
+  ],
+  "새 기록으로 덮어써 복원했습니다.": [
+    "새 기록으로 덮어써 복원했습니다.",
+    "Restored and replaced existing records.",
+    "既存の記録を上書きして復元しました。",
+    "已覆盖现有记录并完成恢复。",
+    "已覆蓋現有記錄並完成恢復。",
+    "Restaurado sobrescribiendo los registros anteriores.",
+    "Restauration effectuée en écrasant les anciens enregistrements.",
+    "Wiederhergestellt und bestehende Einträge überschrieben."
+  ],
+  "기존 기록과 통합하여 복원했습니다.": [
+    "기존 기록과 통합하여 복원했습니다.",
+    "Restored and merged with existing records.",
+    "既存の記録と統合して復元しました。",
+    "已与现有记录合并并完成恢复。",
+    "已與現有記錄合併並完成恢復。",
+    "Restaurado y combinado con los registros existentes.",
+    "Restauration effectuée et fusionnée avec l'existant.",
+    "Wiederhergestellt und mit vorhandenen Daten zusammengeführt."
+  ],
+  "휴식 시간": [
+    "휴식 시간",
+    "Rest Time",
+    "休憩時間",
+    "休息时间",
+    "休息時間",
+    "Tiempo de descanso",
+    "Temps de repos",
+    "Pausenzeit"
+  ],
+  "휴식 완료!": [
+    "휴식 완료!",
+    "Rest Complete!",
+    "休憩完了！",
+    "休息完成！",
+    "休息完成！",
+    "¡Descanso terminado!",
+    "Repos terminé !",
+    "Pause beendet!"
+  ],
+  "휴식 완료": [
+    "휴식 완료",
+    "Rest Complete",
+    "休憩完了",
+    "休息完成",
+    "休息完成",
+    "Descanso terminado",
+    "Repos terminé",
+    "Pause beendet"
+  ],
+  "복구": [
+    "복구",
+    "Undo",
+    "復元",
+    "恢复",
+    "復原",
+    "Deshacer",
+    "Annuler",
+    "Wiederherstellen"
+  ],
+  "완료!": [
+    "완료!",
+    "Done!",
+    "完了！",
+    "完成！",
+    "完成！",
+    "¡Listo!",
+    "Terminé !",
+    "Fertig!"
+  ],
+  "휴식 종료 & 세트에 기록": [
+    "휴식 종료 & 세트에 기록",
+    "End Rest & Log to Set",
+    "休憩終了＆セットに記録",
+    "结束休息并记录到组",
+    "結束休息並記錄至組",
+    "Terminar descanso y registrar",
+    "Terminer le repos et enregistrer",
+    "Pause beenden & im Satz speichern"
+  ],
+  "종료": [
+    "종료",
+    "End",
+    "終了",
+    "结束",
+    "結束",
+    "Fin",
+    "Fin",
+    "Ende"
+  ],
+  "최소화": [
+    "최소화",
+    "Minimize",
+    "最小化",
+    "最小化",
+    "最小化",
+    "Minimizar",
+    "Réduire",
+    "Minimieren"
+  ],
+  "아래로 쓸어내려 최소화": [
+    "아래로 쓸어내려 최소화",
+    "Swipe down to minimize",
+    "下にスワイプして最小化",
+    "向下滑动以最小化",
+    "向下滑動以最小化",
+    "Desliza hacia abajo para minimizar",
+    "Glissez vers le bas pour réduire",
+    "Nach unten wischen zum Minimieren"
+  ],
+  "화면 아래로 최소화": [
+    "화면 아래로 최소화",
+    "Minimize to bottom",
+    "画面下に最小化",
+    "最小化至屏幕底部",
+    "最小化至螢幕底部",
+    "Minimizar al fondo",
+    "Réduire en bas",
+    "Nach unten minimieren"
+  ],
+  "💡 창을 아래로 쓸어내리면 작은 플로팅 타이머로 변경됩니다": [
+    "💡 창을 아래로 쓸어내리면 작은 플로팅 타이머로 변경됩니다",
+    "💡 Swipe down to collapse into a floating capsule timer",
+    "💡 下にスワイプすると小さなフローティングタイマーに変わります",
+    "💡 向下滑动窗口可变为浮动小胶囊计时器",
+    "💡 向下滑動視窗可變為懸浮小膠囊計時器",
+    "💡 Desliza hacia abajo para convertirlo en un temporizador flotante",
+    "💡 Glissez vers le bas pour réduire en chronomètre flottant",
+    "💡 Nach unten wischen für einen schwebenden Mini-Timer"
+  ],
+  "실수로 리셋하셨나요? 방금 전": [
+    "실수로 리셋하셨나요? 방금 전",
+    "Reset by mistake? Restore recent",
+    "誤ってリセットしましたか？直前の",
+    "不小心重置了？恢复刚才的",
+    "不小心重置了？恢復剛才的",
+    "¿Lo restableciste por error? Recuperar",
+    "Réinitialisé par erreur ? Restaurer",
+    "Versehentlich zurückgesetzt? Vorherige"
+  ],
+  "초 복구": [
+    "초 복구",
+    "s undo",
+    "秒を復元",
+    "秒",
+    "秒",
+    "s recuperados",
+    "s restaurées",
+    "s zurückholen"
+  ],
+  "🎉 목표 휴식 완료": [
+    "🎉 목표 휴식 완료",
+    "🎉 Target Rest Completed",
+    "🎉 目標休憩完了",
+    "🎉 目标休息完成",
+    "🎉 目標休息完成",
+    "🎉 ¡Descanso objetivo completado!",
+    "🎉 Repos cible terminé !",
+    "🎉 Ziel-Pausenzeit erreicht!"
+  ],
+  "총 쉰 시간:": [
+    "총 쉰 시간:",
+    "Total Rested:",
+    "総休憩時間:",
+    "总休息时间:",
+    "總休息時間:",
+    "Descanso total:",
+    "Temps de repos total :",
+    "Gesamte Pause:"
+  ],
+  "실제 쉰 시간:": [
+    "실제 쉰 시간:",
+    "Actual Rested:",
+    "実際の休憩時間:",
+    "实际休息时间:",
+    "實際休息時間:",
+    "Descanso real:",
+    "Temps de repos réel :",
+    "Tatsächliche Pause:"
+  ],
+  "휴식 종료 &": [
+    "휴식 종료 &",
+    "Finish Rest &",
+    "休憩終了＆",
+    "结束休息并",
+    "結束休息並",
+    "Terminar descanso y",
+    "Terminer le repos et",
+    "Pause beenden &"
+  ],
+  "초 세트에 기록": [
+    "초 세트에 기록",
+    "s Log to Set",
+    "秒をセットに記録",
+    "秒记录至组",
+    "秒記錄至組",
+    "s registrar en la serie",
+    "s enregistrer dans la série",
+    "s im Satz speichern"
+  ],
+  "현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": [
+    "현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.",
+    "Cancel the current workout?\nUnsaved changes will be discarded and return to home.",
+    "現在のワークアウトをキャンセルしますか？\n記録中の内容は保存されず、初期画面に戻ります。",
+    "确定要取消正在进行的训练吗？\n未保存的内容将丢失并返回主界面。",
+    "確定要取消正在進行的訓練嗎？\n未儲存的內容將丟失並返回主畫面。",
+    "¿Cancelar el entrenamiento actual?\nLos cambios no guardados se perderán y volverás al inicio.",
+    "Annuler l'entraînement en cours ?\nLes modifications non enregistrées seront perdues.",
+    "Aktuelles Training abbrechen?\nNicht gespeicherte Daten gehen verloren."
+  ],
+  "등록된 운동 종목이 없습니다. 그래도 운동을 완료하시겠습니까?": [
+    "등록된 운동 종목이 없습니다. 그래도 운동을 완료하시겠습니까?",
+    "No exercises added. Do you still want to complete the workout?",
+    "登録された種目がありません。それでもワークアウトを完了しますか？",
+    "尚未添加任何动作。确定要完成训练吗？",
+    "尚未新增任何動作。確定要完成訓練嗎？",
+    "No hay ejercicios registrados. ¿Deseas completar el entrenamiento igualmente?",
+    "Aucun exercice ajouté. Souhaitez-vous quand même terminer la séance ?",
+    "Keine Übungen hinzugefügt. Training trotzdem abschließen?"
+  ],
+  "오늘 운동 완료!": [
+    "오늘 운동 완료!",
+    "Workout Complete!",
+    "今日のワークアウト完了！",
+    "今日训练完成！",
+    "今日訓練完成！",
+    "¡Entrenamiento completado!",
+    "Séance terminée !",
+    "Training abgeschlossen!"
+  ],
+  "총 운동 시간:": [
+    "총 운동 시간:",
+    "Total Time:",
+    "総運動時間:",
+    "总训练时长:",
+    "總訓練時長:",
+    "Tiempo total:",
+    "Temps total :",
+    "Gesamtdauer:"
+  ],
+  "총 볼륨:": [
+    "총 볼륨:",
+    "Total Volume:",
+    "総ボリューム:",
+    "总容量:",
+    "總容量:",
+    "Volumen total:",
+    "Volume total :",
+    "Gesamtvolumen:"
+  ],
+  "총 횟수:": [
+    "총 횟수:",
+    "Total Reps:",
+    "総回数:",
+    "总次数:",
+    "總次數:",
+    "Reps totales:",
+    "Répétitions totales :",
+    "Gesamtwiederholungen:"
+  ],
+  "기록이 성공적으로 저장되었습니다.": [
+    "기록이 성공적으로 저장되었습니다.",
+    "Workout saved successfully.",
+    "記録が正常に保存されました。",
+    "训练记录已成功保存。",
+    "訓練記錄已成功儲存。",
+    "Registro guardado con éxito.",
+    "Séance enregistrée avec succès.",
+    "Training erfolgreich gespeichert."
+  ],
+  "체험용 샘플 운동 일지가 불러와졌습니다. [기록 조회] 탭에서 확인해 보세요!": [
+    "체험용 샘플 운동 일지가 불러와졌습니다. [기록 조회] 탭에서 확인해 보세요!",
+    "Demo sample workout log loaded. Check it in the [History] tab!",
+    "体験用サンプル日誌が読み込まれました。[履歴]タブで確認してください！",
+    "体验用训练示例日志已加载。请前往【历史记录】标签查看！",
+    "體驗用訓練範例日誌已載入。請前往【歷史記錄】標籤查看！",
+    "Diario de muestra cargado. ¡Consúltalo en la pestaña [Historial]!",
+    "Journal d'entraînement de démonstration chargé. Consultez l'onglet [Historique] !",
+    "Beispiel-Trainingsprotokoll geladen. Im Reiter [Verlauf] ansehen!"
+  ],
+  "운동 종목 이름을 입력해 주세요.": [
+    "운동 종목 이름을 입력해 주세요.",
+    "Please enter an exercise name.",
+    "種目名を入力してください。",
+    "请输入动作名称。",
+    "請輸入動作名稱。",
+    "Introduce el nombre del ejercicio.",
+    "Veuillez saisir le nom de l'exercice.",
+    "Bitte geben Sie einen Übungsnamen ein."
+  ],
+  "종목을 저장하지 못했습니다. 저장 공간이나 브라우저 저장 권한을 확인한 뒤 다시 시도해 주세요.": [
+    "종목을 저장하지 못했습니다. 저장 공간이나 브라우저 저장 권한을 확인한 뒤 다시 시도해 주세요.",
+    "Failed to save exercise. Check available storage or browser permissions and try again.",
+    "種目を保存できませんでした。ストレージ容量やブラウザの権限を確認し、再試行してください。",
+    "未能保存动作。请检查存储空间或浏览器存储权限后重试。",
+    "未能儲存動作。請檢查儲存空間或瀏覽器儲存權限後重試。",
+    "Error al guardar el ejercicio. Comprueba el almacenamiento o permisos y vuelve a intentarlo.",
+    "Échec de l'enregistrement de l'exercice. Vérifiez l'espace de stockage et réessayez.",
+    "Übung konnte nicht gespeichert werden. Bitte Speicherplatz prüfen."
+  ],
+  "의 운동 기록을 정말 삭제하시겠습니까?": [
+    "의 운동 기록을 정말 삭제하시겠습니까?",
+    ": Are you sure you want to delete this workout log?",
+    "のワークアウト記録を本当に削除しますか？",
+    "的训练记录确定要删除吗？",
+    "的訓練記錄確定要刪除嗎？",
+    "¿Seguro que deseas eliminar el registro de entrenamiento de",
+    ": Voulez-vous vraiment supprimer la séance du",
+    "Wirklich das Trainingsprotokoll löschen für"
+  ],
+  "오늘 운동 기록 합치기": [
+    "오늘 운동 기록 합치기",
+    "Merge Today's Workouts",
+    "本日のワークアウト記録を統合",
+    "合并今日训练记录",
+    "合併今日訓練記錄",
+    "Combinar entrenamientos de hoy",
+    "Fusionner les entraînements d'aujourd'hui",
+    "Heutige Workouts zusammenführen"
+  ],
+  "개의 세션을 하나로 합치시겠습니까?": [
+    "개의 세션을 하나로 합치시겠습니까?",
+    "sessions: Do you want to merge them into one?",
+    "件のセッションを1つに統合しますか？",
+    "个会话合并为一个吗？",
+    "個訓練合併為一個嗎？",
+    "sesiones: ¿Deseas unirlas en una sola?",
+    "séances : voulez-vous les fusionner en une seule ?",
+    "Sessions zu einer zusammenführen?"
+  ],
+  "총 종목:": [
+    "총 종목:",
+    "Total Exercises:",
+    "総種目数:",
+    "总动作数:",
+    "總動作數:",
+    "Ejercicios totales:",
+    "Exercices totaux :",
+    "Übungen gesamt:"
+  ],
+  "총 세트:": [
+    "총 세트:",
+    "Total Sets:",
+    "総セット数:",
+    "总组数:",
+    "總組數:",
+    "Series totales:",
+    "Séries totales :",
+    "Sätze gesamt:"
+  ],
+  "총 소요 시간:": [
+    "총 소요 시간:",
+    "Total Duration:",
+    "総所要時間:",
+    "总耗时:",
+    "總耗時:",
+    "Duración total:",
+    "Durée totale :",
+    "Gesamtdauer:"
+  ],
+  "모든 종목과 세트, 무게 기록이 손상 없이 순서대로 통합됩니다.": [
+    "모든 종목과 세트, 무게 기록이 손상 없이 순서대로 통합됩니다.",
+    "All exercises, sets, and weights will be merged sequentially without any data loss.",
+    "すべての種目、セット、重量記録が欠落することなく順番に統合されます。",
+    "所有动作、组数和重量记录将按顺序完整合并，数据不会丢失。",
+    "所有動作、組數和重量記錄將按順序完整合併，數據不會丟失。",
+    "Todos los ejercicios, series y pesos se combinarán en orden sin perder datos.",
+    "Tous les exercices, séries et charges seront fusionnés sans aucune perte de données.",
+    "Alle Übungen, Sätze und Gewichte werden verlustfrei zusammengeführt."
+  ],
+  "오늘의 운동 기록 ": [
+    "오늘의 운동 기록 ",
+    "Today's workout logs (",
+    "本日のワークアウト記録 ",
+    "今天的训练记录 ",
+    "今天的訓練記錄 ",
+    "Registros de hoy (",
+    "Séances d'aujourd'hui (",
+    "Heutige Trainings ("
+  ],
+  "개가 하나로 깔끔하게 합쳐졌습니다!": [
+    "개가 하나로 깔끔하게 합쳐졌습니다!",
+    ") merged cleanly into one!",
+    "件が1つにきれいに統合されました！",
+    "项已整洁合并为一条！",
+    "項已整潔合併為一條！",
+    ") combinados con éxito en uno solo.",
+    ") fusionnées avec succès !",
+    ") sauber zu einem zusammengeführt!"
+  ],
+  "저장된 모든 운동 기록을 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.": [
+    "저장된 모든 운동 기록을 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    "Are you sure you want to reset all workout records? This action cannot be undone.",
+    "保存されているすべてのワークアウト記録を初期化しますか？この操作は元に戻せません。",
+    "确定要清空所有已保存的训练记录吗？此操作无法撤销。",
+    "確定要清空所有已儲存的訓練記錄嗎？此操作無法撤銷。",
+    "¿Seguro que deseas restablecer todos los registros? Esta acción no se puede deshacer.",
+    "Voulez-vous vraiment réinitialiser tout l'historique ? Cette action est irréversible.",
+    "Wirklich alle Trainingsdaten zurücksetzen? Dies kann nicht rückgängig gemacht werden."
+  ],
+  "3D 모델을 표시하지 못했어요.": [
+    "3D 모델을 표시하지 못했어요.",
+    "Could not load 3D model.",
+    "3Dモデルを表示できませんでした。",
+    "未能显示3D模型。",
+    "未能顯示3D模型。",
+    "No se pudo cargar el modelo 3D.",
+    "Impossible de charger le modèle 3D.",
+    "3D-Modell konnte nicht geladen werden."
+  ],
+  "다시 불러오기": [
+    "다시 불러오기",
+    "Retry",
+    "再読み込み",
+    "重试",
+    "重試",
+    "Reintentar",
+    "Réessayer",
+    "Erneut versuchen"
+  ],
+  "앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.": [
+    "앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.",
+    "Both sides show the same body. Choose front or back to rotate freely.",
+    "前後は同じモデルです。前面・後面を選択して回転させてみてください。",
+    "正反面为同一模型。选择正面或背面可自由旋转查看。",
+    "正反面為同一模型。選擇正面或背面可自由旋轉查看。",
+    "Ambas vistas son del mismo modelo. Elige frente o dorso para girar.",
+    "Face et dos représentent le même modèle. Choisissez l'angle et faites pivoter.",
+    "Vorne und hinten zeigen denselben Körper. Wählen Sie eine Ansicht zum Drehen."
+  ],
+  "드래그하여 회전 · 두 손가락으로 확대 · 근육을 눌러 이름 확인": [
+    "드래그하여 회전 · 두 손가락으로 확대 · 근육을 눌러 이름 확인",
+    "Drag to rotate · Pinch to zoom · Tap muscle for info",
+    "ドラッグして回転・ピンチして拡大・筋肉をタップして確認",
+    "拖动旋转·双指缩放·点击肌肉查看详情",
+    "拖曳旋轉·雙指縮放·點擊肌肉查看詳情",
+    "Arrastra para rotar · Pellizca para zoom · Toca músculo para info",
+    "Glissez pour tourner · Pincez pour zoomer · Touchez un muscle",
+    "Ziehen zum Drehen · Zoomen mit zwei Fingern · Muskel antippen"
+  ],
+  "동일한 3D 인체의 전면과 후면": [
+    "동일한 3D 인체의 전면과 후면",
+    "Front and back of the same 3D body",
+    "同一3D人体の前面と後面",
+    "同一3D人体的正面与背面",
+    "同一3D人體的正面與背面",
+    "Frente y dorso del mismo cuerpo 3D",
+    "Face et dos du même corps 3D",
+    "Vorder- und Rückseite desselben 3D-Körpers"
+  ],
+  "드래그로 회전하고 두 손가락으로 확대하는 인체": [
+    "드래그로 회전하고 두 손가락으로 확대하는 인체",
+    "Interactive 3D body: rotate and zoom",
+    "ドラッグで回転しピンチで拡大する人体",
+    "可拖动旋转及缩放的人体3D模型",
+    "可拖曳旋轉及縮放的人體3D模型",
+    "Cuerpo 3D interactivo: gira y haz zoom",
+    "Corps 3D interactif : pivotez et zoomez",
+    "Interaktiver 3D-Körper: drehen und zoomen"
+  ],
+  "3D 모델 출처": [
+    "3D 모델 출처",
+    "3D Model Attribution",
+    "3Dモデル出典",
+    "3D模型来源",
+    "3D模型來源",
+    "Fuente del modelo 3D",
+    "Crédits modèle 3D",
+    "3D-Modellquelle"
+  ],
+  "해부학 근육 시각화": [
+    "해부학 근육 시각화",
+    "Anatomical Muscle Visualization",
+    "解剖学的筋肉可視化",
+    "解剖学肌肉可视化",
+    "解剖學肌肉視覺化",
+    "Visualización muscular anatómica",
+    "Visualisation anatomique des muscles",
+    "Anatomische Muskelvisualisierung"
+  ],
+  "주동근·협응근": [
+    "주동근·협응근",
+    "Primary & Secondary Muscles",
+    "主働筋・補助筋",
+    "主发力肌与协同肌",
+    "主發力肌與協同肌",
+    "Músculos principales y secundarios",
+    "Muscles primaires et secondaires",
+    "Haupt- & Hilfsmuskeln"
+  ],
+  "인체를 터치하여 운동 찾기": [
+    "인체를 터치하여 운동 찾기",
+    "Tap muscle to find exercises",
+    "人体をタップして種目を検索",
+    "轻触人体查找动作",
+    "輕觸人體查找動作",
+    "Toca el cuerpo para buscar ejercicios",
+    "Touchez le corps pour trouver des exercices",
+    "Tippen Sie auf Muskeln für passende Übungen"
+  ],
+  "선택된 근육:": [
+    "선택된 근육:",
+    "Selected muscle:",
+    "選択された筋肉:",
+    "选中的肌肉:",
+    "選中的肌肉:",
+    "Músculo seleccionado:",
+    "Muscle sélectionné :",
+    "Ausgewählter Muskel:"
+  ],
+  "필터 해제": [
+    "필터 해제",
+    "Clear Filter",
+    "フィルター解除",
+    "清除筛选",
+    "清除篩選",
+    "Quitar filtro",
+    "Effacer le filtre",
+    "Filter zurücksetzen"
+  ],
+  "기록에 담기": [
+    "기록에 담기",
+    "Add to Workout",
+    "記録に追加",
+    "加入训练",
+    "加入訓練",
+    "Añadir al entreno",
+    "Ajouter à la séance",
+    "Zum Training hinzufügen"
+  ],
+  "주동근 (Primary)": [
+    "주동근 (Primary)",
+    "Primary Muscles",
+    "主働筋 (Primary)",
+    "主发力肌 (Primary)",
+    "主發力肌 (Primary)",
+    "Músculos primarios",
+    "Muscles primaires",
+    "Hauptmuskeln"
+  ],
+  "협응근 (Secondary)": [
+    "협응근 (Secondary)",
+    "Secondary Muscles",
+    "補助筋 (Secondary)",
+    "协同肌 (Secondary)",
+    "協同肌 (Secondary)",
+    "Músculos secundarios",
+    "Muscles secondaires",
+    "Hilfsmuskeln"
+  ],
+  "올바른 자세 가이드": [
+    "올바른 자세 가이드",
+    "Proper Form Guide",
+    "正しいフォームガイド",
+    "正确姿势指南",
+    "正確姿勢指南",
+    "Guía de postura correcta",
+    "Guide de bonne posture",
+    "Leitfaden für richtige Haltung"
+  ],
+  "필터 초기화": [
+    "필터 초기화",
+    "Reset Filters",
+    "フィルター初期化",
+    "重置筛选",
+    "重設篩選",
+    "Restablecer filtros",
+    "Réinitialiser les filtres",
+    "Filter zurücksetzen"
+  ],
+  "더 보기": [
+    "더 보기",
+    "Load More",
+    "もっと見る",
+    "加载更多",
+    "載入更多",
+    "Ver más",
+    "Voir plus",
+    "Mehr anzeigen"
+  ],
+  "오늘의 운동 일지 & 코멘트": [
+    "오늘의 운동 일지 & 코멘트",
+    "Today's Log & Notes",
+    "今日の記録とコメント",
+    "今日训练日志与心得",
+    "今日訓練日誌與心得",
+    "Diario y notas de hoy",
+    "Journal et notes du jour",
+    "Heutiges Tagebuch & Notizen"
+  ],
+  "몸 상태, 운동 부위, 컨디션, 특이사항 기록": [
+    "몸 상태, 운동 부위, 컨디션, 특이사항 기록",
+    "Log body state, target muscles, readiness, and notes",
+    "身体状態、対象部位、コンディション、特記事項の記録",
+    "记录身体状态、目标部位、疲劳状态和特殊备注",
+    "記錄身體狀態、目標部位、疲勞狀態和特殊備註",
+    "Registra estado físico, grupos musculares y sensaciones",
+    "Notez forme physique, muscles ciblés et remarques",
+    "Körperzustand, Zielmuskeln und Notizen festhalten"
+  ],
+  "오늘의 신체 컨디션": [
+    "오늘의 신체 컨디션",
+    "Today's Readiness",
+    "今日のコンディション",
+    "今日身体状态",
+    "今日身體狀態",
+    "Condición física de hoy",
+    "Condition physique du jour",
+    "Heutige Tagesform"
+  ],
+  "최상의 컨디션": [
+    "최상의 컨디션",
+    "Peak Condition",
+    "最高の調子",
+    "状态极佳",
+    "狀態極佳",
+    "En plena forma",
+    "Excellente forme",
+    "Topform"
+  ],
+  "적절한 펌핑 & 힘": [
+    "적절한 펌핑 & 힘",
+    "Good Pump & Strength",
+    "良いパンプ感と筋力",
+    "力量与泵感良好",
+    "力量與泵感良好",
+    "Buen bombeo y fuerza",
+    "Bonne congestion et force",
+    "Guter Pump & Kraft"
+  ],
+  "수면 부족 / 피로": [
+    "수면 부족 / 피로",
+    "Lack of Sleep / Fatigued",
+    "睡眠不足・疲労",
+    "睡眠不足/疲惫",
+    "睡眠不足/疲憊",
+    "Falta de sueño / Fatiga",
+    "Manque de sommeil / Fatigue",
+    "Schlafmangel / Müde"
+  ],
+  "관절 / 통증 주의": [
+    "관절 / 통증 주의",
+    "Joint / Soreness Caution",
+    "関節・痛み注意",
+    "注意关节/酸痛",
+    "注意關節/酸痛",
+    "Cuidado con articulaciones",
+    "Attention articulations",
+    "Vorsicht bei Gelenken"
+  ],
+  "신기록 갱신 달성": [
+    "신기록 갱신 달성",
+    "New PR Achieved",
+    "新記録更新達成",
+    "刷新个人最佳纪录",
+    "刷新個人最佳紀錄",
+    "¡Nuevo récord personal!",
+    "Nouveau record personnel !",
+    "Neuer PR aufgestellt!"
+  ],
+  "운동 부위 재설정": [
+    "운동 부위 재설정",
+    "Adjust Target Muscles",
+    "運動部位の再設定",
+    "重新设定训练部位",
+    "重新設定訓練部位",
+    "Ajustar grupos musculares",
+    "Modifier les muscles cibles",
+    "Zielmuskeln anpassen"
+  ],
+  "자동 감지": [
+    "자동 감지",
+    "Auto Detect",
+    "自動検出",
+    "自动检测",
+    "自動檢測",
+    "Autodetectar",
+    "Détection auto",
+    "Automatisch erkennen"
+  ],
+  "종목 기반으로 부위가 자동 체크됩니다": [
+    "종목 기반으로 부위가 자동 체크됩니다",
+    "Target areas checked automatically based on logged exercises",
+    "種目に基づいて部位が自動選択されます",
+    "将根据已添加的动作自动勾选部位",
+    "將根據已新增的動作自動勾選部位",
+    "Selecciona los grupos automáticamente según los ejercicios",
+    "Sélectionne automatiquement les zones selon les exercices",
+    "Muskelbereiche werden anhand der Übungen gewählt"
+  ],
+  "디로딩 세션으로 기록 (강도/볼륨 조절 주간)": [
+    "디로딩 세션으로 기록 (강도/볼륨 조절 주간)",
+    "Mark as Deload Session (Recovery week)",
+    "ディロードとして記録（強度・量調整週）",
+    "记录为减载训练（降低强度与容量）",
+    "記錄為減載訓練（降低強度與容量）",
+    "Marcar como descarga (Semana de recuperación)",
+    "Marquer comme séance de deload",
+    "Als Deload-Session markieren"
+  ],
+  "루틴 제목 자동 동기화": [
+    "루틴 제목 자동 동기화",
+    "Sync routine title automatically",
+    "ルーチン名を自動同期",
+    "自动同步训练标题",
+    "自動同步訓練標題",
+    "Sincronizar título de rutina automáticamente",
+    "Synchroniser le titre de routine",
+    "Routinentitel automatisch synchronisieren"
+  ],
+  "운동 일지 메모 (식단, 통증, 집중도 등)": [
+    "운동 일지 메모 (식단, 통증, 집중도 등)",
+    "Session Notes (diet, pain, focus, etc.)",
+    "運動メモ（食事、痛み、集中度など）",
+    "训练备注（饮食、酸痛、专注度等）",
+    "訓練備註（飲食、酸痛、專注度等）",
+    "Notas (dieta, dolor, concentración)",
+    "Notes (alimentation, douleurs, focus)",
+    "Notizen (Ernährung, Schmerzen, Fokus)"
+  ],
+  "오늘 운동 일지 및 특이사항 입력...": [
+    "오늘 운동 일지 및 특이사항 입력...",
+    "Enter today's workout notes and observations...",
+    "本日の記録や特記事項を入力…",
+    "输入今日训练日志及特殊情况...",
+    "輸入今日訓練日誌及特殊情況...",
+    "Introduce notas u observaciones de hoy...",
+    "Notes et remarques de la séance...",
+    "Heutige Notizen und Beobachtungen eingeben..."
+  ],
+  "저장하기": [
+    "저장하기",
+    "Save",
+    "保存する",
+    "保存",
+    "儲存",
+    "Guardar",
+    "Enregistrer",
+    "Speichern"
+  ],
+  "운동 일지 수정": [
+    "운동 일지 수정",
+    "Edit Workout Session",
+    "ワークアウト記録の編集",
+    "修改训练日志",
+    "修改訓練日誌",
+    "Editar sesión de entrenamiento",
+    "Modifier la séance",
+    "Trainingstagebuch bearbeiten"
+  ],
+  "세션 상세 내용 및 기록 편집": [
+    "세션 상세 내용 및 기록 편집",
+    "Edit session details and logs",
+    "セッションの詳細と記録を編集",
+    "编辑训练详情与记录",
+    "編輯訓練詳情與記錄",
+    "Edita detalles y series",
+    "Modifier les détails et les séries",
+    "Details und Sätze bearbeiten"
+  ],
+  "루틴 제목": [
+    "루틴 제목",
+    "Routine Title",
+    "ルーチン名",
+    "训练标题",
+    "訓練標題",
+    "Título de la rutina",
+    "Titre de routine",
+    "Routinentitel"
+  ],
+  "운동 시간(분)": [
+    "운동 시간(분)",
+    "Duration (min)",
+    "運動時間（分）",
+    "训练时长(分)",
+    "訓練時長(分)",
+    "Duración (min)",
+    "Durée (min)",
+    "Dauer (Min.)"
+  ],
+  "디로딩 세션": [
+    "디로딩 세션",
+    "Deload Session",
+    "ディロードセッション",
+    "减载训练",
+    "減載訓練",
+    "Sesión de descarga",
+    "Séance de deload",
+    "Deload-Session"
+  ],
+  "세션 메모": [
+    "세션 메모",
+    "Session Notes",
+    "セッションメモ",
+    "训练备注",
+    "訓練備註",
+    "Notas de sesión",
+    "Notes de séance",
+    "Session-Notizen"
+  ],
+  "종목 추가": [
+    "종목 추가",
+    "Add Exercise",
+    "種目追加",
+    "添加动作",
+    "新增動作",
+    "Añadir ejercicio",
+    "Ajouter un exercice",
+    "Übung hinzufügen"
+  ],
+  "수정 완료 저장": [
+    "수정 완료 저장",
+    "Save Changes",
+    "修正を保存",
+    "保存修改",
+    "儲存修改",
+    "Guardar cambios",
+    "Enregistrer les modifications",
+    "Änderungen speichern"
+  ],
+  "아직 1RM 기록 없음": [
+    "아직 1RM 기록 없음",
+    "No 1RM record yet",
+    "まだ1RM記録なし",
+    "暂无1RM记录",
+    "暫無1RM記錄",
+    "Sin registros de 1RM aún",
+    "Aucun record 1RM pour l'instant",
+    "Noch kein 1RM-Rekord"
+  ],
+  "검색 결과가 없어요. 검색어를 줄여 보세요.": [
+    "검색 결과가 없어요. 검색어를 줄여 보세요.",
+    "No results found. Try a shorter keyword.",
+    "検索結果がありません。キーワードを短くしてみてください。",
+    "未找到搜索结果。请尝试缩短关键词。",
+    "未找到搜尋結果。請嘗試縮短關鍵詞。",
+    "No se encontraron resultados. Prueba con palabras más cortas.",
+    "Aucun résultat. Essayez avec un mot-clé plus court.",
+    "Keine Ergebnisse. Kürzeren Suchbegriff versuchen."
+  ],
+  "아직 1RM 데이터가 있는 종목이 없어요.": [
+    "아직 1RM 데이터가 있는 종목이 없어요.",
+    "No exercises with 1RM data yet.",
+    "まだ1RMデータがある種目がありません。",
+    "暂无含1RM数据的动作。",
+    "暫無含1RM數據的動作。",
+    "Aún no hay ejercicios con datos de 1RM.",
+    "Aucun exercice avec données 1RM.",
+    "Noch keine Übungen mit 1RM-Daten."
+  ],
+  "전체 종목에서 찾기": [
+    "전체 종목에서 찾기",
+    "Search all exercises",
+    "全種目から検索",
+    "在全部动作中查找",
+    "在全部動作中查找",
+    "Buscar en todos los ejercicios",
+    "Rechercher dans tous les exercices",
+    "In allen Übungen suchen"
   ]
 }

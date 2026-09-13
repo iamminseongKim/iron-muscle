@@ -36,16 +36,22 @@ export function disposeAnatomy(group: THREE.Object3D) {
 }
 
 export async function loadAnatomyModel(): Promise<{ group: THREE.Group; parts: AnatomyPart[] }> {
+  await MeshoptDecoder.ready;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const loadModel = async (name: string) => {
-    const url = `${import.meta.env.BASE_URL}anatomy/${name}.glb`;
-    if (!import.meta.env.PROD) return loader.loadAsync(url);
-    const response = await fetch(`${url}.gz`);
-    if (!response.ok) throw new Error(`Model load failed: ${response.status}`);
-    const payload = new Uint8Array(await response.arrayBuffer());
-    // Some web servers transparently decompress .gz responses; native assets do not.
-    const bytes = payload[0] === 0x1f && payload[1] === 0x8b ? gunzipSync(payload) : payload;
-    return loader.parseAsync(bytes.buffer as ArrayBuffer, '');
+    const glbUrl = `${import.meta.env.BASE_URL}anatomy/${name}.glb`;
+    const gzUrl = `${glbUrl}.gz`;
+    try {
+      const response = await fetch(gzUrl);
+      if (response.ok) {
+        const payload = new Uint8Array(await response.arrayBuffer());
+        const bytes = payload[0] === 0x1f && payload[1] === 0x8b ? gunzipSync(payload) : payload;
+        return await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer, '');
+      }
+    } catch {
+      // Fallback to direct .glb loading (essential for Android APK where AAPT decompresses assets)
+    }
+    return await loader.loadAsync(glbUrl);
   };
   // allSettled ensures a successful half-load is disposed if the other file fails.
   const results = await Promise.allSettled([

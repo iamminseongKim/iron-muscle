@@ -1,3 +1,4 @@
+import { t, displayExercise } from '../../i18n';
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, X, Check } from 'lucide-react';
 import { Category } from '../../types/workout';
@@ -43,41 +44,41 @@ export function GrowthExercisePicker({ options, selectedId, onSelect, onClose }:
       <div className="flex flex-col" style={{ maxHeight: 'calc(var(--input-viewport-height, 100dvh) - 2rem)' }}>
         <div className="p-4 space-y-3 border-b border-black/5 dark:border-white/10 shrink-0">
           <div className="flex items-center justify-between gap-2">
-            <h2 id="growth-picker-title" className="font-extrabold">성장 지표 종목 찾기</h2>
-            <button type="button" onClick={onClose} aria-label="종목 선택 닫기" className="p-2 rounded-xl bg-gray-100 dark:bg-[#2C2C2E]"><X size={20} /></button>
+            <h2 id="growth-picker-title" className="font-extrabold">{t("성장 지표 종목 찾기")}</h2>
+            <button type="button" onClick={onClose} aria-label={t("종목 선택 닫기")} className="p-2 rounded-xl bg-gray-100 dark:bg-[#2C2C2E]"><X size={20} /></button>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">1RM 데이터가 있는 종목부터 최근 기록순으로 보여드려요.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t("1RM 데이터가 있는 종목부터 최근 기록순으로 보여드려요.")}</p>
           <div className="relative">
             <Search size={18} className="absolute left-3 top-3 text-gray-400" />
-            <input autoFocus value={query} onChange={event => setQuery(event.target.value)} aria-label="성장 지표 종목 검색"
-              placeholder="이름·별칭·초성 검색 (예: 레그컬, ㄹㄱ)"
+            <input autoFocus value={query} onChange={event => setQuery(event.target.value)} aria-label={t("성장 지표 종목 검색")}
+              placeholder={t("이름·별칭·초성 검색 (예: 레그컬, ㄹㄱ)")}
               className="w-full rounded-xl bg-[#F2F2F7] dark:bg-[#2C2C2E] py-3 pl-10 pr-10 text-sm outline-none focus:ring-2 focus:ring-[#0F766E]" />
-            {query && <button type="button" onClick={() => setQuery('')} aria-label="검색어 지우기" className="absolute right-1 top-1 p-2"><X size={18} /></button>}
+            {query && <button type="button" onClick={() => setQuery('')} aria-label={t("검색어 지우기")} className="absolute right-1 top-1 p-2"><X size={18} /></button>}
           </div>
           <div className="flex gap-2 text-xs font-bold">
             {[true, false].map(only => <button key={String(only)} type="button" aria-pressed={recordedOnly === only} onClick={() => setRecordedOnly(only)}
               className={`rounded-full px-3 py-2 ${recordedOnly === only ? 'bg-[#0F766E] text-white' : 'bg-[#F2F2F7] dark:bg-[#2C2C2E]'}`}>
-              {only ? `기록 있는 종목 ${recordedCount}` : `전체 종목 ${options.length}`}
+              {only ? `${t("기록 있는 종목")} ${recordedCount}` : `${t("전체 종목")} ${options.length}`}
             </button>)}
           </div>
-          <p role="status" className="text-xs text-gray-500">검색 결과 {filtered.length}개</p>
+          <p role="status" className="text-xs text-gray-500">{t("검색 결과")} {filtered.length}{t("개")}</p>
         </div>
         <div className="overflow-y-auto overscroll-contain p-3 space-y-1 min-h-0">
           {filtered.slice(0, visibleCount).map(({ exercise, recordCount, latestDate }) => (
             <button key={exercise.id} type="button" onClick={() => onSelect(exercise.id)} aria-pressed={exercise.id === selectedId}
               className={`w-full flex items-center gap-3 text-left rounded-2xl p-3 ${exercise.id === selectedId ? 'bg-[#0F766E]/10' : 'hover:bg-gray-50 dark:hover:bg-[#2C2C2E]'}`}>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold break-words">{exercise.name}</div>
-                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">{CATEGORY_LABELS[exercise.category]} · {recordCount > 0 ? `1RM 기록 ${recordCount}개 · 최근 ${latestDate}` : '아직 1RM 기록 없음'}</div>
+                <div className="text-sm font-bold break-words">{displayExercise(exercise)}</div>
+                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t(CATEGORY_LABELS[exercise.category])} · {recordCount > 0 ? `1RM ${recordCount}${t("회 기록")} · ${t("최근:")} ${latestDate}` : t('아직 1RM 기록 없음')}</div>
               </div>
               {exercise.id === selectedId && <Check size={18} className="shrink-0 text-[#0F766E]" />}
             </button>
           ))}
           {filtered.length === 0 && <div className="py-8 px-3 text-center text-sm text-gray-500 space-y-3">
-            <p>{query ? '검색 결과가 없어요. 검색어를 줄여 보세요.' : '아직 1RM 데이터가 있는 종목이 없어요.'}</p>
-            {recordedOnly && <button type="button" onClick={() => setRecordedOnly(false)} className="text-[#0F766E] font-bold">전체 종목에서 찾기</button>}
+            <p>{query ? t('검색 결과가 없어요. 검색어를 줄여 보세요.') : t('아직 1RM 데이터가 있는 종목이 없어요.')}</p>
+            {recordedOnly && <button type="button" onClick={() => setRecordedOnly(false)} className="text-[#0F766E] font-bold">{t("전체 종목에서 찾기")}</button>}
           </div>}
-          {filtered.length > visibleCount && <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full p-3 text-sm font-bold text-[#0F766E]">더 보기 ({visibleCount} / {filtered.length})</button>}
+          {filtered.length > visibleCount && <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full p-3 text-sm font-bold text-[#0F766E]">{t("더 보기")} ({visibleCount} / {filtered.length})</button>}
         </div>
       </div>
     </dialog>

@@ -250,7 +250,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             type="button"
             onClick={handleCapsuleClick}
             className="flex items-center gap-2 text-left shrink-0 outline-none"
-            title="탭하여 크게 보기"
+            title={t("탭하여 크게 보기")}
           >
             <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
               isCompleted ? 'bg-[#34C759]/20 text-[#34C759]' : 'bg-[#FF9500]/15 text-[#FF9500]'
@@ -261,10 +261,10 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               <span className={`text-[13px] font-black font-mono block ${
                 isCompleted ? 'text-[#34C759]' : 'text-[#1D1D1F] dark:text-white'
               }`}>
-                {isCompleted ? `완료! ${elapsedSeconds}s` : formatTime(remainingSeconds)}
+                {isCompleted ? `${t("완료!")} ${elapsedSeconds}s` : formatTime(remainingSeconds)}
               </span>
               <span className="text-[10px] font-bold text-gray-400 block -mt-0.5 truncate max-w-[80px]">
-                {isCompleted ? '휴식 완료' : `${exerciseName} #${setNumber}`}
+                {isCompleted ? t('휴식 완료') : `${exerciseName} #${setNumber}`}
               </span>
             </div>
           </button>
@@ -275,15 +275,15 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               type="button"
               onClick={handleFinish}
               className="px-2 py-1 bg-[#34C759] text-white rounded-full text-[11px] font-extrabold shadow-sm active:scale-95 transition"
-              title="휴식 종료 & 세트에 기록"
+              title={t("휴식 종료 & 세트에 기록")}
             >
-              종료
+              {t("종료")}
             </button>
             <button
               type="button"
               onClick={handleDismiss}
               className="p-1 text-gray-400 hover:text-black dark:hover:text-white rounded-full transition"
-              title="타이머 닫기"
+              title={t("타이머 닫기")}
             >
               <X size={15} />
             </button>
@@ -317,7 +317,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
         <div
           onClick={() => setIsMinimized(true)}
           className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 rounded-full mx-auto mb-3 cursor-pointer transition"
-          title="아래로 쓸어내려 최소화"
+          title={t("아래로 쓸어내려 최소화")}
         />
 
         {/* 상단 컨트롤 & 라벨 */}
@@ -326,16 +326,16 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             type="button"
             onClick={() => setIsMinimized(true)}
             className="p-2 rounded-xl text-gray-400 hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-1 text-xs"
-            title="화면 아래로 최소화"
+            title={t("화면 아래로 최소화")}
           >
             <Minimize2 size={16} />
-            <span className="text-[11px] font-bold">최소화</span>
+            <span className="text-[11px] font-bold">{t("최소화")}</span>
           </button>
 
           <div>
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">휴식 시간</span>
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">{t("휴식 시간")}</span>
             <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white truncate max-w-[160px]">
-              {exerciseName} #{setNumber}세트 후
+              {exerciseName} #{setNumber}{t("세트")} {t("휴식")}
             </h3>
           </div>
 
@@ -351,7 +351,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
 
         {/* 스와이프 다운 힌트 */}
         <p className="text-[10px] text-gray-400 -mt-1 mb-2">
-          💡 창을 아래로 쓸어내리면 작은 플로팅 타이머로 변경됩니다
+          {t("💡 창을 아래로 쓸어내리면 작은 플로팅 타이머로 변경됩니다")}
         </p>
 
         {/* 리셋 실수 방지용 직전 시간 복구 (Undo) 배너 */}
@@ -363,7 +363,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               className="w-full py-2 px-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-indigo-500/15 transition active:scale-98 shadow-xs"
             >
               <RotateCcw size={13} className="rotate-180 text-indigo-500 shrink-0" />
-              <span>실수로 리셋하셨나요? <strong>방금 전 {undoBackup.elapsedSeconds}초 복구</strong></span>
+              <span>{t("실수로 리셋하셨나요? 방금 전")} <strong>{undoBackup.elapsedSeconds}{t("초 복구")}</strong></span>
             </button>
           </div>
         )}
@@ -403,15 +403,15 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             {isCompleted ? (
               <div className="flex flex-col items-center justify-center animate-fade-in">
                 <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#34C759] mb-1 animate-pulse">
-                  🎉 목표 휴식 완료
+                  {t("🎉 목표 휴식 완료")}
                 </span>
                 <span className="text-4xl font-black font-mono tracking-tighter text-[#34C759]">
                   {formatTime(targetSeconds)}
                 </span>
                 <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">
-                  총 쉰 시간: <strong className="text-[#0F766E] dark:text-[#2DD4BF] font-bold">{elapsedSeconds}초</strong>
+                  {t("총 쉰 시간:")} <strong className="text-[#0F766E] dark:text-[#2DD4BF] font-bold">{elapsedSeconds}s</strong>
                   {overtimeSeconds > 0 && (
-                    <span className="text-[#FF9500] font-bold ml-1">(+{overtimeSeconds}초)</span>
+                    <span className="text-[#FF9500] font-bold ml-1">(+{overtimeSeconds}s)</span>
                   )}
                 </span>
               </div>
@@ -421,7 +421,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
                   {formatTime(remainingSeconds)}
                 </span>
                 <span className="text-xs font-semibold text-gray-400 mt-1">
-                  실제 쉰 시간: <strong className="text-[#FF9500] font-bold">{elapsedSeconds}초</strong>
+                  {t("실제 쉰 시간:")} <strong className="text-[#FF9500] font-bold">{elapsedSeconds}s</strong>
                 </span>
               </>
             )}
@@ -435,27 +435,27 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             onClick={() => adjustRemaining(-15)}
             className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-[#2C2C2E] text-xs font-bold text-gray-700 dark:text-gray-300 hover:opacity-80 active:scale-95 transition"
           >
-            -15초
+            -15s
           </button>
           <button
             type="button"
             onClick={() => adjustRemaining(15)}
             className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-[#2C2C2E] text-xs font-bold text-gray-700 dark:text-gray-300 hover:opacity-80 active:scale-95 transition"
           >
-            +15초
+            +15s
           </button>
           <button
             type="button"
             onClick={() => adjustRemaining(30)}
             className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-[#2C2C2E] text-xs font-bold text-gray-700 dark:text-gray-300 hover:opacity-80 active:scale-95 transition"
           >
-            +30초
+            +30s
           </button>
           <button
             type="button"
             onClick={resetTimer}
             className="p-1.5 rounded-full bg-gray-100 dark:bg-[#2C2C2E] text-gray-500 hover:text-[#1D1D1F] dark:hover:text-white active:scale-95 transition"
-            title="리셋"
+            title={t("초기화")}
           >
             <RotateCcw size={16} />
           </button>
@@ -483,7 +483,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             }`}
           >
             <Check size={18} strokeWidth={2.5} />
-            휴식 종료 & {elapsedSeconds}초 세트에 기록
+            {t("휴식 종료 & 세트에 기록")} ({elapsedSeconds}s)
           </button>
         </div>
       </div>

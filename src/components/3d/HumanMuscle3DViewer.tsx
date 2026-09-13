@@ -171,29 +171,29 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
   return (
     <section aria-label="통합 3D 근육 해부도" className="rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-[#F3F5F8] dark:bg-[#151519]">
       <div className="px-3 pt-3 flex flex-wrap gap-3 text-xs text-gray-600 dark:text-gray-300">
-        <span><span className="text-[#FF2D55]">●</span>{t("주동근")}</span><span><span className="text-[#FF9500]">●</span>{t("협응근")}</span><span><span className="text-[#328bff]">●</span> 선택 근육</span>
+        <span><span className="text-[#FF2D55]">●</span> {t("주동근")}</span><span><span className="text-[#FF9500]">●</span> {t("협응근")}</span><span><span className="text-[#328bff]">●</span> {t("선택 근육")}</span>
       </div>
       <div className="relative" style={{ height }}>
-        <div ref={containerRef} role="img" aria-label={view === 'both' ? '동일한 3D 인체의 전면과 후면' : '드래그로 회전하고 두 손가락으로 확대하는 인체'} className="absolute inset-0 touch-none" />
+        <div ref={containerRef} role="img" aria-label={view === 'both' ? t('동일한 3D 인체의 전면과 후면') : t('드래그로 회전하고 두 손가락으로 확대하는 인체')} className="absolute inset-0 touch-none" />
         {status !== 'ready' && <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#F3F5F8] dark:bg-[#151519] p-5 text-center text-sm text-gray-500" role="status">
-          <p>{status === 'loading' ? '3D 해부학 모델을 불러오는 중…' : '3D 모델을 표시하지 못했어요.'}</p>
-          {status === 'error' && <button type="button" onClick={() => setAttempt(value => value + 1)} className="text-[#007AFF] font-bold">다시 불러오기</button>}
+          <p>{status === 'loading' ? t('3D 해부학 모델을 불러오는 중…') : t('3D 모델을 표시하지 못했어요.')}</p>
+          {status === 'error' && <button type="button" onClick={() => setAttempt(value => value + 1)} className="text-[#007AFF] font-bold">{t("다시 불러오기")}</button>}
         </div>}
       </div>
       {showControls && <div className="px-3 pb-3 space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex rounded-xl bg-black/5 dark:bg-white/5 p-1">
-            {(['both', 'front', 'back'] as const).map(mode => <button type="button" key={mode} disabled={status !== 'ready'} aria-pressed={view === mode} onClick={() => chooseView(mode)} className={`px-3 py-2 text-xs rounded-lg font-bold ${view === mode ? 'bg-white dark:bg-[#333338] shadow-sm' : 'text-gray-500'}`}>{mode === 'both' ? '앞뒤 함께' : mode === 'front' ? '전면·회전' : '후면·회전'}</button>)}
+            {(['both', 'front', 'back'] as const).map(mode => <button type="button" key={mode} disabled={status !== 'ready'} aria-pressed={view === mode} onClick={() => chooseView(mode)} className={`px-3 py-2 text-xs rounded-lg font-bold ${view === mode ? 'bg-white dark:bg-[#333338] shadow-sm' : 'text-gray-500'}`}>{mode === 'both' ? t('앞뒤 함께') : mode === 'front' ? t('전면·회전') : t('후면·회전')}</button>)}
           </div>
           <div className="flex gap-1">
-            <button type="button" aria-label="인체 확대" onClick={() => apiRef.current?.zoom(.85)} className="p-2"><ZoomIn size={18} /></button>
-            <button type="button" aria-label="인체 축소" onClick={() => apiRef.current?.zoom(1.15)} className="p-2"><ZoomOut size={18} /></button>
-            <button type="button" aria-label="시점 초기화" onClick={() => apiRef.current?.reset()} className="p-2"><RotateCcw size={18} /></button>
+            <button type="button" aria-label={t("인체 확대")} onClick={() => apiRef.current?.zoom(.85)} className="p-2"><ZoomIn size={18} /></button>
+            <button type="button" aria-label={t("인체 축소")} onClick={() => apiRef.current?.zoom(1.15)} className="p-2"><ZoomOut size={18} /></button>
+            <button type="button" aria-label={t("시점 초기화")} onClick={() => apiRef.current?.reset()} className="p-2"><RotateCcw size={18} /></button>
           </div>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400" role="status">{displayedTarget ? MUSCLE_INFO_MAP[displayedTarget].nameKo : view === 'both' ? '앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.' : '드래그하여 회전 · 두 손가락으로 확대 · 근육을 눌러 이름 확인'}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400" role="status">{displayedTarget ? MUSCLE_INFO_MAP[displayedTarget].nameKo : view === 'both' ? t('앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.') : t('드래그하여 회전 · 두 손가락으로 확대 · 근육을 눌러 이름 확인')}</p>
       </div>}
-      <div className="px-3 pb-3 text-[10px] text-gray-500"><a href={`${import.meta.env.BASE_URL}anatomy/NOTICE.html`} target="_blank" rel="noreferrer" className="underline">3D 모델 출처 · BodyParts3D / Z-Anatomy · CC BY-SA</a></div>
+      <div className="px-3 pb-3 text-[10px] text-gray-500"><a href={`${import.meta.env.BASE_URL}anatomy/NOTICE.html`} target="_blank" rel="noreferrer" className="underline">{t("3D 모델 출처")} · BodyParts3D / Z-Anatomy · CC BY-SA</a></div>
     </section>
   );
 };
