@@ -45,7 +45,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
       <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
         {/* 좌측 패널: 누적 통계, 디로딩 주기화, 종목별 성장 지표 (고정) */}
         <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">
-          {/* 상단 누적 통계 카드 (애플 헬스케어 스타일) */}
+          {/* 상단 누적 통계 카드 (헬스케어 통계 스타일) */}
           <div className="p-5 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("나의 트레이닝 통계")}</span>

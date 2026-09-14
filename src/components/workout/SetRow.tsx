@@ -284,7 +284,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">{t("회")}</span>
           </div>
 
-          {/* 세트 완료 체크 버튼 (애플 스타일 라운드 체크) */}
+          {/* 세트 완료 체크 버튼 (라운드 체크) */}
           <button
             type="button"
             aria-label={`${index + 1}${t("세트 완료")}`}

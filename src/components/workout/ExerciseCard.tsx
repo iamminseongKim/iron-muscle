@@ -248,7 +248,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </summary>
         <p className="px-3 text-xs text-gray-400">{exerciseNameEn}</p>
         <div className="px-3 py-1 flex items-center gap-2"><span className="text-xs text-gray-500">{t("장비")}</span>
-            {/* 세련된 애플 세그먼트 컨트롤 (프리 vs 머신) */}
+            {/* 세련된 세그먼트 컨트롤 (프리 vs 머신) */}
             <div className="flex items-center bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-xl p-0.5 text-[11px] font-bold">
               <button
                 type="button"

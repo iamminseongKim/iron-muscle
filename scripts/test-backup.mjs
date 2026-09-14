@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+if (typeof structuredClone === 'undefined') {
+  globalThis.structuredClone = obj => JSON.parse(JSON.stringify(obj));
+}
 import {build} from 'esbuild';
 const result=await build({entryPoints:['src/utils/backup.ts'],bundle:true,write:false,format:'esm',platform:'node'});
 const api=await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`);

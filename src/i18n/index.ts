@@ -10,19 +10,6 @@ export function detectLanguage(value: string): Language {
 }
 const keys = Object.keys(languages) as Language[];
 const messages = new Map<string, string[]>(Object.entries(rawMessages));
-let language: Language = 'ko';
-try { const saved = localStorage.getItem('iron_language'); language = saved && saved in languages ? saved as Language : detectLanguage(navigator.language); } catch {}
-const subscribers = new Set<() => void>();
-export const getLanguage = () => language;
-export function setLanguage(next: Language) {
-  if (!(next in languages)) return;
-  language = next;
-  try { localStorage.setItem('iron_language', next); } catch {}
-  document.documentElement.lang = next;
-  subscribers.forEach(callback => callback());
-}
-export const subscribeLanguage = (callback: () => void) => { subscribers.add(callback); return () => { subscribers.delete(callback); }; };
-export function useLanguage() { return useSyncExternalStore(subscribeLanguage, getLanguage, () => 'ko' as Language); }
 import { locales, LocalePack } from './locales';
 export { locales };
 export type { LocalePack };
@@ -32,6 +19,34 @@ export function t(value: string, locale: Language = language): string {
   if (pack?.ui?.[value]) return pack.ui[value];
   return messages.get(value)?.[keys.indexOf(locale)] || value;
 }
+
+export function updateDocumentTitle(locale: Language = language) {
+  if (typeof document === 'undefined') return;
+  const title = t('아이언 머슬 | 쇠와 땀, 묵묵한 성장의 여정', locale);
+  if (title) {
+    document.title = title;
+  }
+}
+
+let language: Language = 'ko';
+try {
+  const saved = localStorage.getItem('iron_language');
+  language = saved && saved in languages ? saved as Language : detectLanguage(navigator.language);
+} catch {}
+updateDocumentTitle(language);
+
+const subscribers = new Set<() => void>();
+export const getLanguage = () => language;
+export function setLanguage(next: Language) {
+  if (!(next in languages)) return;
+  language = next;
+  try { localStorage.setItem('iron_language', next); } catch {}
+  document.documentElement.lang = next;
+  updateDocumentTitle(next);
+  subscribers.forEach(callback => callback());
+}
+export const subscribeLanguage = (callback: () => void) => { subscribers.add(callback); return () => { subscribers.delete(callback); }; };
+export function useLanguage() { return useSyncExternalStore(subscribeLanguage, getLanguage, () => 'ko' as Language); }
 
 import { MUSCLE_INFO_MAP } from '../data/muscleMap';
 import { MuscleTarget } from '../types/workout';

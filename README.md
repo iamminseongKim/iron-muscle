@@ -1,5 +1,5 @@
 # 🏋️‍♂️ 아이언 머슬 트래커 (IRON MUSCLE TRACKER)
-### 100% 로컬 독립형 Apple 스타일 피트니스 & 운동 기록 어플리케이션
+### 쇠와 땀, 묵묵한 성장의 여정 — 100% 로컬 독립형 운동 기록 어플리케이션
 **[ iPhone · iPad · Android 로컬 전용 완벽 지원 ]**
 
 [![Mobile Build](https://github.com/iamminseongKim/iron-muscle/actions/workflows/build-mobile.yml/badge.svg)](https://github.com/iamminseongKim/iron-muscle/actions/workflows/build-mobile.yml)
@@ -88,7 +88,7 @@ npm run dev -- --host
 - **원암 선택 시 좌(L) / 우(R) 독립 기록**:
   - 좌우 근력 불균형 및 편측 운동(원암 덤벨 로우, 원암 케이블 푸시다운 등)을 세트별로 구분하여 기록.
 
-### 4. ⏱️ 애플 감성 듀얼 스마트 타이머
+### 4. ⏱️ 듀얼 스마트 타이머
 - **상시 상단 총 운동 시간 타이머**: 일시정지, 계속 진행, 분:초 단위 실시간 측정.
 - **세트 완료 시 대형 원형 스마트 휴식 타이머**:
   - 세트 완료 체크 시 대형 원형 프로그레스 타이머 팝업.

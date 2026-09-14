@@ -1,4 +1,4 @@
-import { useLanguage, getLanguage } from './i18n';
+import { useLanguage, getLanguage, t } from './i18n';
 import { MyPage } from './components/profile/MyPage';
 import { refreshHealth } from './services/health/healthService';
 import React, { useState, useEffect, lazy, Suspense, memo, useCallback } from 'react';
@@ -15,7 +15,10 @@ import { WeightUnit } from './types/workout';
 
 export const App: React.FC = () => {
   const language = useLanguage();
-  useEffect(() => { document.documentElement.lang = language; }, [language]);
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.title = t('아이언 머슬 | 쇠와 땀, 묵묵한 성장의 여정');
+  }, [language]);
   const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics' | 'explore' | 'my'>('workout');
 
   useEffect(() => {
@@ -133,7 +136,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] flex flex-col transition-colors duration-200">
-      {/* 상단 애플 스타일 헤더 & 단일화된 총 운동 시간 시계 & 테마 스위처 */}
+      {/* 상단 헤더 & 단일화된 총 운동 시간 시계 & 테마 스위처 */}
       <Header
         activeTab={activeTab}
         isDark={isDark}
