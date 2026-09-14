@@ -1,7 +1,7 @@
 import { displayExercise, displayMuscle, displayExerciseInstructions, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
 import { lazy, Suspense } from 'react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronDown, ChevronRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
   Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame 
@@ -13,6 +13,7 @@ import { QuickSetEditor } from './QuickSetEditor';
 import { getExerciseRecords, convertWeight, isAssistedExercise } from '../../utils/calculations';
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
+import { loadGymProfile, getExerciseConfigs } from '../../utils/gymStorage';
 
 interface ExerciseCardProps {
   exerciseItem: WorkoutExercise;
@@ -65,6 +66,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const [isCustomBrand, setIsCustomBrand] = useState(false);
   const [showMachineSetting, setShowMachineSetting] = useState(false);
   const [showQuickSets, setShowQuickSets] = useState(false);
+
+  const gymProfile = useMemo(() => loadGymProfile(), []);
+  const gymConfigs = useMemo(() => getExerciseConfigs(gymProfile, exerciseItem.exerciseId), [gymProfile, exerciseItem.exerciseId]);
 
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
   const baseExercise: Exercise = resolveRecordedExercise(exerciseItem);
@@ -188,6 +192,16 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
           <div className="flex items-center gap-2 flex-wrap mt-0.5">
             <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}{t("세트 완료")}{records.maxWeight > 0 ? ` · ${t("최고")} ${records.maxWeight}${currentUnit}` : ''}</span>
+            {(!collapsed && exerciseItem.machineBrand) && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold">
+                🏷️ {exerciseItem.machineBrand}
+              </span>
+            )}
+            {(!collapsed && exerciseItem.machineSetting) && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-gray-100 dark:bg-white/10 text-gray-500 text-[10px] font-medium truncate max-w-[150px]">
+                📐 {exerciseItem.machineSetting}
+              </span>
+            )}
             {(!collapsed && (exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes(t("덤벨")) || exerciseNameEn.toLowerCase().includes('dumbbell'))) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
                 💡 {t("덤벨: 한쪽(편측) 무게 기준")}
@@ -199,6 +213,39 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               </span>
             )}
           </div>
+
+          {/* 등록된 머신이 2대 이상일 때 헤더 바로 아래 원터치 빠른 스위칭 칩 */}
+          {!collapsed && gymConfigs.length > 1 && (
+            <div className="flex items-center gap-1.5 flex-wrap mt-1.5 pt-1 border-t border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold text-gray-400 shrink-0">{t('머신 전환')}:</span>
+              {gymConfigs.map((gc, idx) => {
+                const isCurrent = exerciseItem.machineBrand === gc.brand || (!exerciseItem.machineBrand && idx === 0);
+                return (
+                  <button
+                    key={gc.id || idx}
+                    type="button"
+                    onClick={() => {
+                      onUpdate({
+                        ...exerciseItem,
+                        machineBrand: gc.brand,
+                        loadType: gc.loadType || exerciseItem.loadType,
+                        machineSetting: gc.machineSetting || exerciseItem.machineSetting,
+                        weightUnit: gc.weightUnit || exerciseItem.weightUnit,
+                      });
+                    }}
+                    className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition flex items-center gap-1 ${
+                      isCurrent
+                        ? 'bg-[#0F766E] text-white shadow-2xs'
+                        : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
+                    }`}
+                  >
+                    <span>{idx + 1}{t('호기')}</span>
+                    {gc.brand && <span className="opacity-90">({gc.brand})</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* 액션 버튼: 묶기, 3D 해부도, 삭제 */}

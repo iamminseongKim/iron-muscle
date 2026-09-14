@@ -692,5 +692,13 @@
   "헬스장 이름": "Nombre del gimnasio",
   "저장된 운동 기록이 없습니다.": "No se encontraron entrenamientos guardados.",
   "운동 마무리": "Finalizar entrenamiento",
-  "현재 진행 중인 운동을 취소하시겠습니까?\\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": "¿Cancelar el entrenamiento en curso?\nEl progreso no guardado se perderá y volverá a la pantalla de inicio."
+  "현재 진행 중인 운동을 취소하시겠습니까?\\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": "¿Cancelar el entrenamiento en curso?\nEl progreso no guardado se perderá y volverá a la pantalla de inicio.",
+  "대 등록됨": " registradas",
+  "이 머신 삭제": "Eliminar esta máquina",
+  "기본 무게 단위": "Unidad de peso predeterminada",
+  "다른 머신 추가": "Añadir otra máquina",
+  "오늘 사용할 머신을 선택하세요": "Seleccione la máquina que usará hoy",
+  "호기": "ª máquina",
+  "머신 전환": "Cambiar máquina",
+  "대": ""
 }

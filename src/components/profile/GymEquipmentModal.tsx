@@ -13,9 +13,10 @@ import {
   MAX_GYMS_COUNT,
   MultiGymState,
   GymEquipmentProfile,
-  GymMachineConfig
+  GymMachineConfig,
+  getExerciseConfigs,
 } from '../../utils/gymStorage';
-import { Category, Exercise, POPULAR_MACHINE_BRANDS } from '../../types/workout';
+import { Category, Exercise, POPULAR_MACHINE_BRANDS, WeightUnit } from '../../types/workout';
 import { CreateCustomExerciseModal } from '../workout/CreateCustomExerciseModal';
 
 interface GymEquipmentModalProps {
@@ -120,21 +121,58 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
       delete nextMachines[exercise.id];
       if (expandedConfigId === exercise.id) setExpandedConfigId(null);
     } else {
-      nextMachines[exercise.id] = {
+      nextMachines[exercise.id] = [{
+        id: `config-${Date.now()}-1`,
         exerciseId: exercise.id,
         loadType: exercise.loadType === 'plate-loaded' ? 'plate-loaded' : 'pin-loaded',
-      };
+        weightUnit: 'kg',
+      }];
       setExpandedConfigId(exercise.id);
     }
     handleUpdateActiveGym({ machines: nextMachines });
   };
 
-  const handleUpdateConfig = (exerciseId: string, updates: Partial<GymMachineConfig>) => {
-    const current = activeGym.machines[exerciseId] || { exerciseId };
+  const handleAddMachineToExercise = (exerciseId: string) => {
+    const configs = getExerciseConfigs(activeGym, exerciseId);
+    if (configs.length >= 3) return;
+    const newConfig: GymMachineConfig = {
+      id: `config-${Date.now()}-${configs.length + 1}`,
+      exerciseId,
+      loadType: 'pin-loaded',
+      weightUnit: 'kg',
+    };
+    const nextConfigs = [...configs, newConfig];
     handleUpdateActiveGym({
       machines: {
         ...activeGym.machines,
-        [exerciseId]: { ...current, ...updates },
+        [exerciseId]: nextConfigs,
+      },
+    });
+  };
+
+  const handleRemoveMachineFromExercise = (exerciseId: string, configId: string) => {
+    const configs = getExerciseConfigs(activeGym, exerciseId);
+    if (configs.length <= 1) return;
+    const nextConfigs = configs.filter(c => c.id !== configId);
+    handleUpdateActiveGym({
+      machines: {
+        ...activeGym.machines,
+        [exerciseId]: nextConfigs,
+      },
+    });
+  };
+
+  const handleUpdateSingleConfig = (
+    exerciseId: string,
+    configId: string,
+    updates: Partial<GymMachineConfig>
+  ) => {
+    const configs = getExerciseConfigs(activeGym, exerciseId);
+    const nextConfigs = configs.map(c => (c.id === configId ? { ...c, ...updates } : c));
+    handleUpdateActiveGym({
+      machines: {
+        ...activeGym.machines,
+        [exerciseId]: nextConfigs,
       },
     });
   };
@@ -345,9 +383,16 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
               </div>
             ) : (
               filteredExercises.map(ex => {
-                const isSelected = Boolean(activeGym.machines[ex.id]);
-                const config = activeGym.machines[ex.id];
+                const configs = getExerciseConfigs(activeGym, ex.id);
+                const isSelected = configs.length > 0;
                 const isExpanded = expandedConfigId === ex.id;
+
+                let settingLabel = t('세팅');
+                if (configs.length === 1) {
+                  settingLabel = configs[0].brand || t('세팅');
+                } else if (configs.length > 1) {
+                  settingLabel = `${configs.length}${t('대 등록됨')}`;
+                }
 
                 return (
                   <div
@@ -388,74 +433,140 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                             className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] hover:bg-[#0F766E]/20 transition"
                           >
                             <Sliders size={12} />
-                            <span>{config?.brand || t('세팅')}</span>
+                            <span>{settingLabel}</span>
                           </button>
                         </div>
                       )}
                     </div>
 
-                    {/* 세부 세팅 (브랜드 & 부하방식) 드롭다운 */}
+                    {/* 세부 머신 세팅 (최대 3대 지원) */}
                     {isSelected && isExpanded && (
-                      <div className="p-3 pt-0 border-t border-[#0F766E]/15 mt-1 space-y-2.5">
-                        <div className="pt-2 grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="text-[10px] font-bold text-gray-500 dark:text-gray-400 block mb-1">
-                              {t('브랜드')}
-                            </label>
-                            <select
-                              value={config?.brand || ''}
-                              onChange={e => handleUpdateConfig(ex.id, { brand: e.target.value })}
-                              className="w-full text-xs p-1.5 rounded-lg bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white"
-                            >
-                              <option value="">{t('브랜드 미지정')}</option>
-                              {POPULAR_MACHINE_BRANDS.map(brand => (
-                                <option key={brand} value={brand}>
-                                  {brand}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                      <div className="p-3 pt-0 border-t border-[#0F766E]/15 mt-1 space-y-3">
+                        {configs.map((cfg, cfgIdx) => (
+                          <div
+                            key={cfg.id || cfgIdx}
+                            className="pt-2.5 space-y-2 border-b border-black/5 dark:border-white/5 pb-2.5 last:border-b-0 last:pb-0"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-extrabold text-[#0F766E] dark:text-[#2DD4BF]">
+                                {t('머신')} {cfgIdx + 1}{cfg.brand ? ` (${cfg.brand})` : ''}
+                              </span>
+                              {configs.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveMachineFromExercise(ex.id, cfg.id!)}
+                                  className="text-gray-400 hover:text-red-500 p-0.5 rounded transition"
+                                  title={t('이 머신 삭제')}
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              )}
+                            </div>
 
-                          <div>
-                            <label className="text-[10px] font-bold text-gray-500 dark:text-gray-400 block mb-1">
-                              {t('부하 방식')}
-                            </label>
-                            <div className="flex gap-1">
-                              <button
-                                type="button"
-                                onClick={() => handleUpdateConfig(ex.id, { loadType: 'pin-loaded' })}
-                                className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg border transition ${
-                                  config?.loadType === 'pin-loaded'
-                                    ? 'bg-[#0F766E] text-white border-[#0F766E]'
-                                    : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
-                                }`}
-                              >
-                                {t('📌 핀 머신')}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleUpdateConfig(ex.id, { loadType: 'plate-loaded' })}
-                                className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg border transition ${
-                                  config?.loadType === 'plate-loaded'
-                                    ? 'bg-[#0F766E] text-white border-[#0F766E]'
-                                    : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
-                                }`}
-                              >
-                                {t('💿 원판')}
-                              </button>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="text-[10px] font-bold text-gray-500 dark:text-gray-400 block mb-1">
+                                  {t('브랜드')}
+                                </label>
+                                <select
+                                  value={cfg.brand || ''}
+                                  onChange={e => handleUpdateSingleConfig(ex.id, cfg.id!, { brand: e.target.value })}
+                                  className="w-full text-xs p-1.5 rounded-lg bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white"
+                                >
+                                  <option value="">{t('브랜드 미지정')}</option>
+                                  {POPULAR_MACHINE_BRANDS.map(brand => (
+                                    <option key={brand} value={brand}>
+                                      {brand}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="text-[10px] font-bold text-gray-500 dark:text-gray-400 block mb-1">
+                                  {t('부하 방식')}
+                                </label>
+                                <div className="flex gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdateSingleConfig(ex.id, cfg.id!, { loadType: 'pin-loaded' })}
+                                    className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg border transition ${
+                                      cfg.loadType === 'pin-loaded'
+                                        ? 'bg-[#0F766E] text-white border-[#0F766E]'
+                                        : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
+                                    }`}
+                                  >
+                                    {t('📌 핀 머신')}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdateSingleConfig(ex.id, cfg.id!, { loadType: 'plate-loaded' })}
+                                    className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg border transition ${
+                                      cfg.loadType === 'plate-loaded'
+                                        ? 'bg-[#0F766E] text-white border-[#0F766E]'
+                                        : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
+                                    }`}
+                                  >
+                                    {t('💿 원판')}
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* 핀머신/원판 기본 무게 단위 (kg vs lbs) */}
+                            <div className="flex items-center justify-between gap-2 pt-0.5">
+                              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">
+                                {t('기본 무게 단위')}
+                              </span>
+                              <div className="flex gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateSingleConfig(ex.id, cfg.id!, { weightUnit: 'kg' })}
+                                  className={`px-3 py-1 text-[10px] font-bold rounded-lg border transition ${
+                                    cfg.weightUnit !== 'lbs'
+                                      ? 'bg-[#0F766E] text-white border-[#0F766E]'
+                                      : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
+                                  }`}
+                                >
+                                  kg
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateSingleConfig(ex.id, cfg.id!, { weightUnit: 'lbs' })}
+                                  className={`px-3 py-1 text-[10px] font-bold rounded-lg border transition ${
+                                    cfg.weightUnit === 'lbs'
+                                      ? 'bg-[#0F766E] text-white border-[#0F766E]'
+                                      : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
+                                  }`}
+                                >
+                                  lbs
+                                </button>
+                              </div>
+                            </div>
+
+                            <div>
+                              <input
+                                type="text"
+                                value={cfg.machineSetting || ''}
+                                onChange={e => handleUpdateSingleConfig(ex.id, cfg.id!, { machineSetting: e.target.value })}
+                                placeholder={t('의자 높이/각도 메모 (예: 의자 4단, 등받이 2단)')}
+                                className="w-full px-2.5 py-1.5 text-xs rounded-lg bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white"
+                              />
                             </div>
                           </div>
-                        </div>
+                        ))}
 
-                        <div>
-                          <input
-                            type="text"
-                            value={config?.machineSetting || ''}
-                            onChange={e => handleUpdateConfig(ex.id, { machineSetting: e.target.value })}
-                            placeholder={t('의자 높이/각도 메모 (예: 의자 4단, 등받이 2단)')}
-                            className="w-full px-2.5 py-1.5 text-xs rounded-lg bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white"
-                          />
-                        </div>
+                        {/* 다른 머신 추가 버튼 (최대 3대) */}
+                        {configs.length < 3 && (
+                          <button
+                            type="button"
+                            onClick={() => handleAddMachineToExercise(ex.id)}
+                            className="w-full py-1.5 bg-white dark:bg-[#1C1C1E] border border-dashed border-[#0F766E]/40 hover:bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] text-xs font-bold rounded-xl flex items-center justify-center gap-1 transition"
+                          >
+                            <Plus size={13} strokeWidth={2.5} />
+                            <span>{t('다른 머신 추가')} ({configs.length}/3)</span>
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>

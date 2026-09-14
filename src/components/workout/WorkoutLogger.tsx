@@ -202,7 +202,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     equipmentType: EquipmentType,
     brand?: string,
     setting?: string,
-    loadType?: LoadType
+    loadType?: LoadType,
+    weightUnit?: WeightUnit
   ) => {
     if (!session) return;
     const previousSets = findPreviousSets(exercise.id, brand);
@@ -231,7 +232,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       machineBrand: brand,
       machineSetting: setting,
       sets: initialSets,
-      weightUnit: 'kg',
+      weightUnit: weightUnit || 'kg',
     };
 
     const updated = {

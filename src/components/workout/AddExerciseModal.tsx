@@ -2,19 +2,26 @@ import { displayExercise, displayMuscle, getLanguage as exerciseLanguage } from 
 import { t } from '../../i18n';
 import React, { useState, useEffect, useMemo } from 'react';
 import { X, Search, Dumbbell, ChevronRight, Plus } from 'lucide-react';
-import { Exercise, Category, EquipmentType, LoadType } from '../../types/workout';
+import { Exercise, Category, EquipmentType, LoadType, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { DISCOVERY_ADDITIONS } from '../../data/discoveryAdditions';
 import { ADDITIONAL_MACHINES } from '../../data/additionalMachines';
 import { buildExerciseUsage, isCoreExercise, rankExercises } from '../../utils/exerciseDiscovery';
 import { loadCustomExercises, loadSavedSessions } from '../../utils/storage';
-import { loadGymProfile, GYM_EQUIPMENT_CHANGE_EVENT, GymEquipmentProfile } from '../../utils/gymStorage';
+import { loadGymProfile, GYM_EQUIPMENT_CHANGE_EVENT, GymEquipmentProfile, GymMachineConfig, getExerciseConfigs } from '../../utils/gymStorage';
 import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
 
 interface AddExerciseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (exercise: Exercise, equipmentType: EquipmentType, brand?: string, setting?: string, loadType?: LoadType) => void;
+  onSelect: (
+    exercise: Exercise,
+    equipmentType: EquipmentType,
+    brand?: string,
+    setting?: string,
+    loadType?: LoadType,
+    weightUnit?: WeightUnit
+  ) => void;
   initialCategory?: Category;
   targetCategories?: Category[];
   targetPartIds?: string[];
@@ -58,6 +65,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   const [customExercises, setCustomExercises] = useState<Exercise[]>(() => loadCustomExercises());
   const [gymProfile, setGymProfile] = useState<GymEquipmentProfile>(() => loadGymProfile());
   const [onlyGymFilter, setOnlyGymFilter] = useState(false);
+  const [selectedMultiConfigTarget, setSelectedMultiConfigTarget] = useState<{
+    exercise: Exercise;
+    configs: GymMachineConfig[];
+  } | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(50);
   useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, isOpen, onlyGymFilter]);
@@ -154,7 +165,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
   const gymEquipmentIds = useMemo(() => {
     const ids = new Set<string>();
-    Object.keys(gymProfile.machines).forEach(id => ids.add(id));
+    Object.keys(gymProfile.machines).forEach(id => {
+      if (getExerciseConfigs(gymProfile, id).length > 0) {
+        ids.add(id);
+      }
+    });
     if (gymProfile.includeFreeWeights) {
       allExercises.forEach(ex => {
         if (ex.equipment === 'barbell' || ex.equipment === 'dumbbell' || ex.equipment === 'bodyweight') {
@@ -366,16 +381,23 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               </button>
             </div>
           ) : (
-            filteredExercises.slice(0, visibleCount).map((ex) => (
+            filteredExercises.slice(0, visibleCount).map((ex) => {
+              const configs = getExerciseConfigs(gymProfile, ex.id);
+              return (
               <button
                 key={ex.id}
                 type="button"
                 onClick={() => {
-                  const gymConfig = gymProfile.machines[ex.id];
+                  if (configs.length > 1) {
+                    setSelectedMultiConfigTarget({ exercise: ex, configs });
+                    return;
+                  }
+                  const gymConfig = configs[0];
                   const targetBrand = gymConfig?.brand || ex.defaultBrand;
                   const targetSetting = gymConfig?.machineSetting;
                   const targetLoadType = gymConfig?.loadType || ex.loadType;
-                  onSelect(ex, ex.equipment, targetBrand, targetSetting, targetLoadType);
+                  const targetWeightUnit = gymConfig?.weightUnit;
+                  onSelect(ex, ex.equipment, targetBrand, targetSetting, targetLoadType, targetWeightUnit);
                   onClose();
                 }}
                 className="w-full text-left px-2.5 py-2 rounded-xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#0F766E]/40 transition flex items-center gap-3 group"
@@ -405,9 +427,9 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
                       {ex.equipment === 'machine' ? t("머신") : ex.equipment === 'barbell' ? t("바벨") : ex.equipment === 'dumbbell' ? t("덤벨") : ex.equipment === 'cable' ? t("케이블") : t('맨몸/소도구')}
                     </span>
-                    {gymProfile.machines[ex.id] ? (
+                    {configs.length > 0 ? (
                       <span className="px-1.5 py-0.2 rounded bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold flex items-center gap-0.5">
-                        🏷️ {gymProfile.machines[ex.id].brand || t('내 헬스장')}
+                        🏷️ {configs.length > 1 ? `${t('머신')} ${configs.length}${t('대')}` : (configs[0].brand || t('내 헬스장'))}
                       </span>
                     ) : ex.id.startsWith('custom_') ? (
                       <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">
@@ -439,7 +461,8 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                   <ChevronRight size={16} />
                 </div>
               </button>
-            ))
+              );
+            })
           )}
           {filteredExercises.length > visibleCount && (
             <button type="button" onClick={() => setVisibleCount(count => count + 50)} className="w-full p-3 rounded-xl bg-blue-500/10 text-[#0F766E] text-sm font-bold">
@@ -448,6 +471,88 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           )}
         </div>
       </div>
+
+      {/* 복수 머신 등록 종목 선택 시 원터치 칩 모달 */}
+      {selectedMultiConfigTarget && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 sm:p-4"
+          onClick={() => setSelectedMultiConfigTarget(null)}
+        >
+          <div
+            className="bg-white dark:bg-[#1C1C1E] rounded-3xl p-5 w-full max-w-sm space-y-4 border border-black/10 dark:border-white/10 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">
+                  {displayExercise(selectedMultiConfigTarget.exercise)}
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {t('오늘 사용할 머신을 선택하세요')}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedMultiConfigTarget(null)}
+                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {selectedMultiConfigTarget.configs.map((cfg, idx) => {
+                const brand = cfg.brand || t('브랜드 미지정');
+                const load = cfg.loadType === 'plate-loaded' ? t('원판') : t('핀머신');
+                const unit = cfg.weightUnit || 'kg';
+                const setting = cfg.machineSetting;
+                return (
+                  <button
+                    key={cfg.id || idx}
+                    type="button"
+                    onClick={() => {
+                      onSelect(
+                        selectedMultiConfigTarget.exercise,
+                        selectedMultiConfigTarget.exercise.equipment,
+                        cfg.brand || selectedMultiConfigTarget.exercise.defaultBrand,
+                        cfg.machineSetting,
+                        cfg.loadType || selectedMultiConfigTarget.exercise.loadType,
+                        cfg.weightUnit
+                      );
+                      setSelectedMultiConfigTarget(null);
+                      onClose();
+                    }}
+                    className="w-full p-3.5 rounded-2xl bg-[#F2F2F7] dark:bg-[#252528] hover:bg-[#0F766E]/10 border border-black/5 dark:border-white/5 hover:border-[#0F766E] transition text-left flex items-center justify-between group active:scale-98"
+                  >
+                    <div className="space-y-1 min-w-0 pr-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-[#0F766E] text-white">
+                          {idx + 1}{t('호기')}
+                        </span>
+                        <span className="font-bold text-sm text-[#1D1D1F] dark:text-white group-hover:text-[#0F766E] transition truncate">
+                          {brand}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 flex items-center gap-1.5 truncate">
+                        <span>{load}</span>
+                        <span>·</span>
+                        <span className="font-semibold text-gray-700 dark:text-gray-300">{unit}</span>
+                        {setting && (
+                          <>
+                            <span>·</span>
+                            <span className="text-gray-500 truncate">{setting}</span>
+                          </>
+                        )}
+                      </p>
+                    </div>
+                    <ChevronRight size={18} className="text-gray-400 group-hover:text-[#0F766E] shrink-0 transition" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 새 운동 직접 등록 모달 */}
       <CreateCustomExerciseModal

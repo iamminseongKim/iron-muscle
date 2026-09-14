@@ -1,4 +1,4 @@
-import { LoadType } from '../types/workout';
+import { LoadType, WeightUnit } from '../types/workout';
 
 export const GYM_EQUIPMENT_STORAGE_KEY = 'iron_gym_equipment_profile_v1';
 export const GYM_EQUIPMENT_CHANGE_EVENT = 'iron_gym_equipment_change';
@@ -6,9 +6,11 @@ export const GYM_EQUIPMENT_CHANGE_EVENT = 'iron_gym_equipment_change';
 export const MAX_GYMS_COUNT = 3;
 
 export interface GymMachineConfig {
+  id?: string;
   exerciseId: string;
   brand?: string;
   loadType?: LoadType;
+  weightUnit?: WeightUnit;
   machineSetting?: string;
 }
 
@@ -16,7 +18,7 @@ export interface GymEquipmentProfile {
   id: string;
   name: string;
   includeFreeWeights: boolean;
-  machines: Record<string, GymMachineConfig>;
+  machines: Record<string, GymMachineConfig | GymMachineConfig[]>;
   updatedAt: string;
 }
 
@@ -147,6 +149,23 @@ export function switchActiveGym(gymId: string): void {
   }
 }
 
+export function getExerciseConfigs(
+  profile: GymEquipmentProfile | undefined,
+  exerciseId: string
+): GymMachineConfig[] {
+  if (!profile || !profile.machines) return [];
+  const entry = profile.machines[exerciseId];
+  if (!entry) return [];
+  if (Array.isArray(entry)) {
+    return entry.map((cfg, idx) => ({
+      ...cfg,
+      id: cfg.id || `config-${idx + 1}`,
+      exerciseId,
+    }));
+  }
+  return [{ ...entry, id: entry.id || 'config-1', exerciseId }];
+}
+
 export function isExerciseInGymProfile(
   exerciseId: string,
   equipment: string,
@@ -155,5 +174,8 @@ export function isExerciseInGymProfile(
   if (profile.includeFreeWeights && (equipment === 'barbell' || equipment === 'dumbbell' || equipment === 'bodyweight')) {
     return true;
   }
-  return Boolean(profile.machines[exerciseId]);
+  const entry = profile.machines[exerciseId];
+  if (!entry) return false;
+  if (Array.isArray(entry)) return entry.length > 0;
+  return true;
 }
