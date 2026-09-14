@@ -29,6 +29,8 @@ console.log('PASS: manufacturer, alias, spacing and initial-consonant search');
 
 // Catch assets that exist locally but would be absent from a clean CI checkout.
 const { readFileSync } = await import('node:fs');
+const releaseVersion = JSON.parse(readFileSync('package.json', 'utf8')).version;
+assert.ok(readFileSync(`releases/${releaseVersion}.md`, 'utf8').includes('최신 업데이트 핵심 요약'), 'Release notes must satisfy the mobile publishing contract before a tag is pushed');
 const { spawnSync } = await import('node:child_process');
 const atlasPath = 'public/anatomy/muscle-atlas.png';
 const atlasBytes = readFileSync(atlasPath);
