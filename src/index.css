@@ -185,3 +185,20 @@ input, textarea, select { scroll-margin-block: 72px; }
 @media (prefers-reduced-motion: reduce) {
   .glass-dock-selection, .glass-dock-tab { transition: none; }
 }
+
+/* Keep the picker list inside the visible viewport, including the software keyboard. */
+.exercise-picker > .exercise-picker-dialog { overflow: hidden; height: min(760px, 100%); }
+.exercise-picker-english:empty { display: none; }
+@media (max-width: 640px) {
+  .keyboard-aware-modal.exercise-picker {
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) !important;
+  }
+  .exercise-picker > .exercise-picker-dialog {
+    height: 100%; max-height: 100%; border-radius: 0; border: 0;
+  }
+  .exercise-picker-header { padding: 8px 12px; }
+  html[data-keyboard-open="true"] .exercise-picker-description { display: none; }
+  html[data-keyboard-open="true"] .exercise-picker { padding-bottom: 0 !important; }
+}
+
+.exercise-picker input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }

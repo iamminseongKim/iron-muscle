@@ -1,7 +1,7 @@
 import { displayExercise, displayMuscle, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
 import React, { useState, useEffect } from 'react';
-import { X, Search, Dumbbell, ChevronRight, Plus, Sparkles } from 'lucide-react';
+import { X, Search, Dumbbell, ChevronRight, Plus } from 'lucide-react';
 import { Exercise, Category, EquipmentType } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { matchesExerciseSearch, normalizeSearch } from '../../utils/exerciseSearch';
@@ -56,6 +56,8 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(50);
   useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, isOpen]);
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const closeButtonRef = React.useRef<HTMLButtonElement>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -68,6 +70,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
       } else {
         setSelectedCategory('all');
       }
+      setFiltersOpen(true);
       setSearchQuery('');
       setSelectedEquipment('all');
     }
@@ -86,22 +89,12 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     return () => window.removeEventListener('iron_custom_exercises_change', handleCustomChange);
   }, []);
 
-  // iOS WKWebView는 모달 오픈 애니메이션/렌더 커밋과 동시에 autoFocus를 걸면
-  // 캐럿만 보이고 소프트 키보드는 안 뜨는 경우가 있어, 약간의 지연 후 포커스
-  React.useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 80);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
-
   const onCloseRef = React.useRef(onClose);
   onCloseRef.current = onClose;
   useEffect(() => {
     if (!isOpen || isCreateModalOpen) return;
     const previousFocus = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus({ preventScroll: true });
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') { event.preventDefault(); onCloseRef.current(); }
       if (event.key !== 'Tab') return;
@@ -121,7 +114,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   const getTargetLabels = () => {
     if (!targetCategories) return '';
     return targetCategories
-      .map((c) => BASE_CATEGORIES.find((b) => b.id === c)?.label)
+      .map((c) => t(BASE_CATEGORIES.find((b) => b.id === c)?.label || c))
       .filter(Boolean)
       .join(', ');
   };
@@ -200,21 +193,21 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
   return (
     <div
-      className="keyboard-aware-modal fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-md animate-fade-in"
+      className="exercise-picker keyboard-aware-modal fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-md animate-fade-in"
       style={{
         paddingTop: 'max(20px, env(safe-area-inset-top, 20px))',
         paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',
       }}
     >
-      <div role="dialog" aria-modal="true" aria-labelledby="exercise-picker-title" className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-lg max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="exercise-picker-title" className="exercise-picker-dialog bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-lg max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
-        <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
+        <div className="exercise-picker-header shrink-0 p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div>
             <h3 id="exercise-picker-title" className="font-extrabold text-base text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
               <Dumbbell size={18} className="text-[#0F766E]" />
               {t("운동 종목 선택")}
             </h3>
-            <p className="text-xs text-gray-400">{t("총")} {allExercises.length}{t("종의 전문 운동 라이브러리")}</p>
+            <p className="exercise-picker-description text-xs text-gray-500 dark:text-gray-300">{t("총")} {allExercises.length}{t("종의 전문 운동 라이브러리")}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -226,9 +219,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               <span>{t("직접 등록")}</span>
             </button>
             <button
+              ref={closeButtonRef}
               onClick={onClose}
               aria-label={t("운동 선택 닫기")}
-              className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             >
               <X size={18} />
             </button>
@@ -236,28 +230,37 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         </div>
 
         {/* 검색창 */}
-        <div className="p-3 border-b border-black/5 dark:border-white/10 bg-[#F2F2F7] dark:bg-[#252528] space-y-2.5">
-          <div className="relative">
+        <div className="shrink-0 p-3 border-b border-black/5 dark:border-white/10 bg-[#F2F2F7] dark:bg-[#252528] space-y-2.5">
+          <form className="relative" onSubmit={(event) => { event.preventDefault(); searchInputRef.current?.blur(); }}>
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               ref={searchInputRef}
-              type="text"
+              type="search"
+              enterKeyHint="search"
+              autoComplete="off"
+              onFocus={() => { if (window.matchMedia("(max-width: 640px)").matches) setFiltersOpen(false); }}
               aria-label={t("운동 검색")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("운동명·브랜드·초성 검색")}
-              className="w-full bg-white dark:bg-[#1C1C1E] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 rounded-2xl pl-10 pr-16 py-2 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#0F766E] shadow-xs transition"
+              className="w-full bg-white dark:bg-[#1C1C1E] text-base text-[#1D1D1F] dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-2xl pl-10 pr-16 py-3 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#0F766E] shadow-xs transition"
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-black dark:hover:text-white"
               >
                 {t("지우기")}
               </button>
             )}
-          </div>
+          </form>
 
+          <button type="button" aria-expanded={filtersOpen} aria-controls="exercise-picker-filters" onClick={() => setFiltersOpen(open => !open)} className="min-h-[36px] text-xs font-semibold text-[#0F766E] dark:text-teal-300">
+            {t(filtersOpen ? "필터 접기" : "필터 펼치기")}
+            {selectedEquipment !== "all" && ` · ${t(EQUIPMENTS.find(eq => eq.id === selectedEquipment)!.label)}`}
+          </button>
+          <div id="exercise-picker-filters" hidden={!filtersOpen} className="space-y-2">
           {/* 카테고리 칩 (오늘 목표 부위 우선 노출 및 다중 부위 완벽 매핑) */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
             {hasTargets && (
@@ -308,14 +311,15 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               </button>
             ))}
           </div>
+          </div>
         </div>
 
-        <div className="px-4 py-2 flex items-center justify-between text-xs border-b border-black/5 dark:border-white/10">
-          <span role="status" className="text-gray-500">{cleanQuery ? t('전체 부위 검색') : t('검색 결과')} {filteredExercises.length}{t("개")}</span>
+        <div className="shrink-0 px-4 py-1 flex items-center justify-between text-xs border-b border-black/5 dark:border-white/10">
+          <span role="status" className="text-gray-600 dark:text-gray-300">{cleanQuery ? t('전체 부위 검색') : t('검색 결과')} {filteredExercises.length}{t("개")}</span>
           <button type="button" className="min-h-[36px] text-[#0F766E] font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); }}>{t("필터 초기화")}</button>
         </div>
         {/* 운동 목록 */}
-        <div className="p-3 overflow-y-auto flex-1 space-y-2">
+        <div className="exercise-picker-results min-h-0 p-3 overflow-y-auto overscroll-contain flex-1 space-y-2">
           {filteredExercises.length === 0 ? (
             <div className="py-12 text-center text-gray-400 space-y-3">
               <p className="text-xs">'{cleanQuery || t('선택한 조건')}'{t("에 맞는 운동을 찾지 못했습니다.")}</p>
@@ -358,7 +362,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
                 <div className="flex-1 min-w-0 pr-1">
                   <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                    <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white group-hover:text-[#0F766E] transition truncate">
+                    <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white group-hover:text-[#0F766E] transition break-words leading-snug w-full">
                       {displayExercise(ex)}
                     </span>
                     <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
@@ -376,12 +380,12 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                   </div>
 
                   {/* 영문 원본 명칭 */}
-                  <p className="text-[11px] text-gray-400 truncate mb-1">
-                    {ex.nameEn}
+                  <p className="exercise-picker-english text-xs text-gray-500 dark:text-gray-300 break-words mb-1">
+                    {exerciseLanguage() !== "en" && ex.nameEn !== displayExercise(ex) ? ex.nameEn : null}
                   </p>
 
                   <div className="flex flex-wrap items-center gap-1 text-[11px]">
-                    <span className="text-[#0F766E] font-semibold text-[11px]">
+                    <span className="text-[#0F766E] dark:text-teal-300 font-semibold text-xs">
                       {ex.primaryMuscles.map(displayMuscle).join(', ')}
                     </span>
 

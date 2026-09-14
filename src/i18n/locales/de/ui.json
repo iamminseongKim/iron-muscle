@@ -641,5 +641,7 @@
   "현재 체중을 지웠습니다. 운동 당시 체중은 기존 기록에 보존됩니다.": "Aktuelles Gewicht gelöscht. Gewichte beim Training bleiben in den Aufzeichnungen.",
   "운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.": "Training konnte nicht gespeichert werden. Prüfe den Speicher und versuche es erneut.",
   "건강 앱 전송을 예약했습니다. 마이에서 결과를 확인하세요.": "Übertragung vorgemerkt. Prüfe das Ergebnis in Mein Bereich.",
-  "운동은 저장했지만 건강 앱 전송을 예약하지 못했습니다.": "Training gespeichert, aber die Gesundheitsübertragung konnte nicht vorgemerkt werden."
+  "운동은 저장했지만 건강 앱 전송을 예약하지 못했습니다.": "Training gespeichert, aber die Gesundheitsübertragung konnte nicht vorgemerkt werden.",
+  "필터 접기": "Filter ausblenden",
+  "필터 펼치기": "Filter anzeigen"
 }
