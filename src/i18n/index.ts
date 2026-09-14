@@ -2,12 +2,35 @@ import { useSyncExternalStore } from 'react';
 import rawMessages from './messages.json';
 export const languages = { ko: '한국어', en: 'English', ja: '日本語', 'zh-CN': '简体中文', 'zh-TW': '繁體中文', es: 'Español', fr: 'Français', de: 'Deutsch' } as const;
 export type Language = keyof typeof languages;
-export function detectLanguage(value: string): Language {
+export function detectLanguage(value?: string): Language {
+  if (!value) return 'en';
   if (/^zh-(TW|HK|MO|Hant)/i.test(value)) return 'zh-TW';
   if (/^zh/i.test(value)) return 'zh-CN';
-  const base = value.split('-')[0];
-  return base in languages ? base as Language : 'en';
+  const base = value.split('-')[0].toLowerCase();
+  return base in languages ? (base as Language) : 'en';
 }
+
+export function detectPreferredLanguage(): Language {
+  if (typeof window === 'undefined') return 'ko';
+  if (typeof navigator !== 'undefined') {
+    if (Array.isArray(navigator.languages) && navigator.languages.length > 0) {
+      for (const lang of navigator.languages) {
+        if (!lang) continue;
+        if (/^zh-(TW|HK|MO|Hant)/i.test(lang)) return 'zh-TW';
+        if (/^zh/i.test(lang)) return 'zh-CN';
+        const base = lang.split('-')[0].toLowerCase();
+        if (base in languages) {
+          return base as Language;
+        }
+      }
+    }
+    if (navigator.language) {
+      return detectLanguage(navigator.language);
+    }
+  }
+  return 'en';
+}
+
 const keys = Object.keys(languages) as Language[];
 const messages = new Map<string, string[]>(Object.entries(rawMessages));
 import { locales, LocalePack } from './locales';
@@ -31,8 +54,10 @@ export function updateDocumentTitle(locale: Language = language) {
 let language: Language = 'ko';
 try {
   const saved = localStorage.getItem('iron_language');
-  language = saved && saved in languages ? saved as Language : detectLanguage(navigator.language);
-} catch {}
+  language = saved && saved in languages ? (saved as Language) : detectPreferredLanguage();
+} catch {
+  language = detectPreferredLanguage();
+}
 updateDocumentTitle(language);
 
 const subscribers = new Set<() => void>();

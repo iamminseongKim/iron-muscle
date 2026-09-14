@@ -13,7 +13,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
     { id: 'explore', label: '운동 탐색', icon: Search },
     { id: 'history', label: '기록 조회', icon: Calendar },
     { id: 'analytics', label: '통계 & 성장', icon: BarChart2 },
-    { id: 'my', label: '마이', icon: User },
+    { id: 'my', label: 'MY', icon: User },
   ] as const;
 
   return (
@@ -37,7 +37,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
             >
               <Icon size={23} strokeWidth={isActive ? 2.4 : 1.9} aria-hidden="true" />
               <span className="text-[10px] font-semibold tracking-tight leading-tight text-center">
-                {t(tab.label)}
+                {tab.id === 'my' ? 'MY' : t(tab.label)}
               </span>
             </button>
           );

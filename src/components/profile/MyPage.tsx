@@ -62,7 +62,18 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
   const section = 'rounded-3xl bg-white dark:bg-[#1C1C1E] p-5 space-y-4 border border-black/5 dark:border-white/5';
   const button = 'rounded-xl px-4 py-3 bg-[#0F766E] text-white text-sm font-bold disabled:opacity-40';
   return <div className="max-w-lg mx-auto px-4 pt-4 pb-32 space-y-4">
-    <div><h2 className="text-2xl font-black">{t('마이')}</h2><p className="text-sm text-gray-500 mt-1">{t('내 몸과 운동 환경을 관리하세요.')}</p></div>
+    <div>
+      <div className="flex items-center gap-2">
+        <h2 className="text-2xl font-black">{t('마이')}</h2>
+        <span className="text-xs font-black px-2 py-0.5 rounded-full bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF]">
+          MY
+        </span>
+      </div>
+      <p className="text-sm text-gray-500 mt-1">{t('내 몸과 운동 환경을 관리하세요.')}</p>
+    </div>
+    <section className={section}>
+      <LanguageSettings />
+    </section>
     <section className={section}>
       <h3 className="font-bold flex items-center gap-2"><User size={18}/>{t('내 신체 정보')}</h3>
       <div><span className="text-3xl font-black">{preferences.weight ? (preferences.weight.kg * unitFactor).toFixed(1) : '—'}</span><span className="ml-2 text-gray-500">{weightUnit}</span></div>
@@ -168,7 +179,6 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
     </section>
     <section className={section}>
       <h3 className="font-bold flex items-center gap-2"><Settings size={18}/>{t('앱 설정')}</h3>
-      <LanguageSettings/>
       <div className="flex justify-between items-center text-sm"><span>{t('테마')}</span><button onClick={onToggleTheme} className="p-3 rounded-xl bg-gray-100 dark:bg-white/10">{t(isDark ? '다크' : '라이트')}</button></div>
       <div className="flex justify-between items-center text-sm"><span>{t('표시 무게 단위')}</span><button onClick={() => { onToggleWeightUnit(); setWeightInput(''); }} className="p-3 rounded-xl bg-gray-100 dark:bg-white/10">{weightUnit}</button></div>
     </section>
