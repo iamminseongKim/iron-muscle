@@ -1,17 +1,20 @@
 import { displayExercise, displayMuscle, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, Search, Dumbbell, ChevronRight, Plus } from 'lucide-react';
-import { Exercise, Category, EquipmentType } from '../../types/workout';
+import { Exercise, Category, EquipmentType, LoadType } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
+import { DISCOVERY_ADDITIONS } from '../../data/discoveryAdditions';
+import { ADDITIONAL_MACHINES } from '../../data/additionalMachines';
 import { buildExerciseUsage, isCoreExercise, rankExercises } from '../../utils/exerciseDiscovery';
 import { loadCustomExercises, loadSavedSessions } from '../../utils/storage';
+import { loadGymProfile, GYM_EQUIPMENT_CHANGE_EVENT, GymEquipmentProfile } from '../../utils/gymStorage';
 import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
 
 interface AddExerciseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (exercise: Exercise, equipmentType: EquipmentType, brand?: string) => void;
+  onSelect: (exercise: Exercise, equipmentType: EquipmentType, brand?: string, setting?: string, loadType?: LoadType) => void;
   initialCategory?: Category;
   targetCategories?: Category[];
   targetPartIds?: string[];
@@ -53,9 +56,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   );
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
   const [customExercises, setCustomExercises] = useState<Exercise[]>(() => loadCustomExercises());
+  const [gymProfile, setGymProfile] = useState<GymEquipmentProfile>(() => loadGymProfile());
+  const [onlyGymFilter, setOnlyGymFilter] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(50);
-  useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, isOpen]);
+  useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, isOpen, onlyGymFilter]);
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const [usage, setUsage] = useState(() => buildExerciseUsage(loadSavedSessions()));
@@ -65,6 +70,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   React.useEffect(() => {
     if (isOpen) {
       setCustomExercises(loadCustomExercises());
+      setGymProfile(loadGymProfile());
       setUsage(buildExerciseUsage(loadSavedSessions()));
       setShowAll(false);
       if (initialCategory) {
@@ -80,7 +86,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     }
   }, [isOpen, initialCategory, hasTargets]);
 
-  // 커스텀 운동 변경 이벤트 리스너
+  // 커스텀 운동 및 헬스장 프로필 변경 이벤트 리스너
   React.useEffect(() => {
     const handleCustomChange = (e: any) => {
       if (e.detail) {
@@ -89,8 +95,19 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         setCustomExercises(loadCustomExercises());
       }
     };
+    const handleGymChange = (e: any) => {
+      if (e.detail) {
+        setGymProfile(e.detail);
+      } else {
+        setGymProfile(loadGymProfile());
+      }
+    };
     window.addEventListener('iron_custom_exercises_change', handleCustomChange);
-    return () => window.removeEventListener('iron_custom_exercises_change', handleCustomChange);
+    window.addEventListener(GYM_EQUIPMENT_CHANGE_EVENT, handleGymChange);
+    return () => {
+      window.removeEventListener('iron_custom_exercises_change', handleCustomChange);
+      window.removeEventListener(GYM_EQUIPMENT_CHANGE_EVENT, handleGymChange);
+    };
   }, []);
 
   const onCloseRef = React.useRef(onClose);
@@ -125,10 +142,30 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
   const cleanQuery = searchQuery.trim();
 
-  // 커스텀 운동을 상단에 결합
-  const allExercises = [...customExercises, ...EXERCISES_DATABASE];
+  // 커스텀 운동 + 추가 머신 + 디스커버리 추가분 + 기본 DB를 중복 없이 결합
+  const allExercises = useMemo(() => {
+    const map = new Map<string, Exercise>();
+    customExercises.forEach(ex => map.set(ex.id, ex));
+    DISCOVERY_ADDITIONS.forEach(ex => { if (!map.has(ex.id)) map.set(ex.id, ex); });
+    ADDITIONAL_MACHINES.forEach(ex => { if (!map.has(ex.id)) map.set(ex.id, ex); });
+    EXERCISES_DATABASE.forEach(ex => { if (!map.has(ex.id)) map.set(ex.id, ex); });
+    return Array.from(map.values());
+  }, [customExercises]);
 
-  const rankedExercises = rankExercises(allExercises, cleanQuery, usage);
+  const gymEquipmentIds = useMemo(() => {
+    const ids = new Set<string>();
+    Object.keys(gymProfile.machines).forEach(id => ids.add(id));
+    if (gymProfile.includeFreeWeights) {
+      allExercises.forEach(ex => {
+        if (ex.equipment === 'barbell' || ex.equipment === 'dumbbell' || ex.equipment === 'bodyweight') {
+          ids.add(ex.id);
+        }
+      });
+    }
+    return ids;
+  }, [gymProfile, allExercises]);
+
+  const rankedExercises = rankExercises(allExercises, cleanQuery, usage, gymEquipmentIds);
   const filteredByCategory = rankedExercises.filter((ex) => {
 
     // 2. 카테고리 필터링 (다중 부위 완벽 매핑 및 오늘 목표 부위 필터링)
@@ -165,7 +202,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     // 3. 장비 필터링
     const matchEquip = selectedEquipment === 'all' || ex.equipment === selectedEquipment;
 
-    return matchCat && matchEquip;
+    // 4. 내 헬스장 전용 필터
+    const matchGym = !onlyGymFilter || gymEquipmentIds.has(ex.id);
+
+    return matchCat && matchEquip && matchGym;
   });
 
   const filteredExercises = filteredByCategory.filter(ex => cleanQuery || showAll || isCoreExercise(ex) || usage.has(ex.id) || ex.id.startsWith('custom_'));
@@ -242,6 +282,18 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           <div id="exercise-picker-filters" hidden={!filtersOpen} className="space-y-2">
           {/* 카테고리 칩 (오늘 목표 부위 우선 노출 및 다중 부위 완벽 매핑) */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
+            <button
+              type="button"
+              onClick={() => setOnlyGymFilter(prev => !prev)}
+              className={`px-3 py-1.5 rounded-full font-black whitespace-nowrap transition flex items-center gap-1 shrink-0 ${
+                onlyGymFilter
+                  ? 'bg-[#0F766E] text-white shadow-sm'
+                  : 'bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] hover:bg-[#0F766E]/20 border border-[#0F766E]/20'
+              }`}
+            >
+              <span>🏷️ {gymProfile.name || t('내 헬스장')}</span>
+              <span className="text-[10px] opacity-90">({Object.keys(gymProfile.machines).length})</span>
+            </button>
             {hasTargets && (
               <button
                 type="button"
@@ -319,7 +371,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                 key={ex.id}
                 type="button"
                 onClick={() => {
-                  onSelect(ex, ex.equipment, ex.defaultBrand);
+                  const gymConfig = gymProfile.machines[ex.id];
+                  const targetBrand = gymConfig?.brand || ex.defaultBrand;
+                  const targetSetting = gymConfig?.machineSetting;
+                  const targetLoadType = gymConfig?.loadType || ex.loadType;
+                  onSelect(ex, ex.equipment, targetBrand, targetSetting, targetLoadType);
                   onClose();
                 }}
                 className="w-full text-left px-2.5 py-2 rounded-xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#0F766E]/40 transition flex items-center gap-3 group"
@@ -349,7 +405,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
                       {ex.equipment === 'machine' ? t("머신") : ex.equipment === 'barbell' ? t("바벨") : ex.equipment === 'dumbbell' ? t("덤벨") : ex.equipment === 'cable' ? t("케이블") : t('맨몸/소도구')}
                     </span>
-                    {ex.id.startsWith('custom_') ? (
+                    {gymProfile.machines[ex.id] ? (
+                      <span className="px-1.5 py-0.2 rounded bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold flex items-center gap-0.5">
+                        🏷️ {gymProfile.machines[ex.id].brand || t('내 헬스장')}
+                      </span>
+                    ) : ex.id.startsWith('custom_') ? (
                       <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">
                         {t("★커스텀")}
                       </span>

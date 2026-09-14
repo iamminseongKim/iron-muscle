@@ -1,10 +1,11 @@
 import { t } from '../../i18n';
 import React, { useRef, useState } from 'react';
-import { Capacitor, registerPlugin } from '@capacitor/core';
+import { Download, FileText, Upload, ShieldAlert, Smartphone, Info, HardDrive } from 'lucide-react';
 import { createBackup, parseBackup, restoreBackup, WorkoutBackup } from '../../utils/backup';
 import { WorkoutSession } from '../../types/workout';
-
-const nativeBackup = registerPlugin<{ save(options: { filename: string; data: string }): Promise<{ cancelled: boolean }> }>('WorkoutBackup');
+import { loadSavedSessions } from '../../utils/storage';
+import { generateAiCoachingMarkdown } from '../../utils/aiPromptGenerator';
+import { saveFileToDevice } from '../../utils/nativeFile';
 
 export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSession[], date?: string) => void }) {
   const input = useRef<HTMLInputElement>(null);
@@ -22,30 +23,44 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
     }
   };
 
-  const backup = async () => {
+  const backupJson = async () => {
     setBusy(true);
     setMessage('');
     try {
       const data = JSON.stringify(createBackup(), null, 2);
       const filename = `iron-muscle-${new Date().toISOString().slice(0, 10)}.json`;
-      if (Capacitor.getPlatform() === 'android') {
-        const result = await nativeBackup.save({ filename, data });
-        setMessage(result.cancelled ? t('저장을 취소했습니다.') : t('백업 파일을 저장했습니다. 앱 삭제 전 파일이 있는지 확인하세요.'));
+      const res = await saveFileToDevice(filename, data, 'application/json');
+      if (res.cancelled) {
+        setMessage(t('저장을 취소했습니다.'));
       } else {
-        const file = new File([data], filename, { type: 'application/json' });
-        if (navigator.canShare?.({ files: [file] })) {
-          await navigator.share({ files: [file], title: t('운동 기록 백업') });
-          setMessage(t('선택한 앱에서 파일 저장을 완료해 주세요.'));
-        } else {
-          const url = URL.createObjectURL(file);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          a.click();
-          setTimeout(() => URL.revokeObjectURL(url), 60000);
-          setText(data);
-          setMessage(t('파일 다운로드를 요청했습니다. 저장되지 않으면 아래 백업 텍스트를 복사해 별도로 보관하세요.'));
-        }
+        setMessage(res.message || t('백업 파일을 저장했습니다. 앱 삭제 전 파일이 있는지 확인하세요.'));
+        setText(data);
+      }
+    } catch (e) {
+      setMessage((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const backupMarkdown = async () => {
+    setBusy(true);
+    setMessage('');
+    try {
+      const sessions = loadSavedSessions();
+      if (!sessions || sessions.length === 0) {
+        setMessage(t('저장된 운동 기록이 없습니다.'));
+        return;
+      }
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const md = generateAiCoachingMarkdown(sessions, { scope: 'all', selectedDate: todayStr, selectedBodyPart: 'all' });
+      const filename = `IronMuscle_All_Workouts_${todayStr}.md`;
+      const res = await saveFileToDevice(filename, md, 'text/markdown');
+      if (res.cancelled) {
+        setMessage(t('저장을 취소했습니다.'));
+      } else {
+        setMessage(res.message || t('전체 마크다운 일지 파일을 저장했습니다.'));
+        setText(md);
       }
     } catch (e) {
       setMessage((e as Error).message);
@@ -58,19 +73,77 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
   const totalVolume = pending ? pending.sessions.reduce((acc, s) => acc + s.exercises.reduce((a, e) => a + e.sets.reduce((x, set) => x + set.weight * set.reps, 0), 0), 0) : 0;
 
   return (
-    <section className="rounded-2xl bg-white dark:bg-[#1C1C1E] p-3 space-y-2 text-xs">
-      <h3 className="font-bold text-sm">{t("기록 백업 · 복원 (마크다운 / JSON)")}</h3>
-      <p className="text-gray-500">
+    <section className="rounded-2xl bg-white dark:bg-[#1C1C1E] p-3 space-y-3 text-xs border border-gray-100 dark:border-white/5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <h3 className="font-bold text-sm flex items-center gap-1.5 text-[#1D1D1F] dark:text-white">
+          <HardDrive size={16} className="text-[#0F766E] dark:text-[#2DD4BF]" />
+          {t("기록 백업 · 복원 (마크다운 / JSON)")}
+        </h3>
+      </div>
+      <p className="text-gray-500 leading-relaxed">
         {t("앱 삭제 전 파일로 백업하거나, 기존에 추출했던 마크다운 일지(.md) 및 백업 파일을 불러와 기록을 온전히 복원할 수 있습니다.")}
       </p>
-      <div className="flex gap-2">
-        <button disabled={busy} onClick={backup} className="px-3 py-2 rounded-lg bg-[#0F766E] text-white font-bold">
-          {t("파일로 백업")}
+
+      {/* 액션 버튼 그룹 */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <button
+          disabled={busy}
+          onClick={backupJson}
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#0F766E] hover:bg-[#0D655E] text-white font-bold transition shadow-sm active:scale-95 disabled:opacity-50"
+        >
+          <Download size={14} />
+          <span>{t("파일로 백업 (.json)")}</span>
         </button>
-        <button onClick={() => input.current?.click()} className="px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/10 font-bold">
-          {t("일지 / 백업 파일 복원 (.md, .json)")}
+
+        <button
+          disabled={busy}
+          onClick={backupMarkdown}
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-teal-50 dark:bg-[#0F766E]/20 text-[#0F766E] dark:text-[#2DD4BF] border border-[#0F766E]/30 font-bold transition hover:bg-teal-100 dark:hover:bg-[#0F766E]/30 active:scale-95 disabled:opacity-50"
+        >
+          <FileText size={14} />
+          <span>{t("전체 마크다운(.md) 내보내기")}</span>
+        </button>
+
+        <button
+          onClick={() => input.current?.click()}
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 font-bold transition hover:bg-gray-200 dark:hover:bg-white/15 active:scale-95"
+        >
+          <Upload size={14} />
+          <span>{t("일지 / 백업 파일 복원")}</span>
         </button>
       </div>
+
+      {/* 안전 보존 가이드 카드 */}
+      <div className="rounded-xl bg-teal-50/70 dark:bg-teal-950/30 border border-teal-200/60 dark:border-teal-800/40 p-3 space-y-2.5">
+        <div className="flex items-center gap-1.5 font-bold text-[#0F766E] dark:text-[#2DD4BF] text-xs">
+          <Info size={15} />
+          <span>{t('로컬 저장소 보존 및 안전 백업 가이드')}</span>
+        </div>
+        <div className="text-[11px] leading-relaxed text-gray-600 dark:text-gray-300 space-y-2">
+          <p>
+            <strong>{t('현재 저장 방식')}:</strong> {t('모든 운동 기록과 헬스장 기구 세팅은 현재 기기의 브라우저 로컬 저장소(LocalStorage)에 안전하게 보존됩니다.')}
+          </p>
+          <div className="bg-white/80 dark:bg-black/20 rounded-lg p-2.5 space-y-1 border border-teal-100 dark:border-white/5">
+            <div className="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-1">
+              <Smartphone size={13} className="text-[#0F766E] dark:text-[#2DD4BF]" />
+              {t('가장 안전한 보존 방법 (홈 화면에 추가 · PWA)')}
+            </div>
+            <p className="text-gray-500 dark:text-gray-400">
+              {t('사파리/크롬 공유 메뉴에서 [홈 화면에 추가]를 실행하면 독립된 앱 공간에 영구 보존되어 브라우저 캐시 삭제 시에도 안전합니다.')}
+            </p>
+          </div>
+          <div className="bg-white/80 dark:bg-black/20 rounded-lg p-2.5 space-y-1 border border-amber-200/60 dark:border-amber-900/40">
+            <div className="font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-1">
+              <ShieldAlert size={13} />
+              {t('데이터 소실 주의 안내')}
+            </div>
+            <p className="text-gray-500 dark:text-gray-400">
+              {t('브라우저 방문 기록/캐시 삭제 또는 시크릿 탭 사용 시 기록이 소실될 수 있으니, 중요한 기록은 [파일로 백업] 또는 [전체 마크다운 내보내기]로 정기 보관하세요.')}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <input
         ref={input}
         type="file"
@@ -86,6 +159,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           e.target.value = '';
         }}
       />
+
       <details className="mt-1">
         <summary className="cursor-pointer py-1.5 text-gray-500 font-medium">{t("마크다운 일지 / 백업 텍스트 직접 붙여넣기")}</summary>
         <div className="mt-2 space-y-2">
@@ -101,9 +175,10 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           </button>
         </div>
       </details>
+
       {pending && (
         <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-lg space-y-2 border border-gray-200 dark:border-white/10">
-          <p className="font-bold text-[#0F766E]">
+          <p className="font-bold text-[#0F766E] dark:text-[#2DD4BF]">
             {t("운동")} {pending.sessions.length}{t("회 확인됨")} ({t("총")} {totalSets}{t("세트")} · {t("볼륨")} {totalVolume.toLocaleString()}kg)
             {pending.customExercises.length > 0 ? ` · ${t("사용자 운동")} ${pending.customExercises.length}${t("종")}` : ''}
             {pending.activeSession ? ` · ${t("진행 중인 운동 포함")}` : ''}
@@ -113,7 +188,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           </p>
           <div className="flex gap-4 pt-1">
             <button
-              className="font-bold text-[#0F766E] py-1.5 px-3 rounded-lg bg-[#0F766E]/10"
+              className="font-bold text-[#0F766E] dark:text-[#2DD4BF] py-1.5 px-3 rounded-lg bg-[#0F766E]/10"
               onClick={() => {
                 try {
                   const result = restoreBackup(pending);
@@ -132,7 +207,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           </div>
         </div>
       )}
-      {message && <p role="status" className="text-gray-500 pt-1 font-medium">{message}</p>}
+      {message && <p role="status" className="text-[#0F766E] dark:text-[#2DD4BF] pt-1 font-medium">{message}</p>}
     </section>
   );
 }

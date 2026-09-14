@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Heart, User, Settings, Shield } from 'lucide-react';
+import { Heart, User, Settings, Shield, Dumbbell, ChevronRight } from 'lucide-react';
 import { t, getLanguage } from '../../i18n';
 import { LanguageSettings } from '../common/LanguageSettings';
 import { BackupPanel } from '../history/BackupPanel';
 import { HEALTH_CHANGE, loadHealthPreferences, loadExportJobs, saveManualWeight, updateHealthPreferences } from '../../services/health/healthStore';
 import { enableHealthFeature, healthPlatform, healthStatus, openHealthSettings, syncWeight, flushWorkoutExports } from '../../services/health/healthService';
+import { loadGymProfile, loadGymState, switchActiveGym, GYM_EQUIPMENT_CHANGE_EVENT, GymEquipmentProfile, MultiGymState } from '../../utils/gymStorage';
+import { GymEquipmentModal } from './GymEquipmentModal';
 import type { WeightUnit } from '../../types/workout';
 import packageJson from '../../../package.json';
 
 export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }: {
   isDark: boolean; onToggleTheme: () => void; weightUnit: WeightUnit; onToggleWeightUnit: () => void;
 }) {
+  const [gymState, setGymState] = useState<MultiGymState>(() => loadGymState());
+  const [gymProfile, setGymProfile] = useState<GymEquipmentProfile>(() => loadGymProfile());
+  const [isGymModalOpen, setIsGymModalOpen] = useState(false);
   const [preferences, setPreferences] = useState(loadHealthPreferences);
   const [jobs, setJobs] = useState(loadExportJobs);
   const [available, setAvailable] = useState(false);
@@ -22,12 +27,23 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
   const unitFactor = weightUnit === 'lbs' ? 2.2046226218 : 1;
   useEffect(() => {
     let active = true;
-    const read = () => { setPreferences(loadHealthPreferences()); setJobs(loadExportJobs()); };
+    const read = () => {
+      setPreferences(loadHealthPreferences());
+      setJobs(loadExportJobs());
+      setGymState(loadGymState());
+      setGymProfile(loadGymProfile());
+    };
     const check = () => { if (!document.hidden) healthStatus().then(s => { if (active) setAvailable(s.available); }).catch(() => { if (active) setAvailable(false); }); };
     check();
     window.addEventListener(HEALTH_CHANGE, read);
+    window.addEventListener(GYM_EQUIPMENT_CHANGE_EVENT, read);
     document.addEventListener('visibilitychange', check);
-    return () => { active = false; window.removeEventListener(HEALTH_CHANGE, read); document.removeEventListener('visibilitychange', check); };
+    return () => {
+      active = false;
+      window.removeEventListener(HEALTH_CHANGE, read);
+      window.removeEventListener(GYM_EQUIPMENT_CHANGE_EVENT, read);
+      document.removeEventListener('visibilitychange', check);
+    };
   }, []);
   const action = async (fn: () => Promise<void>) => {
     setBusy(true); setMessage('');
@@ -88,6 +104,69 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
     </section>
     {message && <p role="status" className="rounded-2xl bg-[#0F766E]/10 p-4 text-sm">{t(message)}</p>}
     <section className={section}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h3 className="font-bold flex items-center gap-2"><Dumbbell size={18}/>{t('내 헬스장 기구 관리')}</h3>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-white/10 text-gray-500 font-bold">
+            {gymState.gyms.length}/3
+          </span>
+        </div>
+        <button
+          onClick={() => setIsGymModalOpen(true)}
+          className="text-xs font-bold text-[#0F766E] dark:text-[#2DD4BF] flex items-center hover:underline"
+        >
+          {t('기구 편집')} <ChevronRight size={14} />
+        </button>
+      </div>
+
+      {/* 등록된 헬스장 빠른 전환 칩 (2개 이상일 때) */}
+      {gymState.gyms.length > 1 && (
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+          {gymState.gyms.map(gym => {
+            const isActive = gym.id === gymState.activeGymId;
+            return (
+              <button
+                key={gym.id}
+                type="button"
+                onClick={() => {
+                  switchActiveGym(gym.id);
+                  setGymState(loadGymState());
+                  setGymProfile(loadGymProfile());
+                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                  isActive
+                    ? 'bg-[#0F766E] text-white shadow-sm'
+                    : 'bg-[#F2F2F7] dark:bg-[#252528] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+                }`}
+              >
+                <span>{gym.name}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-black/5 dark:bg-white/10 text-gray-500'}`}>
+                  {Object.keys(gym.machines || {}).length}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="bg-[#F2F2F7] dark:bg-[#252528] rounded-2xl p-3.5 space-y-1.5 cursor-pointer hover:opacity-90 transition" onClick={() => setIsGymModalOpen(true)}>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-sm text-[#1D1D1F] dark:text-white">{gymProfile.name}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] font-bold">
+              {t('선택됨')}
+            </span>
+          </div>
+          <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] font-bold">
+            {t('머신')} {Object.keys(gymProfile.machines).length}{t('개 등록')}
+          </span>
+        </div>
+        <p className="text-xs text-gray-500">
+          {gymProfile.includeFreeWeights ? t('바벨·덤벨·맨몸 운동 포함') : t('머신 및 등록 기구만')} · {t('운동 선택 시 최상단 우선 노출')}
+        </p>
+      </div>
+    </section>
+    <section className={section}>
       <h3 className="font-bold flex items-center gap-2"><Settings size={18}/>{t('앱 설정')}</h3>
       <LanguageSettings/>
       <div className="flex justify-between items-center text-sm"><span>{t('테마')}</span><button onClick={onToggleTheme} className="p-3 rounded-xl bg-gray-100 dark:bg-white/10">{t(isDark ? '다크' : '라이트')}</button></div>
@@ -101,5 +180,12 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
       <button className="text-sm underline py-2" disabled={busy} onClick={() => void action(async () => { updateHealthPreferences({ autoWeight: false, weight: undefined, lastWeightSync: undefined }); setMessage('현재 체중을 지웠습니다. 운동 당시 체중은 기존 기록에 보존됩니다.'); })}>{t('현재 체중 지우기')}</button>
     </details>
     <p className="text-center text-xs text-gray-400">Iron Muscle · v{packageJson.version}</p>
+    {isGymModalOpen && (
+      <GymEquipmentModal
+        isOpen={isGymModalOpen}
+        onClose={() => setIsGymModalOpen(false)}
+        onSaved={() => setGymProfile(loadGymProfile())}
+      />
+    )}
   </div>;
 }

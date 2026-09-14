@@ -1,7 +1,8 @@
 import { Exercise, WorkoutSession } from '../types/workout';
 import { isMarkdownWorkout, parseMarkdownWorkout } from './markdownParser';
+import { GYM_EQUIPMENT_STORAGE_KEY, GymEquipmentProfile } from './gymStorage';
 
-export interface WorkoutBackup { format: 'iron-muscle-backup'; version: 1; exportedAt: string; sessions: WorkoutSession[]; customExercises: Exercise[]; activeSession: WorkoutSession | null; }
+export interface WorkoutBackup { format: 'iron-muscle-backup'; version: 1; exportedAt: string; sessions: WorkoutSession[]; customExercises: Exercise[]; activeSession: WorkoutSession | null; gymProfile?: GymEquipmentProfile | null; }
 const keys = ['iron_workout_sessions_v1', 'iron_custom_exercises_v1', 'iron_active_session_v1'] as const;
 const object = (v: any) => v && typeof v === 'object' && !Array.isArray(v);
 const str = (v: any) => typeof v === 'string';
@@ -35,7 +36,7 @@ export function parseBackup(raw: string): WorkoutBackup {
   return b;
 }
 export function createBackup(): WorkoutBackup {
-  return parseBackup(JSON.stringify({format:'iron-muscle-backup',version:1,exportedAt:new Date().toISOString(),sessions:JSON.parse(localStorage.getItem(keys[0]) || '[]'),customExercises:JSON.parse(localStorage.getItem(keys[1]) || '[]'),activeSession:JSON.parse(localStorage.getItem(keys[2]) || 'null')}));
+  return parseBackup(JSON.stringify({format:'iron-muscle-backup',version:1,exportedAt:new Date().toISOString(),sessions:JSON.parse(localStorage.getItem(keys[0]) || '[]'),customExercises:JSON.parse(localStorage.getItem(keys[1]) || '[]'),activeSession:JSON.parse(localStorage.getItem(keys[2]) || 'null'),gymProfile:JSON.parse(localStorage.getItem(GYM_EQUIPMENT_STORAGE_KEY) || 'null')}));
 }
 export function restoreBackup(incoming: WorkoutBackup) {
   incoming = parseBackup(JSON.stringify(incoming));
@@ -53,11 +54,17 @@ export function restoreBackup(incoming: WorkoutBackup) {
     localStorage.setItem(keys[0],JSON.stringify(sessions));
     localStorage.setItem(keys[1],JSON.stringify(customExercises));
     if (active) localStorage.setItem(keys[2],JSON.stringify(active));
+    if (incoming.gymProfile && object(incoming.gymProfile)) {
+      localStorage.setItem(GYM_EQUIPMENT_STORAGE_KEY, JSON.stringify(incoming.gymProfile));
+    }
   } catch (error) {
     keys.forEach((k,i)=>{try {if(before[i]===null)localStorage.removeItem(k);else localStorage.setItem(k,before[i]!);}catch{}});
     throw new Error('저장 공간 또는 저장 권한 문제로 복원하지 못했습니다.');
   }
   window.dispatchEvent(new CustomEvent('iron_custom_exercises_change',{detail:customExercises}));
   window.dispatchEvent(new CustomEvent('iron_active_session_change',{detail:active}));
+  if (incoming.gymProfile && object(incoming.gymProfile)) {
+    window.dispatchEvent(new CustomEvent('iron_gym_equipment_change',{detail:incoming.gymProfile}));
+  }
   return {sessions,added:added.length,skipped:incoming.sessions.length-added.length};
 }

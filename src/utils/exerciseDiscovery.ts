@@ -41,11 +41,21 @@ export function exerciseSearchRelevance(exercise: Exercise, query: string): numb
   return tokens.every(token => contexts.includes(token) || fields.some(field => field.includes(token))) ? 1 : -1;
 }
 
-export function rankExercises(catalog: Exercise[], query: string, usage = new Map<string, ExerciseUsage>()): Exercise[] {
+export function rankExercises(
+  catalog: Exercise[],
+  query: string,
+  usage = new Map<string, ExerciseUsage>(),
+  gymEquipmentIds?: Set<string>
+): Exercise[] {
   return catalog.map(exercise => ({ exercise, relevance: exerciseSearchRelevance(exercise, query) }))
     .filter(item => item.relevance >= 0)
     .sort((a, b) => {
       if (a.relevance !== b.relevance) return b.relevance - a.relevance;
+      if (gymEquipmentIds && gymEquipmentIds.size > 0) {
+        const aInGym = gymEquipmentIds.has(a.exercise.id);
+        const bInGym = gymEquipmentIds.has(b.exercise.id);
+        if (aInGym !== bInGym) return Number(bInGym) - Number(aInGym);
+      }
       const au = usage.get(a.exercise.id), bu = usage.get(b.exercise.id);
       // Recency first, frequency as a tie-breaker; exact query matches always beat history.
       return Number(Boolean(bu)) - Number(Boolean(au)) || (bu?.latest || 0) - (au?.latest || 0) ||

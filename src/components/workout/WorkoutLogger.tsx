@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { 
   WorkoutSession, WorkoutExercise, Exercise, EquipmentType, ExerciseGroupType, Category,
-  TARGET_BODY_PARTS, WeightUnit
+  TARGET_BODY_PARTS, WeightUnit, LoadType
 } from '../../types/workout';
 import { ExerciseCard } from './ExerciseCard';
 import { AddExerciseModal } from './AddExerciseModal';
@@ -197,7 +197,13 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   };
 
   // 종목 추가 핸들러
-  const handleAddExercise = (exercise: Exercise, equipmentType: EquipmentType, brand?: string) => {
+  const handleAddExercise = (
+    exercise: Exercise,
+    equipmentType: EquipmentType,
+    brand?: string,
+    setting?: string,
+    loadType?: LoadType
+  ) => {
     if (!session) return;
     const previousSets = findPreviousSets(exercise.id, brand);
 
@@ -221,8 +227,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       exerciseId: exercise.id,
       exerciseName: exercise.name,
       equipmentType,
-      loadType: exercise.loadType,
+      loadType: loadType || exercise.loadType,
       machineBrand: brand,
+      machineSetting: setting,
       sets: initialSets,
       weightUnit: 'kg',
     };

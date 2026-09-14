@@ -27,8 +27,14 @@ assert.equal(JSON.stringify(history),original);
 assert.deepEqual(rankExercises([...db].reverse(),'').map(e=>e.id),rankExercises(db,'').map(e=>e.id),'Catalog order cannot affect ranking');
 for(const lang of ['ko','en','ja','zh-CN','zh-TW','es','fr','de']) {
  const pack=JSON.parse(readFileSync(`src/i18n/locales/${lang}/exercises.json`,'utf8'));
- for(const id of ['dumbbell-romanian-deadlift','smith-romanian-deadlift','seated-cable-fly']) {
-  assert.ok(pack[id]);assert.ok(matchesExerciseSearch(byId.get(id),pack[id]),`${lang}: ${id}`);
+ for(const id of ['dumbbell-romanian-deadlift','smith-romanian-deadlift','seated-cable-fly','machine-front-pulldown','machine-seated-row','machine-high-row','machine-low-row','v-squat-machine','machine-lateral-raise']) {
+  assert.ok(pack[id], `${lang} missing ${id}`);assert.ok(matchesExerciseSearch(byId.get(id),pack[id]),`${lang}: ${id}`);
  }
 }
-console.log('PASS: representative IDs, ranked aliases, rare exact matches, personal recency, completed records, broad context, multilingual additions and deterministic order');
+
+// Gym equipment priority test: registered gym machines must rank first even with no search query
+const gymPrioritized = rankExercises(db, '', usage, new Set(['machine-front-pulldown', 'v-squat-machine']));
+const topTwo = [gymPrioritized[0].id, gymPrioritized[1].id];
+assert.ok(topTwo.includes('machine-front-pulldown') && topTwo.includes('v-squat-machine'), 'Gym machines must be at the very top of ranked list');
+
+console.log('PASS: representative IDs, ranked aliases, rare exact matches, personal recency, completed records, broad context, multilingual additions, gym equipment ranking and deterministic order');
