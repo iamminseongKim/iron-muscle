@@ -247,7 +247,7 @@
   "실제 쉰 시간:": "Temps de repos réel :",
   "휴식 종료 &": "Terminer le repos et",
   "초 세트에 기록": "s enregistrer dans la série",
-  "현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": "Voulez-vous annuler l'entraînement en cours ?\nLes données non enregistrées seront perdues et vous reviendrez à l'accueil.",
+  "현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": "Annuler l'entraînement en cours ?\nLa progression non enregistrée sera perdue et vous reviendrez à l'accueil.",
   "등록된 운동 종목이 없습니다. 그래도 운동을 완료하시겠습니까?": "Aucun exercice ajouté. Souhaitez-vous quand même terminer la séance ?",
   "오늘 운동 완료!": "Séance terminée !",
   "총 운동 시간:": "Temps total :",
@@ -683,5 +683,14 @@
   "사파리/크롬 공유 메뉴에서 [홈 화면에 추가]를 실행하면 독립된 앱 공간에 영구 보존되어 브라우저 캐시 삭제 시에도 안전합니다.": "L'option [Sur l'écran d'accueil] depuis le menu de partage Safari/Chrome isole vos données dans un espace d'application sécurisé même en cas de nettoyage du cache.",
   "데이터 소실 주의 안내": "Avis de prévention des pertes de données",
   "브라우저 방문 기록/캐시 삭제 또는 시크릿 탭 사용 시 기록이 소실될 수 있으니, 중요한 기록은 [파일로 백업] 또는 [전체 마크다운 내보내기]로 정기 보관하세요.": "Effacer l'historique/le cache ou naviguer en mode privé peut supprimer vos données. Effectuez régulièrement des sauvegardes de vos séances importantes.",
-  "선택됨": "Sélectionné"
+  "선택됨": "Sélectionné",
+  "헬스장을 삭제하시겠습니까?": "Êtes-vous sûr de vouloir supprimer cette salle de sport ?",
+  "헬스장 삭제": "Supprimer la salle",
+  "헬스장 추가": "Ajouter une salle",
+  "새 헬스장 이름 (예: 회사 헬스장, 홈짐)": "Nouveau nom de salle (ex: Salle du bureau, Salle maison)",
+  "추가": "Ajouter",
+  "헬스장 이름": "Nom de la salle",
+  "저장된 운동 기록이 없습니다.": "Aucun entraînement enregistré trouvé.",
+  "운동 마무리": "Terminer la séance",
+  "현재 진행 중인 운동을 취소하시겠습니까?\\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": "Annuler l'entraînement en cours ?\nLa progression non enregistrée sera perdue et vous reviendrez à l'accueil."
 }

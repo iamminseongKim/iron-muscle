@@ -247,7 +247,7 @@
   "실제 쉰 시간:": "Descanso real:",
   "휴식 종료 &": "Terminar descanso y",
   "초 세트에 기록": "s registrar en la serie",
-  "현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": "¿Desea cancelar el entrenamiento en curso?\nEl contenido no guardado se perderá y volverá a la pantalla inicial.",
+  "현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": "¿Cancelar el entrenamiento en curso?\nEl progreso no guardado se perderá y volverá a la pantalla de inicio.",
   "등록된 운동 종목이 없습니다. 그래도 운동을 완료하시겠습니까?": "No hay ejercicios registrados. ¿Deseas completar el entrenamiento igualmente?",
   "오늘 운동 완료!": "¡Entrenamiento completado!",
   "총 운동 시간:": "Tiempo total:",
@@ -683,5 +683,14 @@
   "사파리/크롬 공유 메뉴에서 [홈 화면에 추가]를 실행하면 독립된 앱 공간에 영구 보존되어 브라우저 캐시 삭제 시에도 안전합니다.": "Al seleccionar [Añadir a pantalla de inicio] en el menú compartir de Safari/Chrome, los datos se conservan en un espacio de app independiente y seguro frente al borrado de caché.",
   "데이터 소실 주의 안내": "Aviso de prevención de pérdida de datos",
   "브라우저 방문 기록/캐시 삭제 또는 시크릿 탭 사용 시 기록이 소실될 수 있으니, 중요한 기록은 [파일로 백업] 또는 [전체 마크다운 내보내기]로 정기 보관하세요.": "Borrar el historial/caché o usar pestañas de incógnito puede eliminar los datos. Realice copias periódicas con [Copia de seguridad] o [Exportar Markdown].",
-  "선택됨": "Seleccionado"
+  "선택됨": "Seleccionado",
+  "헬스장을 삭제하시겠습니까?": "¿Estás seguro de que quieres eliminar este gimnasio?",
+  "헬스장 삭제": "Eliminar gimnasio",
+  "헬스장 추가": "Añadir gimnasio",
+  "새 헬스장 이름 (예: 회사 헬스장, 홈짐)": "Nuevo nombre del gimnasio (ej: Gimnasio de la oficina, Casa)",
+  "추가": "Añadir",
+  "헬스장 이름": "Nombre del gimnasio",
+  "저장된 운동 기록이 없습니다.": "No se encontraron entrenamientos guardados.",
+  "운동 마무리": "Finalizar entrenamiento",
+  "현재 진행 중인 운동을 취소하시겠습니까?\\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.": "¿Cancelar el entrenamiento en curso?\nEl progreso no guardado se perderá y volverá a la pantalla de inicio."
 }
