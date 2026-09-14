@@ -1,12 +1,14 @@
 import { ADDITIONAL_MACHINES } from './additionalMachines';
 import { ADDITIONAL_POPULAR_EXERCISES } from './additionalExercises';
 import { Exercise } from '../types/workout';
+import { DISCOVERY_ADDITIONS } from './discoveryAdditions';
 
 /**
  * EXERCISES_DATABASE
  * Powered by free-exercise-db (876 exercises) with 100% Korean translations, aliases & CDN images
  */
 export const EXERCISES_DATABASE: Exercise[] = [
+  ...DISCOVERY_ADDITIONS,
   ...ADDITIONAL_POPULAR_EXERCISES,
   ...ADDITIONAL_MACHINES,
   {
@@ -9069,20 +9071,21 @@ export const EXERCISES_DATABASE: Exercise[] = [
   },
   {
     "id": "Dead_Bug",
-    "name": "데드 데드버그",
+    "name": "데드버그",
     "nameEn": "Dead Bug",
-    "category": "fullbody",
+    "category": "core",
     "categories": [
-      "fullbody"
+      "core"
     ],
     "equipment": "bodyweight",
     "loadType": "bodyweight",
-    "movementPlane": "arm-isolation",
+    "movementPlane": "core",
     "primaryMuscles": [
       "abs"
     ],
     "secondaryMuscles": [],
-    "description": "데드 데드버그은(는) 목표 부위의 근비대와 스트렝스 향상을 이끌어내는 전문 웨이트 트레이닝 운동입니다.",
+    "description": "누운 자세에서 몸통을 안정적으로 유지하며 팔다리를 움직이는 코어 운동입니다.",
+    "descriptionEn": "A supine core exercise that keeps the trunk steady while moving the limbs.",
     "instructions": [
       "천장을 향해 손을 위로 뻗은 채 등을 대고 누워 시작하세요.",
       "발, 무릎, 엉덩이를 90도까지 올리세요.",
@@ -12009,9 +12012,9 @@ export const EXERCISES_DATABASE: Exercise[] = [
     "id": "EZ-Bar_Skullcrusher",
     "name": "EZ바 스컬 크러셔",
     "nameEn": "EZ-Bar Skullcrusher",
-    "category": "fullbody",
+    "category": "arms",
     "categories": [
-      "fullbody"
+      "arms"
     ],
     "equipment": "barbell",
     "loadType": "barbell",

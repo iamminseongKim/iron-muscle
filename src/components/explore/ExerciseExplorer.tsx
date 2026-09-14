@@ -6,7 +6,7 @@ import {
   Search, Sparkles, ChevronRight, RotateCcw, BookOpen 
 } from 'lucide-react';
 import { Exercise, MuscleTarget, Category, LoadType, LOAD_TYPE_LABELS, MOVEMENT_PLANE_LABELS } from '../../types/workout';
-import { matchesExerciseSearch } from '../../utils/exerciseSearch';
+import { rankExercises } from '../../utils/exerciseDiscovery';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 
@@ -27,14 +27,13 @@ const getEquipmentLabel = (equipment: string) => {
 };
 
 export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForWorkout, isDark = false }) => {
-  const [selectedExercise, setSelectedExercise] = useState<Exercise>(EXERCISES_DATABASE[0]);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise>(() => rankExercises(EXERCISES_DATABASE, '')[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [selectedLoadType, setSelectedLoadType] = useState<LoadType | 'all'>('all');
   const [activeMuscleFilter, setActiveMuscleFilter] = useState<MuscleTarget | null>(null);
 
-  const filteredExercises = EXERCISES_DATABASE.filter((ex) => {
-    const matchSearch = matchesExerciseSearch(ex, searchQuery);
+  const filteredExercises = rankExercises(EXERCISES_DATABASE, searchQuery).filter((ex) => {
 
     // 다중 부위(categories) 완벽 대응: 하체 선택 시에도 데드리프트 노출, 등 선택 시에도 노출!
     const matchCat =
@@ -49,7 +48,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
       ex.primaryMuscles.includes(activeMuscleFilter) ||
       ex.secondaryMuscles.includes(activeMuscleFilter);
 
-    return matchSearch && matchCat && matchLoad && matchMuscle;
+    return matchCat && matchLoad && matchMuscle;
   });
 
   const [visibleCount, setVisibleCount] = useState(50);

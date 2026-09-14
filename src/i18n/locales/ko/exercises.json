@@ -1,4 +1,7 @@
 {
+  "dumbbell-romanian-deadlift": "덤벨 루마니안 데드리프트",
+  "smith-romanian-deadlift": "스미스머신 루마니안 데드리프트",
+  "seated-cable-fly": "시티드 케이블 플라이",
   "smith-shoulder-press": "스미스 머신 숄더 프레스",
   "스미스 머신 숄더 프레스": "스미스 머신 숄더 프레스",
   "low-to-high-cable-flye": "로우 투 하이 케이블 플라이",
@@ -802,8 +805,8 @@
   "쿠반 프레스": "쿠반 프레스",
   "Dancers_Stretch": "댄서 자세 스트레칭",
   "댄서 자세 스트레칭": "댄서 자세 스트레칭",
-  "Dead_Bug": "데드 데드버그",
-  "데드 데드버그": "데드 데드버그",
+  "Dead_Bug": "데드버그",
+  "데드 데드버그": "데드버그",
   "Deadlift_with_Bands": "밴드 저항 데드리프트",
   "밴드 저항 데드리프트": "밴드 저항 데드리프트",
   "Deadlift_with_Chains": "체인 저항 데드리프트",

@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Search, Dumbbell, ChevronRight, Plus } from 'lucide-react';
 import { Exercise, Category, EquipmentType } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
-import { matchesExerciseSearch, normalizeSearch } from '../../utils/exerciseSearch';
-import { loadCustomExercises } from '../../utils/storage';
+import { buildExerciseUsage, isCoreExercise, rankExercises } from '../../utils/exerciseDiscovery';
+import { loadCustomExercises, loadSavedSessions } from '../../utils/storage';
 import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
 
 interface AddExerciseModalProps {
@@ -57,12 +57,16 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   const [visibleCount, setVisibleCount] = useState(50);
   useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, isOpen]);
   const [filtersOpen, setFiltersOpen] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+  const [usage, setUsage] = useState(() => buildExerciseUsage(loadSavedSessions()));
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (isOpen) {
       setCustomExercises(loadCustomExercises());
+      setUsage(buildExerciseUsage(loadSavedSessions()));
+      setShowAll(false);
       if (initialCategory) {
         setSelectedCategory(initialCategory);
       } else if (hasTargets) {
@@ -120,18 +124,17 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   };
 
   const cleanQuery = searchQuery.trim();
-  const normQuery = normalizeSearch(cleanQuery);
 
   // 커스텀 운동을 상단에 결합
   const allExercises = [...customExercises, ...EXERCISES_DATABASE];
 
-  const filteredExercises = allExercises.filter((ex) => {
-    const matchQuery = matchesExerciseSearch(ex, cleanQuery);
+  const rankedExercises = rankExercises(allExercises, cleanQuery, usage);
+  const filteredByCategory = rankedExercises.filter((ex) => {
 
     // 2. 카테고리 필터링 (다중 부위 완벽 매핑 및 오늘 목표 부위 필터링)
     let matchCat = false;
     // 검색어가 입력된 경우, 오늘 목표 탭('targets')에 있더라도 전역 검색이 가능하도록 유연하게 매칭
-    if (cleanQuery !== '') {
+    if (cleanQuery !== '' && selectedCategory === 'targets') {
       matchCat = true;
     } else if (selectedCategory === 'all') {
       matchCat = true;
@@ -162,34 +165,10 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     // 3. 장비 필터링
     const matchEquip = selectedEquipment === 'all' || ex.equipment === selectedEquipment;
 
-    return matchQuery && matchCat && matchEquip;
+    return matchCat && matchEquip;
   });
 
-  // 검색 시 연관도 높은 종목(정확한 별칭 일치, 인기 종목 등) 우선 정렬
-  if (cleanQuery !== '') {
-    filteredExercises.sort((a, b) => {
-      const aAliases = a.aliases || [];
-      const bAliases = b.aliases || [];
-
-      // A. 별칭이나 이름에 정확히 일치하는 단어가 있는 경우 1순위 (예: '불스스' -> '덤벨 스플릿 스쿼트')
-      const aExact = aAliases.some(al => normalizeSearch(al) === normQuery) || normalizeSearch(a.name) === normQuery;
-      const bExact = bAliases.some(al => normalizeSearch(al) === normQuery) || normalizeSearch(b.name) === normQuery;
-      if (aExact && !bExact) return -1;
-      if (!aExact && bExact) return 1;
-
-      // B. 이름 시작 일치
-      const aStart = normalizeSearch(a.name).startsWith(normQuery);
-      const bStart = normalizeSearch(b.name).startsWith(normQuery);
-      if (aStart && !bStart) return -1;
-      if (!aStart && bStart) return 1;
-
-      // C. 인기 종목 우선
-      if (a.isPopular && !b.isPopular) return -1;
-      if (!a.isPopular && b.isPopular) return 1;
-
-      return 0;
-    });
-  }
+  const filteredExercises = filteredByCategory.filter(ex => cleanQuery || showAll || isCoreExercise(ex) || usage.has(ex.id) || ex.id.startsWith('custom_'));
 
   return (
     <div
@@ -315,11 +294,13 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         </div>
 
         <div className="shrink-0 px-4 py-1 flex items-center justify-between text-xs border-b border-black/5 dark:border-white/10">
-          <span role="status" className="text-gray-600 dark:text-gray-300">{cleanQuery ? t('전체 부위 검색') : t('검색 결과')} {filteredExercises.length}{t("개")}</span>
+          <span role="status" className="text-gray-600 dark:text-gray-300">{cleanQuery ? t(selectedCategory === 'all' || selectedCategory === 'targets' ? '전체 부위 검색' : '검색 결과') : t(showAll ? '전체 종목' : '내 운동·대표 종목')} {filteredExercises.length}{t("개")}</span>
           <button type="button" className="min-h-[36px] text-[#0F766E] font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); }}>{t("필터 초기화")}</button>
         </div>
         {/* 운동 목록 */}
         <div className="exercise-picker-results min-h-0 p-3 overflow-y-auto overscroll-contain flex-1 space-y-2">
+          {!cleanQuery && <button type="button" onClick={() => { setShowAll(value => !value); setVisibleCount(50); }} className="w-full min-h-[40px] rounded-xl text-xs font-semibold text-[#0F766E] dark:text-teal-300 bg-teal-500/10">{t(showAll ? '대표 종목만 보기' : '전체 종목 보기')} ({showAll ? filteredByCategory.filter(ex => isCoreExercise(ex) || usage.has(ex.id) || ex.id.startsWith('custom_')).length : filteredByCategory.length})</button>}
+          {cleanQuery && selectedCategory !== 'all' && selectedCategory !== 'targets' && <button type="button" onClick={() => setSelectedCategory('all')} className="w-full min-h-[40px] text-xs text-[#0F766E] dark:text-teal-300">{t('전체 부위에서 찾기')}</button>}
           {filteredExercises.length === 0 ? (
             <div className="py-12 text-center text-gray-400 space-y-3">
               <p className="text-xs">'{cleanQuery || t('선택한 조건')}'{t("에 맞는 운동을 찾지 못했습니다.")}</p>
@@ -372,9 +353,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                       <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">
                         {t("★커스텀")}
                       </span>
-                    ) : ex.isPopular && (
+                    ) : usage.has(ex.id) ? (
+                      <span className="text-[10px] text-[#0F766E] dark:text-teal-300">{t('내 기록')}</span>
+                    ) : isCoreExercise(ex) && (
                       <span className="px-1.5 py-0.2 rounded bg-red-500/10 text-[#0F766E] text-[10px] font-bold">
-                        {t("★인기")}
+                        {t("대표 종목")}
                       </span>
                     )}
                   </div>
