@@ -36,7 +36,7 @@ assert.equal(grouped.reps, 50);
 assert.equal(grouped.volume, 500);
 console.log('PASS: compact groups, separate sessions, ungrouped records and unique exercise count');
 
-assert.equal(WORKOUT_QUOTE_CATALOG.length,21);
-assert.equal(new Set(WORKOUT_QUOTE_CATALOG.map(q=>q.text)).size,21);
+assert.equal(WORKOUT_QUOTE_CATALOG.length,31);
+assert.equal(new Set(WORKOUT_QUOTE_CATALOG.map(q=>q.text)).size,31);
 for(const quote of WORKOUT_QUOTE_CATALOG) {assert.notEqual(recommendWorkoutQuote(quote.text),quote.text);if(quote.author)assert.ok(quote.source.startsWith('https://'));}
 console.log('PASS unique captions, athlete source metadata and immediate-repeat exclusion');

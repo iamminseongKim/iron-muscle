@@ -21,13 +21,13 @@ try {
  await click('2호기');const updated=await page.evaluate(()=>window.updatedMachine);assert.equal(updated.weightUnit,'lbs');assert.equal(updated.sets[0].weight,44);assert.equal(updated.machineConfigId,'gym-1:b');assert.equal(updated.machineSetting,undefined);
  await render('machine',true);assert.ok(await page.$$eval('button',nodes=>nodes.filter(n=>n.textContent.includes('호기')).every(n=>n.disabled)));
  await render('share');await page.waitForSelector('img[alt*="운동 인증 카드"]');await click('문구 목록');
- assert.equal(await page.$$eval('#workout-quotes button',nodes=>nodes.length),21);
- await click('가벼워, 베이비!');assert.equal(await page.$eval('input[aria-label="인증 문구"]',e=>e.value),'가벼워, 베이비!');
+ assert.equal(await page.$$eval('#workout-quotes button',nodes=>nodes.length),31);
+ await click('Light weight baby!');assert.equal(await page.$eval('input[aria-label="인증 문구"]',e=>e.value),'Light weight baby!');
  assert.ok(await page.$('a[href="https://ronniecoleman.net/pages/youtube-2"]'));
- await click('랜덤 선택');assert.notEqual(await page.$eval('input[aria-label="인증 문구"]',e=>e.value),'가벼워, 베이비!');
- await click('내게는 꿈이 있어야 한다.');await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(b=>b.textContent.includes('이미지 저장 / 공유')&&!b.disabled));
+ await click('랜덤 선택');assert.notEqual(await page.$eval('input[aria-label="인증 문구"]',e=>e.value),'Light weight baby!');
+ await click('Never give up.');await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(b=>b.textContent.includes('이미지 저장 / 공유')&&!b.disabled));
  for(const width of [320,390,768]) {await page.setViewport({width,height:844,isMobile:true,hasTouch:true});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow ${width}`);}
  await page.setViewport({width:390,height:844,isMobile:true,hasTouch:true});await page.screenshot({path:'/tmp/iron-workout-review.png',fullPage:true});
  assert.deepEqual(errors,[]);
- console.log('PASS picker reopen, nested Escape, same-brand identity, safe machine switching, 21 captions, random exclusion, source links and 320/390/768px layout');
+ console.log('PASS picker reopen, nested Escape, same-brand identity, safe machine switching, 31 captions, random exclusion, source links and 320/390/768px layout');
 } finally {await browser.close();}

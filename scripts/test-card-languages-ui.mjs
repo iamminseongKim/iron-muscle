@@ -37,5 +37,5 @@ try {
   assert.ok(result.texts.every(text=>text.x+text.width<=text.canvasWidth-30),`${result.language} text overflow`);
   if(process.env.SCREENSHOT_DIR){fs.mkdirSync(process.env.SCREENSHOT_DIR,{recursive:true});fs.writeFileSync(`${process.env.SCREENSHOT_DIR}/card-${result.language}.png`,Buffer.from(result.png.split(',')[1],'base64'));}
  }
- console.log('PASS all 21 captions and athlete attribution in 8 languages; PNG output, translated legends/groups, distinct captions and text bounds');
+ console.log('PASS all 31 captions and athlete attribution in 8 languages; PNG output, translated legends/groups, distinct captions and text bounds');
 }finally{await browser.close()}
