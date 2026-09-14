@@ -139,3 +139,7 @@ assert.ok(merged.targetCategories.includes('chest'));
 assert.ok(merged.targetCategories.includes('arms'));
 
 console.log('PASS: mergeDaySessions combines durations, exercises, renumbers sets, and merges notes/titles correctly.');
+
+const machineSessions = ['gym-1:a', 'gym-1:b', 'gym-2:a'].map((machineConfigId, index) => ({...singleSession,id:`machine-${index}`,exercises:[{...singleSession.exercises[0],machineBrand:'Same brand',machineConfigId}]}));
+assert.equal(mergeDaySessions(machineSessions).exercises.length,3);
+console.log('PASS same-brand machines and gyms remain separate when merging sessions');

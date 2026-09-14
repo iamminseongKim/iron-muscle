@@ -20,7 +20,8 @@ interface AddExerciseModalProps {
     brand?: string,
     setting?: string,
     loadType?: LoadType,
-    weightUnit?: WeightUnit
+    weightUnit?: WeightUnit,
+    machineConfigId?: string
   ) => void;
   initialCategory?: Category;
   targetCategories?: Category[];
@@ -71,6 +72,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   } | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(50);
+  useEffect(() => { if (!isOpen) setSelectedMultiConfigTarget(null); }, [isOpen]);
   useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, isOpen, onlyGymFilter]);
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [showAll, setShowAll] = useState(false);
@@ -106,13 +108,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         setCustomExercises(loadCustomExercises());
       }
     };
-    const handleGymChange = (e: any) => {
-      if (e.detail) {
-        setGymProfile(e.detail);
-      } else {
-        setGymProfile(loadGymProfile());
-      }
-    };
+    const handleGymChange = () => setGymProfile(loadGymProfile());
     window.addEventListener('iron_custom_exercises_change', handleCustomChange);
     window.addEventListener(GYM_EQUIPMENT_CHANGE_EVENT, handleGymChange);
     return () => {
@@ -126,11 +122,13 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   useEffect(() => {
     if (!isOpen || isCreateModalOpen) return;
     const previousFocus = document.activeElement as HTMLElement | null;
-    closeButtonRef.current?.focus({ preventScroll: true });
+    const machineDialog = document.getElementById('machine-picker-title')?.closest('[role="dialog"]');
+    if (selectedMultiConfigTarget) machineDialog?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
+    else closeButtonRef.current?.focus({ preventScroll: true });
     const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') { event.preventDefault(); onCloseRef.current(); }
+      if (event.key === 'Escape') { event.preventDefault(); if (selectedMultiConfigTarget) setSelectedMultiConfigTarget(null); else onCloseRef.current(); }
       if (event.key !== 'Tab') return;
-      const dialog = document.getElementById('exercise-picker-title')?.closest('[role="dialog"]');
+      const dialog = document.getElementById(selectedMultiConfigTarget ? 'machine-picker-title' : 'exercise-picker-title')?.closest('[role="dialog"]');
       const nodes = dialog?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])');
       if (!nodes?.length) return;
       const first = nodes[0], last = nodes[nodes.length - 1];
@@ -139,9 +137,8 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     };
     document.addEventListener('keydown', handleKey);
     return () => { document.removeEventListener('keydown', handleKey); previousFocus?.focus({ preventScroll: true }); };
-  }, [isOpen, isCreateModalOpen]);
+  }, [isOpen, isCreateModalOpen, selectedMultiConfigTarget]);
 
-  if (!isOpen) return null;
 
   const getTargetLabels = () => {
     if (!targetCategories) return '';
@@ -180,7 +177,9 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     return ids;
   }, [gymProfile, allExercises]);
 
-  const rankedExercises = rankExercises(allExercises, cleanQuery, usage, gymEquipmentIds);
+  const rankedExercises = useMemo(() => rankExercises(allExercises, cleanQuery, usage, gymEquipmentIds), [allExercises, cleanQuery, usage, gymEquipmentIds]);
+
+  if (!isOpen) return null;
   const filteredByCategory = rankedExercises.filter((ex) => {
 
     // 2. 카테고리 필터링 (다중 부위 완벽 매핑 및 오늘 목표 부위 필터링)
@@ -393,11 +392,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     return;
                   }
                   const gymConfig = configs[0];
-                  const targetBrand = gymConfig?.brand || ex.defaultBrand;
+                  const targetBrand = gymConfig?.brand;
                   const targetSetting = gymConfig?.machineSetting;
                   const targetLoadType = gymConfig?.loadType || ex.loadType;
                   const targetWeightUnit = gymConfig?.weightUnit;
-                  onSelect(ex, ex.equipment, targetBrand, targetSetting, targetLoadType, targetWeightUnit);
+                  onSelect(ex, ex.equipment, targetBrand, targetSetting, targetLoadType, targetWeightUnit, gymConfig ? `${gymProfile.id}:${gymConfig.id}` : undefined);
                   onClose();
                 }}
                 className="w-full text-left px-2.5 py-2 rounded-xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#0F766E]/40 transition flex items-center gap-3 group"
@@ -429,7 +428,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     </span>
                     {configs.length > 0 ? (
                       <span className="px-1.5 py-0.2 rounded bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold flex items-center gap-0.5">
-                        🏷️ {configs.length > 1 ? `${t('머신')} ${configs.length}${t('대')}` : (configs[0].brand || t('내 헬스장'))}
+                        🏷️ {configs.length > 1 ? t('머신 {count}대').replace('{count}', String(configs.length)) : (configs[0].brand || t('내 헬스장'))}
                       </span>
                     ) : ex.id.startsWith('custom_') ? (
                       <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">
@@ -479,12 +478,13 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           onClick={() => setSelectedMultiConfigTarget(null)}
         >
           <div
-            className="bg-white dark:bg-[#1C1C1E] rounded-3xl p-5 w-full max-w-sm space-y-4 border border-black/10 dark:border-white/10 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200"
+            role="dialog" aria-modal="true" aria-labelledby="machine-picker-title"
+            className="bg-white dark:bg-[#1C1C1E] rounded-3xl p-5 w-full max-w-sm max-h-[85dvh] overflow-y-auto space-y-4 border border-black/10 dark:border-white/10 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">
+                <h3 id="machine-picker-title" className="font-extrabold text-base text-[#1D1D1F] dark:text-white">
                   {displayExercise(selectedMultiConfigTarget.exercise)}
                 </h3>
                 <p className="text-xs text-gray-500 mt-0.5">
@@ -493,6 +493,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               </div>
               <button
                 type="button"
+                aria-label={t("닫기")}
                 onClick={() => setSelectedMultiConfigTarget(null)}
                 className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400"
               >
@@ -514,10 +515,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                       onSelect(
                         selectedMultiConfigTarget.exercise,
                         selectedMultiConfigTarget.exercise.equipment,
-                        cfg.brand || selectedMultiConfigTarget.exercise.defaultBrand,
+                        cfg.brand,
                         cfg.machineSetting,
                         cfg.loadType || selectedMultiConfigTarget.exercise.loadType,
-                        cfg.weightUnit
+                        cfg.weightUnit,
+                        `${gymProfile.id}:${cfg.id}`
                       );
                       setSelectedMultiConfigTarget(null);
                       onClose();

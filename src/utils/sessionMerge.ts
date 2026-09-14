@@ -52,6 +52,7 @@ export function mergeDaySessions(sessionsToMerge: WorkoutSession[]): WorkoutSess
       const existingMatch = mergedExercises.find(
         (m) =>
           m.exerciseId === ex.exerciseId &&
+          (m.machineConfigId || '') === (ex.machineConfigId || '') &&
           (m.machineBrand || '') === (ex.machineBrand || '') &&
           (m.loadType || '') === (ex.loadType || '') &&
           (m.weightUnit || 'kg') === (ex.weightUnit || 'kg') &&

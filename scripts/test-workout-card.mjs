@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 const bundle = await build({ entryPoints: ['src/utils/workoutCard.ts'], bundle: true, write: false, platform: 'node', format: 'esm' });
-const { summarizeWorkoutDay } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
+const { summarizeWorkoutDay, WORKOUT_QUOTE_CATALOG, recommendWorkoutQuote } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
 const exercise = { exerciseId: 'custom-deleted', exerciseName: '나만의 운동', equipmentType: 'other', sets: [{ completed: true, weight: 10, reps: 10 }, { completed: false, weight: 100, reps: 20 }] };
 const sessions = [{ date: '2026-09-13', durationSeconds: 600, exercises: [exercise] }, { date: '2026-09-13', durationSeconds: 300, exercises: [{ ...exercise, weightUnit: 'lbs', sets: [{ completed: true, weight: 22.0462, reps: 5 }] }, { exerciseId: 'push-up', sets: [{ completed: true, weight: 0, reps: 20 }] }] }, { date: '2026-09-12', durationSeconds: 999, exercises: [exercise] }];
 const before = JSON.stringify(sessions);
@@ -35,3 +35,8 @@ assert.equal(grouped.sets, 5);
 assert.equal(grouped.reps, 50);
 assert.equal(grouped.volume, 500);
 console.log('PASS: compact groups, separate sessions, ungrouped records and unique exercise count');
+
+assert.equal(WORKOUT_QUOTE_CATALOG.length,21);
+assert.equal(new Set(WORKOUT_QUOTE_CATALOG.map(q=>q.text)).size,21);
+for(const quote of WORKOUT_QUOTE_CATALOG) {assert.notEqual(recommendWorkoutQuote(quote.text),quote.text);if(quote.author)assert.ok(quote.source.startsWith('https://'));}
+console.log('PASS unique captions, athlete source metadata and immediate-repeat exclusion');

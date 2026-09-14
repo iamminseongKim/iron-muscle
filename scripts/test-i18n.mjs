@@ -102,3 +102,9 @@ assert.ok(matchesExerciseSearch(smithEx, 'Smith-Maschine'), 'Search matching Ger
 
 console.log(`PASS ${Object.keys(data).length} labels in 8 languages, modular language packs, exercise translations and multilingual search`);
 
+
+const baseUiKeys = Object.keys(locales.ko.ui).sort();
+for (const lang of Object.keys(locales)) {
+  for (const key of baseUiKeys) assert.ok(typeof locales[lang].ui[key] === 'string' && locales[lang].ui[key].trim(), `${lang}: ${key}`);
+}
+console.log('PASS Korean UI keys have nonempty translations in every language pack');

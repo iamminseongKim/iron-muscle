@@ -21,6 +21,7 @@ import { ExerciseGroupModal } from './ExerciseGroupModal';
 import { HoldToCompleteButton } from './HoldToCompleteButton';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, convertWeight } from '../../utils/calculations';
 import { saveActiveSession, loadActiveSession, saveSessions, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
+import { findPreviousMachineExercise, convertExerciseSets } from '../../utils/gymWorkout';
 import { soundManager } from '../../utils/audio';
 import { sanitizeSessionExercises } from '../../utils/exerciseResolver';
 import { mapPartIdsToCategories, formatWorkoutTitleFromParts } from '../../utils/bodyPartDetector';
@@ -181,21 +182,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     return Math.max(session?.durationSeconds || 0, fromStorage || 0, fromStart);
   };
 
-  // 과거 세트 기록 조회 (이전 중량/횟수 자동 복사)
-  const findPreviousSets = (exerciseId: string, machineBrand?: string) => {
-    const allHistory = loadSavedSessions();
-    for (let i = allHistory.length - 1; i >= 0; i--) {
-      const pastSession = allHistory[i];
-      const match = pastSession.exercises.find(
-        (e) => e.exerciseId === exerciseId && (!machineBrand || e.machineBrand === machineBrand)
-      );
-      if (match && match.sets.length > 0) {
-        return match.sets;
-      }
-    }
-    return null;
-  };
-
   // 종목 추가 핸들러
   const handleAddExercise = (
     exercise: Exercise,
@@ -203,10 +189,13 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     brand?: string,
     setting?: string,
     loadType?: LoadType,
-    weightUnit?: WeightUnit
+    weightUnit?: WeightUnit,
+    machineConfigId?: string
   ) => {
     if (!session) return;
-    const previousSets = findPreviousSets(exercise.id, brand);
+    const previous = findPreviousMachineExercise(loadSavedSessions(), exercise.id, brand, machineConfigId);
+    const targetUnit = weightUnit || previous?.weightUnit || 'kg';
+    const previousSets = previous ? convertExerciseSets(previous, targetUnit) : undefined;
 
     const initialSets = previousSets && previousSets.length > 0
       ? previousSets.map((ps, idx) => ({
@@ -230,9 +219,10 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       equipmentType,
       loadType: loadType || exercise.loadType,
       machineBrand: brand,
+      machineConfigId,
       machineSetting: setting,
       sets: initialSets,
-      weightUnit: weightUnit || 'kg',
+      weightUnit: targetUnit,
     };
 
     const updated = {

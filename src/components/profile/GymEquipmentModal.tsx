@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { X, Search, Check, Plus, Sliders, Dumbbell, Trash2, Building2 } from 'lucide-react';
 import { t } from '../../i18n';
+import { matchesExerciseSearch } from '../../utils/exerciseSearch';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { DISCOVERY_ADDITIONS } from '../../data/discoveryAdditions';
 import { ADDITIONAL_MACHINES } from '../../data/additionalMachines';
@@ -73,10 +74,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
     const matchCat = selectedCategory === 'all' || ex.category === selectedCategory || ex.categories?.includes(selectedCategory);
     if (!matchCat) return false;
     if (!searchQuery.trim()) return true;
-    const q = searchQuery.trim().toLowerCase();
-    const nameMatch = ex.name.toLowerCase().includes(q) || ex.nameEn.toLowerCase().includes(q);
-    const aliasMatch = ex.aliases?.some(a => a.toLowerCase().includes(q));
-    return nameMatch || aliasMatch;
+    return matchesExerciseSearch(ex, searchQuery);
   });
 
   const selectedCount = Object.keys(activeGym.machines).length;

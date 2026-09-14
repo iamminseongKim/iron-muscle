@@ -47,16 +47,40 @@ export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, un
     sets: exercises.reduce((sum, row) => sum + row.sets, 0), reps: exercises.reduce((sum, row) => sum + row.reps, 0) };
 }
 
-export const WORKOUT_CARD_QUOTES = ['오늘의 나를 기록하다.', '조금씩, 더 강하게.', '꾸준함이 만드는 변화.', '나만의 속도로, 한 걸음 더.', '오늘의 노력은 남는다.', '어제보다 한 세트 더.'];
+export const WORKOUT_QUOTE_CATALOG: { text: string; author?: string; source?: string }[] = [
+  { text: "오늘의 나를 기록하다." },
+  { text: "조금씩, 더 강하게." },
+  { text: "꾸준함이 만드는 변화." },
+  { text: "나만의 속도로, 한 걸음 더." },
+  { text: "오늘의 노력은 남는다." },
+  { text: "어제보다 한 세트 더." },
+  { text: "오늘도 나와의 약속을 지켰다." },
+  { text: "작은 기록이 큰 변화를 만든다." },
+  { text: "비교 대신, 나의 페이스." },
+  { text: "땀으로 채운 오늘 한 페이지." },
+  { text: "완벽하지 않아도, 꾸준하게." },
+  { text: "오늘의 한 걸음도 충분히 값지다." },
+  { text: "무게보다 중요한 건 나의 성장." },
+  { text: "쉬어 가도, 방향은 앞으로." },
+  { text: "나를 위한 시간, 오늘도 완료." },
+  { text: "다음의 나에게 남기는 응원." },
+  {"text": "가벼워, 베이비!", "author": "로니 콜먼", "source": "https://ronniecoleman.net/pages/youtube-2"},
+  {"text": "좋았어, 친구!", "author": "로니 콜먼", "source": "https://ronniecoleman.net/pages/youtube-2"},
+  {"text": "그냥 하면 되는 거야!", "author": "로니 콜먼", "source": "https://ronniecoleman.net/pages/youtube-2"},
+  {"text": "내게는 꿈이 있어야 한다.", "author": "톰 플라츠", "source": "https://lilys.ai/ko/notes/946965"},
+  {"text": "내게는 목표가 있어야 한다.", "author": "톰 플라츠", "source": "https://lilys.ai/ko/notes/946965"},
+ ];
+export const WORKOUT_CARD_QUOTES = WORKOUT_QUOTE_CATALOG.map(quote => quote.text);
 
 export function recommendWorkoutQuote(previous = ''): string {
-  const choices = WORKOUT_CARD_QUOTES.filter(quote => t(quote) !== previous);
-  return t(choices[Math.floor(Math.random() * choices.length)]);
+  const choices = WORKOUT_CARD_QUOTES.map(quote => t(quote)).filter(quote => quote !== previous);
+  return choices[Math.floor(Math.random() * choices.length)] || previous;
 }
 
 export interface WorkoutCardStyle {
   light: boolean;
   title: string;
+  author?: string;
   photo?: HTMLImageElement;
   anatomy?: HTMLImageElement;
   textColor: 'auto' | 'white' | 'black';
@@ -110,7 +134,7 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
   const rows = summary.exercises.map(row => ({ ...row, lines: wrap(row.name),
     details: wrap(`${row.groupLabel ? `[${row.groupLabel}] · ` : ''}${number(row.sets)} ${m.sets} · ${number(row.reps)} ${m.reps} · ${row.maxWeight > 0 ? `${m.best} ${number(row.maxWeight)} ${summary.unit}` : m.bodyweight}`, 27, 860)
   }));
-  const titleLines = wrap(style.title.trim() || t('오늘의 운동'), 64, 944);
+  const titleLines = wrap(`${style.title.trim() || t('오늘의 운동')}${style.author ? ` — ${style.author}` : ''}`, 64, 944);
   const extraHeight = Math.max(0, titleLines.length - 1) * 76;
   canvas.width = 1080;
   canvas.height = Math.max(1630 + extraHeight, 930 + extraHeight + rows.reduce((sum, row) => sum + 66 + row.lines.length * 44 + row.details.length * 34, 0));

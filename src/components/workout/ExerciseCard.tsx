@@ -13,7 +13,8 @@ import { QuickSetEditor } from './QuickSetEditor';
 import { getExerciseRecords, convertWeight, isAssistedExercise } from '../../utils/calculations';
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
-import { loadGymProfile, getExerciseConfigs } from '../../utils/gymStorage';
+import { applyGymMachineConfig } from '../../utils/gymWorkout';
+import { loadGymProfile, getExerciseConfigs, GYM_EQUIPMENT_CHANGE_EVENT } from '../../utils/gymStorage';
 
 interface ExerciseCardProps {
   exerciseItem: WorkoutExercise;
@@ -67,7 +68,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const [showMachineSetting, setShowMachineSetting] = useState(false);
   const [showQuickSets, setShowQuickSets] = useState(false);
 
-  const gymProfile = useMemo(() => loadGymProfile(), []);
+  const [gymProfile, setGymProfile] = useState(() => loadGymProfile());
+  useEffect(() => {
+    const refresh = () => setGymProfile(loadGymProfile());
+    window.addEventListener(GYM_EQUIPMENT_CHANGE_EVENT, refresh);
+    return () => window.removeEventListener(GYM_EQUIPMENT_CHANGE_EVENT, refresh);
+  }, []);
   const gymConfigs = useMemo(() => getExerciseConfigs(gymProfile, exerciseItem.exerciseId), [gymProfile, exerciseItem.exerciseId]);
 
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
@@ -131,7 +137,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     onUpdate({
       ...exerciseItem,
       equipmentType: eq,
-      machineBrand: eq === 'machine' ? (exerciseItem.machineBrand || baseExercise?.defaultBrand || '') : undefined,
+      machineBrand: eq === 'machine' ? (exerciseItem.machineBrand || '') : undefined,
       loadType: eq === 'machine' ? currentLoadType : undefined,
     });
   };
@@ -218,22 +224,20 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           {!collapsed && gymConfigs.length > 1 && (
             <div className="flex items-center gap-1.5 flex-wrap mt-1.5 pt-1 border-t border-black/5 dark:border-white/5">
               <span className="text-[10px] font-bold text-gray-400 shrink-0">{t('머신 전환')}:</span>
+              {exerciseItem.sets.some(set => set.completed) && <span className="text-[10px] text-gray-500">{t('완료한 세트가 있으면 다른 머신은 종목을 추가해 기록하세요.')}</span>}
               {gymConfigs.map((gc, idx) => {
-                const isCurrent = exerciseItem.machineBrand === gc.brand || (!exerciseItem.machineBrand && idx === 0);
+                const isCurrent = exerciseItem.machineConfigId === `${gymProfile.id}:${gc.id}`;
+                const locked = exerciseItem.sets.some(set => set.completed);
                 return (
                   <button
                     key={gc.id || idx}
                     type="button"
+                    aria-pressed={isCurrent}
+                    disabled={locked}
                     onClick={() => {
-                      onUpdate({
-                        ...exerciseItem,
-                        machineBrand: gc.brand,
-                        loadType: gc.loadType || exerciseItem.loadType,
-                        machineSetting: gc.machineSetting || exerciseItem.machineSetting,
-                        weightUnit: gc.weightUnit || exerciseItem.weightUnit,
-                      });
+                      onUpdate(applyGymMachineConfig(exerciseItem, gc, gymProfile.id, currentUnit));
                     }}
-                    className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition flex items-center gap-1 ${
+                    className={`min-h-[36px] disabled:opacity-50 px-2 py-0.5 rounded-md text-[10px] font-bold transition flex items-center gap-1 ${
                       isCurrent
                         ? 'bg-[#0F766E] text-white shadow-2xs'
                         : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
