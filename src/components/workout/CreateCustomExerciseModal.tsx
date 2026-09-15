@@ -1,7 +1,7 @@
 import { EQUIPMENT_OPTIONS } from '../../utils/equipment';
 import { t, displayMuscle } from '../../i18n';
-import React, { useState } from 'react';
-import { X, Plus, Dumbbell, Sparkles } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { X, Plus, Dumbbell, Sparkles, Check } from 'lucide-react';
 import { Exercise, Category, EquipmentType, MuscleTarget, MovementPlane } from '../../types/workout';
 import { saveCustomExercise } from '../../utils/storage';
 
@@ -36,6 +36,38 @@ const CATEGORY_PRIMARY_MUSCLES: Record<Category, MuscleTarget[]> = {
   fullbody: ['quads', 'erectors', 'chest'],
 };
 
+// 카테고리별 추천 보조근(협응근) 목록
+const CATEGORY_SECONDARY_RECOMMENDATIONS: Record<Category, MuscleTarget[]> = {
+  chest: ['triceps', 'deltoid_front'],
+  back: ['biceps', 'deltoid_rear', 'traps', 'erectors'],
+  legs: ['glutes', 'hamstrings', 'erectors', 'calves'],
+  shoulders: ['triceps', 'traps', 'deltoid_rear', 'chest_upper'],
+  arms: ['forearms', 'deltoid_side'],
+  core: ['obliques', 'erectors'],
+  fullbody: ['glutes', 'hamstrings', 'lats', 'deltoid_front'],
+};
+
+// 전체 17개 해부학 근육 타겟 목록
+const ALL_MUSCLE_TARGETS: MuscleTarget[] = [
+  'chest',
+  'chest_upper',
+  'lats',
+  'traps',
+  'erectors',
+  'deltoid_front',
+  'deltoid_side',
+  'deltoid_rear',
+  'biceps',
+  'triceps',
+  'forearms',
+  'abs',
+  'obliques',
+  'glutes',
+  'quads',
+  'hamstrings',
+  'calves',
+];
+
 export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps> = ({
   isOpen,
   initialName = '',
@@ -49,24 +81,54 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
   const [equipment, setEquipment] = useState<EquipmentType>('machine');
   const [loadType, setLoadType] = useState<'plate-loaded' | 'pin-loaded' | 'barbell' | 'dumbbell' | 'bodyweight'>('plate-loaded');
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleTarget>(CATEGORY_PRIMARY_MUSCLES[initialCategory]?.[0] || 'quads');
+  const [selectedSecondaryMuscles, setSelectedSecondaryMuscles] = useState<MuscleTarget[]>([]);
+  const [showAllMuscles, setShowAllMuscles] = useState(false);
 
   React.useEffect(() => {
     if (isOpen) {
       setName(initialName);
       if (initialCategory) {
         setCategory(initialCategory);
-        setSelectedMuscle(CATEGORY_PRIMARY_MUSCLES[initialCategory]?.[0] || 'quads');
+        const defaultMuscle = CATEGORY_PRIMARY_MUSCLES[initialCategory]?.[0] || 'quads';
+        setSelectedMuscle(defaultMuscle);
+        setSelectedSecondaryMuscles([]);
+        setShowAllMuscles(false);
       }
     }
   }, [isOpen, initialName, initialCategory]);
-
-  if (!isOpen) return null;
 
   const handleCategoryChange = (newCat: Category) => {
     setCategory(newCat);
     const defaultMuscle = CATEGORY_PRIMARY_MUSCLES[newCat]?.[0] || 'quads';
     setSelectedMuscle(defaultMuscle);
+    setSelectedSecondaryMuscles(prev => prev.filter(m => m !== defaultMuscle));
   };
+
+  const handleSelectPrimaryMuscle = (m: MuscleTarget) => {
+    setSelectedMuscle(m);
+    setSelectedSecondaryMuscles(prev => prev.filter(muscle => muscle !== m));
+  };
+
+  const handleToggleSecondaryMuscle = (m: MuscleTarget) => {
+    if (m === selectedMuscle) return;
+    setSelectedSecondaryMuscles(prev =>
+      prev.includes(m) ? prev.filter(item => item !== m) : [...prev, m]
+    );
+  };
+
+  const displayCandidateMuscles = useMemo(() => {
+    const baseList = showAllMuscles
+      ? ALL_MUSCLE_TARGETS
+      : Array.from(
+          new Set([
+            ...(CATEGORY_SECONDARY_RECOMMENDATIONS[category] || []),
+            ...selectedSecondaryMuscles,
+          ])
+        );
+    return baseList.filter(m => m !== selectedMuscle);
+  }, [showAllMuscles, category, selectedSecondaryMuscles, selectedMuscle]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +159,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
       loadType: equipment === 'smith' ? 'plate-loaded' : equipment === 'machine' ? loadType : equipment,
       movementPlane: defaultPlane[category] || 'squat-pattern',
       primaryMuscles: [selectedMuscle],
-      secondaryMuscles: [],
+      secondaryMuscles: selectedSecondaryMuscles,
       description: `${t('사용자 정의 커스텀 운동:')} ${cleanName}`,
       instructions: [t('바른 자세와 통제된 템포로 안전하게 운동을 수행하세요.')],
       tips: [t('목표 근육에 긴장을 유지하며 점진적 과부하를 적용하세요.')],
@@ -250,24 +312,68 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
 
           {/* 주동근 선택 */}
           <div>
-            <label className="text-xs font-bold text-gray-500 dark:text-gray-400 block">
-              {t("주요 타겟 근육")}
+            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">
+              {t("주 타겟 근육 (주동근)")} <span className="text-[#0F766E]">*</span>
             </label>
             <div className="flex flex-wrap gap-1.5">
               {(CATEGORY_PRIMARY_MUSCLES[category] || []).map((m) => (
                 <button
                   key={m}
                   type="button"
-                  onClick={() => setSelectedMuscle(m)}
+                  onClick={() => handleSelectPrimaryMuscle(m)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
                     selectedMuscle === m
-                      ? 'bg-[#5856D6] text-white shadow-xs'
-                      : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-400'
+                      ? 'bg-[#5856D6] text-white shadow-xs font-bold'
+                      : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
                   }`}
                 >
                   {displayMuscle(m)}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* 보조근 (협응근) 선택 */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                <span>{t("보조 근육 (협응근, 선택)")}</span>
+                {selectedSecondaryMuscles.length > 0 && (
+                  <span className="text-[10px] font-black text-[#0F766E] bg-teal-50 dark:bg-teal-950/40 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-800/50">
+                    {selectedSecondaryMuscles.length}
+                  </span>
+                )}
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowAllMuscles(!showAllMuscles)}
+                className="text-[11px] font-semibold text-[#0F766E] hover:underline cursor-pointer"
+              >
+                {showAllMuscles ? t("추천 근육만 보기") : t("모든 근육 부위 보기")}
+              </button>
+            </div>
+            <p className="text-[11px] text-gray-400 mb-2">
+              {t("운동 시 함께 개입되는 보조 근육을 선택하세요 (다중 선택 가능).")}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {displayCandidateMuscles.map((m) => {
+                const isSelected = selectedSecondaryMuscles.includes(m);
+                return (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => handleToggleSecondaryMuscle(m)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-[#0F766E] text-white shadow-xs font-bold'
+                        : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
+                    }`}
+                  >
+                    {isSelected && <Check size={12} strokeWidth={3} />}
+                    <span>{displayMuscle(m)}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

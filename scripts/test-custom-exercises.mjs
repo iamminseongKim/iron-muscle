@@ -34,6 +34,13 @@ assert.equal(resolver.resolveRecordedExercise(item).id,custom.id,'Missing old me
 const setItem=localStorage.setItem, log=console.error;
 try {
  localStorage.setItem=()=>{throw new Error('Quota exceeded');}; console.error=()=>{};
- assert.equal(storage.saveCustomExercise(custom),false,'UI must be able to reject a failed custom save');
+  assert.equal(storage.saveCustomExercise(custom),false,'UI must be able to reject a failed custom save');
 } finally {localStorage.setItem=setItem;console.error=log;}
+const customWithSecondary={id:'custom_bench_secondary',name:'커스텀 체스트 프레스',nameEn:'Custom Chest Press',category:'chest',categories:['chest'],equipment:'machine',loadType:'plate-loaded',primaryMuscles:['chest'],secondaryMuscles:['triceps','deltoid_front'],description:'사용자 종목',instructions:[],tips:[]};
+assert.equal(storage.saveCustomExercise(customWithSecondary),true);
+const resolvedSecondary=resolver.resolveExercise(customWithSecondary.id);
+assert.ok(resolvedSecondary,'Saved custom exercise must resolve');
+assert.deepEqual(resolvedSecondary.primaryMuscles,['chest']);
+assert.deepEqual(resolvedSecondary.secondaryMuscles,['triceps','deltoid_front']);
+console.log('PASS: custom exercise secondaryMuscles preservation and resolution');
 console.log('PASS: legacy custom names, saved name snapshots, reload, lbs/brand/set preservation, backup validation and failed custom save');

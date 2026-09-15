@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MuscleTarget } from '../../types/workout';
 import { loadAnatomyModel, disposeAnatomy, AnatomyPart } from './anatomyModel';
-import { RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
+import { RotateCcw, ZoomIn, ZoomOut, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface HumanMuscle3DViewerProps {
   primaryMuscles?: MuscleTarget[];
@@ -21,7 +21,7 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
   onSelectMuscle, height = '480px', showControls = true, isDark = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const apiRef = useRef<{ view: (view: View) => void; zoom: (scale: number) => void; reset: () => void; clearSelection: () => void; paint: () => void }>();
+  const apiRef = useRef<{ view: (view: View) => void; zoom: (scale: number) => void; panY: (delta: number) => void; reset: () => void; clearSelection: () => void; paint: () => void }>();
   const propsRef = useRef({ primaryMuscles, secondaryMuscles, activeMuscleFilter, onSelectMuscle, isDark });
   propsRef.current = { primaryMuscles, secondaryMuscles, activeMuscleFilter, onSelectMuscle, isDark };
   const [view, setView] = useState<View>('both');
@@ -55,9 +55,12 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
     const camera = new THREE.PerspectiveCamera(35, 1, .1, 100);
     const front = camera.clone(), back = camera.clone();
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; controls.enablePan = false;
+    controls.enableDamping = true;
+    controls.enablePan = true;
+    controls.panSpeed = 0.8;
+    controls.screenSpacePanning = true;
     controls.minDistance = 3; controls.maxDistance = 20;
-    controls.minPolarAngle = Math.PI * .25; controls.maxPolarAngle = Math.PI * .75;
+    controls.minPolarAngle = Math.PI * .15; controls.maxPolarAngle = Math.PI * .85;
     let width = 1, h = 1;
     const fit = (aspect: number) => Math.max(5.6, 2.8 / aspect) / (2 * Math.tan(THREE.MathUtils.degToRad(17.5)));
     const reset = () => {
@@ -95,7 +98,17 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
         const cams = currentView === 'both' ? [front, back] : [camera];
         cams.forEach(cam => cam.position.multiplyScalar(THREE.MathUtils.clamp(cam.position.length() * factor, 3, 25) / cam.position.length()));
         controls.update();
-      }, reset, paint, clearSelection: () => { selectedTarget = null; setSelected(null); paint(); },
+      },
+      panY: delta => {
+        dirty = true;
+        controls.target.y = THREE.MathUtils.clamp(controls.target.y + delta, -2.5, 2.5);
+        const cams = currentView === 'both' ? [front, back] : [camera];
+        cams.forEach(cam => {
+          cam.position.y = THREE.MathUtils.clamp(cam.position.y + delta, -2.5, 2.5);
+        });
+        controls.update();
+      },
+      reset, paint, clearSelection: () => { selectedTarget = null; setSelected(null); paint(); },
     };
     controls.enabled = false;
     let pointer: { x: number; y: number } | null = null;
@@ -117,8 +130,15 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       if (currentView === 'both') { viewportWidth = width / 2; cam = x < viewportWidth ? front : back; x %= viewportWidth; }
       const ray = new THREE.Raycaster();
       ray.setFromCamera(new THREE.Vector2(x / viewportWidth * 2 - 1, -y / h * 2 + 1), cam);
-      const hit = ray.intersectObject(group, true)[0];
-      const target = hit?.object.userData.muscleTarget as MuscleTarget | undefined;
+      const hits = ray.intersectObject(group, true);
+      let target: MuscleTarget | undefined;
+      // 복부 전면 클릭 시 복직근(abs) 우선 선택
+      const absHit = hits.find(h => (h.object.userData.muscleTarget as MuscleTarget) === 'abs');
+      if (absHit && Math.abs(absHit.point.x) < 0.6) {
+        target = 'abs';
+      } else {
+        target = hits.find(h => h.object.userData.muscleTarget)?.object.userData.muscleTarget as MuscleTarget | undefined;
+      }
       if (target) {
         selectedTarget = selectedTarget === target ? null : target;
         setSelected(selectedTarget); propsRef.current.onSelectMuscle?.(target); paint();
@@ -184,13 +204,15 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
           <div className="flex rounded-xl bg-black/5 dark:bg-white/5 p-1">
             {(['both', 'front', 'back'] as const).map(mode => <button type="button" key={mode} disabled={status !== 'ready'} aria-pressed={view === mode} onClick={() => chooseView(mode)} className={`px-3 py-2 text-xs rounded-lg font-bold ${view === mode ? 'bg-white dark:bg-[#333338] shadow-sm' : 'text-gray-500'}`}>{mode === 'both' ? t('앞뒤 함께') : mode === 'front' ? t('전면·회전') : t('후면·회전')}</button>)}
           </div>
-          <div className="flex gap-1">
-            <button type="button" aria-label={t("인체 확대")} onClick={() => apiRef.current?.zoom(.85)} className="p-2"><ZoomIn size={18} /></button>
-            <button type="button" aria-label={t("인체 축소")} onClick={() => apiRef.current?.zoom(1.15)} className="p-2"><ZoomOut size={18} /></button>
-            <button type="button" aria-label={t("시점 초기화")} onClick={() => apiRef.current?.reset()} className="p-2"><RotateCcw size={18} /></button>
+          <div className="flex gap-0.5 items-center">
+            <button type="button" aria-label={t("위로 이동")} onClick={() => apiRef.current?.panY(0.4)} className="p-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition"><ChevronUp size={18} /></button>
+            <button type="button" aria-label={t("아래로 이동")} onClick={() => apiRef.current?.panY(-0.4)} className="p-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition"><ChevronDown size={18} /></button>
+            <button type="button" aria-label={t("인체 확대")} onClick={() => apiRef.current?.zoom(.85)} className="p-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition"><ZoomIn size={18} /></button>
+            <button type="button" aria-label={t("인체 축소")} onClick={() => apiRef.current?.zoom(1.15)} className="p-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition"><ZoomOut size={18} /></button>
+            <button type="button" aria-label={t("시점 초기화")} onClick={() => apiRef.current?.reset()} className="p-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition"><RotateCcw size={18} /></button>
           </div>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400" role="status">{displayedTarget ? displayMuscle(displayedTarget) : view === 'both' ? t('앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.') : t('드래그하여 회전 · 두 손가락으로 확대 · 근육을 눌러 이름 확인')}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400" role="status">{displayedTarget ? displayMuscle(displayedTarget) : view === 'both' ? t('앞뒤는 같은 모델이에요. 전면·후면을 선택해 돌려 보세요.') : t('드래그하여 회전 · 두 손가락으로 확대 및 이동 · 근육을 눌러 이름 확인')}</p>
       </div>}
       <div className="px-3 pb-3 text-[10px] text-gray-500"><button type="button" onClick={() => { const url = `${window.location.origin}${import.meta.env.BASE_URL}anatomy/NOTICE.html`; window.open(url, '_system', 'location=yes'); }} className="underline text-left">{t("3D 모델 출처")} · BodyParts3D / Z-Anatomy · CC BY-SA</button></div>
     </section>

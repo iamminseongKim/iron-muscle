@@ -19,7 +19,7 @@ interface ExerciseExplorerProps {
 const getEquipmentLabel = (equipment: EquipmentType) => t(equipmentLabel(equipment));
 
 export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForWorkout, isDark = false }) => {
-  const [selectedExercise, setSelectedExercise] = useState<Exercise>(() => rankExercises(EXERCISES_DATABASE, '')[0]);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(() => rankExercises(EXERCISES_DATABASE, '')[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
@@ -49,6 +49,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
   // useCallback으로 참조를 고정: 검색어/필터 변경 등 무관한 리렌더 때마다
   // HumanMuscle3DViewer의 Three.js 씬이 통째로 재생성(카메라 리셋)되는 것을 방지
   const handleMuscleClickOn3D = useCallback((muscle: MuscleTarget) => {
+    setSelectedExercise(null);
     setActiveMuscleFilter((prev) => (prev === muscle ? null : muscle));
   }, []);
 
@@ -73,7 +74,11 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                   {t("해부학 근육 시각화")}
                 </h2>
                 <p className="text-xs text-gray-400">
-                  {selectedExercise ? `${displayExercise(selectedExercise)} ${t("주동근·협응근")}` : t("인체를 터치하여 운동 찾기")}
+                  {selectedExercise
+                    ? `${displayExercise(selectedExercise)} ${t("주동근·협응근")}`
+                    : activeMuscleFilter
+                    ? `${displayMuscle(activeMuscleFilter)} ${t("운동 탐색")}`
+                    : t("인체를 터치하여 운동 찾기")}
                 </p>
               </div>
             </div>
@@ -97,7 +102,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
             <Suspense fallback={<div className="h-48 flex items-center justify-center" role="status">3D…</div>}><HumanMuscle3DViewer
               primaryMuscles={selectedExercise?.primaryMuscles || []}
               secondaryMuscles={selectedExercise?.secondaryMuscles || []}
-              activeMuscleFilter={activeMuscleFilter}
+              activeMuscleFilter={selectedExercise ? null : activeMuscleFilter}
               onSelectMuscle={handleMuscleClickOn3D}
               height="440px"
               isDark={isDark}

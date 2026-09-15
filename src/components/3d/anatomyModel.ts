@@ -66,7 +66,31 @@ export async function loadAnatomyModel(): Promise<{ group: THREE.Group; parts: A
       const target = index === 0 ? muscleTargetForName(object.name) : undefined;
       const connective = /tendon|ligament|fascia|retinaculum|tract|aponeurosis/i.test(object.name);
       const key = index === 1 ? 'bone' : connective ? 'connective' : target || 'neutral';
-      const geometry = object.geometry.clone().applyMatrix4(object.matrixWorld).applyMatrix4(transform);
+      
+      let baseGeo = object.geometry;
+      // 복직근(식스팩) 앞면을 덮어 시각화 및 터치 선택을 가로막는 외복사근 전면 건막 판(aponeurosis) 절제
+      if (target === 'obliques' && baseGeo.index) {
+        const pos = baseGeo.attributes.position;
+        const indexAttr = baseGeo.index;
+        const newIndices: number[] = [];
+        for (let i = 0; i < indexAttr.count; i += 3) {
+          const ia = indexAttr.getX(i);
+          const ib = indexAttr.getX(i + 1);
+          const ic = indexAttr.getX(i + 2);
+          const mx = (pos.getX(ia) + pos.getX(ib) + pos.getX(ic)) / 3;
+          const my = (pos.getY(ia) + pos.getY(ib) + pos.getY(ic)) / 3;
+          const mz = (pos.getZ(ia) + pos.getZ(ib) + pos.getZ(ic)) / 3;
+          const isFrontRectusCover = Math.abs(mx) < 68 && my < -140 && mz >= 770 && mz <= 1200;
+          if (!isFrontRectusCover) {
+            newIndices.push(ia, ib, ic);
+          }
+        }
+        baseGeo = baseGeo.clone();
+        baseGeo.setIndex(newIndices);
+      }
+
+      const geometry = baseGeo.clone().applyMatrix4(object.matrixWorld).applyMatrix4(transform);
+      if (baseGeo !== object.geometry) baseGeo.dispose();
       // All meshes use the same attribute schema for one draw call per target group.
       Object.keys(geometry.attributes).forEach(name => { if (name !== 'position' && name !== 'normal') geometry.deleteAttribute(name); });
       if (!geometry.getAttribute('normal')) geometry.computeVertexNormals();
