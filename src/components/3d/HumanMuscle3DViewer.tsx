@@ -131,14 +131,22 @@ export const HumanMuscle3DViewer: React.FC<HumanMuscle3DViewerProps> = ({
       const ray = new THREE.Raycaster();
       ray.setFromCamera(new THREE.Vector2(x / viewportWidth * 2 - 1, -y / h * 2 + 1), cam);
       const hits = ray.intersectObject(group, true);
-      let target: MuscleTarget | undefined;
-      // 복부 전면 클릭 시 복직근(abs) 우선 선택
-      const absHit = hits.find(h => (h.object.userData.muscleTarget as MuscleTarget) === 'abs');
-      if (absHit && Math.abs(absHit.point.x) < 0.6) {
-        target = 'abs';
-      } else {
-        target = hits.find(h => h.object.userData.muscleTarget)?.object.userData.muscleTarget as MuscleTarget | undefined;
+      const targetHits = hits.filter(h => h.object.userData.muscleTarget);
+      if (targetHits.length === 0) return;
+
+      let selectedHit = targetHits[0];
+      // 카메라가 전면(앞쪽)에 위치할 때만, 복부 중앙에서 obliques와 abs가 겹쳐있을 경우 abs를 우선
+      const isFrontView = cam.position.z > 0;
+      if (isFrontView && selectedHit.object.userData.muscleTarget === 'obliques') {
+        const nearAbs = targetHits.find(h =>
+          h.object.userData.muscleTarget === 'abs' &&
+          (h.distance - selectedHit.distance) < 0.15 &&
+          Math.abs(h.point.x) < 0.5
+        );
+        if (nearAbs) selectedHit = nearAbs;
       }
+
+      const target = selectedHit.object.userData.muscleTarget as MuscleTarget | undefined;
       if (target) {
         selectedTarget = selectedTarget === target ? null : target;
         setSelected(selectedTarget); propsRef.current.onSelectMuscle?.(target); paint();
