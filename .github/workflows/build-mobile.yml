@@ -17,41 +17,9 @@ permissions:
   contents: read
 
 jobs:
-  # 1. 웹 애플리케이션 빌드 및 공통 테스트 (가벼운 Ubuntu 러너에서 단 1회 수행)
-  build-web:
-    name: Build Web & Run Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check exercise data and record preservation (Parallel)
-        run: npm test
-
-      - name: Build Web Application
-        run: npm run build
-
-      - name: Upload Web Assets Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: iron-muscle-dist
-          path: dist/
-          retention-days: 1
-
-  # 2. 안드로이드 APK 빌드
+  # 1. 안드로이드 APK 빌드 (즉시 병렬 시작)
   build-android:
     name: Build Android APK
-    needs: build-web
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.release_tag.outputs.tag }}
@@ -72,11 +40,6 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
-      - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          cache-read-only: false
-
       - name: Verify preinstalled Android SDK
         run: |
           test -n "$ANDROID_HOME"
@@ -86,11 +49,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download Web Assets Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: iron-muscle-dist
-          path: dist
+      - name: Check exercise data and record preservation
+        run: npm test
+
+      - name: Build Web Application
+        run: npm run build
 
       - name: Sync Capacitor Android
         run: |
@@ -151,10 +114,9 @@ jobs:
           path: release-apk/*.apk
           retention-days: 30
 
-  # 3. iOS 빌드 및 IPA 패키징 (클라우드 macOS)
+  # 2. iOS 빌드 및 IPA 패키징 (즉시 병렬 시작)
   build-ios:
     name: Build iOS Project & Package IPA
-    needs: build-web
     runs-on: macos-latest
 
     steps:
@@ -170,11 +132,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download Web Assets Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: iron-muscle-dist
-          path: dist
+      - name: Check exercise data and record preservation
+        run: npm test
+
+      - name: Build Web Application
+        run: npm run build
 
       - name: Sync Capacitor iOS
         run: |
@@ -201,7 +163,7 @@ jobs:
           path: release-ios/IronMuscle-iOS.ipa
           retention-days: 30
 
-  # 4. 릴리즈 배포 (Android APK & iOS IPA 산출물 등록)
+  # 3. 릴리즈 배포 (Android APK & iOS IPA 산출물 등록)
   release:
     name: Publish Release Packages
     permissions:
