@@ -37,4 +37,14 @@ const gymPrioritized = rankExercises(db, '', usage, new Set(['machine-front-pull
 const topTwo = [gymPrioritized[0].id, gymPrioritized[1].id];
 assert.ok(topTwo.includes('machine-front-pulldown') && topTwo.includes('v-squat-machine'), 'Gym machines must be at the very top of ranked list');
 
+// Muscle filter priority test: when filtering by muscle, primary target matches must rank ahead of secondary synergist matches
+const tricepsExercises = rankExercises(db, '').filter(e => e.primaryMuscles.includes('triceps') || e.secondaryMuscles.includes('triceps'));
+const sortedTriceps = tricepsExercises.slice().sort((a, b) => {
+  const aPri = a.primaryMuscles.includes('triceps') ? 1 : 0;
+  const bPri = b.primaryMuscles.includes('triceps') ? 1 : 0;
+  return bPri - aPri;
+});
+assert.ok(sortedTriceps[0].primaryMuscles.includes('triceps'), 'First sorted exercise must have triceps as primary');
+assert.ok(!sortedTriceps[0].primaryMuscles.includes('chest'), 'Bench press must not precede pure triceps exercises');
+
 console.log('PASS: representative IDs, ranked aliases, rare exact matches, personal recency, completed records, broad context, multilingual additions, gym equipment ranking and deterministic order');

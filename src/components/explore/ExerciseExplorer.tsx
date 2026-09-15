@@ -2,7 +2,7 @@ import { EQUIPMENT_FILTERS, getExerciseEquipment, equipmentLabel } from '../../u
 import { displayExercise, displayMuscle, displayExerciseDescription, displayExerciseInstructions } from '../../i18n';
 import { t } from '../../i18n';
 import { lazy, Suspense } from 'react';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { 
   Search, Sparkles, ChevronRight, RotateCcw, BookOpen 
 } from 'lucide-react';
@@ -25,23 +25,36 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
   const [activeMuscleFilter, setActiveMuscleFilter] = useState<MuscleTarget | null>(null);
 
-  const filteredExercises = rankExercises(EXERCISES_DATABASE, searchQuery).filter((ex) => {
+  const filteredExercises = useMemo(() => {
+    const matched = rankExercises(EXERCISES_DATABASE, searchQuery).filter((ex) => {
+      // 다중 부위(categories) 완벽 대응: 하체 선택 시에도 데드리프트 노출, 등 선택 시에도 노출!
+      const matchCat =
+        selectedCategory === 'all' ||
+        (ex.categories && ex.categories.includes(selectedCategory)) ||
+        ex.category === selectedCategory;
 
-    // 다중 부위(categories) 완벽 대응: 하체 선택 시에도 데드리프트 노출, 등 선택 시에도 노출!
-    const matchCat =
-      selectedCategory === 'all' ||
-      (ex.categories && ex.categories.includes(selectedCategory)) ||
-      ex.category === selectedCategory;
+      const matchEquipment = selectedEquipment === 'all' || getExerciseEquipment(ex) === selectedEquipment;
 
-    const matchEquipment = selectedEquipment === 'all' || getExerciseEquipment(ex) === selectedEquipment;
+      const matchMuscle =
+        !activeMuscleFilter ||
+        ex.primaryMuscles.includes(activeMuscleFilter) ||
+        ex.secondaryMuscles.includes(activeMuscleFilter);
 
-    const matchMuscle =
-      !activeMuscleFilter ||
-      ex.primaryMuscles.includes(activeMuscleFilter) ||
-      ex.secondaryMuscles.includes(activeMuscleFilter);
+      return matchCat && matchEquipment && matchMuscle;
+    });
 
-    return matchCat && matchEquipment && matchMuscle;
-  });
+    if (!activeMuscleFilter) return matched;
+
+    // 특정 근육을 필터로 선택했을 때는 해당 근육이 '주동근'인 종목을 '협응근'인 종목보다 최우선 정렬
+    return matched.slice().sort((a, b) => {
+      const aIsPrimary = a.primaryMuscles.includes(activeMuscleFilter) ? 1 : 0;
+      const bIsPrimary = b.primaryMuscles.includes(activeMuscleFilter) ? 1 : 0;
+      if (aIsPrimary !== bIsPrimary) {
+        return bIsPrimary - aIsPrimary;
+      }
+      return 0; // 동일 우선순위 내에서는 기존 rankExercises 정렬 순서 보존
+    });
+  }, [searchQuery, selectedCategory, selectedEquipment, activeMuscleFilter]);
 
   const [visibleCount, setVisibleCount] = useState(50);
   useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, activeMuscleFilter]);
