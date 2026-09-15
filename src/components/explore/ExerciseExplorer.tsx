@@ -288,7 +288,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               onClick={() => {
                 setSelectedExercise(ex);
                 if (window.innerWidth < 768) {
-                  document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
               }}
               className={`w-full text-left p-3.5 rounded-3xl border transition-all flex items-center justify-between ${

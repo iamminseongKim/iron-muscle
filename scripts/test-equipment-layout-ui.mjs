@@ -4,21 +4,27 @@ const browser=await puppeteer.launch({executablePath:process.env.CHROME_PATH || 
 try {
  const page=await browser.newPage(); const errors=[]; page.on('pageerror',e=>errors.push(e.message));
  await page.setViewport({width:390,height:844,isMobile:true,hasTouch:true});
- await page.goto(process.env.TEST_URL || 'http://127.0.0.1:3000',{waitUntil:'networkidle2'});
+ await page.goto(process.env.TEST_URL || 'http://127.0.0.1:3000/index.html',{waitUntil:'networkidle2'});
  await page.evaluate(async()=>{const {setLanguage}=await import('/src/i18n/index.ts');setLanguage('ko');});
  await page.waitForSelector('[data-workout-start]');
- for(const [width,height] of [[320,568],[360,640],[390,844],[430,932],[844,390],[768,1024]]) {
+ for(const [width,height] of [[320,568],[360,640],[390,844],[430,932],[673,841],[768,1024],[884,1104],[960,1080],[844,390]]) {
   await page.setViewport({width,height,isMobile:true,hasTouch:true});
   for(const safe of [0,34]) {
-   await page.evaluate(safe=>{document.querySelector('[data-bottom-navigation]').style.paddingBottom=safe+'px';document.querySelector('main').scrollTop=100000;},safe);
+   await page.evaluate(safe=>{document.querySelector('[data-bottom-navigation]').style.paddingBottom=safe+'px';document.scrollingElement.scrollTo(0,0);},safe);
    await new Promise(r=>setTimeout(r,100));
-   const bounds=await page.evaluate(()=>{const b=document.querySelector('[data-workout-start]').closest('button').getBoundingClientRect(),n=document.querySelector('[data-bottom-navigation]').getBoundingClientRect();return {buttonBottom:b.bottom,buttonTop:b.top,navTop:n.top,navBottom:n.bottom,scroll:document.documentElement.scrollWidth,width:innerWidth,height:innerHeight};});
-   assert.ok(bounds.buttonBottom<=bounds.navTop && bounds.buttonTop>=0,JSON.stringify({width,height,safe,...bounds}));
-   assert.ok(bounds.navBottom<=height && bounds.scroll<=width);
+   const initial=await page.evaluate(()=>{const b=document.querySelector('[data-workout-start]').closest('button').getBoundingClientRect(),n=document.querySelector('[data-bottom-navigation]').getBoundingClientRect(),g=getComputedStyle(document.querySelector('.glass-dock'));return {buttonBottom:b.bottom,buttonTop:b.top,navTop:n.top,navBottom:n.bottom,navPosition:getComputedStyle(document.querySelector('[data-bottom-navigation]')).position,glass:g.backdropFilter||g.webkitBackdropFilter,scroll:document.documentElement.scrollWidth,width:innerWidth,height:innerHeight};});
+   assert.ok(initial.buttonBottom<=initial.navTop-8 || initial.buttonTop>=height,`initial overlap ${JSON.stringify({width,height,safe,...initial})}`);
+   assert.equal(initial.navPosition,'fixed');
+   assert.ok(initial.glass.includes('blur'));
+   assert.ok(initial.navBottom<=height && initial.scroll<=width);
+   await page.evaluate(()=>document.querySelector('[data-workout-start]').scrollIntoView({block:'center'}));
+   await new Promise(r=>setTimeout(r,100));
+   const scrolled=await page.evaluate(()=>{const b=document.querySelector('[data-workout-start]').closest('button').getBoundingClientRect(),n=document.querySelector('[data-bottom-navigation]').getBoundingClientRect();return {buttonBottom:b.bottom,buttonTop:b.top,navTop:n.top};});
+   assert.ok(scrolled.buttonBottom<=scrolled.navTop-8 && scrolled.buttonTop>=0,`scrolled overlap ${JSON.stringify({width,height,safe,...scrolled})}`);
   }
  }
  await page.setViewport({width:390,height:844,isMobile:true,hasTouch:true});
- await page.evaluate(()=>document.querySelector('main').scrollTop=100000);
+ await page.evaluate(()=>document.scrollingElement.scrollTo(0,0));
  await page.screenshot({path:process.env.SCREENSHOT_PATH || '.layout-review.png'});
  await page.click('[data-workout-start]');
  await page.waitForSelector('#exercise-picker-title');
@@ -46,5 +52,5 @@ try {
  await page.evaluate(()=>window.equipmentFixture.picker());await page.waitForSelector('[aria-label="운동 검색"]');await click('스미스');
  const labels=await page.$$eval('button',bs=>bs.filter(b=>b.textContent.includes('Smith')&&b.getClientRects().length).map(b=>b.textContent));assert.ok(labels.length>0);
  assert.deepEqual(errors,[]);
- console.log('PASS: 6 viewports x 2 safe-area sizes; start button above menu; custom brand edit/save/reopen and second machine preserved; Smith picker');
+ console.log('PASS: 9 phone/fold/split viewports x 2 safe-area sizes; floating glass dock restored; thumb-reach start button never overlaps dock; custom brand and Smith picker');
 } finally { await browser.close(); }

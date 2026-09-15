@@ -174,6 +174,20 @@ input, textarea, select { scroll-margin-block: 72px; }
 .dark .glass-dock-selection { background: rgba(255, 255, 255, .14); box-shadow: inset 0 1px 1px rgba(255, 255, 255, .12); }
 .dark .glass-dock-tab { color: #c0c2c7; }
 .dark .glass-dock-tab[aria-current="page"] { color: #5eead4; }
+
+/* Keep the primary action in thumb reach without letting it sit behind the dock. */
+@media (max-height: 700px) {
+  [data-workout-date],
+  [data-workout-subtitle] { display: none; }
+  [data-workout-target-card] { padding: 12px !important; }
+  [data-workout-target-grid] { gap: 4px !important; }
+  [data-workout-target-grid] button { padding: 4px !important; }
+  [data-workout-target-grid] svg { width: 24px !important; height: 30px !important; }
+  [data-workout-start-section] button { padding-top: 14px !important; padding-bottom: 14px !important; }
+}
+@media (max-height: 500px) {
+  [data-workout-start-section] { margin-top: 140px !important; }
+}
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-dock { background: rgba(245, 245, 248, .96); }
   .dark .glass-dock { background: rgba(30, 32, 37, .96); }

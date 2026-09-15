@@ -444,22 +444,22 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     });
 
     return (
-      <div className="pb-6 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
+      <div data-workout-idle className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
         {/* 상단 날짜 및 상태 카드 */}
-        <div className="pt-2 text-center space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-semibold text-gray-500 shadow-xs">
+        <div data-workout-intro className="pt-2 text-center space-y-1">
+          <div data-workout-date className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-semibold text-gray-500 shadow-xs">
             <Calendar size={13} className="text-[#0F766E]" />
             {todayDateFormatted}
           </div>
           <h2 className="text-2xl font-black tracking-tight text-[#1D1D1F] dark:text-white">{t("오늘의 운동 시작하기")}</h2>
-          <p className="text-xs text-gray-400">{t("오늘 운동할 부위를 선택하면 첫 운동 추가 시 해당 부위가 자동 추천됩니다.")}</p>
+          <p data-workout-subtitle className="text-xs text-gray-400">{t("오늘 운동할 부위를 선택하면 첫 운동 추가 시 해당 부위가 자동 추천됩니다.")}</p>
         </div>
 
         <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
           {/* 좌측 패널 (목표 부위 선택 & 안내) */}
           <div className="space-y-4 md:col-span-6 lg:col-span-6 md:sticky md:top-16">
             {/* 1. 운동 부위 다중 선택 카드 */}
-        <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
+        <div data-workout-target-card className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-black text-gray-400 tracking-wider uppercase flex items-center gap-1.5">
               <Target size={14} className="text-[#0F766E]" />{t("오늘의 목표 부위 (다중 선택)")}</span>
@@ -467,7 +467,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               {selectedPartIds.length}{t("개 선택됨")}</span>
           </div>
 
-          <div className="grid grid-cols-4 gap-2">
+          <div data-workout-target-grid className="grid grid-cols-4 gap-2">
             {TARGET_BODY_PARTS.map((part) => {
               const isSelected = selectedPartIds.includes(part.id);
               return (
@@ -498,6 +498,18 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               {" "}{selectedPartIds.length > 0 ? t("부위가 첫 운동 라이브러리 탭에 최우선 노출됩니다.") : t("부위를 선택해 주세요.")}
             </span>
           </div>
+        </div>
+            {/* 엄지로 누르기 쉬운 중간-하단 영역에 시작 동작을 배치 */}
+        <div data-workout-start-section className="pt-1">
+          <button
+            type="button"
+            onClick={handleStartWorkout}
+            className="w-full py-5 bg-gradient-to-r from-[#0F766E] to-[#115E59] hover:opacity-95 text-white rounded-2xl text-[17px] font-black flex items-center justify-center gap-2.5 shadow-lg shadow-teal-900/30 transition active:scale-98"
+          >
+            <Dumbbell size={22} />
+            <span data-workout-start>{t("새 운동 시작하기")} ({recommendedTitle})</span>
+            <ArrowRight size={20} />
+          </button>
         </div>
             {/* 안내 카드 & 샘플 데이터 옵션 */}
         <div className="p-3.5 bg-white/60 dark:bg-[#1C1C1E]/60 rounded-2xl border border-black/5 dark:border-white/5 text-center text-xs text-gray-400 space-y-1">
@@ -578,18 +590,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             </button>
           </div>
         </div>
-            {/* 3. 대형 운동 시작 CTA 버튼 */}
-        <div className="pt-2 pb-1">
-          <button
-            type="button"
-            onClick={handleStartWorkout}
-            className="w-full py-5 bg-gradient-to-r from-[#0F766E] to-[#115E59] hover:opacity-95 text-white rounded-2xl text-[17px] font-black flex items-center justify-center gap-2.5 shadow-lg shadow-teal-900/30 transition active:scale-98"
-          >
-            <Dumbbell size={22} />
-            <span data-workout-start>{t("새 운동 시작하기")} ({recommendedTitle})</span>
-            <ArrowRight size={20} />
-          </button>
-        </div>
           </div>
         </div>
       </div>
@@ -606,7 +606,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const completedSetCount = sessionSets.filter(set => set.completed).length;
 
   return (
-    <div className="pb-6 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
+    <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
       <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
         {/* 좌측 패널: 세션 정보, 요약 통계, 고정 완료 버튼 */}
         <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">
