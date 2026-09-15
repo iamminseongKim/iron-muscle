@@ -23,6 +23,15 @@ import {
   TargetBodyPart,
   BODY_PART_OPTIONS,
 } from '../../utils/aiPromptGenerator';
+import {
+  generateCalendarGrid,
+  getPrevMonthString,
+  getNextMonthString,
+  getPrevDayString,
+  getNextDayString,
+  getTodayString,
+  formatLocalMonth,
+} from '../../utils/calendar';
 
 interface WorkoutHistoryViewProps {
   weightUnit?: WeightUnit;
@@ -72,14 +81,10 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Date states
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const now = new Date();
-    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    return today;
-  });
+  const [selectedDate, setSelectedDate] = useState<string>(() => getTodayString());
 
   const [currentMonth, setCurrentMonth] = useState<string>(() => {
-    return new Date().toISOString().slice(0, 7); // 'YYYY-MM'
+    return getTodayString().slice(0, 7); // 'YYYY-MM'
   });
 
   const [currentYear, setCurrentYear] = useState<number>(() => {
@@ -182,6 +187,15 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
     return new Set(sessions.map((s) => s.date));
   }, [sessions]);
 
+  // Date-wise session counts (for multiple sessions badge)
+  const dateSessionCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const s of sessions) {
+      counts.set(s.date, (counts.get(s.date) || 0) + 1);
+    }
+    return counts;
+  }, [sessions]);
+
   // Filtered sessions based on date / month / year
   const dailySessions = useMemo(() => {
     return sessions.filter((s) => s.date === selectedDate);
@@ -195,29 +209,32 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
     return sessions.filter((s) => s.date.startsWith(String(currentYear)));
   }, [sessions, currentYear]);
 
+  // Calendar cells for the current month
+  const calendarCells = useMemo(() => {
+    return generateCalendarGrid(currentMonth);
+  }, [currentMonth]);
+
   // Navigation handlers
   const handlePrevDay = () => {
-    const d = new Date(selectedDate);
-    d.setDate(d.getDate() - 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(getPrevDayString(selectedDate));
   };
 
   const handleNextDay = () => {
-    const d = new Date(selectedDate);
-    d.setDate(d.getDate() + 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(getNextDayString(selectedDate));
   };
 
   const handlePrevMonth = () => {
-    const [y, m] = currentMonth.split('-').map(Number);
-    const prev = new Date(y, m - 2, 1);
-    setCurrentMonth(prev.toISOString().slice(0, 7));
+    setCurrentMonth(getPrevMonthString(currentMonth));
   };
 
   const handleNextMonth = () => {
-    const [y, m] = currentMonth.split('-').map(Number);
-    const next = new Date(y, m, 1);
-    setCurrentMonth(next.toISOString().slice(0, 7));
+    setCurrentMonth(getNextMonthString(currentMonth));
+  };
+
+  const handleGoToToday = () => {
+    const today = getTodayString();
+    setSelectedDate(today);
+    setCurrentMonth(today.slice(0, 7));
   };
 
   // AI 내보내기용 대상 세션 및 마크다운 계산
@@ -432,15 +449,28 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           <div className="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3 rounded-2xl border border-black/5 dark:border-white/5 shadow-xs">
             <button
               onClick={handlePrevMonth}
+              aria-label={t("이전 달")}
               className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
             >
               <ChevronLeft size={18} />
             </button>
-            <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
-              {formatYearMonthHeader(currentMonth, language)}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
+                {formatYearMonthHeader(currentMonth, language)}
+              </span>
+              {(currentMonth !== getTodayString().slice(0, 7) || selectedDate !== getTodayString()) && (
+                <button
+                  type="button"
+                  onClick={handleGoToToday}
+                  className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#0F766E]/10 text-[#0F766E] hover:bg-[#0F766E]/20 transition"
+                >
+                  {t("오늘")}
+                </button>
+              )}
+            </div>
             <button
               onClick={handleNextMonth}
+              aria-label={t("다음 달")}
               className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
             >
               <ChevronRight size={18} />
@@ -476,35 +506,68 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <span className="text-[11px] text-gray-400">{t("날짜 클릭 시 해당 일지 조회")}</span>
             </div>
 
-            <div className="grid grid-cols-7 gap-1 text-center">
-              {['일', '월', '화', '수', '목', '금', '토'].map((w) => (
-                <span key={w} className="text-[10px] text-gray-400 font-bold py-1">{t(w)}</span>
+            <div className="grid grid-cols-7 gap-1 text-center mb-1">
+              {['일', '월', '화', '수', '목', '금', '토'].map((w, idx) => (
+                <span
+                  key={w}
+                  className={`text-[10px] font-extrabold py-1 ${
+                    idx === 0
+                      ? 'text-rose-500/80 dark:text-rose-400/80'
+                      : idx === 6
+                      ? 'text-blue-500/80 dark:text-blue-400/80'
+                      : 'text-gray-400 dark:text-gray-500'
+                  }`}
+                >
+                  {t(w)}
+                </span>
               ))}
+            </div>
 
-              {/* Day cells (1-31) */}
-              {Array.from({ length: 31 }, (_, i) => {
-                const dayNum = i + 1;
-                const dayStr = `${currentMonth}-${dayNum < 10 ? '0' : ''}${dayNum}`;
-                const hasSession = workoutDates.has(dayStr);
-                const isSelected = selectedDate === dayStr;
+            {/* Calendar Grid Cells */}
+            <div className="grid grid-cols-7 gap-1 text-center">
+              {calendarCells.map((cell) => {
+                const hasSession = workoutDates.has(cell.dateString);
+                const sessionCount = dateSessionCounts.get(cell.dateString) || 0;
+                const isSelected = selectedDate === cell.dateString;
 
                 return (
                   <button
-                    key={dayStr}
+                    key={cell.dateString}
                     type="button"
                     onClick={() => {
-                      setSelectedDate(dayStr);
+                      setSelectedDate(cell.dateString);
+                      if (!cell.isCurrentMonth) {
+                        setCurrentMonth(`${cell.year}-${String(cell.month).padStart(2, '0')}`);
+                      }
                       setViewScope('daily');
                     }}
-                    className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-bold transition ${
-                      hasSession
-                        ? 'bg-[#34C759] text-white shadow-xs'
+                    className={`relative aspect-square rounded-xl flex flex-col items-center justify-center text-xs font-bold transition select-none ${
+                      !cell.isCurrentMonth
+                        ? 'text-gray-300 dark:text-gray-600 hover:bg-black/5 dark:hover:bg-white/5'
+                        : hasSession
+                        ? 'bg-[#34C759] text-white shadow-xs font-black'
                         : isSelected
-                        ? 'border border-[#0F766E] text-[#0F766E]'
-                        : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-400 hover:bg-black/10'
+                        ? 'border-2 border-[#0F766E] text-[#0F766E] dark:text-teal-300 bg-[#0F766E]/5 font-black'
+                        : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-300 hover:bg-black/10'
+                    } ${
+                      cell.isToday && cell.isCurrentMonth && !hasSession && !isSelected
+                        ? 'ring-2 ring-[#0F766E]/40 font-black'
+                        : ''
                     }`}
                   >
-                    <span>{dayNum}</span>
+                    <span>{cell.dayNumber}</span>
+                    {cell.isToday && cell.isCurrentMonth && (
+                      <span
+                        className={`w-1 h-1 rounded-full absolute bottom-1 ${
+                          hasSession ? 'bg-white' : 'bg-[#0F766E]'
+                        }`}
+                      />
+                    )}
+                    {hasSession && sessionCount > 1 && (
+                      <span className="absolute top-0.5 right-0.5 min-w-[12px] h-3 px-0.5 rounded-full bg-black/40 text-[8px] font-black leading-none flex items-center justify-center text-white">
+                        {sessionCount}
+                      </span>
+                    )}
                   </button>
                 );
               })}

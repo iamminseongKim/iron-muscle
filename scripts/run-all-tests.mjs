@@ -23,6 +23,7 @@ const testFiles = [
   'test-health.mjs',
   'test-gym-workout.mjs',
   'test-equipment.mjs',
+  'test-calendar.mjs',
 ];
 
 const startTime = Date.now();
