@@ -1,3 +1,4 @@
+import { EQUIPMENT_FILTERS, getExerciseEquipment, equipmentLabel } from '../../utils/equipment';
 import { displayExercise, displayMuscle, displayExerciseDescription, displayExerciseInstructions } from '../../i18n';
 import { t } from '../../i18n';
 import { lazy, Suspense } from 'react';
@@ -5,7 +6,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { 
   Search, Sparkles, ChevronRight, RotateCcw, BookOpen 
 } from 'lucide-react';
-import { Exercise, MuscleTarget, Category, LoadType, LOAD_TYPE_LABELS, MOVEMENT_PLANE_LABELS } from '../../types/workout';
+import { Exercise, MuscleTarget, Category, EquipmentType, LOAD_TYPE_LABELS, MOVEMENT_PLANE_LABELS } from '../../types/workout';
 import { rankExercises } from '../../utils/exerciseDiscovery';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
@@ -15,22 +16,13 @@ interface ExerciseExplorerProps {
   isDark?: boolean;
 }
 
-const getEquipmentLabel = (equipment: string) => {
-  switch (equipment) {
-    case 'machine': return t('머신');
-    case 'barbell': return t('바벨');
-    case 'dumbbell': return t('덤벨');
-    case 'cable': return t('케이블');
-    case 'bodyweight': return t('맨몸');
-    default: return t('기타');
-  }
-};
+const getEquipmentLabel = (equipment: EquipmentType) => t(equipmentLabel(equipment));
 
 export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForWorkout, isDark = false }) => {
   const [selectedExercise, setSelectedExercise] = useState<Exercise>(() => rankExercises(EXERCISES_DATABASE, '')[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
-  const [selectedLoadType, setSelectedLoadType] = useState<LoadType | 'all'>('all');
+  const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
   const [activeMuscleFilter, setActiveMuscleFilter] = useState<MuscleTarget | null>(null);
 
   const filteredExercises = rankExercises(EXERCISES_DATABASE, searchQuery).filter((ex) => {
@@ -41,18 +33,18 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
       (ex.categories && ex.categories.includes(selectedCategory)) ||
       ex.category === selectedCategory;
 
-    const matchLoad = selectedLoadType === 'all' || ex.loadType === selectedLoadType;
+    const matchEquipment = selectedEquipment === 'all' || getExerciseEquipment(ex) === selectedEquipment;
 
     const matchMuscle =
       !activeMuscleFilter ||
       ex.primaryMuscles.includes(activeMuscleFilter) ||
       ex.secondaryMuscles.includes(activeMuscleFilter);
 
-    return matchCat && matchLoad && matchMuscle;
+    return matchCat && matchEquipment && matchMuscle;
   });
 
   const [visibleCount, setVisibleCount] = useState(50);
-  useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedLoadType, activeMuscleFilter]);
+  useEffect(() => { setVisibleCount(50); }, [searchQuery, selectedCategory, selectedEquipment, activeMuscleFilter]);
 
   // useCallback으로 참조를 고정: 검색어/필터 변경 등 무관한 리렌더 때마다
   // HumanMuscle3DViewer의 Three.js 씬이 통째로 재생성(카메라 리셋)되는 것을 방지
@@ -63,7 +55,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
-    setSelectedLoadType('all');
+    setSelectedEquipment('all');
     setActiveMuscleFilter(null);
   };
 
@@ -120,7 +112,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                   <div className="flex items-center gap-2">
                     <h3 className="text-lg font-black text-[#1D1D1F] dark:text-white">{displayExercise(selectedExercise)}</h3>
                     <span className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 text-[10px] font-bold">
-                      {getEquipmentLabel(selectedExercise.equipment)}
+                      {getEquipmentLabel(getExerciseEquipment(selectedExercise))}
                     </span>
                     {selectedExercise.defaultBrand && (
                       <span className="px-2 py-0.5 rounded-lg bg-[#FF9500]/10 text-[#FF9500] text-[10px] font-bold">
@@ -199,7 +191,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
           <div className="space-y-2 pt-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{t("운동 종목")} ({filteredExercises.length})</span>
-              {(searchQuery || selectedCategory !== 'all' || selectedLoadType !== 'all' || activeMuscleFilter) && (
+              {(searchQuery || selectedCategory !== 'all' || selectedEquipment !== 'all' || activeMuscleFilter) && (
                 <button onClick={clearFilters} className="text-xs text-[#0F766E] hover:underline">
                   {t("필터 초기화")}
                 </button>
@@ -236,21 +228,21 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
           ))}
         </div>
 
-        {/* 장비 부하 방식 필터 (원판머신, 핀머신, 바벨, 덤벨, 케이블 등) */}
+        {/* 공통 장비 분류 필터 */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px]">
           <span className="text-gray-400 font-semibold shrink-0">{t("장비")}:</span>
-          {(['all', 'plate-loaded', 'pin-loaded', 'barbell', 'dumbbell', 'cable', 'bodyweight', 'other'] as const).map((load) => (
+          {EQUIPMENT_FILTERS.map(({ id: load, label }) => (
             <button
               key={load}
               type="button"
-              onClick={() => setSelectedLoadType(load)}
+              onClick={() => setSelectedEquipment(load)}
               className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap transition-all ${
-                selectedLoadType === load
+                selectedEquipment === load
                   ? 'bg-[#0F766E] text-white shadow-xs'
                   : 'bg-white dark:bg-[#1C1C1E] text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5'
               }`}
             >
-              {load === 'all' ? t("전체") : load === 'plate-loaded' ? t('플레이트(원판)') : load === 'pin-loaded' ? t('핀머신') : load === 'barbell' ? t("바벨") : load === 'dumbbell' ? t("덤벨") : load === 'cable' ? t("케이블") : load === 'bodyweight' ? t("맨몸") : t('기타')}
+              {t(label)}
             </button>
           ))}
         </div>
@@ -278,7 +270,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
               onClick={() => {
                 setSelectedExercise(ex);
                 if (window.innerWidth < 768) {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
                 }
               }}
               className={`w-full text-left p-3.5 rounded-3xl border transition-all flex items-center justify-between ${
@@ -293,7 +285,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                     {displayExercise(ex)}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[10px] text-gray-500 dark:text-gray-400 font-bold">
-                    {getEquipmentLabel(ex.equipment)}
+                    {getEquipmentLabel(getExerciseEquipment(ex))}
                   </span>
                   {ex.defaultBrand && (
                     <span className="text-[10px] text-[#FF9500] font-semibold">

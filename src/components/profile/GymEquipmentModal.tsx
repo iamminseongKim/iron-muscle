@@ -1,3 +1,6 @@
+import { EquipmentFilter } from '../common/EquipmentFilter';
+import { getExerciseEquipment } from '../../utils/equipment';
+import { EquipmentType } from '../../types/workout';
 import React, { useState, useMemo } from 'react';
 import { X, Search, Check, Plus, Sliders, Dumbbell, Trash2, Building2 } from 'lucide-react';
 import { t } from '../../i18n';
@@ -42,6 +45,8 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
   onSaved,
 }) => {
   const [gymState, setGymState] = useState<MultiGymState>(() => loadGymState());
+  const [customBrandInputs, setCustomBrandInputs] = useState<Record<string, boolean>>({});
+  const [equipment, setEquipment] = useState<EquipmentType | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -60,7 +65,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
     const all = [...custom, ...DISCOVERY_ADDITIONS, ...ADDITIONAL_MACHINES, ...EXERCISES_DATABASE];
     const map = new Map<string, Exercise>();
     for (const ex of all) {
-      if (!map.has(ex.id) && (ex.equipment === 'machine' || ex.equipment === 'cable')) {
+      if (!map.has(ex.id) && (ex.equipment === 'machine' || ex.equipment === 'smith' || ex.equipment === 'cable')) {
         map.set(ex.id, ex);
       }
     }
@@ -72,7 +77,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
   // 검색 및 카테고리 필터링
   const filteredExercises = allMachineExercises.filter(ex => {
     const matchCat = selectedCategory === 'all' || ex.category === selectedCategory || ex.categories?.includes(selectedCategory);
-    if (!matchCat) return false;
+    if (!matchCat || (equipment !== 'all' && getExerciseEquipment(ex) !== equipment)) return false;
     if (!searchQuery.trim()) return true;
     return matchesExerciseSearch(ex, searchQuery);
   });
@@ -373,6 +378,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
             </div>
           </div>
 
+          <div className="px-3 pb-2"><EquipmentFilter value={equipment} onChange={setEquipment} machinesOnly /></div>
           {/* 머신 목록 */}
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {filteredExercises.length === 0 ? (
@@ -467,8 +473,12 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                   {t('브랜드')}
                                 </label>
                                 <select
-                                  value={cfg.brand || ''}
-                                  onChange={e => handleUpdateSingleConfig(ex.id, cfg.id!, { brand: e.target.value })}
+                                  value={customBrandInputs[cfg.id!] || (cfg.brand && !POPULAR_MACHINE_BRANDS.includes(cfg.brand as any)) ? '기타 (직접 입력)' : cfg.brand || ''}
+                                  onChange={e => {
+                                    const custom = e.target.value === '기타 (직접 입력)';
+                                    setCustomBrandInputs(prev => ({ ...prev, [cfg.id!]: custom }));
+                                    handleUpdateSingleConfig(ex.id, cfg.id!, { brand: custom ? '' : e.target.value });
+                                  }}
                                   className="w-full text-xs p-1.5 rounded-lg bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white"
                                 >
                                   <option value="">{t('브랜드 미지정')}</option>
@@ -478,6 +488,13 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                     </option>
                                   ))}
                                 </select>
+                                {(customBrandInputs[cfg.id!] || cfg.brand === '기타 (직접 입력)' || (cfg.brand && !POPULAR_MACHINE_BRANDS.includes(cfg.brand as any))) && (
+                                  <input type="text" aria-label={t('머신 브랜드 직접 입력')}
+                                    value={cfg.brand === '기타 (직접 입력)' ? '' : cfg.brand || ''}
+                                    onChange={e => handleUpdateSingleConfig(ex.id, cfg.id!, { brand: e.target.value })}
+                                    placeholder={t('머신 브랜드 직접 입력')}
+                                    className="mt-2 w-full min-w-0 text-xs p-2 rounded-lg bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10" />
+                                )}
                               </div>
 
                               <div>

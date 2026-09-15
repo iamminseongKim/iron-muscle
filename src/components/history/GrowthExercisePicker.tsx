@@ -1,3 +1,6 @@
+import { EquipmentFilter } from '../common/EquipmentFilter';
+import { getExerciseEquipment } from '../../utils/equipment';
+import { EquipmentType } from '../../types/workout';
 import { t, displayExercise } from '../../i18n';
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, X, Check } from 'lucide-react';
@@ -16,11 +19,12 @@ export function GrowthExercisePicker({ options, selectedId, onSelect, onClose }:
   onClose: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [equipment, setEquipment] = useState<EquipmentType | 'all'>('all');
   const [query, setQuery] = useState('');
   const [recordedOnly, setRecordedOnly] = useState(options.some(option => option.recordCount > 0));
   const [visibleCount, setVisibleCount] = useState(50);
   const recordedCount = options.filter(option => option.recordCount > 0).length;
-  const filtered = options.filter(option => (!recordedOnly || option.recordCount > 0) && matchesExerciseSearch(option.exercise, query));
+  const filtered = options.filter(option => (!recordedOnly || option.recordCount > 0) && matchesExerciseSearch(option.exercise, query) && (equipment === 'all' || getExerciseEquipment(option.exercise) === equipment));
 
   useEffect(() => {
     const dialog = dialogRef.current!;
@@ -34,7 +38,7 @@ export function GrowthExercisePicker({ options, selectedId, onSelect, onClose }:
       previousFocus?.focus({ preventScroll: true });
     };
   }, []);
-  useEffect(() => { setVisibleCount(50); }, [query, recordedOnly]);
+  useEffect(() => { setVisibleCount(50); }, [query, recordedOnly, equipment]);
 
   return (
     <dialog ref={dialogRef} aria-labelledby="growth-picker-title" onCancel={onClose}
@@ -61,6 +65,7 @@ export function GrowthExercisePicker({ options, selectedId, onSelect, onClose }:
               {only ? `${t("기록 있는 종목")} ${recordedCount}` : `${t("전체 종목")} ${options.length}`}
             </button>)}
           </div>
+          <EquipmentFilter value={equipment} onChange={setEquipment} />
           <p role="status" className="text-xs text-gray-500">{t("검색 결과")} {filtered.length}{t("개")}</p>
         </div>
         <div className="overflow-y-auto overscroll-contain p-3 space-y-1 min-h-0">

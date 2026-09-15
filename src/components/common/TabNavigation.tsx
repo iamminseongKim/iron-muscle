@@ -19,7 +19,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
   return (
     <nav
       data-bottom-navigation
-      className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto select-none w-[calc(100%-24px)] max-w-md"
+      className="relative shrink-0 mx-auto mt-2 mb-3 z-30 pointer-events-auto select-none w-[calc(100%_-_24px)] max-w-md"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <div className="glass-dock" style={{ '--dock-active-index': tabs.findIndex(tab => tab.id === activeTab) } as React.CSSProperties}>

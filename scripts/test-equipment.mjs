@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { build } from 'esbuild';
+const result = await build({entryPoints:['src/utils/equipment.ts','src/data/exercises.ts','src/utils/backup.ts'],outdir:'out',bundle:true,write:false,platform:'node',format:'esm'});
+const [equipment, catalog, backup] = await Promise.all(result.outputFiles.map(f=>import(`data:text/javascript;base64,${Buffer.from(f.text).toString('base64')}`)));
+const snapshot=JSON.stringify(catalog.EXERCISES_DATABASE);
+const smith=catalog.EXERCISES_DATABASE.filter(ex=>equipment.getExerciseEquipment(ex)==='smith');
+assert.ok(smith.length>10);
+assert.ok(smith.some(ex=>ex.id==='smith-jm-press'));
+assert.equal(JSON.stringify(catalog.EXERCISES_DATABASE),snapshot,'Classification must not mutate legacy IDs/equipment');
+assert.deepEqual(equipment.EQUIPMENT_OPTIONS.map(ex=>ex.id),['machine','smith','cable','barbell','dumbbell','bodyweight','other']);
+assert.equal(equipment.getExerciseEquipment({name:'사용자 운동',nameEn:'Custom press',equipment:'smith'}),'smith');
+assert.equal(equipment.getExerciseEquipment({name:'체스트 프레스',nameEn:'Chest press',equipment:'machine'}),'machine');
+const custom={id:'custom_smith',name:'사용자 운동',nameEn:'Custom press',category:'chest',categories:['chest'],equipment:'smith',loadType:'plate-loaded',primaryMuscles:['chest'],secondaryMuscles:[],description:'',instructions:[],tips:[]};
+const session={id:'session',title:'Test',date:'2026-09-15',startTime:'2026-09-15T00:00:00Z',durationSeconds:60,completed:true,exercises:[{id:'item',exerciseId:custom.id,equipmentType:'smith',loadType:'plate-loaded',weightUnit:'lbs',machineBrand:'User brand',machineConfigId:'gym:one',sets:[{id:'set',setNumber:1,weight:45,reps:10,completed:true}]}]};
+const parsed=backup.parseBackup(JSON.stringify({format:'iron-muscle-backup',version:1,exportedAt:new Date().toISOString(),sessions:[session],customExercises:[custom],activeSession:null}));
+assert.deepEqual(parsed.sessions,[session]);
+assert.deepEqual(parsed.customExercises,[custom]);
+console.log('PASS Smith legacy classification without catalog mutation and custom Smith backup record preservation');

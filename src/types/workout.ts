@@ -19,7 +19,7 @@ export type MuscleTarget =
 
 export type Category = 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'fullbody';
 
-export type EquipmentType = 'barbell' | 'dumbbell' | 'machine' | 'cable' | 'bodyweight' | 'other';
+export type EquipmentType = 'smith' | 'barbell' | 'dumbbell' | 'machine' | 'cable' | 'bodyweight' | 'other';
 
 export const POPULAR_MACHINE_BRANDS = [
   'Hammer Strength (해머 스트렝스)',

@@ -25,7 +25,7 @@ export function buildExerciseUsage(history: WorkoutSession[]): Map<string, Exerc
 
 // Broad equipment/body-part searches remain below actual name/alias matches.
 const categoryLabels: Record<string, string> = { chest: '가슴', back: '등', legs: '하체', shoulders: '어깨', arms: '팔', core: '복근/코어', fullbody: '전신' };
-const equipmentLabels: Record<string, string> = { barbell: '바벨', dumbbell: '덤벨', machine: '머신', cable: '케이블', bodyweight: '맨몸', other: '기타' };
+const equipmentLabels: Record<string, string> = { smith: '스미스', barbell: '바벨', dumbbell: '덤벨', machine: '머신', cable: '케이블', bodyweight: '맨몸', other: '기타' };
 export function exerciseSearchRelevance(exercise: Exercise, query: string): number {
   const normalized = normalizeSearch(query.trim());
   if (!normalized) return 0;

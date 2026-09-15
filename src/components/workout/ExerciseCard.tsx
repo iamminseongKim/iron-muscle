@@ -1,3 +1,4 @@
+import { getExerciseEquipment } from '../../utils/equipment';
 import { displayExercise, displayMuscle, displayExerciseInstructions, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
 import { lazy, Suspense } from 'react';
@@ -78,6 +79,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
   const baseExercise: Exercise = resolveRecordedExercise(exerciseItem);
+  const isMachineEquipment = ['machine', 'smith'].includes(exerciseItem.equipmentType);
+  const isSmithEquipment = exerciseItem.equipmentType === 'smith' || getExerciseEquipment(baseExercise) === 'smith';
   const isAssisted = isAssistedExercise(baseExercise);
   const currentLoadType = exerciseItem.loadType || baseExercise.loadType || 'plate-loaded';
   const exerciseName = displayExercise(baseExercise);
@@ -213,7 +216,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 💡 {t("덤벨: 한쪽(편측) 무게 기준")}
               </span>
             )}
-            {(!collapsed && (exerciseItem.equipmentType === 'machine' || baseExercise.equipment === 'machine') && (exerciseName.includes('스미스') || exerciseNameEn.toLowerCase().includes('smith'))) && (
+            {(!collapsed && isSmithEquipment) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] dark:bg-[#0F766E]/20 text-[10px] font-bold tracking-tight">
                 💡 {t("스미스머신: 봉 무게 제외 (원판 무게만 기록)")}
               </span>
@@ -295,7 +298,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <details className="border-b border-black/5 dark:border-white/5">
         <summary className="px-3 py-2 cursor-pointer text-xs text-gray-500 dark:text-gray-400 marker:text-gray-400">
           <span className="font-bold text-gray-500 dark:text-gray-400">{t("운동 설정")}</span>
-          <span className="ml-2">{exerciseItem.executionMode === 'unilateral' ? t('편측') : t('양측')} · {currentUnit}{exerciseItem.equipmentType === 'machine' ? ` · ${currentLoadType === 'pin-loaded' ? t('핀머신') : t('원판')} · ${exerciseItem.machineBrand?.split(' (')[0] || t('브랜드 미지정')}` : ''}</span>
+          <span className="ml-2">{exerciseItem.executionMode === 'unilateral' ? t('편측') : t('양측')} · {currentUnit}{isMachineEquipment ? ` · ${currentLoadType === 'pin-loaded' ? t('핀머신') : t('원판')} · ${exerciseItem.machineBrand?.split(' (')[0] || t('브랜드 미지정')}` : ''}</span>
         </summary>
         <p className="px-3 text-xs text-gray-400">{exerciseNameEn}</p>
         <div className="px-3 py-1 flex items-center gap-2"><span className="text-xs text-gray-500">{t("장비")}</span>
@@ -305,16 +308,16 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 type="button"
                 onClick={() => handleEquipmentChange('barbell')}
                 className={`px-2.5 py-0.5 rounded-lg transition-all ${
-                  exerciseItem.equipmentType !== 'machine' ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-sm' : 'text-gray-400'
+                  !isMachineEquipment ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-sm' : 'text-gray-400'
                 }`}
               >
                 {t("프리")}
               </button>
               <button
                 type="button"
-                onClick={() => handleEquipmentChange('machine')}
+                onClick={() => handleEquipmentChange(getExerciseEquipment(baseExercise) === 'smith' ? 'smith' : 'machine')}
                 className={`px-2.5 py-0.5 rounded-lg transition-all ${
-                  exerciseItem.equipmentType === 'machine' ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-sm' : 'text-gray-400'
+                  isMachineEquipment ? 'bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white shadow-sm' : 'text-gray-400'
                 }`}
               >{t("머신")}</button>
             </div>
@@ -384,7 +387,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </div>
 
         {/* 부하 방식 토글 (머신일 경우): 플레이트 vs 핀로드 */}
-        {exerciseItem.equipmentType === 'machine' && (
+        {isMachineEquipment && (
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] text-gray-400 font-bold">{t("부하방식:")}</span>
             <div className="flex bg-[#E5E5EA] dark:bg-[#2C2C2E] p-0.5 rounded-xl text-[10px] font-bold">
@@ -416,7 +419,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       </div>
 
       {/* 머신 선택 시 브랜드 & 세팅 바 */}
-      {exerciseItem.equipmentType === 'machine' && (
+      {isMachineEquipment && (
         <div className="px-4 py-2 bg-[#F9F9FB] dark:bg-[#18181A] border-b border-black/5 dark:border-white/5 flex flex-wrap items-center gap-2 text-xs">
           <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 font-bold">
             <Settings2 size={14} className="text-[#FF9500]" />

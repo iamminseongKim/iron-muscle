@@ -1,3 +1,4 @@
+import { EQUIPMENT_OPTIONS } from '../../utils/equipment';
 import { t, displayMuscle } from '../../i18n';
 import React, { useState } from 'react';
 import { X, Plus, Dumbbell, Sparkles } from 'lucide-react';
@@ -22,14 +23,7 @@ const CATEGORY_OPTIONS: { id: Category; label: string }[] = [
   { id: 'fullbody', label: '전신' },
 ];
 
-const EQUIPMENT_OPTIONS: { id: EquipmentType; label: string }[] = [
-  { id: 'machine', label: '머신' },
-  { id: 'barbell', label: '바벨' },
-  { id: 'dumbbell', label: '덤벨' },
-  { id: 'cable', label: '케이블' },
-  { id: 'bodyweight', label: '맨몸/소도구' },
-  { id: 'other', label: '기타' },
-];
+
 
 // 카테고리별 추천 주동근 목록
 const CATEGORY_PRIMARY_MUSCLES: Record<Category, MuscleTarget[]> = {
@@ -100,7 +94,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
       category,
       categories: [category],
       equipment,
-      loadType: equipment === 'machine' ? loadType : (equipment as any),
+      loadType: equipment === 'smith' ? 'plate-loaded' : equipment === 'machine' ? loadType : equipment,
       movementPlane: defaultPlane[category] || 'squat-pattern',
       primaryMuscles: [selectedMuscle],
       secondaryMuscles: [],

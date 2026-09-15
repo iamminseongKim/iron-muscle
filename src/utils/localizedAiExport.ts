@@ -38,9 +38,9 @@ export function localizedAiExport(sessions: WorkoutSession[], options: AiExportO
       if(group&&!groups.has(exercise.groupId!))groups.set(exercise.groupId!,groups.size+1);
       const groupLabel=group?` [${m[exercise.groupType as 'superset'|'compound'|'giant']} ${groups.get(exercise.groupId!)}]`:'';
       const isDumbbell=exercise.equipmentType==='dumbbell'||base.equipment==='dumbbell';
-      const isSmith=/smith/i.test(base.nameEn);
+      const isSmith=exercise.equipmentType === 'smith' || base.equipment === 'smith' || /smith/i.test(base.nameEn);
       const mode=exercise.executionMode||'bilateral';
-      md+=`\n### ${exIndex+1}. ${cell(name)}${groupLabel} (${m[load]} / ${m[mode]})\n`;
+      md+=`\n### ${exIndex+1}. ${cell(name)}${groupLabel} (${load === 'smith' ? t('스미스', language) : m[load]} / ${m[mode]})\n`;
       if(isDumbbell)md+=`- ${m.perHand}\n`;
       if(isSmith)md+=`- ${m.platesOnly}\n`;
       if(exercise.machineBrand)md+=`- **${m.brand}**: ${cell(exercise.machineBrand)}\n`;

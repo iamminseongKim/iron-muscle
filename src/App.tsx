@@ -135,7 +135,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] flex flex-col transition-colors duration-200">
+    <div className="h-[100dvh] overflow-hidden bg-[#F2F2F7] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] flex flex-col transition-colors duration-200">
       {/* 상단 헤더 & 단일화된 총 운동 시간 시계 & 테마 스위처 */}
       <Header
         activeTab={activeTab}
@@ -148,7 +148,7 @@ export const App: React.FC = () => {
 
 
       {/* 메인 컨텐츠 */}
-      <main className="flex-1 w-full pt-2"><Suspense fallback={<div role="status" className="p-8 text-center">…</div>}>
+      <main className="flex-1 min-h-0 overflow-y-auto w-full pt-2"><Suspense fallback={<div role="status" className="p-8 text-center">…</div>}>
         {activeTab === 'workout' && (
           <WorkoutLogger
             onWorkoutCompleted={onWorkoutCompleted}

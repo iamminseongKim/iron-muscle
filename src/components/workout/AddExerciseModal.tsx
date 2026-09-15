@@ -1,3 +1,4 @@
+import { EQUIPMENT_FILTERS, getExerciseEquipment, equipmentLabel } from '../../utils/equipment';
 import { displayExercise, displayMuscle, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -39,15 +40,7 @@ const BASE_CATEGORIES: { id: Category | 'all'; label: string }[] = [
   { id: 'fullbody', label: '전신' },
 ];
 
-const EQUIPMENTS: { id: EquipmentType | 'all'; label: string }[] = [
-  { id: 'all', label: '모든 장비' },
-  { id: 'barbell', label: '바벨' },
-  { id: 'dumbbell', label: '덤벨' },
-  { id: 'machine', label: '머신' },
-  { id: 'cable', label: '케이블' },
-  { id: 'bodyweight', label: '맨몸' },
-  { id: 'other', label: '기타' },
-];
+const EQUIPMENTS = EQUIPMENT_FILTERS;
 
 export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ 
   isOpen, 
@@ -214,7 +207,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
     }
 
     // 3. 장비 필터링
-    const matchEquip = selectedEquipment === 'all' || ex.equipment === selectedEquipment;
+    const matchEquip = selectedEquipment === 'all' || getExerciseEquipment(ex) === selectedEquipment;
 
     // 4. 내 헬스장 전용 필터
     const matchGym = !onlyGymFilter || gymEquipmentIds.has(ex.id);
@@ -424,7 +417,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                       {displayExercise(ex)}
                     </span>
                     <span className="px-1.5 py-0.2 rounded bg-gray-100 dark:bg-[#1C1C1E] text-[10px] font-bold text-gray-500 dark:text-gray-400">
-                      {ex.equipment === 'machine' ? t("머신") : ex.equipment === 'barbell' ? t("바벨") : ex.equipment === 'dumbbell' ? t("덤벨") : ex.equipment === 'cable' ? t("케이블") : t('맨몸/소도구')}
+                      {t(equipmentLabel(getExerciseEquipment(ex)))}
                     </span>
                     {configs.length > 0 ? (
                       <span className="px-1.5 py-0.2 rounded bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold flex items-center gap-0.5">

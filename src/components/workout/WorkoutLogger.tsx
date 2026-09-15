@@ -444,7 +444,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     });
 
     return (
-      <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
+      <div className="pb-6 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
         {/* 상단 날짜 및 상태 카드 */}
         <div className="pt-2 text-center space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-semibold text-gray-500 shadow-xs">
@@ -586,7 +586,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             className="w-full py-5 bg-gradient-to-r from-[#0F766E] to-[#115E59] hover:opacity-95 text-white rounded-2xl text-[17px] font-black flex items-center justify-center gap-2.5 shadow-lg shadow-teal-900/30 transition active:scale-98"
           >
             <Dumbbell size={22} />
-            <span>{t("새 운동 시작하기")} ({recommendedTitle})</span>
+            <span data-workout-start>{t("새 운동 시작하기")} ({recommendedTitle})</span>
             <ArrowRight size={20} />
           </button>
         </div>
@@ -606,7 +606,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const completedSetCount = sessionSets.filter(set => set.completed).length;
 
   return (
-    <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
+    <div className="pb-6 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
       <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
         {/* 좌측 패널: 세션 정보, 요약 통계, 고정 완료 버튼 */}
         <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">

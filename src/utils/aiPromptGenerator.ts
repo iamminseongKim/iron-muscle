@@ -323,7 +323,7 @@ export function generateAiCoachingMarkdown(
       const groupLabel = ex.groupLabel ? ` [${ex.groupLabel}]` : '';
 
       const isDumbbell = ex.equipmentType === 'dumbbell' || base?.equipment === 'dumbbell' || name.includes('덤벨');
-      const isSmith = (ex.equipmentType === 'machine' || base?.equipment === 'machine') && (name.includes('스미스') || base?.nameEn.toLowerCase().includes('smith'));
+      const isSmith = ex.equipmentType === 'smith' || base?.equipment === 'smith' || (ex.equipmentType === 'machine' || base?.equipment === 'machine') && (name.includes('스미스') || base?.nameEn.toLowerCase().includes('smith'));
       const weightStandardNote = isDumbbell ? ' [💡 한쪽 무게 기준]' : isSmith ? ' [💡 봉 제외 원판만]' : '';
 
       md += `### ${eIdx + 1}. ${name}${groupLabel}${weightStandardNote} (${loadLabel} / ${modeLabel})\n`;
