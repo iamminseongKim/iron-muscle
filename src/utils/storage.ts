@@ -1,6 +1,7 @@
 import { WorkoutSession, Exercise } from '../types/workout';
 import { INITIAL_SAMPLE_HISTORY } from '../data/sampleHistory';
 import { sanitizeSessionExercises } from './exerciseResolver';
+import { migrateLegacySessionDates } from './calendar';
 
 const STORAGE_KEYS = {
   SESSIONS: 'iron_workout_sessions_v1',
@@ -16,7 +17,12 @@ export function loadSavedSessions(): WorkoutSession[] {
       return []; // 기본 더미 데이터 없이 깨끗한 빈 상태로 시작!
     }
     const parsed: WorkoutSession[] = JSON.parse(raw);
-    return parsed.map(sanitizeSessionExercises);
+    const sanitized = parsed.map(sanitizeSessionExercises);
+    const { sessions: migrated, migratedCount } = migrateLegacySessionDates(sanitized);
+    if (migratedCount > 0) {
+      saveSessions(migrated);
+    }
+    return migrated;
   } catch (e) {
     console.error('Failed to load sessions', e);
     return [];
@@ -51,7 +57,12 @@ export function loadActiveSession(): WorkoutSession | null {
     const raw = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
     if (!raw) return null;
     const parsed: WorkoutSession = JSON.parse(raw);
-    return sanitizeSessionExercises(parsed);
+    const sanitized = sanitizeSessionExercises(parsed);
+    const { sessions: migrated, migratedCount } = migrateLegacySessionDates([sanitized]);
+    if (migratedCount > 0) {
+      saveActiveSession(migrated[0]);
+    }
+    return migrated[0];
   } catch (e) {
     console.error('Failed to load active session', e);
     return null;

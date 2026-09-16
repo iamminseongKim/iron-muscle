@@ -17,7 +17,10 @@ const {
   getNextMonthString,
   getPrevDayString,
   getNextDayString,
+  addDays,
+  getTodayString,
   formatLocalDate,
+  migrateLegacySessionDates,
 } = await import(
   `data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`
 );
@@ -95,4 +98,61 @@ assert.equal(getNextMonthString('2026-12'), '2027-01');
 assert.equal(getPrevDayString('2026-09-01'), '2026-08-31');
 assert.equal(getNextDayString('2026-08-31'), '2026-09-01');
 
-console.log('PASS: 캘린더 날짜 계산, 요일 정렬, 월말 일수 및 네비게이션 검증 완료');
+console.log('--- 5. addDays 및 임의 일수 증감 검증 ---');
+assert.equal(addDays('2026-09-16', 1), '2026-09-17');
+assert.equal(addDays('2026-09-16', -1), '2026-09-15');
+assert.equal(addDays('2026-09-16', -6), '2026-09-10');
+assert.equal(addDays('2026-09-01', -1), '2026-08-31');
+assert.equal(addDays('2026-12-31', 1), '2027-01-01');
+
+console.log('--- 6. UTC 시차로 왜곡된 과거 세션 자동 보정(마이그레이션) 검증 ---');
+// 한국 시간 16일 오전 7시 운동 -> UTC로는 15일 22시
+const sampleStartTime = '2026-09-15T22:00:00.000Z';
+const expectedLocalDate = formatLocalDate(new Date(sampleStartTime));
+
+const skewedSession = {
+  id: 'session-skewed-1',
+  title: '오전 7시 운동',
+  date: '2026-09-15', // 버그로 인해 UTC 날짜가 들어감
+  startTime: sampleStartTime,
+  durationSeconds: 3600,
+  completed: true,
+  exercises: [],
+};
+
+const normalSession = {
+  id: 'session-normal-1',
+  title: '오후 3시 운동',
+  date: '2026-09-16',
+  startTime: '2026-09-16T06:00:00.000Z',
+  durationSeconds: 3600,
+  completed: true,
+  exercises: [],
+};
+
+const manualSession = {
+  id: 'session-manual-1',
+  title: '과거 날짜 수기 입력',
+  date: '2026-09-10', // 사용자가 수동으로 선택한 날짜
+  startTime: '2026-09-16T01:00:00.000Z',
+  durationSeconds: 3600,
+  completed: true,
+  exercises: [],
+};
+
+const migrationResult = migrateLegacySessionDates([skewedSession, normalSession, manualSession]);
+
+if (expectedLocalDate !== '2026-09-15') {
+  // 로컬 시간대가 한국(KST, UTC+9) 등 양수 오프셋인 경우 16일로 보정되어야 함
+  assert.equal(migrationResult.migratedCount, 1);
+  assert.equal(migrationResult.sessions[0].date, expectedLocalDate);
+} else {
+  // UTC 0 환경인 경우
+  assert.equal(migrationResult.migratedCount, 0);
+}
+
+// 정상 세션과 수기 입력 세션은 날짜가 유지되어야 함
+assert.equal(migrationResult.sessions[1].date, '2026-09-16');
+assert.equal(migrationResult.sessions[2].date, '2026-09-10');
+
+console.log('PASS: 캘린더 날짜 계산, 요일 정렬, 월말 일수, addDays 및 UTC 왜곡 세션 자동 보정 검증 완료');

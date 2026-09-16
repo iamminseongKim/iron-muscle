@@ -6,6 +6,7 @@ import { WorkoutSession } from '../../types/workout';
 import { loadSavedSessions } from '../../utils/storage';
 import { generateAiCoachingMarkdown } from '../../utils/aiPromptGenerator';
 import { saveFileToDevice } from '../../utils/nativeFile';
+import { getTodayString } from '../../utils/calendar';
 
 export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSession[], date?: string) => void }) {
   const input = useRef<HTMLInputElement>(null);
@@ -28,7 +29,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
     setMessage('');
     try {
       const data = JSON.stringify(createBackup(), null, 2);
-      const filename = `iron-muscle-${new Date().toISOString().slice(0, 10)}.json`;
+      const filename = `iron-muscle-${getTodayString()}.json`;
       const res = await saveFileToDevice(filename, data, 'application/json');
       if (res.cancelled) {
         setMessage(t('저장을 취소했습니다.'));
@@ -52,7 +53,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         setMessage(t('저장된 운동 기록이 없습니다.'));
         return;
       }
-      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayStr = getTodayString();
       const md = generateAiCoachingMarkdown(sessions, { scope: 'all', selectedDate: todayStr, selectedBodyPart: 'all' });
       const filename = `IronMuscle_All_Workouts_${todayStr}.md`;
       const res = await saveFileToDevice(filename, md, 'text/markdown');

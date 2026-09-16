@@ -3,6 +3,7 @@ import { localizedAiExport } from './localizedAiExport';
 import { WorkoutSession, WorkoutExercise } from '../types/workout';
 import { resolveRecordedExercise } from './exerciseResolver';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from './calculations';
+import { addDays } from './calendar';
 
 export type AiExportScope = 'day' | 'week' | 'month' | 'custom' | 'all';
 
@@ -173,11 +174,8 @@ export function filterSessionsForAiExport(
     dateFiltered = sessions.filter((s) => s.date === selectedDate);
   } else if (scope === 'week') {
     // selectedDate 기준 직전 7일
-    const end = new Date(selectedDate);
-    const start = new Date(selectedDate);
-    start.setDate(start.getDate() - 6);
-    const startStr = start.toISOString().slice(0, 10);
-    const endStr = end.toISOString().slice(0, 10);
+    const startStr = addDays(selectedDate, -6);
+    const endStr = selectedDate;
     dateFiltered = sessions.filter((s) => s.date >= startStr && s.date <= endStr);
   } else if (scope === 'month') {
     const monthPrefix = selectedDate.slice(0, 7); // YYYY-MM

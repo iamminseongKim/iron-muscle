@@ -25,6 +25,7 @@ import { findPreviousMachineExercise, convertExerciseSets } from '../../utils/gy
 import { soundManager } from '../../utils/audio';
 import { sanitizeSessionExercises } from '../../utils/exerciseResolver';
 import { mapPartIdsToCategories, formatWorkoutTitleFromParts } from '../../utils/bodyPartDetector';
+import { getTodayString } from '../../utils/calendar';
 
 interface WorkoutLoggerProps {
   onWorkoutCompleted?: () => void;
@@ -141,7 +142,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     const selectedOptions = TARGET_BODY_PARTS.filter((p) => selectedPartIds.includes(p.id));
     const targetCategories = Array.from(new Set(selectedOptions.map((p) => p.category))) as Category[];
 
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getTodayString();
     const newSession: WorkoutSession = {
       id: 'session-' + Date.now(),
       title: recommendedTitle,

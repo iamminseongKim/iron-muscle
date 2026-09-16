@@ -4,6 +4,8 @@
  * 윤년, 월말 일수, 시작 요일, 타임존 안전 변환을 완벽하게 처리합니다.
  */
 
+import { WorkoutSession } from '../types/workout';
+
 export interface CalendarCell {
   dateString: string; // 'YYYY-MM-DD'
   dayNumber: number; // 1 ~ 31
@@ -92,6 +94,15 @@ export function getNextDayString(dateString: string): string {
 }
 
 /**
+ * 임의의 일수 n을 더하거나 뺀 'YYYY-MM-DD' 반환
+ */
+export function addDays(dateString: string, days: number): string {
+  const [y, m, d] = dateString.split('-').map(Number);
+  const targetDate = new Date(y, m - 1, d + days);
+  return formatLocalDate(targetDate);
+}
+
+/**
  * 7열 달력 그리드 셀 배열 생성
  * - 1일 시작 요일 전까지의 이전 달 날짜들(패딩)
  * - 현재 월의 1일 ~ 마지막 일
@@ -172,3 +183,41 @@ export function generateCalendarGrid(
 
   return cells;
 }
+
+/**
+ * 과거 버그(toISOString().split('T')[0])로 인해
+ * 로컬 시간대와 다르게 UTC 날짜로 기록된 운동 세션 날짜를 로컬 날짜로 자동 보정합니다.
+ *
+ * 보정 조건:
+ * 1. session.startTime이 존재함
+ * 2. startTime을 로컬로 파싱한 날짜(formatLocalDate(new Date(session.startTime)))와 session.date가 다름
+ * 3. session.date가 startTime의 UTC 날짜(session.startTime.slice(0, 10))와 정확히 일치함
+ *    (즉 운동 시작 시점에 toISOString().split('T')[0]이 그대로 session.date로 쓰였던 세션)
+ */
+export function migrateLegacySessionDates(sessions: WorkoutSession[]): {
+  sessions: WorkoutSession[];
+  migratedCount: number;
+} {
+  let migratedCount = 0;
+  const migrated = sessions.map((s) => {
+    if (!s.startTime) return s;
+    const utcDateStr = s.startTime.slice(0, 10);
+    const startDate = new Date(s.startTime);
+    if (isNaN(startDate.getTime())) return s;
+
+    const localDateStr = formatLocalDate(startDate);
+
+    // 저장된 session.date가 UTC 날짜와 같고, 로컬 날짜와 다른 경우 (오전 0~9시 KST 운동 등)
+    if (s.date === utcDateStr && s.date !== localDateStr) {
+      migratedCount++;
+      return {
+        ...s,
+        date: localDateStr,
+      };
+    }
+    return s;
+  });
+
+  return { sessions: migrated, migratedCount };
+}
+
