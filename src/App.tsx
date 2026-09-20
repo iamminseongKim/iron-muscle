@@ -1,8 +1,10 @@
 import { useLanguage, getLanguage, t } from './i18n';
 import { MyPage } from './components/profile/MyPage';
 import { refreshHealth } from './services/health/healthService';
-import React, { useState, useEffect, lazy, Suspense, memo, useCallback } from 'react';
+import React, { useState, useEffect, lazy, Suspense, memo, useCallback, useRef } from 'react';
 import { useKeyboardViewport } from './hooks/useKeyboardViewport';
+import { Lock } from 'lucide-react';
+import { HoldToCompleteButton } from './components/workout/HoldToCompleteButton';
 import { Header } from './components/common/Header';
 import { TabNavigation } from './components/common/TabNavigation';
 const ExerciseExplorer = lazy(() => import('./components/explore/ExerciseExplorer').then(module => ({default: module.ExerciseExplorer})));
@@ -59,6 +61,23 @@ export const App: React.FC = () => {
     return saved ? saved.durationSeconds : 0;
   });
   const [isWorkoutTimerRunning, setIsWorkoutTimerRunning] = useState<boolean>(true);
+
+  const isTouchLocked = Boolean(activeSession && !activeSession.completed && !isWorkoutTimerRunning);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const lockRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isTouchLocked) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    contentRef.current?.setAttribute('inert', '');
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    lockRef.current?.querySelector<HTMLElement>('[role="button"]')?.focus();
+    return () => {
+      contentRef.current?.removeAttribute('inert');
+      document.body.style.overflow = overflow;
+      previousFocus?.focus();
+    };
+  }, [isTouchLocked]);
 
   // 세션 시작/취소/완료 이벤트 동기화
   useEffect(() => {
@@ -136,6 +155,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] flex flex-col transition-colors duration-200">
+      <div ref={contentRef} className="isolate flex min-h-screen flex-col">
       {/* 상단 헤더 & 단일화된 총 운동 시간 시계 & 테마 스위처 */}
       <Header
         activeTab={activeTab}
@@ -149,12 +169,12 @@ export const App: React.FC = () => {
 
       {/* 메인 컨텐츠 */}
       <main className="flex-1 w-full pt-2"><Suspense fallback={<div role="status" className="p-8 text-center">…</div>}>
-        {activeTab === 'workout' && (
+        {(activeTab === 'workout' || activeSession) && (<div hidden={activeTab !== 'workout'}>
           <WorkoutLogger
             onWorkoutCompleted={onWorkoutCompleted}
             isDark={isDark}
           />
-        )}
+        </div>)}
         {activeTab === 'my' && <MyPage isDark={isDark} onToggleTheme={toggleTheme} weightUnit={weightUnit} onToggleWeightUnit={toggleWeightUnit} />}
         {activeTab === 'explore' && <ExerciseExplorer isDark={isDark} />}
         {activeTab === 'history' && (
@@ -167,6 +187,20 @@ export const App: React.FC = () => {
 
       {/* 하단 탭 네비게이션 */}
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+      {isTouchLocked && (
+        <div ref={lockRef} role="dialog" aria-modal="true" aria-labelledby="touch-lock-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-6 touch-none">
+          <div className="w-full max-w-sm rounded-3xl bg-white dark:bg-[#1C1C1E] p-6 text-center shadow-2xl">
+            <Lock className="mx-auto mb-4 text-orange-500" size={40} />
+            <h2 id="touch-lock-title" className="font-bold text-lg">{t('운동 시간이 일시정지되었습니다')}</h2>
+            <p className="my-5 text-sm">{t('총운동')} <strong>{Math.floor(totalWorkoutSeconds / 60)}:{String(totalWorkoutSeconds % 60).padStart(2, '0')}</strong>
+              {' · '}{t('세트 완료')} <strong>{activeSession?.exercises.reduce((count, ex) => count + ex.sets.filter(set => set.completed).length, 0)}</strong></p>
+            <HoldToCompleteButton onComplete={() => setIsWorkoutTimerRunning(true)} holdDurationMs={1500}
+              label={t('1.5초 길게 눌러 잠금 해제 & 운동 재개')} holdingLabel={t('잠금 해제 중...')} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

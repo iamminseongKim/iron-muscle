@@ -1,7 +1,7 @@
 {
   "name": "iron-muscle-tracker",
   "private": true,
-  "version": "3.28.7",
+  "version": "3.29.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -18,6 +18,7 @@
     "@capacitor/core": "^5.7.0",
     "@capacitor/haptics": "^5.0.6",
     "@capacitor/ios": "^5.7.0",
+    "@capacitor/local-notifications": "^5.0.8",
     "@capacitor/status-bar": "^5.0.6",
     "@iron-muscle/health": "file:plugins/iron-health",
     "fflate": "^0.8.2",

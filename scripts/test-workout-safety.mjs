@@ -81,3 +81,53 @@ assert.equal(currentTimer.remainingSeconds, 0);
 assert.equal(undoBackup, null);
 
 console.log('PASS: hold-to-complete button bundled, timer overtime calculated, and timer reset-undo restores elapsed seconds');
+
+// Exercise the production clock with throttled ticks, pause, resume and fractional seconds.
+const clockBundle = await build({ entryPoints: ['src/utils/restClock.ts'], bundle: true, write: false, format: 'esm', platform: 'node' });
+const { RestClock } = await import(`data:text/javascript;base64,${Buffer.from(clockBundle.outputFiles[0].text).toString('base64')}`);
+const clock = new RestClock(90, 0, true, 0);
+assert.deepEqual(clock.sample(600), { remaining: 90, elapsed: 0 });
+assert.deepEqual(clock.sample(1200), { remaining: 89, elapsed: 1 });
+assert.deepEqual(clock.sample(65000), { remaining: 25, elapsed: 65 });
+clock.pause(65500);
+assert.deepEqual(clock.sample(120000), { remaining: 25, elapsed: 65 });
+clock.resume(120000);
+assert.deepEqual(clock.sample(150000), { remaining: 0, elapsed: 95 });
+assert.deepEqual(clock.sample(180000), { remaining: 0, elapsed: 125 });
+
+// Use the real notification coordinator with mocked native I/O to test cancellation races.
+const events = [];
+let permissionResolve;
+globalThis.__restNativeMock = {
+  cancel: async () => events.push('cancel'),
+  checkPermissions: async () => ({ display: 'prompt' }),
+  requestPermissions: () => new Promise(resolve => { permissionResolve = resolve; }),
+  createChannel: async () => events.push('channel'),
+  schedule: async options => events.push(options.notifications[0]),
+};
+const notificationsBundle = await build({
+  entryPoints: ['src/utils/restNotifications.ts'], bundle: true, write: false, format: 'esm', platform: 'node',
+  plugins: [{ name: 'native-mock', setup(builder) {
+    builder.onResolve({ filter: /^@capacitor\// }, args => ({ path: args.path, namespace: 'mock' }));
+    builder.onLoad({ filter: /.*/, namespace: 'mock' }, args => ({ contents: args.path.endsWith('/core')
+      ? 'export const Capacitor = {isNativePlatform: () => true, getPlatform: () => "android"};'
+      : 'export const LocalNotifications = globalThis.__restNativeMock;' }));
+  } }],
+});
+const { scheduleRestNotification, cancelRestNotification } = await import(`data:text/javascript;base64,${Buffer.from(notificationsBundle.outputFiles[0].text).toString('base64')}`);
+const pending = scheduleRestNotification(Date.now() + 90000, 'Rest', 'Next set');
+await new Promise(resolve => setImmediate(resolve));
+cancelRestNotification();
+permissionResolve({ display: 'granted' });
+assert.equal(await pending, false);
+await new Promise(resolve => setImmediate(resolve));
+assert.deepEqual(events, ['cancel', 'cancel'], 'Cancellation during permission request must prevent scheduling');
+globalThis.__restNativeMock.checkPermissions = async () => ({ display: 'granted' });
+assert.equal(await scheduleRestNotification(Date.now() + 90000, 'Rest', 'Next set'), true);
+assert.equal(events.at(-1).schedule.allowWhileIdle, true);
+assert.equal(events.at(-1).body, 'Next set');
+cancelRestNotification();
+await new Promise(resolve => setImmediate(resolve));
+assert.equal(events.at(-1), 'cancel');
+delete globalThis.__restNativeMock;
+console.log('Production rest clock and notification cancellation race checks passed.');

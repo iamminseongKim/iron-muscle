@@ -1,6 +1,6 @@
 import { loadHealthPreferences, enqueueWorkout } from '../../services/health/healthStore';
 import { flushWorkoutExports } from '../../services/health/healthService';
-import { t } from '../../i18n';
+import { displayExercise, t } from '../../i18n';
 import { getLanguage, useLanguage } from '../../i18n';
 import { BodyPartIcon } from '../common/BodyPartIcon';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -23,7 +23,7 @@ import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, conv
 import { saveActiveSession, loadActiveSession, saveSessions, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { findPreviousMachineExercise, convertExerciseSets } from '../../utils/gymWorkout';
 import { soundManager } from '../../utils/audio';
-import { sanitizeSessionExercises } from '../../utils/exerciseResolver';
+import { resolveRecordedExercise, sanitizeSessionExercises } from '../../utils/exerciseResolver';
 import { mapPartIdsToCategories, formatWorkoutTitleFromParts } from '../../utils/bodyPartDetector';
 import { getTodayString } from '../../utils/calendar';
 
@@ -68,11 +68,17 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     exerciseName: string;
     setId: string;
     setNumber: number;
+    exerciseId: string;
+    isLastSetOfExercise: boolean;
+    runId: number;
   }>({
     isOpen: false,
     exerciseName: '',
     setId: '',
     setNumber: 1,
+    exerciseId: "",
+    isLastSetOfExercise: false,
+    runId: 0,
   });
 
   // 구버전 로컬스토리지 데이터 자동 치유
@@ -168,7 +174,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   // 운동 취소 (확인 팝업 후 초기화)
   const handleCancelWorkout = () => {
-    if (window.confirm(t('현재 진행 중인 운동을 취소하시겠습니까?\n작성 중인 운동 내용은 저장되지 않고 초기 화면으로 돌아갑니다.'))) {
+    if (window.confirm(t('운동을 취소하고 기록을 삭제하시겠습니까?\n완료한 세트와 입력한 무게·횟수를 포함한 이번 운동 기록이 모두 삭제되며 복구할 수 없습니다.\n운동을 계속하려면 취소를 누르세요.'))) {
       saveActiveSession(null);
       setSession(null);
     }
@@ -343,12 +349,15 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     saveActiveSession(updated);
   };
 
-  const handleTriggerRestTimer = (exerciseName: string, setId: string, setNumber: number) => {
+  const handleTriggerRestTimer = (exerciseName: string, setId: string, setNumber: number, isLastSetOfExercise: boolean, exerciseId: string) => {
     setRestTimerState({
       isOpen: true,
       exerciseName,
       setId,
       setNumber,
+      isLastSetOfExercise,
+      exerciseId,
+      runId: restTimerState.runId + 1,
     });
   };
 
@@ -604,6 +613,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const totalReps = calculateSessionReps(session);
   const avgRpe = calculateAverageRPE(session);
   const sessionSets = session.exercises.flatMap(exercise => exercise.sets);
+  const restExerciseIndex = session.exercises.findIndex(item => item.id === restTimerState.exerciseId);
+  const nextRestExercise = restExerciseIndex >= 0 ? session.exercises[restExerciseIndex + 1] : undefined;
   const completedSetCount = sessionSets.filter(set => set.completed).length;
 
   return (
@@ -757,7 +768,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               weightUnit={item.weightUnit || 'kg'}
               onUpdate={(updated) => handleUpdateExercise(idx, updated)}
               onDelete={() => handleDeleteExercise(idx)}
-              onTriggerRestTimer={(exName, setId, setNum) => handleTriggerRestTimer(exName, setId, setNum)}
+              onTriggerRestTimer={(exName, setId, setNum, last) => handleTriggerRestTimer(exName, setId, setNum, last, item.id)}
               onOpenRpeGuide={() => setIsRpeGuideOpen(true)}
               onOpenGroupModal={() => setGroupModalTarget(item)}
               onUnlinkGroup={() => handleUnlinkExercise(item.id)}
@@ -790,6 +801,16 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
       {/* 대형 원형 스마트 휴식 타이머 모달 */}
       <RestTimerModal
+        key={restTimerState.runId}
+        isLastSetOfExercise={restTimerState.isLastSetOfExercise}
+        nextExerciseName={nextRestExercise ? displayExercise(resolveRecordedExercise(nextRestExercise)) : undefined}
+        onNextExercise={() => {
+          if (!nextRestExercise) { setIsAddModalOpen(true); return; }
+          setCollapsedExerciseIds(previous => {
+            const next = new Set(previous); next.delete(nextRestExercise.id); return next;
+          });
+          requestAnimationFrame(() => document.getElementById(`exercise-${nextRestExercise.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        }}
         isOpen={restTimerState.isOpen}
         initialSeconds={90}
         exerciseName={restTimerState.exerciseName}

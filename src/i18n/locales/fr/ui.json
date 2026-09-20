@@ -752,5 +752,16 @@
   "모든 근육 부위 보기": "Afficher tous les groupes musculaires",
   "추천 근육만 보기": "Afficher seulement recommandés",
   "위로 이동": "Déplacer vers le haut",
-  "아래로 이동": "Déplacer vers le bas"
+  "아래로 이동": "Déplacer vers le bas",
+  "운동 시간이 일시정지되었습니다": "Chronomètre de séance en pause",
+  "1.5초 길게 눌러 잠금 해제 & 운동 재개": "Maintenez 1,5 s pour déverrouiller et reprendre",
+  "잠금 해제 중...": "Déverrouillage...",
+  "터치하여 운동 시간 일시정지 및 화면 잠금": "Touchez pour mettre en pause et verrouiller l’écran",
+  "휴식 시간 완료!": "Repos terminé !",
+  "{exerciseName} - 다음 세트를 시작하세요.": "{exerciseName} - Commencez la série suivante.",
+  "🎉 종목 완료! 다음 운동 준비": "🎉 Exercice terminé ! Préparez le suivant",
+  "+60초 (기구 정리/이동)": "+60 s (ranger le matériel / se déplacer)",
+  "다음 종목: {name}으로 이동": "Exercice suivant : aller à {name}",
+  "+ 다음 운동 추가": "+ Ajouter l’exercice suivant",
+  "운동을 취소하고 기록을 삭제하시겠습니까?\n완료한 세트와 입력한 무게·횟수를 포함한 이번 운동 기록이 모두 삭제되며 복구할 수 없습니다.\n운동을 계속하려면 취소를 누르세요.": "Annuler cette séance et supprimer ses données ?\nToutes les données de cette séance, y compris les séries terminées, les charges et les répétitions, seront supprimées définitivement.\nAppuyez sur Annuler pour poursuivre la séance."
 }

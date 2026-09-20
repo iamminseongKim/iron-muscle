@@ -23,7 +23,7 @@ interface ExerciseCardProps {
   onToggleWeightUnit?: () => void;
   onUpdate: (updated: WorkoutExercise) => void;
   onDelete: () => void;
-  onTriggerRestTimer: (exerciseName: string, setId: string, setNumber: number) => void;
+  onTriggerRestTimer: (exerciseName: string, setId: string, setNumber: number, isLastSetOfExercise: boolean) => void;
   onOpenRpeGuide: () => void;
   onOpenGroupModal?: () => void;
   onUnlinkGroup?: () => void;
@@ -158,7 +158,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const isGrouped = Boolean(exerciseItem.groupId);
 
   return (
-    <div className={`bg-white dark:bg-[#1C1C1E] rounded-2xl border shadow-sm overflow-hidden transition-all ${
+    <div id={`exercise-${exerciseItem.id}`} className={`scroll-mt-24 bg-white dark:bg-[#1C1C1E] rounded-2xl border shadow-sm overflow-hidden transition-all ${
       isGrouped
         ? exerciseItem.groupType === 'superset'
           ? 'border-l-4 border-l-[#0F766E] border-black/5 dark:border-white/5'
@@ -622,9 +622,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             isAssisted={isAssisted}
             onUpdate={(updated) => handleUpdateSet(idx, updated)}
             onDelete={() => handleDeleteSet(idx)}
-            onCompleteToggle={(_comp, setId, setNum) =>
-              onTriggerRestTimer(exerciseName, setId, setNum)
-            }
+            onCompleteToggle={(comp, setId, setNum) => {
+              if (comp) onTriggerRestTimer(exerciseName, setId, setNum,
+                idx === exerciseItem.sets.length - 1 || exerciseItem.sets.every(s => s.id === setId || s.completed));
+            }}
             onOpenRpeGuide={onOpenRpeGuide}
           />
         ))}

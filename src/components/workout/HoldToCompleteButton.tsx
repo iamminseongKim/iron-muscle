@@ -8,6 +8,8 @@ interface HoldToCompleteButtonProps {
   holdDurationMs?: number; // 기본값 1500ms (1.5초)
   className?: string;
   disabled?: boolean;
+  label?: string;
+  holdingLabel?: string;
 }
 
 export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
@@ -15,6 +17,8 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
   holdDurationMs = 1500,
   className = '',
   disabled = false,
+  label,
+  holdingLabel,
 }) => {
   const [progress, setProgress] = useState<number>(0);
   const [isHolding, setIsHolding] = useState<boolean>(false);
@@ -33,11 +37,12 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
     }
   }, []);
 
-  const handleStart = (e: React.TouchEvent | React.MouseEvent) => {
-    if (disabled || completedRef.current) return;
+  const handleStart = (e: React.PointerEvent | React.KeyboardEvent) => {
+    if (disabled || completedRef.current || startTimeRef.current !== null) return;
     // 우클릭 등 방지
     if ('button' in e && e.button !== 0) return;
 
+    e.preventDefault();
     cleanupRaf();
     startTimeRef.current = performance.now();
     completedRef.current = false;
@@ -71,11 +76,12 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
         Haptics.notification({ type: NotificationType.Success }).catch(() => {});
 
         // 약간의 여운 후 완료 실행
-        setTimeout(() => {
+        holdStartTimerRef.current = window.setTimeout(() => {
           onComplete();
           // 완료 후 게이지 리셋
           setProgress(0);
           completedRef.current = false;
+          startTimeRef.current = null;
         }, 150);
         return;
       }
@@ -109,7 +115,17 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
   };
 
   useEffect(() => {
+    const cancelHold = () => {
+      cleanupRaf();
+      startTimeRef.current = null;
+      setIsHolding(false);
+      setProgress(0);
+    };
+    document.addEventListener("visibilitychange", cancelHold);
+    window.addEventListener("blur", cancelHold);
     return () => {
+      document.removeEventListener("visibilitychange", cancelHold);
+      window.removeEventListener("blur", cancelHold);
       cleanupRaf();
       if (holdStartTimerRef.current) clearTimeout(holdStartTimerRef.current);
     };
@@ -120,13 +136,15 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
       <div
         role="button"
         tabIndex={0}
-        aria-label={t("꾹 눌러서 운동 완료 (1.5초)")}
-        onTouchStart={handleStart}
-        onTouchEnd={handleEnd}
-        onTouchCancel={handleEnd}
-        onMouseDown={handleStart}
-        onMouseUp={handleEnd}
-        onMouseLeave={handleEnd}
+        aria-label={label || t("꾹 눌러서 운동 완료 (1.5초)")}
+        onKeyDown={e => { if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); handleStart(e); } }}
+        onKeyUp={e => { if (e.key === " " || e.key === "Enter") handleEnd(); }}
+        onBlur={handleEnd}
+        onPointerDown={handleStart}
+        onPointerUp={handleEnd}
+        onPointerCancel={handleEnd}
+        onPointerLeave={handleEnd}
+        style={{ touchAction: "none" }}
         className={`relative w-full overflow-hidden rounded-2xl p-4 text-center cursor-pointer transition-all duration-200 active:scale-[0.98] ${
           isShaking ? 'animate-[shake_0.4s_ease-in-out]' : ''
         } ${
@@ -151,9 +169,9 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
             className={`transition-transform duration-150 ${isHolding ? 'scale-110' : ''}`}
           />
           {isHolding ? (
-            <span>{t("운동 완료 중...")} {Math.round(progress * 100)}% ({t("손을 떼면 취소")})</span>
+            <span>{holdingLabel || t("운동 완료 중...")} {Math.round(progress * 100)}% ({t("손을 떼면 취소")})</span>
           ) : (
-            <span>{t("오늘 운동 완료 & 기록 저장 (1.5초간 꾹 누르기)")}</span>
+            <span>{label || t("오늘 운동 완료 & 기록 저장 (1.5초간 꾹 누르기)")}</span>
           )}
         </div>
       </div>

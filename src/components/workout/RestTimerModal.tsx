@@ -1,6 +1,8 @@
 import { t } from '../../i18n';
 import React, { useEffect, useState, useRef } from 'react';
 import { Play, Pause, RotateCcw, Plus, Minus, X, Check, Bell, Minimize2, GripHorizontal } from 'lucide-react';
+import { RestClock } from '../../utils/restClock';
+import { scheduleRestNotification, cancelRestNotification } from '../../utils/restNotifications';
 import { soundManager } from '../../utils/audio';
 
 interface RestTimerModalProps {
@@ -8,6 +10,9 @@ interface RestTimerModalProps {
   initialSeconds?: number;
   exerciseName?: string;
   setNumber?: number;
+  isLastSetOfExercise?: boolean;
+  nextExerciseName?: string;
+  onNextExercise?: () => void;
   onClose: (actualElapsedSeconds: number) => void;
   onFinishAndSave: (actualElapsedSeconds: number) => void;
 }
@@ -17,6 +22,9 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   initialSeconds = 90,
   exerciseName = '',
   setNumber = 1,
+  isLastSetOfExercise = false,
+  nextExerciseName,
+  onNextExercise,
   onClose,
   onFinishAndSave,
 }) => {
@@ -31,6 +39,31 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
     elapsedSeconds: number;
     isActive: boolean;
   } | null>(null);
+
+  const clockRef = useRef(new RestClock(initialSeconds));
+  const completedRef = useRef(false);
+  const nativeAlarmRef = useRef(false);
+  const alarmRevisionRef = useRef(0);
+  const armAlarm = () => {
+    const revision = ++alarmRevisionRef.current;
+    nativeAlarmRef.current = false;
+    cancelRestNotification();
+    const clock = clockRef.current;
+    if (!clock.running || clock.remaining <= 0) return;
+    void scheduleRestNotification(Date.now() + clock.remaining * 1000,
+      t('휴식 시간 완료!'), t('{exerciseName} - 다음 세트를 시작하세요.').replace('{exerciseName}', exerciseName))
+      .then(scheduled => { if (revision === alarmRevisionRef.current) nativeAlarmRef.current = scheduled; });
+  };
+  const sample = () => {
+    const value = clockRef.current.sample();
+    setRemainingSeconds(value.remaining);
+    setElapsedSeconds(value.elapsed);
+    if (value.remaining === 0 && !completedRef.current) {
+      completedRef.current = true;
+      if (!nativeAlarmRef.current) soundManager.playTimerComplete();
+    }
+    return value;
+  };
 
   // 1. 최소화 상태 플로팅 캡슐의 드래그 위치 (화면 우측 하단 기본)
   const [floatingPos, setFloatingPos] = useState<{ x: number; y: number } | null>(null);
@@ -51,6 +84,9 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
       }
       window.getSelection()?.removeAllRanges();
 
+      clockRef.current = new RestClock(initialSeconds);
+      completedRef.current = false;
+      armAlarm();
       setTargetSeconds(initialSeconds);
       setRemainingSeconds(initialSeconds);
       setElapsedSeconds(0);
@@ -59,6 +95,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
       setDragOffsetVisualY(0);
       setUndoBackup(null);
     }
+    return () => { ++alarmRevisionRef.current; cancelRestNotification(); };
   }, [isOpen, initialSeconds]);
 
   // 기본 플로팅 위치 초기화 (화면 크기 기준 우측 하단)
@@ -71,67 +108,66 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   }, [floatingPos]);
 
   useEffect(() => {
-    let interval: any = null;
-    if (isOpen && isActive) {
-      let lastTick = Date.now();
-      interval = setInterval(() => {
-        const now = Date.now();
-        const deltaSec = Math.max(1, Math.round((now - lastTick) / 1000));
-        lastTick = now;
-        setElapsedSeconds((prev) => prev + deltaSec);
-        setRemainingSeconds((prev) => {
-          if (prev - deltaSec <= 0) {
-            soundManager.playTimerComplete();
-            return 0;
-          }
-          return prev - deltaSec;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isOpen, isActive]);
+    if (!isOpen) return;
+    const refresh = () => { sample(); };
+    const interval = window.setInterval(refresh, 250);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const togglePlay = () => setIsActive(!isActive);
+  const togglePlay = () => {
+    const clock = clockRef.current;
+    if (clock.running) clock.pause(); else clock.resume();
+    setIsActive(clock.running);
+    sample();
+    armAlarm();
+  };
 
   const resetTimer = () => {
-    // 쉰 시간(elapsedSeconds)이 있는 경우 실수 리셋 복구를 위해 직전 상태 백업
-    if (elapsedSeconds > 0) {
-      setUndoBackup({
-        remainingSeconds,
-        targetSeconds,
-        elapsedSeconds,
-        isActive,
-      });
-    }
-    setRemainingSeconds(targetSeconds);
-    setElapsedSeconds(0);
+    const value = sample();
+    if (value.elapsed > 0) setUndoBackup({ remainingSeconds: clockRef.current.remaining,
+      targetSeconds, elapsedSeconds: clockRef.current.elapsed, isActive: clockRef.current.running });
+    clockRef.current = new RestClock(targetSeconds);
+    completedRef.current = false;
     setIsActive(true);
+    sample();
+    armAlarm();
   };
 
   const handleUndoReset = () => {
     if (!undoBackup) return;
-    setRemainingSeconds(undoBackup.remainingSeconds);
+    clockRef.current = new RestClock(undoBackup.remainingSeconds, undoBackup.elapsedSeconds, undoBackup.isActive);
+    completedRef.current = undoBackup.remainingSeconds <= 0;
     setTargetSeconds(undoBackup.targetSeconds);
-    setElapsedSeconds(undoBackup.elapsedSeconds);
     setIsActive(undoBackup.isActive);
     setUndoBackup(null);
+    sample();
+    armAlarm();
   };
 
   const adjustRemaining = (delta: number) => {
-    setRemainingSeconds((prev) => Math.max(0, prev + delta));
-    setTargetSeconds((prev) => Math.max(10, prev + delta));
+    sample();
+    clockRef.current.remaining = Math.max(0, clockRef.current.remaining + delta);
+    setTargetSeconds(prev => Math.max(10, prev + delta));
+    if (clockRef.current.remaining > 0) completedRef.current = false;
+    sample();
+    armAlarm();
   };
 
-  const handleFinish = () => {
-    soundManager.playSuccessSound();
-    onFinishAndSave(elapsedSeconds);
+  const finish = (save: boolean) => {
+    const value = clockRef.current.sample();
+    ++alarmRevisionRef.current;
+    cancelRestNotification();
+    if (save) soundManager.playSuccessSound();
+    (save ? onFinishAndSave : onClose)(value.elapsed);
   };
-
-  const handleDismiss = () => {
-    onClose(elapsedSeconds);
-  };
+  const handleFinish = () => finish(true);
+  const handleDismiss = () => finish(false);
 
   const formatTime = (secs: number) => {
     const mins = Math.floor(secs / 60);
@@ -311,7 +347,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
           transform: dragOffsetVisualY > 0 ? `translateY(${dragOffsetVisualY}px)` : undefined,
           transition: dragOffsetVisualY === 0 ? 'transform 0.2s ease-out' : 'none',
         }}
-        className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-sm overflow-hidden flex flex-col shadow-2xl p-6 text-center select-none"
+        className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-sm max-h-[90dvh] overflow-y-auto flex flex-col shadow-2xl p-6 text-center select-none"
       >
         {/* iOS 감성 풀다운 손잡이 바 (아래로 쓸어내리면 최소화) */}
         <div
@@ -349,6 +385,18 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
           </button>
         </div>
 
+        {isLastSetOfExercise && (
+          <div className="my-2 flex flex-col gap-2">
+            <span className="text-xs font-bold text-[#0F766E]">{t('🎉 종목 완료! 다음 운동 준비')}</span>
+            <button type="button" onClick={() => adjustRemaining(60)} className="rounded-xl bg-orange-500/10 p-2 text-sm font-bold text-orange-600">
+              {t('+60초 (기구 정리/이동)')}
+            </button>
+            <button type="button" onClick={() => { setIsMinimized(true); onNextExercise?.(); }} className="rounded-xl bg-teal-600 p-2 text-sm font-bold text-white">
+              {nextExerciseName ? t('다음 종목: {name}으로 이동').replace('{name}', nextExerciseName) : t('+ 다음 운동 추가')}
+            </button>
+          </div>
+        )}
+
         {/* 스와이프 다운 힌트 */}
         <p className="text-[10px] text-gray-400 -mt-1 mb-2">
           {t("💡 창을 아래로 쓸어내리면 작은 플로팅 타이머로 변경됩니다")}
@@ -363,7 +411,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               className="w-full py-2 px-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-indigo-500/15 transition active:scale-98 shadow-xs"
             >
               <RotateCcw size={13} className="rotate-180 text-indigo-500 shrink-0" />
-              <span>{t("실수로 리셋하셨나요? 방금 전")} <strong>{undoBackup.elapsedSeconds}{t("초 복구")}</strong></span>
+              <span>{t("실수로 리셋하셨나요? 방금 전")} <strong>{Math.floor(undoBackup.elapsedSeconds)}{t("초 복구")}</strong></span>
             </button>
           </div>
         )}
@@ -466,6 +514,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
           <button
             type="button"
             onClick={togglePlay}
+            aria-label={isActive ? t("일시정지") : t("재개")}
             className={`p-3.5 rounded-2xl font-bold flex items-center justify-center transition ${
               isActive
                 ? 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-300'
