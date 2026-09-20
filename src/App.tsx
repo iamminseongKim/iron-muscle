@@ -5,6 +5,8 @@ import React, { useState, useEffect, lazy, Suspense, memo, useCallback, useRef }
 import { useKeyboardViewport } from './hooks/useKeyboardViewport';
 import { Lock } from 'lucide-react';
 import { HoldToCompleteButton } from './components/workout/HoldToCompleteButton';
+import { OfflineStatus } from './components/common/OfflineStatus';
+import { RecoveryUndo } from './components/library/RecoveryPanel';
 import { Header } from './components/common/Header';
 import { TabNavigation } from './components/common/TabNavigation';
 const ExerciseExplorer = lazy(() => import('./components/explore/ExerciseExplorer').then(module => ({default: module.ExerciseExplorer})));
@@ -21,13 +23,23 @@ export const App: React.FC = () => {
     document.documentElement.lang = language;
     document.title = t('아이언 머슬 | 쇠와 땀, 묵묵한 성장의 여정');
   }, [language]);
-  const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics' | 'explore' | 'my'>('workout');
+  const [activeTab, setActiveTab] = useState<'workout' | 'history' | 'analytics' | 'explore' | 'my'>(() => location.hash.startsWith('#routine=') ? 'my' : 'workout');
 
   useEffect(() => {
     void refreshHealth();
     const refresh = () => { if (!document.hidden) void refreshHealth(); };
     document.addEventListener('visibilitychange', refresh);
     return () => document.removeEventListener('visibilitychange', refresh);
+  }, []);
+
+  useEffect(() => {
+    const open = () => setActiveTab('workout');
+    const library = () => { setActiveTab('my'); requestAnimationFrame(() => document.getElementById('routine-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' })); };
+    window.addEventListener('iron_open_library', library);
+    const shared = () => { if (location.hash.startsWith('#routine=')) setActiveTab('my'); };
+    window.addEventListener('iron_open_workout', open);
+    window.addEventListener('hashchange', shared);
+    return () => { window.removeEventListener('iron_open_library', library); window.removeEventListener('iron_open_workout', open); window.removeEventListener('hashchange', shared); };
   }, []);
 
   const onWorkoutCompleted = useCallback(() => setActiveTab('history'), []);
@@ -86,7 +98,7 @@ export const App: React.FC = () => {
       setActiveSession(current);
       if (current) {
         // 💡 세션 갱신 이벤트 발생 시에도 이미 진행 중인 초수가 0이나 이전 값으로 떨어지지 않도록 보존
-        setTotalWorkoutSeconds((prev) => Math.max(prev, current.durationSeconds || 0));
+        setTotalWorkoutSeconds((prev) => activeSession?.id === current.id ? Math.max(prev, current.durationSeconds || 0) : current.durationSeconds || 0);
         if (!activeSession || activeSession.id !== current.id) setIsWorkoutTimerRunning(true);
       } else {
         setTotalWorkoutSeconds(0);
@@ -167,6 +179,8 @@ export const App: React.FC = () => {
       />
 
 
+      <OfflineStatus />
+      <RecoveryUndo />
       {/* 메인 컨텐츠 */}
       <main className="flex-1 w-full pt-2"><Suspense fallback={<div role="status" className="p-8 text-center">…</div>}>
         {(activeTab === 'workout' || activeSession) && (<div hidden={activeTab !== 'workout'}>

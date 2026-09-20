@@ -1,12 +1,12 @@
 {
   "name": "iron-muscle-tracker",
   "private": true,
-  "version": "3.29.0",
+  "version": "3.30.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "test": "node scripts/run-all-tests.mjs",
-    "build": "tsc && vite build && node scripts/compact-models.mjs",
+    "build": "tsc && vite build && node scripts/compact-models.mjs && node scripts/build-offline.mjs",
     "preview": "vite preview",
     "cap:sync": "cap sync",
     "cap:android": "cap open android",

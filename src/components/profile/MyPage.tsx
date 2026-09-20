@@ -1,3 +1,5 @@
+import { RoutineLibrary } from '../library/RoutineLibrary';
+import { RecoveryPanel } from '../library/RecoveryPanel';
 import React, { useEffect, useState } from 'react';
 import { Heart, User, Settings, Shield, Dumbbell, ChevronRight } from 'lucide-react';
 import { t, getLanguage } from '../../i18n';
@@ -182,6 +184,8 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
       <div className="flex justify-between items-center text-sm"><span>{t('테마')}</span><button onClick={onToggleTheme} className="p-3 rounded-xl bg-gray-100 dark:bg-white/10">{t(isDark ? '다크' : '라이트')}</button></div>
       <div className="flex justify-between items-center text-sm"><span>{t('표시 무게 단위')}</span><button onClick={() => { onToggleWeightUnit(); setWeightInput(''); }} className="p-3 rounded-xl bg-gray-100 dark:bg-white/10">{weightUnit}</button></div>
     </section>
+    <RoutineLibrary />
+    <RecoveryPanel />
     <BackupPanel onRestored={() => {}}/>
     <details className={section}>
       <summary className="font-bold cursor-pointer"><Shield size={18} className="inline mr-2"/>{t('건강 데이터 개인정보 안내')}</summary>

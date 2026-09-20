@@ -1,6 +1,6 @@
 import exportMessages from '../../i18n/exportMessages.json';
 import { useLanguage, t, displayExercise } from '../../i18n';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Calendar, ChevronLeft, ChevronRight, Download, Copy, Check, 
   Sparkles, Bot, Clock, Dumbbell, Flame, Zap, Trophy, MessageSquare, 
@@ -9,6 +9,7 @@ import {
 import { WorkoutSession, WorkoutExercise, WeightUnit } from '../../types/workout';
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE } from '../../utils/calculations';
+import { removeSession, removeAllSessions, saveWithRecovery } from '../../utils/recovery';
 import { loadSavedSessions, saveSessions, clearAllSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { WorkoutShareCard } from './WorkoutShareCard';
 import { BackupPanel } from './BackupPanel';
@@ -111,11 +112,17 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
   };
 
   // 과거 운동 삭제 핸들러
+  useEffect(() => {
+    const refresh = () => setSessions(loadSavedSessions());
+    window.addEventListener('iron_sessions_change', refresh);
+    window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener('iron_sessions_change', refresh); window.removeEventListener('storage', refresh); };
+  }, []);
+
   const handleDeleteSession = (sessionId: string, sessionDate: string) => {
     if (window.confirm(`${sessionDate} ${t("의 운동 기록을 정말 삭제하시겠습니까?")}`)) {
-      const updated = sessions.filter((s) => s.id !== sessionId);
-      setSessions(updated);
-      saveSessions(updated);
+      try { removeSession(sessionId, 'history'); }
+      catch (error) { alert(t((error as Error).message)); }
     }
   };
 
@@ -127,9 +134,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
   // 과거 운동 수정 저장
   const handleSaveEditedSession = (updatedSession: WorkoutSession) => {
-    const updated = sessions.map((s) => (s.id === updatedSession.id ? updatedSession : s));
-    setSessions(updated);
-    saveSessions(updated);
+    try { saveWithRecovery(updatedSession, 'history'); }
+    catch (error) { alert(t((error as Error).message)); }
   };
 
   // 오늘 운동 기록 합치기 피드백
@@ -176,9 +182,9 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
   // 전체 기록 초기화
   const handleClearAllHistory = () => {
-    if (window.confirm(t('저장된 모든 운동 기록을 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))) {
-      clearAllSessions();
-      setSessions([]);
+    if (window.confirm(t('모든 운동 기록을 복구함으로 옮기시겠습니까? 30일간 복원할 수 있습니다.'))) {
+      try { removeAllSessions(); }
+      catch (error) { alert(t((error as Error).message)); }
     }
   };
 

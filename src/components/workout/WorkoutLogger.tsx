@@ -1,3 +1,4 @@
+import { removeSession, saveWithRecovery } from '../../utils/recovery';
 import { loadHealthPreferences, enqueueWorkout } from '../../services/health/healthStore';
 import { flushWorkoutExports } from '../../services/health/healthService';
 import { displayExercise, t } from '../../i18n';
@@ -50,6 +51,15 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<Set<string>>(new Set());
   const [session, setSession] = useState<WorkoutSession | null>(() => loadActiveSession());
 
+  useEffect(() => {
+    const refresh = () => setSession(loadActiveSession());
+    window.addEventListener('iron_active_session_change', refresh);
+    window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener('iron_active_session_change', refresh); window.removeEventListener('storage', refresh); };
+  }, []);
+
+  const openLibrary = () => window.dispatchEvent(new Event('iron_open_library'));
+
   // 대기(Idle) 화면 상태
   const [selectedPartIds, setSelectedPartIds] = useState<string[]>(['chest']);
   const [customTitle, setCustomTitle] = useState<string>('');
@@ -71,6 +81,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     exerciseId: string;
     isLastSetOfExercise: boolean;
     runId: number;
+    initialSeconds: number;
   }>({
     isOpen: false,
     exerciseName: '',
@@ -79,6 +90,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     exerciseId: "",
     isLastSetOfExercise: false,
     runId: 0,
+    initialSeconds: 90,
   });
 
   // 구버전 로컬스토리지 데이터 자동 치유
@@ -174,9 +186,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   // 운동 취소 (확인 팝업 후 초기화)
   const handleCancelWorkout = () => {
-    if (window.confirm(t('운동을 취소하고 기록을 삭제하시겠습니까?\n완료한 세트와 입력한 무게·횟수를 포함한 이번 운동 기록이 모두 삭제되며 복구할 수 없습니다.\n운동을 계속하려면 취소를 누르세요.'))) {
-      saveActiveSession(null);
-      setSession(null);
+    if (window.confirm(t('운동을 취소하시겠습니까? 기록은 복구함에서 30일간 복원할 수 있습니다.'))) {
+      try { if (session) removeSession(session.id, 'active'); }
+      catch (error) { alert(t((error as Error).message)); }
     }
   };
 
@@ -275,8 +287,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       durationSeconds: getLatestDuration(),
       exercises: newExercises,
     };
-    setSession(updated);
-    saveActiveSession(updated);
+    try { saveWithRecovery(updated, 'active'); }
+    catch (error) { alert(t((error as Error).message)); }
   };
 
   const handleDeleteExercise = (index: number) => {
@@ -287,8 +299,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       durationSeconds: getLatestDuration(),
       exercises: newExercises,
     };
-    setSession(updated);
-    saveActiveSession(updated);
+    try { saveWithRecovery(updated, 'active'); }
+    catch (error) { alert(t((error as Error).message)); }
   };
 
   // 종목 묶기 (슈퍼세트/컴파운드세트)
@@ -358,6 +370,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       isLastSetOfExercise,
       exerciseId,
       runId: restTimerState.runId + 1,
+      initialSeconds: session?.exercises.find(e => e.id === exerciseId)?.sets.find(s => s.id === setId)?.plannedRestSeconds ?? 90,
     });
   };
 
@@ -466,6 +479,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         </div>
 
         <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
+          <button type="button" onClick={openLibrary} className="col-span-full rounded-xl bg-teal-600/10 p-3 text-sm font-bold text-teal-700">{t('루틴 레시피 · 복구함')}</button>
           {/* 좌측 패널 (목표 부위 선택 & 안내) */}
           <div className="space-y-4 md:col-span-6 lg:col-span-6 md:sticky md:top-16">
             {/* 1. 운동 부위 다중 선택 카드 */}
@@ -799,6 +813,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         </div>
       </div>
 
+      <button type="button" onClick={openLibrary} className="w-full rounded-xl bg-teal-600/10 p-3 text-sm font-bold text-teal-700">{t('루틴 레시피 · 복구함')}</button>
       {/* 대형 원형 스마트 휴식 타이머 모달 */}
       <RestTimerModal
         key={restTimerState.runId}
@@ -812,7 +827,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           requestAnimationFrame(() => document.getElementById(`exercise-${nextRestExercise.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
         }}
         isOpen={restTimerState.isOpen}
-        initialSeconds={90}
+        initialSeconds={restTimerState.initialSeconds}
         exerciseName={restTimerState.exerciseName}
         setNumber={restTimerState.setNumber}
         onClose={handleSaveRestTimeToSet}

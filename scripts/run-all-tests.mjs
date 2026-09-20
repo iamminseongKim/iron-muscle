@@ -24,6 +24,7 @@ const testFiles = [
   'test-gym-workout.mjs',
   'test-equipment.mjs',
   'test-calendar.mjs',
+  'test-web-features.mjs',
 ];
 
 const startTime = Date.now();

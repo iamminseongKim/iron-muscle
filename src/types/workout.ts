@@ -55,6 +55,7 @@ export interface WorkoutSet {
   tags?: string[]; // '웜업', '탑세트', '백오프', '드롭세트', '실패지점', '스트랩 착용' 등
   previousWeight?: number;
   previousReps?: number;
+  plannedRestSeconds?: number; // 루틴에서 지정한 목표 휴식 시간
   restSeconds?: number; // 실제로 소요된 휴식 시간 (초)
   side?: 'left' | 'right' | 'both'; // 편측(원암/원레그) 수행 시 좌/우 기록
 }
