@@ -141,13 +141,20 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
     if (line) lines.push(line);
     return lines;
   };
-  const rows = summary.exercises.map(row => ({ ...row, lines: wrap(row.name),
-    details: wrap(`${row.groupLabel ? `[${row.groupLabel}] · ` : ''}${number(row.sets)} ${m.sets} · ${number(row.reps)} ${m.reps} · ${row.maxWeight > 0 ? `${m.best} ${number(row.maxWeight)} ${summary.unit}` : m.bodyweight}`, 27, 860)
+  // Ease into a denser layout as the list grows. Keep every exercise and its details.
+  const density = Math.min(1, Math.max(0, (summary.exercises.length - 7) / 8));
+  const nameSize = 36 - 6 * density, detailSize = 27 - 4 * density;
+  const nameLine = 44 - 11 * density, detailLine = 34 - 7 * density;
+  const titleOffset = 60 - 22 * density, rowPadding = 66 - 46 * density;
+  const rows = summary.exercises.map(row => ({ ...row, lines: wrap(row.name, nameSize),
+    details: wrap(`${row.groupLabel ? `[${row.groupLabel}] · ` : ''}${number(row.sets)} ${m.sets} · ${number(row.reps)} ${m.reps} · ${row.maxWeight > 0 ? `${m.best} ${number(row.maxWeight)} ${summary.unit}` : m.bodyweight}`, detailSize, 860)
   }));
   const titleLines = wrap(`${style.title.trim() || t('오늘의 운동')}${style.author ? ` — ${style.author}` : ''}`, 64, 944);
   const extraHeight = Math.max(0, titleLines.length - 1) * 76;
+  const listTop = 525 + extraHeight - 70 * density;
+  const listHeight = rows.reduce((sum, row) => sum + rowPadding + row.lines.length * nameLine + row.details.length * detailLine, 0);
   canvas.width = 1080;
-  canvas.height = Math.max(1630 + extraHeight, 930 + extraHeight + rows.reduce((sum, row) => sum + 66 + row.lines.length * 44 + row.details.length * 34, 0));
+  canvas.height = Math.max(1630 + extraHeight, listTop + listHeight + 390);
   const darkText = style.textColor === 'black' || (style.textColor === 'auto' && !photo && light);
   const bg = light ? '#F2F2F7' : '#000000';
   const fg = darkText ? '#1D1D1F' : '#FFFFFF';
@@ -165,7 +172,7 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
   const text = (value: string, x: number, y: number, size: number, color = fg, bold = false) => {
-    const maxWidth = y > canvas.height - 110 && x === 68 ? 640 : x === 68 || x === 398 || x === 728 ? (y === 410 + extraHeight ? 290 : canvas.width - x - 64) : canvas.width - x - 48;
+    const maxWidth = y > canvas.height - 110 && x === 68 ? 640 : x === 68 || x === 398 || x === 728 ? (y === 410 + extraHeight - 30 * density ? 290 : canvas.width - x - 64) : canvas.width - x - 48;
     ctx.font = `${bold ? 'bold' : 'normal'} ${size}px ${font}`;
     const measured = ctx.measureText(value).width;
     if (measured > maxWidth) ctx.font = `${bold ? 'bold' : 'normal'} ${size * maxWidth / measured}px ${font}`;
@@ -177,15 +184,15 @@ export function renderWorkoutCard(summary: ReturnType<typeof summarizeWorkoutDay
   text(summary.date.replace(/-/g, '.'), 68, 261 + extraHeight, 30, muted);
   const stats = [[String(summary.exerciseCount), t('운동 종목')], [String(summary.sets), t('완료 세트')], [String(Math.round(summary.seconds / 60)), t('운동 시간 (분)')]];
   stats.forEach(([value, label], i) => {
-    text(value, 68 + i * 330, 366 + extraHeight, 68, accent, true); text(label, 68 + i * 330, 410 + extraHeight, 26, muted); });
-  text(`${m.reps}: ${number(summary.reps)}  /  ${m.volume}: ${number(summary.volume)} ${summary.unit}`, 68, 476 + extraHeight, 30, fg, true);
-  let y = 525 + extraHeight;
+    text(value, 68 + i * 330, 366 + extraHeight - 30 * density, 68 - 6 * density, accent, true); text(label, 68 + i * 330, 410 + extraHeight - 30 * density, 26 - 2 * density, muted); });
+  text(`${m.reps}: ${number(summary.reps)}  /  ${m.volume}: ${number(summary.volume)} ${summary.unit}`, 68, 476 + extraHeight - 55 * density, 30 - 2 * density, fg, true);
+  let y = listTop;
   rows.forEach((row, index) => {
     ctx.fillStyle = darkText ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.22)'; ctx.fillRect(64, y, 952, 1);
-    text(String(index + 1).padStart(2, '0'), 68, y + 59, 27, accent, true);
-    row.lines.forEach((line, n) => text(line, 140, y + 60 + n * 44, 36, fg, true));
-    row.details.forEach((line, n) => text(line, 140, y + 60 + row.lines.length * 44 + n * 34, 27, muted));
-    y += 66 + row.lines.length * 44 + row.details.length * 34;
+    text(String(index + 1).padStart(2, '0'), 68, y + titleOffset, 27 - 3 * density, accent, true);
+    row.lines.forEach((line, n) => text(line, 140, y + titleOffset + n * nameLine, nameSize, fg, true));
+    row.details.forEach((line, n) => text(line, 140, y + titleOffset + row.lines.length * nameLine + n * detailLine, detailSize, muted));
+    y += rowPadding + row.lines.length * nameLine + row.details.length * detailLine;
   });
   if (style.anatomy) {
     ctx.save();

@@ -27,15 +27,26 @@ try {
    drawn=[];
    const png=renderWorkoutCard(summary,{light:true,title:quote,anatomy,textColor:'auto',overlay:0.45});
    results.push({language,png,texts:drawn,expected:t('주동근')});
-  }}finally{CanvasRenderingContext2D.prototype.fillText=original;}
-  return results;
+  }
+  setLanguage('ko');drawn=[];
+  const names=['원레그 머신 레그 익스텐션','시티드 레그 컬','루마니안 데드리프트','원레그 핵프레스','V-스쿼트 (V-Squat)','덤벨 풀오버','바벨 벤치프레스 (미디엄 그립)','케이블 크로스오버','딥스 (체스트 가슴 버전)','머신 인클라인 프레스','케이블 크로스오버 리어 델트 플라이','스미스 머신 숄더 프레스','스미스머신 비하인드 넥 프레스','원암 케이블 레터럴 레이즈','인클라인 EZ바 트라이셉스 익스텐션'];
+  const longSummary=summarizeWorkoutDay([{date:'2026-09-13',durationSeconds:7920,exercises:names.map((name,i)=>({exerciseId:`custom-${i}`,exerciseName:name,sets:[{completed:true,weight:20,reps:10}]}))}],'2026-09-13');
+  const densePng=renderWorkoutCard(longSummary,{light:true,title:'완벽하지 않아도, 꾸준하게.',anatomy,textColor:'auto',overlay:0.45});
+  const denseImage=new Image();denseImage.src=densePng;await denseImage.decode();
+  return {results,dense:{png:densePng,height:denseImage.naturalHeight,texts:drawn,names}};
+  }finally{CanvasRenderingContext2D.prototype.fillText=original;}
  });
- for(const result of results){
+ for(const result of results.results){
   assert.ok(result.png.startsWith('data:image/png;base64,'));
   assert.ok(result.texts.some(text=>text.value.includes(result.expected)));
   if(result.language!=='ko')assert.ok(result.texts.every(text=>!/[가-힣]/.test(text.value)),result.language);
   assert.ok(result.texts.every(text=>text.x+text.width<=text.canvasWidth-30),`${result.language} text overflow`);
   if(process.env.SCREENSHOT_DIR){fs.mkdirSync(process.env.SCREENSHOT_DIR,{recursive:true});fs.writeFileSync(`${process.env.SCREENSHOT_DIR}/card-${result.language}.png`,Buffer.from(result.png.split(',')[1],'base64'));}
  }
+ assert.ok(results.dense.height<=2200,`15-exercise card too tall: ${results.dense.height}`);
+ for(const name of results.dense.names)assert.ok(results.dense.texts.some(text=>text.value===name),`missing exercise: ${name}`);
+ assert.ok(results.dense.texts.every(text=>text.x+text.width<=text.canvasWidth-30),'dense card text overflow');
+ if(process.env.SCREENSHOT_DIR)fs.writeFileSync(`${process.env.SCREENSHOT_DIR}/card-dense-ko.png`,Buffer.from(results.dense.png.split(',')[1],'base64'));
  console.log('PASS all 31 captions and athlete attribution in 8 languages; PNG output, translated legends/groups, distinct captions and text bounds');
+ console.log(`PASS 15-exercise compact card: ${results.dense.height}px high with all exercise names visible`);
 }finally{await browser.close()}
