@@ -13,6 +13,7 @@ import {
 import { GrowthExercisePicker } from './GrowthExercisePicker';
 import { buildGrowthExerciseOptions } from '../../utils/growthExercises';
 import { loadCustomExercises, loadSavedSessions } from '../../utils/storage';
+import { ConditionIcon } from '../common/ConditionIcon';
 
 interface HistoryDashboardProps {
   weightUnit?: WeightUnit;
@@ -46,7 +47,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
         {/* 좌측 패널: 누적 통계, 디로딩 주기화, 종목별 성장 지표 (고정) */}
         <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">
           {/* 상단 누적 통계 카드 (헬스케어 통계 스타일) */}
-          <div className="p-5 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
+          <div className="soft-surface p-5 bg-white dark:bg-[#1C211E] space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("나의 트레이닝 통계")}</span>
               <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/10 text-[#34C759] text-[11px] font-extrabold">
@@ -73,7 +74,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
           </div>
 
           {/* 🔄 디로딩 피로도 분석 */}
-          <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2.5">
+          <div className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 rounded-xl bg-indigo-500/10 text-indigo-500">
@@ -89,7 +90,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                   ? 'bg-red-500/10 text-[#0F766E]'
                   : 'bg-indigo-500/10 text-indigo-500'
               }`}>
-                {deloadAnalysis.shouldDeload ? t("⚠️ 디로딩 권장") : t("⚡ 컨디션 최적")}
+                {deloadAnalysis.shouldDeload ? t("디로딩 권장") : t("컨디션 최적")}
               </span>
             </div>
 
@@ -105,7 +106,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
           </div>
 
           {/* 🚀 종목별 통합 성장 지표 (Cross-Brand Growth) */}
-          <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
+          <div className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
@@ -142,7 +143,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                   {progression.records.length < 2
                     ? t('기록 측정 중')
                     : progression.growthRate > 0
-                    ? `+${progression.growthRate}% ${t("성장 🚀")}`
+                    ? `+${progression.growthRate}% ${t("성장")}`
                     : progression.growthRate === 0
                     ? `0.0% (${t("유지")})`
                     : `${progression.growthRate}%`}
@@ -203,7 +204,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
             </h3>
 
             {history.length === 0 ? (
-              <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-2">
+              <div className="soft-surface py-12 text-center bg-white dark:bg-[#1C211E] p-6 space-y-2">
                 <Calendar size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
                 <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{t("기록된 운동이 없습니다.")}</p>
               </div>
@@ -213,10 +214,10 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
           const completedExercises = sess.exercises;
 
           return (
-            <div key={sess.id} className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2.5">
+            <div key={sess.id} className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-2.5">
               <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl leading-none">{sess.conditionEmoji || '💪'}</span>
+                  <ConditionIcon condition={sess.conditionEmoji} size={20} />
                   <div>
                     <h4 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white">{sess.title}</h4>
                     <span className="text-[11px] text-gray-400">{sess.date}</span>

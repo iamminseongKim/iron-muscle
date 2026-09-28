@@ -87,7 +87,7 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
         {/* Modal Content */}
         <div className="p-4 overflow-y-auto space-y-3.5 text-sm">
           <div className="bg-red-500/10 dark:bg-red-950/30 p-3.5 rounded-2xl border border-red-500/20 text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-            <strong className="text-red-600 dark:text-red-400 font-bold block mb-1">{t("💡 RPE란 무엇인가요?")}</strong>
+            <strong className="text-red-600 dark:text-red-400 font-bold block mb-1">{t("RPE란 무엇인가요?")}</strong>
             {t("RPE (Rating of Perceived Exertion)는 '세트를 마쳤을 때 얼마나 힘들었는지'를 6~10점 척도로 매기는 운동 자각도입니다.")}
             <span className="block mt-1 text-amber-700 dark:text-amber-300">
               {t("RIR(Reps in Reserve)은 '실패 지점까지 앞으로 몇 번을 더 들 수 있었는가'를 의미합니다. (예: RPE 8 = RIR 2, 즉 2개 더 가능)")}

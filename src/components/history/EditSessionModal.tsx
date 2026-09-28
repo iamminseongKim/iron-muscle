@@ -7,6 +7,7 @@ import {
 import { WorkoutSession, WorkoutExercise, WorkoutSet, Category, EquipmentType } from '../../types/workout';
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { AddExerciseModal } from '../workout/AddExerciseModal';
+import { ConditionIcon } from '../common/ConditionIcon';
 
 interface EditSessionModalProps {
   isOpen: boolean;
@@ -226,7 +227,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                         conditionEmoji === em ? 'bg-black/10 dark:bg-white/20 scale-110' : 'opacity-50 hover:opacity-100'
                       }`}
                     >
-                      {em}
+                      <ConditionIcon condition={em} size={16} />
                     </button>
                   ))}
                 </div>

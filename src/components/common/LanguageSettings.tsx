@@ -2,15 +2,15 @@ import React from 'react';
 import { Globe } from 'lucide-react';
 import { useLanguage, setLanguage, Language, t } from '../../i18n';
 
-const LANGUAGE_OPTIONS: Array<{ id: Language; label: string; flag: string }> = [
-  { id: 'en', label: 'English', flag: '🇺🇸' },
-  { id: 'ko', label: '한국어', flag: '🇰🇷' },
-  { id: 'ja', label: '日本語', flag: '🇯🇵' },
-  { id: 'zh-CN', label: '简体中文', flag: '🇨🇳' },
-  { id: 'zh-TW', label: '繁體中文', flag: '🇹🇼' },
-  { id: 'es', label: 'Español', flag: '🇪🇸' },
-  { id: 'fr', label: 'Français', flag: '🇫🇷' },
-  { id: 'de', label: 'Deutsch', flag: '🇩🇪' },
+const LANGUAGE_OPTIONS: Array<{ id: Language; label: string; code: string }> = [
+  { id: 'en', label: 'English', code: 'EN' },
+  { id: 'ko', label: '한국어', code: 'KO' },
+  { id: 'ja', label: '日本語', code: 'JA' },
+  { id: 'zh-CN', label: '简体中文', code: '简' },
+  { id: 'zh-TW', label: '繁體中文', code: '繁' },
+  { id: 'es', label: 'Español', code: 'ES' },
+  { id: 'fr', label: 'Français', code: 'FR' },
+  { id: 'de', label: 'Deutsch', code: 'DE' },
 ];
 
 export function LanguageSettings() {
@@ -24,12 +24,12 @@ export function LanguageSettings() {
           <span>Language · 언어 · 言語 · 语言</span>
         </div>
         <span className="text-[10px] text-gray-400 font-medium">
-          {LANGUAGE_OPTIONS.find(l => l.id === currentLang)?.flag} {LANGUAGE_OPTIONS.find(l => l.id === currentLang)?.label}
+          {LANGUAGE_OPTIONS.find(l => l.id === currentLang)?.label}
         </span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-        {LANGUAGE_OPTIONS.map(({ id, label, flag }) => {
+        {LANGUAGE_OPTIONS.map(({ id, label, code }) => {
           const isSelected = currentLang === id;
           return (
             <button
@@ -42,7 +42,7 @@ export function LanguageSettings() {
                   : 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/15'
               }`}
             >
-              <span className="text-sm">{flag}</span>
+              <span className="text-[10px] font-extrabold opacity-70">{code}</span>
               <span className="truncate">{label}</span>
             </button>
           );

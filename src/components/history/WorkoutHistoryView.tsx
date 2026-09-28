@@ -14,6 +14,7 @@ import { loadSavedSessions, saveSessions, clearAllSessions, loadSampleDataForDem
 import { WorkoutShareCard } from './WorkoutShareCard';
 import { BackupPanel } from './BackupPanel';
 import { EditSessionModal } from './EditSessionModal';
+import { ConditionIcon } from '../common/ConditionIcon';
 import { saveFileToDevice } from '../../utils/nativeFile';
 import { mergeDaySessions } from '../../utils/sessionMerge';
 import {
@@ -381,7 +382,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           {viewScope === 'daily' && (
             <div className="space-y-3">
               {/* 날짜 네비게이터 */}
-          <div className="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3 rounded-2xl border border-black/5 dark:border-white/5 shadow-xs">
+          <div className="flex items-center justify-between bg-white dark:bg-[#1C211E] p-3 soft-surface">
             <button
               onClick={handlePrevDay}
               className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
@@ -452,7 +453,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           {viewScope === 'monthly' && (
             <div className="space-y-3">
               {/* 월 네비게이터 */}
-          <div className="flex items-center justify-between bg-white dark:bg-[#1C1C1E] p-3 rounded-2xl border border-black/5 dark:border-white/5 shadow-xs">
+          <div className="flex items-center justify-between bg-white dark:bg-[#1C211E] p-3 soft-surface">
             <button
               onClick={handlePrevMonth}
               aria-label={t("이전 달")}
@@ -484,7 +485,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           </div>
 
           {/* 월간 요약 카드 */}
-          <div className="grid grid-cols-3 gap-2 text-center bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
+          <div className="grid grid-cols-3 gap-2 text-center bg-white dark:bg-[#1C211E] p-4 soft-surface">
             <div>
               <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 운동 횟수")}</span>
               <span className="text-xl font-black text-[#1D1D1F] dark:text-white">{monthlySessions.length} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
@@ -506,7 +507,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           </div>
 
           {/* 월간 출석 체크 캘린더 히트맵 (잔디 달력) */}
-          <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-2">
+          <div className="bg-white dark:bg-[#1C211E] p-4 soft-surface space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-gray-500 mb-2">
               <span>{t("월간 출석 캘린더")}</span>
               <span className="text-[11px] text-gray-400">{t("날짜 클릭 시 해당 일지 조회")}</span>
@@ -604,11 +605,11 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-center">
-            <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
+            <div className="bg-white dark:bg-[#1C211E] p-4 soft-surface">
               <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 총 운동 일수")}</span>
               <span className="text-2xl font-black text-[#1D1D1F] dark:text-white">{yearlySessions.length} <span className="text-xs font-normal text-gray-400">{t("일")}</span></span>
             </div>
-            <div className="bg-white dark:bg-[#1C1C1E] p-4 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm">
+            <div className="bg-white dark:bg-[#1C211E] p-4 soft-surface">
               <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 누적 볼륨")}</span>
               <span className="text-2xl font-black text-[#0F766E]">
                 {Math.round(yearlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0) / 1000).toLocaleString()} <span className="text-xs font-normal text-gray-400">{t("톤")}</span>
@@ -625,7 +626,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             <div className="space-y-3">
                         {/* 해당 일자의 운동 목록 */}
           {dailySessions.length === 0 ? (
-            <div className="py-12 text-center bg-white dark:bg-[#1C1C1E] rounded-3xl border border-dashed border-black/10 dark:border-white/10 p-6 space-y-3">
+            <div className="py-12 text-center bg-white dark:bg-[#1C211E] soft-surface p-6 space-y-3">
               <Dumbbell size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
               <div>
                 <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
@@ -658,13 +659,13 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               return (
                 <div
                   key={session.id}
-                  className="bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 p-4 shadow-sm space-y-3"
+                  className="bg-white dark:bg-[#1C211E] soft-surface p-4 space-y-3"
                 >
                   {/* 세션 헤더 */}
                   <div className="flex items-start justify-between pb-3 border-b border-black/5 dark:border-white/5 flex-wrap gap-2">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-lg leading-none">{session.conditionEmoji || '💪'}</span>
+                        <ConditionIcon condition={session.conditionEmoji} size={18} />
                         <h3 className="text-base font-extrabold text-[#1D1D1F] dark:text-white">
                           {session.title || t("오늘의 운동")}
                         </h3>
@@ -832,7 +833,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 className="p-3 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-between hover:border-[#0F766E] transition cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="text-lg">{s.conditionEmoji || '💪'}</span>
+                  <ConditionIcon condition={s.conditionEmoji} size={18} />
                   <div>
                     <h4 className="text-xs font-bold text-[#1D1D1F] dark:text-white">{s.title || t("오늘의 운동")}</h4>
                     <span className="text-[11px] text-gray-400">{s.date} · {s.exercises.length}{t("개 종목")}</span>
@@ -919,7 +920,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       className="p-3 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-between hover:border-[#0F766E] transition cursor-pointer"
                     >
                       <div className="flex items-center gap-2.5">
-                        <span className="text-lg">{s.conditionEmoji || '💪'}</span>
+                        <ConditionIcon condition={s.conditionEmoji} size={18} />
                         <div>
                           <h4 className="text-xs font-bold text-[#1D1D1F] dark:text-white">{s.title || t("오늘의 운동")}</h4>
                           <span className="text-[11px] text-gray-400">{s.date} · {s.exercises.length}{t("개 종목")}</span>

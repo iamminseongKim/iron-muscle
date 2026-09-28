@@ -120,7 +120,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                 >
                   <div className="flex items-center gap-1.5 font-bold text-xs mb-1">
                     <Zap size={14} className="text-[#0F766E]" />
-                    {t("⚡ 슈퍼세트")}
+                    {t("슈퍼세트")}
                   </div>
                   <p className="text-[11px] text-gray-400 leading-tight">
                     {t("길항근 / 다른 부위 2개 종목을 번갈아 수행 (예: 이두+삼두, 가슴+등)")}
@@ -138,7 +138,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                 >
                   <div className="flex items-center gap-1.5 font-bold text-xs mb-1">
                     <Flame size={14} className="text-[#FF9500]" />
-                    {t("🔥 컴파운드세트")}
+                    {t("컴파운드세트")}
                   </div>
                   <p className="text-[11px] text-gray-400 leading-tight">
                     {t("같은 부위 2개 종목을 연속 수행하여 완전 탈진 유도")}

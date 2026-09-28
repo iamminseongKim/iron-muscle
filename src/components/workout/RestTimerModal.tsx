@@ -387,7 +387,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
 
         {isLastSetOfExercise && (
           <div className="my-2 flex flex-col gap-2">
-            <span className="text-xs font-bold text-[#0F766E]">{t('🎉 종목 완료! 다음 운동 준비')}</span>
+            <span className="text-xs font-bold text-[#0F766E]">{t('종목 완료! 다음 운동 준비')}</span>
             <button type="button" onClick={() => adjustRemaining(60)} className="rounded-xl bg-orange-500/10 p-2 text-sm font-bold text-orange-600">
               {t('+60초 (기구 정리/이동)')}
             </button>
@@ -399,7 +399,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
 
         {/* 스와이프 다운 힌트 */}
         <p className="text-[10px] text-gray-400 -mt-1 mb-2">
-          {t("💡 창을 아래로 쓸어내리면 작은 플로팅 타이머로 변경됩니다")}
+          {t("창을 아래로 쓸어내리면 작은 플로팅 타이머로 변경됩니다")}
         </p>
 
         {/* 리셋 실수 방지용 직전 시간 복구 (Undo) 배너 */}
@@ -451,7 +451,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             {isCompleted ? (
               <div className="flex flex-col items-center justify-center animate-fade-in">
                 <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#34C759] mb-1 animate-pulse">
-                  {t("🎉 목표 휴식 완료")}
+                  {t("목표 휴식 완료")}
                 </span>
                 <span className="text-4xl font-black font-mono tracking-tighter text-[#34C759]">
                   {formatTime(targetSeconds)}
@@ -539,4 +539,3 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
     </div>
   );
 };
-

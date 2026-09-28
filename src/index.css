@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Soft surface separation inspired by the reference. The floating dock keeps its glass treatment below. */
+.soft-surface {
+  background-color: #F3F5F4;
+  border: 0;
+  border-radius: 20px;
+  box-shadow: 0 5px 16px rgba(30, 70, 49, .045);
+}
+.dark .soft-surface {
+  background-color: #1C211E;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .2);
+}
+
+@media (max-width: 360px) {
+  .header-timer-label,
+  .header-theme-label {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) and (max-height: 600px) {
+  [data-workout-intro] {
+    padding-top: 0;
+  }
+}
+
 @layer base {
   /* 1. 앱 전체 모든 요소에서 텍스트 선택, 돋보기, 터치 핀(물방울) 원천 차단 */
   *, *::before, *::after {

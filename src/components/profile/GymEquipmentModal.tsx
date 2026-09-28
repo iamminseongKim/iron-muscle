@@ -511,7 +511,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                         : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
                                     }`}
                                   >
-                                    {t('📌 핀 머신')}
+                                    {t('핀 머신')}
                                   </button>
                                   <button
                                     type="button"
@@ -522,7 +522,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                         : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
                                     }`}
                                   >
-                                    {t('💿 원판')}
+                                    {t('원판')}
                                   </button>
                                 </div>
                               </div>

@@ -30,10 +30,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header
-      className="sticky top-0 z-30 bg-[#F2F2F7]/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/5 dark:border-white/10 px-4 pb-2.5"
+      className="sticky top-0 z-30 bg-white/95 dark:bg-[#151C19]/95 backdrop-blur-xl shadow-[0_2px_16px_rgba(30,70,49,0.04)] px-4 pb-3"
       style={{ paddingTop: 'max(10px, env(safe-area-inset-top, 0px))' }}
     >
-      <div className="max-w-lg md:max-w-5xl lg:max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-lg md:max-w-5xl lg:max-w-7xl mx-auto flex items-center justify-between min-h-[40px]">
         <div className="flex items-center gap-2 shrink-0">
           <img src="/brand-mark.svg" alt="" className="w-8 h-8 shrink-0"/>
           <div>
@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <Play size={10} className="fill-[#FF9500] text-[#FF9500]" />
               </span>
             )}
-            <span className={`text-[11px] font-bold ${isWorkoutTimerRunning ? 'text-gray-400' : 'text-[#FF9500]'}`}>
+            <span className={`header-timer-label text-[11px] font-bold ${isWorkoutTimerRunning ? 'text-gray-400' : 'text-[#FF9500]'}`}>
               {isWorkoutTimerRunning ? t("총운동") : t("일시정지")}
             </span>
             <span className={`font-mono font-extrabold text-xs tracking-tight ${isWorkoutTimerRunning ? 'text-[#1D1D1F] dark:text-white' : 'text-[#FF9500]'}`}>
@@ -83,17 +83,19 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={onToggleTheme}
+            aria-label={t(isDark ? '라이트' : '다크')}
+            title={t(isDark ? '라이트' : '다크')}
             className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-xs font-semibold text-gray-700 dark:text-gray-200 shadow-xs hover:opacity-80 transition"
           >
             {isDark ? (
               <>
                 <Sun size={13} className="text-amber-400" />
-                <span className="text-[11px]">{t("라이트")}</span>
+                <span className="header-theme-label text-[11px]">{t("라이트")}</span>
               </>
             ) : (
               <>
                 <Moon size={13} className="text-indigo-500" />
-                <span className="text-[11px]">{t("다크")}</span>
+                <span className="header-theme-label text-[11px]">{t("다크")}</span>
               </>
             )}
           </button>

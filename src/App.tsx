@@ -166,7 +166,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#000000] text-[#1D1D1F] dark:text-[#F5F5F7] flex flex-col transition-colors duration-200">
+    <div className="iron-app-shell min-h-screen bg-white dark:bg-[#101715] text-[#202824] dark:text-[#F5F7F5] flex flex-col transition-colors duration-200">
       <div ref={contentRef} className="isolate flex min-h-screen flex-col">
       {/* 상단 헤더 & 단일화된 총 운동 시간 시계 & 테마 스위처 */}
       <Header

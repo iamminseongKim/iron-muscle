@@ -124,7 +124,7 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
 
           {/* 선택된 운동 상세 카드 */}
           {selectedExercise && (
-            <div className="p-4 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-black/5 dark:border-white/5 shadow-sm space-y-3">
+            <div className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-3">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -291,10 +291,10 @@ export const ExerciseExplorer: React.FC<ExerciseExplorerProps> = ({ onSelectForW
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
               }}
-              className={`w-full text-left p-3.5 rounded-3xl border transition-all flex items-center justify-between ${
+              className={`w-full text-left p-3.5 rounded-2xl transition-colors flex items-center justify-between ${
                 isCurrent
-                  ? 'bg-white dark:bg-[#1C1C1E] border-[#0F766E] shadow-sm'
-                  : 'bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] border-black/5 dark:border-white/5'
+                  ? 'bg-[#E0F2E6] dark:bg-[#214231]'
+                  : 'bg-white dark:bg-[#1C211E] hover:bg-[#F0F6F2] dark:hover:bg-[#252F28]'
               }`}
             >
               <div>

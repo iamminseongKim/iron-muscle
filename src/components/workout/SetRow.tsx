@@ -177,7 +177,7 @@ export const SetRow: React.FC<SetRowProps> = ({
     <>
       <div className={`px-2 py-1 transition-colors border-b border-black/5 dark:border-white/5 ${
         set.completed
-          ? 'bg-[#34C759]/5 dark:bg-[#34C759]/10'
+          ? 'bg-[#EAF7EF] dark:bg-[#1E392A]'
           : 'bg-transparent'
       }`}>
         {/* Line 1: Core Inputs (Set #, Previous Record, Weight, Reps, Complete Check) */}
@@ -246,7 +246,7 @@ export const SetRow: React.FC<SetRowProps> = ({
               } text-sm font-extrabold transition outline-none border ${
                 isWeightFresh
                   ? 'bg-[#0F766E]/10 dark:bg-[#0F766E]/15 text-[#0F766E] border-[#0F766E] ring-2 ring-[#0F766E]/10'
-                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E]'
+                  : 'bg-[#F1F4F2] dark:bg-[#2A332D] text-[#202824] dark:text-white border-transparent focus:border-[#19845D] focus:bg-white dark:focus:bg-[#1C211E]'
               }`}
             />
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">
@@ -278,7 +278,7 @@ export const SetRow: React.FC<SetRowProps> = ({
               className={`numeric-set-input w-full text-center rounded-lg h-9 py-1 px-1 pr-5 text-sm font-extrabold transition outline-none border ${
                 isRepsFresh
                   ? 'bg-[#0F766E]/10 dark:bg-[#0F766E]/15 text-[#0F766E] border-[#0F766E] ring-2 ring-[#0F766E]/10'
-                  : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white border-transparent focus:border-[#0F766E] focus:bg-white dark:focus:bg-[#1C1C1E]'
+                  : 'bg-[#F1F4F2] dark:bg-[#2A332D] text-[#202824] dark:text-white border-transparent focus:border-[#19845D] focus:bg-white dark:focus:bg-[#1C211E]'
               }`}
             />
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">{t("회")}</span>
@@ -292,8 +292,8 @@ export const SetRow: React.FC<SetRowProps> = ({
             onClick={handleToggleComplete}
             className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center transition-all ${
               set.completed
-                ? 'bg-[#34C759] text-white shadow-sm scale-105 active:scale-95'
-                : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 active:scale-95'
+                ? 'bg-[#19845D] text-white active:scale-95'
+                : 'bg-[#F1F4F2] dark:bg-[#2A332D] text-gray-500 hover:text-[#19845D] active:scale-95'
             }`}
           >
             <Check size={18} strokeWidth={2.5} />

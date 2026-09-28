@@ -5,7 +5,7 @@ import { lazy, Suspense } from 'react';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronDown, ChevronRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
-  Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame, Check
+  Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame, Check, Tag, Ruler, Lightbulb, Camera, ListOrdered
 } from 'lucide-react';
 import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
@@ -176,19 +176,19 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const isGrouped = Boolean(exerciseItem.groupId);
 
   return (
-    <div id={`exercise-${exerciseItem.id}`} className={`scroll-mt-24 bg-white dark:bg-[#1C1C1E] rounded-2xl border shadow-sm overflow-hidden transition-all ${
+    <div id={`exercise-${exerciseItem.id}`} className={`scroll-mt-24 bg-[#F3F5F4] dark:bg-[#1C211E] rounded-2xl shadow-[0_5px_16px_rgba(30,70,49,0.045)] dark:shadow-[0_8px_28px_rgba(0,0,0,0.2)] overflow-hidden transition-all ${
       isGrouped
         ? exerciseItem.groupType === 'superset'
-          ? 'border-l-4 border-l-[#0F766E] border-black/5 dark:border-white/5'
-          : 'border-l-4 border-l-[#FF9500] border-black/5 dark:border-white/5'
-        : 'border-black/5 dark:border-white/5'
+          ? 'border-l-4 border-l-[#19845D]'
+          : 'border-l-4 border-l-[#F47750]'
+        : ''
     }`}>
       {/* 묶음(슈퍼세트/컴파운드세트) 상단 배너 */}
       {isGrouped && (
         <div className={`px-4 py-1.5 flex items-center justify-between text-xs font-black text-white ${
           exerciseItem.groupType === 'superset'
-            ? 'bg-gradient-to-r from-[#0F766E] to-[#5856D6]'
-            : 'bg-gradient-to-r from-[#FF9500] to-[#0F766E]'
+            ? 'bg-[#19845D]'
+            : 'bg-[#D76F47]'
         }`}>
           <span className="flex items-center gap-1.5 tracking-tight">
             {exerciseItem.groupType === 'superset' ? <Zap size={13} /> : <Flame size={13} />}
@@ -235,22 +235,22 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             ))}
             {(!collapsed && exerciseItem.machineBrand) && (
               <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold">
-                🏷️ {exerciseItem.machineBrand}
+                <Tag size={11} /> {exerciseItem.machineBrand}
               </span>
             )}
             {(!collapsed && exerciseItem.machineSetting) && (
               <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-gray-100 dark:bg-white/10 text-gray-500 text-[10px] font-medium truncate max-w-[150px]">
-                📐 {exerciseItem.machineSetting}
+                <Ruler size={11} /> {exerciseItem.machineSetting}
               </span>
             )}
             {(!collapsed && (exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes(t("덤벨")) || exerciseNameEn.toLowerCase().includes('dumbbell'))) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
-                💡 {t("덤벨: 한쪽(편측) 무게 기준")}
+                <Lightbulb size={11} /> {t("덤벨: 한쪽(편측) 무게 기준")}
               </span>
             )}
             {(!collapsed && isSmithEquipment) && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] dark:bg-[#0F766E]/20 text-[10px] font-bold tracking-tight">
-                💡 {t("스미스머신: 봉 무게 제외 (원판 무게만 기록)")}
+                <Lightbulb size={11} /> {t("스미스머신: 봉 무게 제외 (원판 무게만 기록)")}
               </span>
             )}
           </div>
@@ -550,7 +550,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                       : 'text-gray-500 hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {t("📸 실물 사진")}
+                  <span className="inline-flex items-center gap-1"><Camera size={13} />{t("실물 사진")}</span>
                 </button>
               )}
             </div>
@@ -586,7 +586,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               </div>
               {displayExerciseInstructions(baseExercise).length > 0 && (
                 <div className="p-3 rounded-2xl bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/5 text-xs space-y-1.5">
-                  <span className="font-bold text-gray-700 dark:text-gray-300 block">📋 {t("올바른 운동 순서")}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-300 inline-flex items-center gap-1"><ListOrdered size={13} />{t("올바른 운동 순서")}</span>
                   {displayExerciseInstructions(baseExercise).slice(0, 4).map((step, idx) => (
                     <p key={idx} className="text-gray-600 dark:text-gray-400 text-[11px] leading-relaxed flex items-start gap-1.5">
                       <span className="w-4 h-4 rounded-full bg-red-500/15 text-[#0F766E] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">

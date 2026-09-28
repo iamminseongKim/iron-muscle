@@ -2,7 +2,7 @@ import { EQUIPMENT_FILTERS, getExerciseEquipment, equipmentLabel } from '../../u
 import { displayExercise, displayMuscle, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Search, Dumbbell, ChevronRight, Plus } from 'lucide-react';
+import { X, Search, Dumbbell, ChevronRight, Plus, Tag, Target, Star } from 'lucide-react';
 import { Exercise, Category, EquipmentType, LoadType, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { DISCOVERY_ADDITIONS } from '../../data/discoveryAdditions';
@@ -225,7 +225,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',
       }}
     >
-      <div role="dialog" aria-modal="true" aria-labelledby="exercise-picker-title" className="exercise-picker-dialog bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-lg max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="exercise-picker-title" className="exercise-picker-dialog bg-white dark:bg-[#1C211E] rounded-3xl w-full max-w-lg max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
         <div className="exercise-picker-header shrink-0 p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div>
@@ -256,7 +256,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
         </div>
 
         {/* 검색창 */}
-        <div className="shrink-0 p-3 border-b border-black/5 dark:border-white/10 bg-[#F2F2F7] dark:bg-[#252528] space-y-2.5">
+        <div className="shrink-0 p-3 border-b border-[#E6EEE8] dark:border-white/10 bg-[#F6F8F7] dark:bg-[#252D28] space-y-2.5">
           <form className="relative" onSubmit={(event) => { event.preventDefault(); searchInputRef.current?.blur(); }}>
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -269,7 +269,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("운동명·브랜드·초성 검색")}
-              className="w-full bg-white dark:bg-[#1C1C1E] text-base text-[#1D1D1F] dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-2xl pl-10 pr-16 py-3 border border-black/5 dark:border-white/10 focus:outline-none focus:border-[#0F766E] shadow-xs transition"
+              className="w-full bg-white dark:bg-[#1C211E] text-base text-[#202824] dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-2xl pl-10 pr-16 py-3 border border-transparent focus:outline-none focus:border-[#19845D] transition"
             />
             {searchQuery && (
               <button
@@ -298,7 +298,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                   : 'bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] hover:bg-[#0F766E]/20 border border-[#0F766E]/20'
               }`}
             >
-              <span>🏷️ {gymProfile.name || t('내 헬스장')}</span>
+              <span className="inline-flex items-center gap-1"><Tag size={13} />{gymProfile.name || t('내 헬스장')}</span>
               <span className="text-[10px] opacity-90">({Object.keys(gymProfile.machines).length})</span>
             </button>
             {hasTargets && (
@@ -311,7 +311,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     : 'bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20'
                 }`}
               >
-                <span>{t("🔥 오늘 목표")}</span>
+                <span className="inline-flex items-center gap-1"><Target size={13} />{t("오늘 목표")}</span>
                 <span className="text-[10px] opacity-90">({getTargetLabels()})</span>
               </button>
             )}
@@ -392,7 +392,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                   onSelect(ex, ex.equipment, targetBrand, targetSetting, targetLoadType, targetWeightUnit, gymConfig ? `${gymProfile.id}:${gymConfig.id}` : undefined);
                   onClose();
                 }}
-                className="w-full text-left px-2.5 py-2 rounded-xl bg-[#F9F9FB] dark:bg-[#252528] hover:bg-gray-100 dark:hover:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-[#0F766E]/40 transition flex items-center gap-3 group"
+                className="w-full text-left px-2.5 py-2 rounded-2xl bg-[#F1F4F2] dark:bg-[#252D28] hover:bg-[#EAF5EE] dark:hover:bg-[#2D3A31] transition flex items-center gap-3 group"
               >
                 {/* 실물 운동 사진 썸네일 (CDN 지연 로딩) */}
                 {ex.images && ex.images.length > 0 ? (
@@ -421,11 +421,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
                     </span>
                     {configs.length > 0 ? (
                       <span className="px-1.5 py-0.2 rounded bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold flex items-center gap-0.5">
-                        🏷️ {configs.length > 1 ? t('머신 {count}대').replace('{count}', String(configs.length)) : (configs[0].brand || t('내 헬스장'))}
+                        <Tag size={11} /> {configs.length > 1 ? t('머신 {count}대').replace('{count}', String(configs.length)) : (configs[0].brand || t('내 헬스장'))}
                       </span>
                     ) : ex.id.startsWith('custom_') ? (
-                      <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">
-                        {t("★커스텀")}
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[10px] font-black">
+                        <Star size={11} />{t("커스텀")}
                       </span>
                     ) : usage.has(ex.id) ? (
                       <span className="text-[10px] text-[#0F766E] dark:text-teal-300">{t('내 기록')}</span>

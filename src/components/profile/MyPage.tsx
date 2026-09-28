@@ -61,7 +61,7 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
   });
   const pending = jobs.filter(j => j.state !== 'sent').length;
   const lastSent = jobs.filter(j => j.state === 'sent').sort((a,b) => b.updatedAt.localeCompare(a.updatedAt))[0];
-  const section = 'rounded-3xl bg-white dark:bg-[#1C1C1E] p-5 space-y-4 border border-black/5 dark:border-white/5';
+  const section = 'soft-surface bg-white dark:bg-[#1C211E] p-5 space-y-4';
   const button = 'rounded-xl px-4 py-3 bg-[#0F766E] text-white text-sm font-bold disabled:opacity-40';
   return <div className="max-w-lg mx-auto px-4 pt-4 pb-32 space-y-4">
     <div>

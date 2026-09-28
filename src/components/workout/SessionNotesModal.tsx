@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { X, FileText, Sparkles, Wand2, Target, Check } from 'lucide-react';
 import { WorkoutExercise, TARGET_BODY_PARTS } from '../../types/workout';
 import { BodyPartIcon } from '../common/BodyPartIcon';
+import { ConditionIcon } from '../common/ConditionIcon';
 import {
   detectBodyPartsFromExercises,
   countExercisesByBodyPart,
@@ -138,7 +139,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                         : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-black/20'
                     }`}
                   >
-                    <span className="text-2xl">{item.emoji}</span>
+                    <ConditionIcon condition={item.emoji} size={22} />
                     <span className={`text-[10px] text-center leading-tight font-medium ${
                       isSelected ? 'text-[#0F766E] font-bold' : 'text-gray-500 dark:text-gray-400'
                     }`}>
