@@ -5,7 +5,7 @@ import { lazy, Suspense } from 'react';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronDown, ChevronRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
-  Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame 
+  Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame, Check
 } from 'lucide-react';
 import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
@@ -15,7 +15,7 @@ import { getExerciseRecords, convertWeight, isAssistedExercise } from '../../uti
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { applyGymMachineConfig } from '../../utils/gymWorkout';
-import { loadGymProfile, getExerciseConfigs, GYM_EQUIPMENT_CHANGE_EVENT } from '../../utils/gymStorage';
+import { loadGymProfile, saveGymProfile, getExerciseConfigs, GYM_EQUIPMENT_CHANGE_EVENT } from '../../utils/gymStorage';
 
 interface ExerciseCardProps {
   exerciseItem: WorkoutExercise;
@@ -85,6 +85,24 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const currentLoadType = exerciseItem.loadType || baseExercise.loadType || 'plate-loaded';
   const exerciseName = displayExercise(baseExercise);
   const exerciseNameEn = baseExercise.nameEn || '';
+  const canRegisterInGym = ['machine', 'smith', 'cable'].includes(getExerciseEquipment(baseExercise));
+
+  const handleRegisterInGym = () => {
+    const activeGym = loadGymProfile();
+    if (getExerciseConfigs(activeGym, baseExercise.id).length > 0) return;
+    saveGymProfile({
+      ...activeGym,
+      machines: {
+        ...activeGym.machines,
+        [baseExercise.id]: [{
+          id: `config-${Date.now()}-1`,
+          exerciseId: baseExercise.id,
+          loadType: currentLoadType,
+          weightUnit: currentUnit,
+        }],
+      },
+    });
+  };
 
   // ID가 보정된 경우 부모 상태 자동 동기화
   useEffect(() => {
@@ -201,6 +219,20 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
           <div className="flex items-center gap-2 flex-wrap mt-0.5">
             <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}{t("세트 완료")}{records.maxWeight > 0 ? ` · ${t("최고")} ${records.maxWeight}${currentUnit}` : ''}</span>
+            {canRegisterInGym && (gymConfigs.length > 0 ? (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0F766E] dark:text-teal-300">
+                <Check size={13} /> {t('헬스장에 등록됨')}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleRegisterInGym}
+                title={gymProfile.name}
+                className="inline-flex min-h-[32px] items-center gap-1 rounded-md border border-[#0F766E]/30 px-2 text-[11px] font-semibold text-[#0F766E] dark:text-teal-300 hover:bg-[#0F766E]/10"
+              >
+                <Plus size={13} /> {t('내 헬스장에 등록')}
+              </button>
+            ))}
             {(!collapsed && exerciseItem.machineBrand) && (
               <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold">
                 🏷️ {exerciseItem.machineBrand}

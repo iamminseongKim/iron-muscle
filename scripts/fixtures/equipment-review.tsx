@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { GymEquipmentModal } from '../../src/components/profile/GymEquipmentModal';
 import { AddExerciseModal } from '../../src/components/workout/AddExerciseModal';
+import { ExerciseCard } from '../../src/components/workout/ExerciseCard';
 import { setLanguage } from '../../src/i18n';
 import { saveGymState } from '../../src/utils/gymStorage';
 const host = document.createElement('div');
@@ -13,3 +14,9 @@ export function setup() {
 }
 export function gym(key=0) { root.render(<GymEquipmentModal key={key} isOpen onClose={()=>root.render(null)} />); }
 export function picker() { root.render(<AddExerciseModal isOpen onClose={()=>root.render(null)} onSelect={()=>{}} />); }
+export function quickAddCard() {
+ root.render(<ExerciseCard
+  exerciseItem={{id:'quick-add-row',exerciseId:'Machine_Bench_Press',equipmentType:'machine',weightUnit:'lbs',machineBrand:'Workout brand',sets:[]}}
+  onUpdate={()=>{}} onDelete={()=>{}} onTriggerRestTimer={()=>{}} onOpenRpeGuide={()=>{}}
+ />);
+}
