@@ -215,16 +215,16 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
           <div className="shrink-0 p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
             <div>
               <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
-                <Dumbbell size={18} className="text-[#0F766E]" />
+                <Dumbbell size={18} className="text-accent" />
                 {t('내 헬스장 기구 관리')}
               </h3>
               <p className="text-xs text-gray-400">
-                {activeGym.name} · {t('등록된 머신')} <span className="font-bold text-[#0F766E] dark:text-[#2DD4BF]">{selectedCount}</span>{t('개')}
+                {activeGym.name} · {t('등록된 머신')} <span className="font-bold text-accent dark:text-accent-light">{selectedCount}</span>{t('개')}
               </p>
             </div>
             <button
               onClick={handleSave}
-              className="px-4 py-1.5 bg-[#0F766E] hover:bg-[#0D655E] text-white text-xs font-bold rounded-xl transition shadow-xs"
+              className="px-4 py-1.5 bg-accent hover:bg-accent-hover text-white text-xs font-bold rounded-xl transition shadow-xs"
             >
               {t('완료')}
             </button>
@@ -240,7 +240,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                     key={g.id}
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${
                       isActive
-                        ? 'bg-[#0F766E] text-white shadow-xs'
+                        ? 'bg-accent text-white shadow-xs'
                         : 'bg-white dark:bg-[#1C1C1E] text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 border border-black/5 dark:border-white/5'
                     }`}
                   >
@@ -275,7 +275,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsAddingNewGym(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-[#1C1C1E] text-[#0F766E] dark:text-[#2DD4BF] border border-dashed border-[#0F766E]/40 hover:bg-[#0F766E]/10 shrink-0 transition"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-[#1C1C1E] text-accent dark:text-accent-light border border-dashed border-accent/40 hover:bg-accent/10 shrink-0 transition"
                 >
                   <Plus size={13} strokeWidth={3} />
                   <span>{t('헬스장 추가')} ({gymState.gyms.length}/{MAX_GYMS_COUNT})</span>
@@ -294,7 +294,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                   placeholder={t('새 헬스장 이름 (예: 회사 헬스장, 홈짐)')}
                   className="flex-1 px-3 py-1.5 text-xs rounded-xl bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white"
                 />
-                <button type="submit" className="px-3 py-1.5 bg-[#0F766E] text-white text-xs font-bold rounded-xl shrink-0">
+                <button type="submit" className="px-3 py-1.5 bg-accent text-white text-xs font-bold rounded-xl shrink-0">
                   {t('추가')}
                 </button>
                 <button type="button" onClick={() => setIsAddingNewGym(false)} className="px-2.5 py-1.5 bg-gray-200 dark:bg-white/10 text-xs rounded-xl shrink-0">
@@ -310,12 +310,12 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                 value={activeGym.name}
                 onChange={e => handleUpdateActiveGym({ name: e.target.value })}
                 placeholder={t('헬스장 이름')}
-                className="flex-1 px-3 py-1.5 text-xs font-bold rounded-xl bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#0F766E]"
+                className="flex-1 px-3 py-1.5 text-xs font-bold rounded-xl bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-2 focus:ring-accent"
               />
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-[#0F766E]/10 hover:bg-[#0F766E]/20 text-[#0F766E] dark:text-[#2DD4BF] text-xs font-black rounded-xl transition shrink-0"
+                className="flex items-center gap-1 px-3 py-1.5 bg-accent/10 hover:bg-accent/20 text-accent dark:text-accent-light text-xs font-black rounded-xl transition shrink-0"
               >
                 <Plus size={13} strokeWidth={3} />
                 <span>{t('기구 직접 등록')}</span>
@@ -332,7 +332,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                   onChange={e => handleUpdateActiveGym({ includeFreeWeights: e.target.checked })}
                   className="peer sr-only"
                 />
-                <span className="absolute inset-0 rounded-full bg-gray-300 dark:bg-white/20 peer-checked:bg-[#0F766E] transition-colors" />
+                <span className="absolute inset-0 rounded-full bg-gray-300 dark:bg-white/20 peer-checked:bg-accent transition-colors" />
                 <span className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
               </span>
             </label>
@@ -347,7 +347,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder={t('머신 이름 검색 (예: 풀다운, 체스트 프레스)')}
-                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-[#F2F2F7] dark:bg-[#252528] border border-black/5 dark:border-white/5 text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#0F766E]"
+                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-[#F2F2F7] dark:bg-[#252528] border border-black/5 dark:border-white/5 text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-2 focus:ring-accent"
               />
               {searchQuery && (
                 <button
@@ -368,7 +368,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                   onClick={() => setSelectedCategory(tab.id)}
                   className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition ${
                     selectedCategory === tab.id
-                      ? 'bg-[#0F766E] text-white shadow-xs'
+                      ? 'bg-accent text-white shadow-xs'
                       : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10'
                   }`}
                 >
@@ -403,7 +403,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                     key={ex.id}
                     className={`rounded-2xl border transition-all ${
                       isSelected
-                        ? 'bg-[#0F766E]/5 dark:bg-[#0F766E]/10 border-[#0F766E]/30'
+                        ? 'bg-accent/5 dark:bg-accent/10 border-accent/30'
                         : 'bg-white dark:bg-[#242426] border-black/5 dark:border-white/5'
                     }`}
                   >
@@ -415,7 +415,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                         <div
                           className={`w-5 h-5 rounded-md flex items-center justify-center border shrink-0 transition ${
                             isSelected
-                              ? 'bg-[#0F766E] border-[#0F766E] text-white'
+                              ? 'bg-accent border-accent text-white'
                               : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1C1C1E]'
                           }`}
                         >
@@ -434,7 +434,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                           <button
                             type="button"
                             onClick={() => setExpandedConfigId(isExpanded ? null : ex.id)}
-                            className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] hover:bg-[#0F766E]/20 transition"
+                            className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-accent/10 text-accent dark:text-accent-light hover:bg-accent/20 transition"
                           >
                             <Sliders size={12} />
                             <span>{settingLabel}</span>
@@ -445,14 +445,14 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
 
                     {/* 세부 머신 세팅 (최대 3대 지원) */}
                     {isSelected && isExpanded && (
-                      <div className="p-3 pt-0 border-t border-[#0F766E]/15 mt-1 space-y-3">
+                      <div className="p-3 pt-0 border-t border-accent/15 mt-1 space-y-3">
                         {configs.map((cfg, cfgIdx) => (
                           <div
                             key={cfg.id || cfgIdx}
                             className="pt-2.5 space-y-2 border-b border-black/5 dark:border-white/5 pb-2.5 last:border-b-0 last:pb-0"
                           >
                             <div className="flex items-center justify-between">
-                              <span className="text-[11px] font-extrabold text-[#0F766E] dark:text-[#2DD4BF]">
+                              <span className="text-[11px] font-extrabold text-accent dark:text-accent-light">
                                 {t('머신')} {cfgIdx + 1}{cfg.brand ? ` (${cfg.brand})` : ''}
                               </span>
                               {configs.length > 1 && (
@@ -507,7 +507,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                     onClick={() => handleUpdateSingleConfig(ex.id, cfg.id!, { loadType: 'pin-loaded' })}
                                     className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg border transition ${
                                       cfg.loadType === 'pin-loaded'
-                                        ? 'bg-[#0F766E] text-white border-[#0F766E]'
+                                        ? 'bg-accent text-white border-accent'
                                         : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
                                     }`}
                                   >
@@ -518,7 +518,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                     onClick={() => handleUpdateSingleConfig(ex.id, cfg.id!, { loadType: 'plate-loaded' })}
                                     className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg border transition ${
                                       cfg.loadType === 'plate-loaded'
-                                        ? 'bg-[#0F766E] text-white border-[#0F766E]'
+                                        ? 'bg-accent text-white border-accent'
                                         : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
                                     }`}
                                   >
@@ -539,7 +539,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                   onClick={() => handleUpdateSingleConfig(ex.id, cfg.id!, { weightUnit: 'kg' })}
                                   className={`px-3 py-1 text-[10px] font-bold rounded-lg border transition ${
                                     cfg.weightUnit !== 'lbs'
-                                      ? 'bg-[#0F766E] text-white border-[#0F766E]'
+                                      ? 'bg-accent text-white border-accent'
                                       : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
                                   }`}
                                 >
@@ -550,7 +550,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                   onClick={() => handleUpdateSingleConfig(ex.id, cfg.id!, { weightUnit: 'lbs' })}
                                   className={`px-3 py-1 text-[10px] font-bold rounded-lg border transition ${
                                     cfg.weightUnit === 'lbs'
-                                      ? 'bg-[#0F766E] text-white border-[#0F766E]'
+                                      ? 'bg-accent text-white border-accent'
                                       : 'bg-white dark:bg-[#1C1C1E] border-gray-200 dark:border-white/10 text-gray-500'
                                   }`}
                                 >
@@ -576,7 +576,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                           <button
                             type="button"
                             onClick={() => handleAddMachineToExercise(ex.id)}
-                            className="w-full py-1.5 bg-white dark:bg-[#1C1C1E] border border-dashed border-[#0F766E]/40 hover:bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] text-xs font-bold rounded-xl flex items-center justify-center gap-1 transition"
+                            className="w-full py-1.5 bg-white dark:bg-[#1C1C1E] border border-dashed border-accent/40 hover:bg-accent/10 text-accent dark:text-accent-light text-xs font-bold rounded-xl flex items-center justify-center gap-1 transition"
                           >
                             <Plus size={13} strokeWidth={2.5} />
                             <span>{t('다른 머신 추가')} ({configs.length}/3)</span>
@@ -598,7 +598,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
             <button
               type="button"
               onClick={handleSave}
-              className="px-4 py-2 bg-[#0F766E] hover:bg-[#0D655E] text-white font-bold rounded-xl transition"
+              className="px-4 py-2 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl transition"
             >
               {t('저장하기')}
             </button>

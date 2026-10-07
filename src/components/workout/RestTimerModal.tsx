@@ -289,13 +289,13 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             title={t("탭하여 크게 보기")}
           >
             <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
-              isCompleted ? 'bg-[#34C759]/20 text-[#34C759]' : 'bg-[#FF9500]/15 text-[#FF9500]'
+              isCompleted ? 'bg-accent-bright/20 text-accent-bright' : 'bg-[#FF9500]/15 text-[#FF9500]'
             }`}>
               <Bell size={13} className={isCompleted ? 'animate-bounce' : ''} />
             </div>
             <div className="leading-tight">
               <span className={`text-[13px] font-black font-mono block ${
-                isCompleted ? 'text-[#34C759]' : 'text-[#1D1D1F] dark:text-white'
+                isCompleted ? 'text-accent-bright' : 'text-[#1D1D1F] dark:text-white'
               }`}>
                 {isCompleted ? `${t("완료!")} ${elapsedSeconds}s` : formatTime(remainingSeconds)}
               </span>
@@ -310,7 +310,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             <button
               type="button"
               onClick={handleFinish}
-              className="px-2 py-1 bg-[#34C759] text-white rounded-full text-[11px] font-extrabold shadow-sm active:scale-95 transition"
+              className="px-2 py-1 bg-accent-bright text-white rounded-full text-[11px] font-extrabold shadow-sm active:scale-95 transition"
               title={t("휴식 종료 & 세트에 기록")}
             >
               {t("종료")}
@@ -387,11 +387,11 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
 
         {isLastSetOfExercise && (
           <div className="my-2 flex flex-col gap-2">
-            <span className="text-xs font-bold text-[#0F766E]">{t('종목 완료! 다음 운동 준비')}</span>
+            <span className="text-xs font-bold text-accent">{t('종목 완료! 다음 운동 준비')}</span>
             <button type="button" onClick={() => adjustRemaining(60)} className="rounded-xl bg-orange-500/10 p-2 text-sm font-bold text-orange-600">
               {t('+60초 (기구 정리/이동)')}
             </button>
-            <button type="button" onClick={() => { setIsMinimized(true); onNextExercise?.(); }} className="rounded-xl bg-teal-600 p-2 text-sm font-bold text-white">
+            <button type="button" onClick={() => { setIsMinimized(true); onNextExercise?.(); }} className="rounded-xl bg-accent-600 p-2 text-sm font-bold text-white">
               {nextExerciseName ? t('다음 종목: {name}으로 이동').replace('{name}', nextExerciseName) : t('+ 다음 운동 추가')}
             </button>
           </div>
@@ -434,7 +434,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               cx="120"
               cy="120"
               r={radius}
-              stroke={isCompleted ? '#34C759' : '#FF9500'}
+              stroke={isCompleted ? 'rgb(var(--accent-bright-rgb))' : '#FF9500'}
               strokeWidth="10"
               strokeLinecap="round"
               fill="transparent"
@@ -450,14 +450,14 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {isCompleted ? (
               <div className="flex flex-col items-center justify-center animate-fade-in">
-                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-[#34C759]/15 text-[#34C759] mb-1 animate-pulse">
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-accent-bright/15 text-accent-bright mb-1 animate-pulse">
                   {t("목표 휴식 완료")}
                 </span>
-                <span className="text-4xl font-black font-mono tracking-tighter text-[#34C759]">
+                <span className="text-4xl font-black font-mono tracking-tighter text-accent-bright">
                   {formatTime(targetSeconds)}
                 </span>
                 <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">
-                  {t("총 쉰 시간:")} <strong className="text-[#0F766E] dark:text-[#2DD4BF] font-bold">{elapsedSeconds}s</strong>
+                  {t("총 쉰 시간:")} <strong className="text-accent dark:text-accent-light font-bold">{elapsedSeconds}s</strong>
                   {overtimeSeconds > 0 && (
                     <span className="text-[#FF9500] font-bold ml-1">(+{overtimeSeconds}s)</span>
                   )}
@@ -527,8 +527,8 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
           <button
             type="button"
             onClick={handleFinish}
-            className={`flex-1 py-3.5 bg-[#34C759] hover:opacity-90 active:scale-98 text-white rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition ${
-              isCompleted ? 'shadow-green-500/30 ring-2 ring-[#34C759]/40' : 'shadow-green-500/20'
+            className={`flex-1 py-3.5 bg-accent-bright hover:opacity-90 active:scale-98 text-white rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition ${
+              isCompleted ? 'shadow-accent-500/30 ring-2 ring-accent-bright/40' : 'shadow-accent-500/20'
             }`}
           >
             <Check size={18} strokeWidth={2.5} />

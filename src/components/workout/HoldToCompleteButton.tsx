@@ -149,13 +149,13 @@ export const HoldToCompleteButton: React.FC<HoldToCompleteButtonProps> = ({
           isShaking ? 'animate-[shake_0.4s_ease-in-out]' : ''
         } ${
           isHolding
-            ? 'bg-[#0F766E]/20 dark:bg-[#0F766E]/30 ring-2 ring-[#0F766E]'
-            : 'bg-[#0F766E] shadow-md shadow-teal-900/20 hover:opacity-95'
+            ? 'bg-accent/20 dark:bg-accent/30 ring-2 ring-accent'
+            : 'bg-accent shadow-md shadow-accent-900/20 hover:opacity-95'
         }`}
       >
         {/* 누르는 동안 차오르는 프로그레스 배경 게이지 */}
         <div
-          className="absolute inset-0 bg-gradient-to-r from-[#0F766E] to-[#34C759] transition-all"
+          className="absolute inset-0 bg-gradient-to-r from-accent to-accent-bright transition-all"
           style={{
             width: `${progress * 100}%`,
             transition: isHolding ? 'none' : 'width 0.25s ease-out',

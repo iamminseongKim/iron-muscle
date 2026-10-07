@@ -40,7 +40,7 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
       rir: '2회 여유 (RIR 2)',
       title: '최적의 근비대 존 (Sweet Spot)',
       desc: '2회 정도 더 가능한 강도로, 부상 없이 근비대와 근신경 발달을 극대화.',
-      badge: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+      badge: 'bg-accent-500/15 text-accent-600 dark:text-accent-400 border-accent-500/30',
       icon: Award
     },
     {
@@ -67,7 +67,7 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
         {/* Modal Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-xl bg-red-500/15 text-[#0F766E]">
+            <div className="p-1.5 rounded-xl bg-red-500/15 text-accent">
               <HelpCircle size={18} />
             </div>
             <div>
@@ -121,7 +121,7 @@ export const RpeGuideModal: React.FC<RpeGuideModalProps> = ({ isOpen, onClose })
         <div className="p-3.5 border-t border-black/5 dark:border-white/10 bg-[#F9F9FB] dark:bg-[#161618] text-center">
           <button
             onClick={onClose}
-            className="w-full py-3 bg-[#0F766E] text-white font-black rounded-2xl text-xs shadow-md shadow-teal-900/20 hover:opacity-95 active:scale-98 transition"
+            className="w-full py-3 bg-accent text-white font-black rounded-2xl text-xs shadow-md shadow-accent-900/20 hover:opacity-95 active:scale-98 transition"
           >
             {t("이해했습니다")}
           </button>

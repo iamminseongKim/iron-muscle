@@ -47,10 +47,10 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
         {/* 좌측 패널: 누적 통계, 디로딩 주기화, 종목별 성장 지표 (고정) */}
         <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">
           {/* 상단 누적 통계 카드 (헬스케어 통계 스타일) */}
-          <div className="soft-surface p-5 bg-white dark:bg-[#1C211E] space-y-3">
+          <div className="soft-surface p-5 bg-white dark:bg-[#1E1B24] space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("나의 트레이닝 통계")}</span>
-              <span className="px-2.5 py-0.5 rounded-full bg-[#34C759]/10 text-[#34C759] text-[11px] font-extrabold">
+              <span className="px-2.5 py-0.5 rounded-full bg-accent-bright/10 text-accent-bright text-[11px] font-extrabold">
                 {t("총")} {totalWorkouts}{t("회 완료")}
               </span>
             </div>
@@ -63,7 +63,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
 
               <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
                 <span className="text-[10px] text-gray-400 font-bold block">{t("누적 볼륨")}</span>
-                <span className="text-xl font-black text-[#0F766E]">{cumulativeVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{weightUnit}</span></span>
+                <span className="text-xl font-black text-accent">{cumulativeVolume.toLocaleString()} <span className="text-xs font-normal text-gray-400">{weightUnit}</span></span>
               </div>
 
               <div className="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
@@ -74,7 +74,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
           </div>
 
           {/* 🔄 디로딩 피로도 분석 */}
-          <div className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-2.5">
+          <div className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 rounded-xl bg-indigo-500/10 text-indigo-500">
@@ -87,7 +87,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
               </div>
               <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
                 deloadAnalysis.shouldDeload
-                  ? 'bg-red-500/10 text-[#0F766E]'
+                  ? 'bg-red-500/10 text-accent'
                   : 'bg-indigo-500/10 text-indigo-500'
               }`}>
                 {deloadAnalysis.shouldDeload ? t("디로딩 권장") : t("컨디션 최적")}
@@ -106,10 +106,10 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
           </div>
 
           {/* 🚀 종목별 통합 성장 지표 (Cross-Brand Growth) */}
-          <div className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-3">
+          <div className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
+                <div className="p-1.5 rounded-xl bg-accent/10 text-accent">
                   <TrendingUp size={16} />
                 </div>
                 <div>
@@ -122,9 +122,9 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
             <div>
               <button type="button" aria-haspopup="dialog" onClick={() => setIsPickerOpen(true)}
                 className="w-full flex items-center gap-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-white rounded-2xl p-3 text-sm text-left">
-                <Search size={18} className="shrink-0 text-[#0F766E]" />
+                <Search size={18} className="shrink-0 text-accent" />
                 <span className="flex-1 font-bold">{targetExercise ? displayExercise(targetExercise) : t('성장을 확인할 종목 검색')}</span>
-                <span className="text-xs text-[#0F766E] shrink-0">{t("종목 변경")}</span>
+                <span className="text-xs text-accent shrink-0">{t("종목 변경")}</span>
               </button>
             </div>
 
@@ -135,7 +135,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                   progression.records.length < 2
                     ? 'text-gray-400'
                     : progression.growthRate > 0
-                    ? 'text-[#34C759]'
+                    ? 'text-accent-bright'
                     : progression.growthRate === 0
                     ? 'text-gray-400'
                     : 'text-[#FF9500]'
@@ -174,7 +174,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-gray-500">{rec.weight}{recUnit} × {rec.reps}{t("회")}</span>
-                          <span className="font-bold text-[#0F766E]">
+                          <span className="font-bold text-accent">
                             {t("추정 1RM")} {rec.max1RM}{recUnit}
                             {converted1RM !== null && (
                               <span className="text-[11px] font-normal text-gray-400 dark:text-gray-400 ml-1">
@@ -199,12 +199,12 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
         <div className="space-y-4 md:col-span-7 lg:col-span-7 mt-4 md:mt-0">
           <div className="space-y-2.5">
             <h3 className="text-sm font-extrabold text-[#1D1D1F] dark:text-white px-1 flex items-center gap-1.5">
-              <Calendar size={15} className="text-[#0F766E]" />
+              <Calendar size={15} className="text-accent" />
               {t("과거 운동 일지")} ({history.length}{t("회")})
             </h3>
 
             {history.length === 0 ? (
-              <div className="soft-surface py-12 text-center bg-white dark:bg-[#1C211E] p-6 space-y-2">
+              <div className="soft-surface py-12 text-center bg-white dark:bg-[#1E1B24] p-6 space-y-2">
                 <Calendar size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
                 <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{t("기록된 운동이 없습니다.")}</p>
               </div>
@@ -214,7 +214,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
           const completedExercises = sess.exercises;
 
           return (
-            <div key={sess.id} className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-2.5">
+            <div key={sess.id} className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-2.5">
               <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-2">
                 <div className="flex items-center gap-2">
                   <ConditionIcon condition={sess.conditionEmoji} size={20} />

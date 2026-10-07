@@ -77,7 +77,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
     <section className="rounded-2xl bg-white dark:bg-[#1C1C1E] p-3 space-y-3 text-xs border border-gray-100 dark:border-white/5 shadow-sm">
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-sm flex items-center gap-1.5 text-[#1D1D1F] dark:text-white">
-          <HardDrive size={16} className="text-[#0F766E] dark:text-[#2DD4BF]" />
+          <HardDrive size={16} className="text-accent dark:text-accent-light" />
           {t("기록 백업 · 복원 (마크다운 / JSON)")}
         </h3>
       </div>
@@ -90,7 +90,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         <button
           disabled={busy}
           onClick={backupJson}
-          className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#0F766E] hover:bg-[#0D655E] text-white font-bold transition shadow-sm active:scale-95 disabled:opacity-50"
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white font-bold transition shadow-sm active:scale-95 disabled:opacity-50"
         >
           <Download size={14} />
           <span>{t("파일로 백업 (.json)")}</span>
@@ -99,7 +99,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         <button
           disabled={busy}
           onClick={backupMarkdown}
-          className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-teal-50 dark:bg-[#0F766E]/20 text-[#0F766E] dark:text-[#2DD4BF] border border-[#0F766E]/30 font-bold transition hover:bg-teal-100 dark:hover:bg-[#0F766E]/30 active:scale-95 disabled:opacity-50"
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-accent-50 dark:bg-accent/20 text-accent dark:text-accent-light border border-accent/30 font-bold transition hover:bg-accent-100 dark:hover:bg-accent/30 active:scale-95 disabled:opacity-50"
         >
           <FileText size={14} />
           <span>{t("전체 마크다운(.md) 내보내기")}</span>
@@ -115,8 +115,8 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
       </div>
 
       {/* 안전 보존 가이드 카드 */}
-      <div className="rounded-xl bg-teal-50/70 dark:bg-teal-950/30 border border-teal-200/60 dark:border-teal-800/40 p-3 space-y-2.5">
-        <div className="flex items-center gap-1.5 font-bold text-[#0F766E] dark:text-[#2DD4BF] text-xs">
+      <div className="rounded-xl bg-accent-50/70 dark:bg-accent-950/30 border border-accent-200/60 dark:border-accent-800/40 p-3 space-y-2.5">
+        <div className="flex items-center gap-1.5 font-bold text-accent dark:text-accent-light text-xs">
           <Info size={15} />
           <span>{t('로컬 저장소 보존 및 안전 백업 가이드')}</span>
         </div>
@@ -124,9 +124,9 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           <p>
             <strong>{t('현재 저장 방식')}:</strong> {t('모든 운동 기록과 헬스장 기구 세팅은 현재 기기의 브라우저 로컬 저장소(LocalStorage)에 안전하게 보존됩니다.')}
           </p>
-          <div className="bg-white/80 dark:bg-black/20 rounded-lg p-2.5 space-y-1 border border-teal-100 dark:border-white/5">
+          <div className="bg-white/80 dark:bg-black/20 rounded-lg p-2.5 space-y-1 border border-accent-100 dark:border-white/5">
             <div className="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-1">
-              <Smartphone size={13} className="text-[#0F766E] dark:text-[#2DD4BF]" />
+              <Smartphone size={13} className="text-accent dark:text-accent-light" />
               {t('가장 안전한 보존 방법 (홈 화면에 추가 · PWA)')}
             </div>
             <p className="text-gray-500 dark:text-gray-400">
@@ -171,7 +171,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
             className="w-full h-28 rounded-lg border border-gray-200 dark:border-white/10 p-2 bg-transparent text-xs font-mono"
             placeholder={t("앱에서 추출했던 마크다운 일지(_YYYYMMDD.md) 내용이나 백업 JSON을 여기에 붙여넣으세요.")}
           />
-          <button className="px-3 py-1.5 rounded-lg bg-[#0F766E] text-white font-bold" onClick={() => preview(text)}>
+          <button className="px-3 py-1.5 rounded-lg bg-accent text-white font-bold" onClick={() => preview(text)}>
             {t("일지 내용 확인")}
           </button>
         </div>
@@ -179,7 +179,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
 
       {pending && (
         <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-lg space-y-2 border border-gray-200 dark:border-white/10">
-          <p className="font-bold text-[#0F766E] dark:text-[#2DD4BF]">
+          <p className="font-bold text-accent dark:text-accent-light">
             {t("운동")} {pending.sessions.length}{t("회 확인됨")} ({t("총")} {totalSets}{t("세트")} · {t("볼륨")} {totalVolume.toLocaleString()}kg)
             {pending.customExercises.length > 0 ? ` · ${t("사용자 운동")} ${pending.customExercises.length}${t("종")}` : ''}
             {pending.activeSession ? ` · ${t("진행 중인 운동 포함")}` : ''}
@@ -189,7 +189,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           </p>
           <div className="flex gap-4 pt-1">
             <button
-              className="font-bold text-[#0F766E] dark:text-[#2DD4BF] py-1.5 px-3 rounded-lg bg-[#0F766E]/10"
+              className="font-bold text-accent dark:text-accent-light py-1.5 px-3 rounded-lg bg-accent/10"
               onClick={() => {
                 try {
                   const result = restoreBackup(pending);
@@ -208,7 +208,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           </div>
         </div>
       )}
-      {message && <p role="status" className="text-[#0F766E] dark:text-[#2DD4BF] pt-1 font-medium">{message}</p>}
+      {message && <p role="status" className="text-accent dark:text-accent-light pt-1 font-medium">{message}</p>}
     </section>
   );
 }

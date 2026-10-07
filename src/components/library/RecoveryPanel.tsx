@@ -24,7 +24,7 @@ export function RecoveryPanel() {
       })()}
       <p className="text-xs text-gray-500">{item.session.date} · {t('삭제일')}: {new Date(item.deletedAt).toLocaleDateString()}</p>
       <div className="flex gap-3 text-sm font-semibold">
-        <button className="text-teal-600 p-2" onClick={() => action(() => restoreRecovery(item.id))}>{t('복원')}</button>
+        <button className="text-accent-600 p-2" onClick={() => action(() => restoreRecovery(item.id))}>{t('복원')}</button>
         <button className="text-red-500 p-2" onClick={() => { if (confirm(t('영구 삭제하면 복원할 수 없습니다. 삭제하시겠습니까?'))) action(() => purgeRecovery(item.id)); }}>{t('영구 삭제')}</button>
       </div>
     </div>)}
@@ -54,7 +54,7 @@ export function RecoveryUndo() {
   if (!item) return null;
   return <div role="status" className="fixed bottom-24 left-4 right-4 z-40 mx-auto max-w-md rounded-2xl bg-gray-900 text-white p-3 shadow-xl flex flex-wrap items-center gap-3">
     <span className="text-sm flex-1">{t(message || '복구함으로 이동했습니다.')}</span>
-    <button className="font-bold text-teal-300 p-2" onClick={() => { try { restoreRecovery(item.id); setItem(null); } catch (e) { setMessage((e as Error).message); } }}>{t('삭제 취소')}</button>
+    <button className="font-bold text-accent-300 p-2" onClick={() => { try { restoreRecovery(item.id); setItem(null); } catch (e) { setMessage((e as Error).message); } }}>{t('삭제 취소')}</button>
     <button aria-label={t('닫기')} onClick={() => setItem(null)}>×</button>
   </div>;
 }

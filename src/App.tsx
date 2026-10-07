@@ -165,8 +165,18 @@ export const App: React.FC = () => {
     setIsDark((prev) => !prev);
   };
 
+  const [accentTheme, setAccentTheme] = useState<'green' | 'purple'>(() => {
+    try { return localStorage.getItem('iron_accent_theme') === 'green' ? 'green' : 'purple'; }
+    catch { return 'purple'; }
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.accent = accentTheme;
+    try { localStorage.setItem('iron_accent_theme', accentTheme); } catch {}
+  }, [accentTheme]);
+
   return (
-    <div className="iron-app-shell min-h-screen bg-white dark:bg-[#101715] text-[#202824] dark:text-[#F5F7F5] flex flex-col transition-colors duration-200">
+    <div className="iron-app-shell min-h-screen bg-white dark:bg-[#121019] text-[#24212B] dark:text-[#F5F3F8] flex flex-col transition-colors duration-200">
       <div ref={contentRef} className="isolate flex min-h-screen flex-col">
       {/* 상단 헤더 & 단일화된 총 운동 시간 시계 & 테마 스위처 */}
       <Header
@@ -189,7 +199,7 @@ export const App: React.FC = () => {
             isDark={isDark}
           />
         </div>)}
-        {activeTab === 'my' && <MyPage isDark={isDark} onToggleTheme={toggleTheme} weightUnit={weightUnit} onToggleWeightUnit={toggleWeightUnit} />}
+        {activeTab === 'my' && <MyPage isDark={isDark} onToggleTheme={toggleTheme} accentTheme={accentTheme} onAccentThemeChange={setAccentTheme} weightUnit={weightUnit} onToggleWeightUnit={toggleWeightUnit} />}
         {activeTab === 'explore' && <ExerciseExplorer isDark={isDark} />}
         {activeTab === 'history' && (
           <WorkoutHistoryView weightUnit={weightUnit} />

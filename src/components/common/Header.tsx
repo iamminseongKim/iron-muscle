@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header
-      className="sticky top-0 z-30 bg-white/95 dark:bg-[#151C19]/95 backdrop-blur-xl shadow-[0_2px_16px_rgba(30,70,49,0.04)] px-4 pb-3"
+      className="sticky top-0 z-30 bg-white/95 dark:bg-[#191620]/95 backdrop-blur-xl shadow-[0_2px_16px_rgba(0,0,0,0.04)] px-4 pb-3"
       style={{ paddingTop: 'max(10px, env(safe-area-inset-top, 0px))' }}
     >
       <div className="max-w-lg md:max-w-5xl lg:max-w-7xl mx-auto flex items-center justify-between min-h-[40px]">
@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
           <img src="/brand-mark.svg" alt="" className="w-8 h-8 shrink-0"/>
           <div>
             <h1 className="font-bold text-sm tracking-[0.02em] text-[#1D1D1F] dark:text-white flex items-center gap-1 whitespace-nowrap">
-              IRON <span className="text-[#0F766E]">MUSCLE</span>
+              IRON <span className="text-accent">MUSCLE</span>
             </h1>
           </div>
         </div>
@@ -50,14 +50,14 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onToggleWorkoutTimer}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-xs transition-all duration-150 active:scale-95 cursor-pointer ${
               isWorkoutTimerRunning
-                ? 'bg-white dark:bg-[#1C1C1E] border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white hover:border-[#34C759]/50'
+                ? 'bg-white dark:bg-[#1C1C1E] border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white hover:border-accent-bright/50'
                 : 'bg-[#FF9500]/15 dark:bg-[#FF9500]/25 border-[#FF9500]/50 text-[#FF9500] ring-2 ring-[#FF9500]/20'
             }`}
             title={isWorkoutTimerRunning ? t('터치하여 운동 시간 일시정지 및 화면 잠금') : t('터치하여 운동 시간 재개')}
           >
             {isWorkoutTimerRunning ? (
               <span className="flex items-center gap-1 shrink-0">
-                <span className="w-2 h-2 rounded-full bg-[#34C759] animate-pulse inline-block" />
+                <span className="w-2 h-2 rounded-full bg-accent-bright animate-pulse inline-block" />
                 <Pause size={10} className="text-gray-400 dark:text-gray-500" />
               </span>
             ) : (

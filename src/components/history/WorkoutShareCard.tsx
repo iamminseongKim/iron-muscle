@@ -68,15 +68,15 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
       </div>
       <div className="overflow-y-auto min-h-0 px-4 pb-4 space-y-4">
         <div className="rounded-2xl bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 space-y-3">
-          <div className="flex gap-2">{[true, false].map(value => <button key={String(value)} type="button" aria-pressed={light === value} onClick={() => setLight(value)} className={`flex-1 py-2 rounded-xl text-xs font-bold ${light === value ? 'bg-white dark:bg-[#1C1C1E] text-[#0F766E] shadow-sm' : 'text-gray-500'}`}>{value ? t("라이트") : t("다크")}</button>)}</div>
-          <label className="block text-xs font-bold">{t("인증 문구")}<input aria-label={t("인증 문구")} value={title} maxLength={60} onChange={e => setTitle(e.target.value)} className="mt-2 w-full rounded-xl p-3 bg-white dark:bg-[#1C1C1E] text-sm outline-none focus:ring-2 focus:ring-[#0F766E]"/>
+          <div className="flex gap-2">{[true, false].map(value => <button key={String(value)} type="button" aria-pressed={light === value} onClick={() => setLight(value)} className={`flex-1 py-2 rounded-xl text-xs font-bold ${light === value ? 'bg-white dark:bg-[#1C1C1E] text-accent shadow-sm' : 'text-gray-500'}`}>{value ? t("라이트") : t("다크")}</button>)}</div>
+          <label className="block text-xs font-bold">{t("인증 문구")}<input aria-label={t("인증 문구")} value={title} maxLength={60} onChange={e => setTitle(e.target.value)} className="mt-2 w-full rounded-xl p-3 bg-white dark:bg-[#1C1C1E] text-sm outline-none focus:ring-2 focus:ring-accent"/>
           </label>
-          <div className="flex justify-between text-xs"><span className="text-gray-500">{t("최대 60자")}</span><button type="button" onClick={() => setTitle(recommendWorkoutQuote(title))} className="min-h-[44px] px-2 font-bold text-[#0F766E]">{t("랜덤 선택")}</button></div>
-          <button type="button" aria-expanded={showQuotes} aria-controls="workout-quotes" onClick={() => setShowQuotes(value => !value)} className="w-full min-h-[44px] rounded-xl bg-white dark:bg-[#1C1C1E] text-sm font-bold text-[#0F766E]">{t("문구 목록")} · {WORKOUT_QUOTE_CATALOG.length}</button>
+          <div className="flex justify-between text-xs"><span className="text-gray-500">{t("최대 60자")}</span><button type="button" onClick={() => setTitle(recommendWorkoutQuote(title))} className="min-h-[44px] px-2 font-bold text-accent">{t("랜덤 선택")}</button></div>
+          <button type="button" aria-expanded={showQuotes} aria-controls="workout-quotes" onClick={() => setShowQuotes(value => !value)} className="w-full min-h-[44px] rounded-xl bg-white dark:bg-[#1C1C1E] text-sm font-bold text-accent">{t("문구 목록")} · {WORKOUT_QUOTE_CATALOG.length}</button>
           {showQuotes && <div id="workout-quotes" className="max-h-64 overflow-y-auto space-y-3">
             {[false, true].map(withAuthor => <div key={String(withAuthor)}>
               <p className="text-xs font-bold mb-2">{withAuthor ? t("보디빌딩 명언") : t("응원 문구")}</p>
-              <div className="space-y-1">{WORKOUT_QUOTE_CATALOG.filter(quote => Boolean(quote.author) === withAuthor).map(quote => <button key={quote.text} type="button" aria-pressed={title === t(quote.text)} onClick={() => setTitle(t(quote.text))} className={`w-full min-h-[44px] text-left rounded-xl p-3 text-sm ${title === t(quote.text) ? 'bg-[#0F766E] text-white' : 'bg-white dark:bg-[#1C1C1E]'}`}>
+              <div className="space-y-1">{WORKOUT_QUOTE_CATALOG.filter(quote => Boolean(quote.author) === withAuthor).map(quote => <button key={quote.text} type="button" aria-pressed={title === t(quote.text)} onClick={() => setTitle(t(quote.text))} className={`w-full min-h-[44px] text-left rounded-xl p-3 text-sm ${title === t(quote.text) ? 'bg-accent text-white' : 'bg-white dark:bg-[#1C1C1E]'}`}>
                 {t(quote.text)}{quote.author && <span className="block text-xs mt-1 opacity-80">— {t(quote.author)}</span>}
               </button>)}</div>
             </div>)}
@@ -104,7 +104,7 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
               <button
                 type="button"
                 onClick={() => photoInputRef.current?.click()}
-                className="px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-[#1C1C1E] text-[#0F766E] border border-black/10 dark:border-white/10 shadow-xs hover:bg-gray-50 dark:hover:bg-white/5 transition"
+                className="px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-[#1C1C1E] text-accent border border-black/10 dark:border-white/10 shadow-xs hover:bg-gray-50 dark:hover:bg-white/5 transition"
               >
                 {photo ? t("사진 변경") : t("사진 선택")}
               </button>
@@ -117,13 +117,13 @@ export function WorkoutShareCard({ sessions, date, unit, onClose }: { sessions: 
           {photo && <><button type="button" className="text-xs text-[#FF3B30]" onClick={() => { photoRequest.current++; setPhotoBusy(false); setPhoto(undefined); }}>{t("사진 제거")}</button><p className="text-[11px] text-gray-500">{t("사진은 카드 중앙에 맞춰 잘립니다.")}</p></>}
           <label className="flex items-center justify-between text-xs font-bold">{t("글자 색")}<select aria-label={t("글자 색")} value={textColor} onChange={e => setTextColor(e.target.value as typeof textColor)} className="p-2 rounded-lg bg-white dark:bg-[#1C1C1E]"><option value="auto">{t("자동")}</option><option value="white">{t("흰색")}</option><option value="black">{t("검정")}</option></select>
           </label>
-          {photo && <label className="block text-xs font-bold">{t("가독성 보정")} · {Math.round(overlay * 100)}%<input aria-label={t("가독성 보정")} type="range" min="0" max="0.85" step="0.05" value={overlay} onChange={e => setOverlay(Number(e.target.value))} className="block mt-2 w-full accent-[#0F766E]"/></label>}
+          {photo && <label className="block text-xs font-bold">{t("가독성 보정")} · {Math.round(overlay * 100)}%<input aria-label={t("가독성 보정")} type="range" min="0" max="0.85" step="0.05" value={overlay} onChange={e => setOverlay(Number(e.target.value))} className="block mt-2 w-full accent-accent"/></label>}
         </div>
         {!summary.sets ? <p className="py-12 text-center text-sm text-gray-500">{t("완료한 세트가 있는 날에 인증 카드를 만들 수 있어요.")}</p> : image ? <img src={image} alt={`${date} ${t("운동 인증 카드")}: ${summary.exercises.map(row => `${row.name} ${row.sets} ${t("세트")} ${row.reps} ${t("횟수")}`).join(', ')}`} className="w-full rounded-xl"/> : <p role="status">{t("이미지를 준비하고 있어요.")}</p>}
       </div>
       <div className="p-4 border-t border-gray-200 dark:border-white/10">
         {message && <p role="status" className="text-xs mb-3">{t(message)}</p>}
-        <button type="button" disabled={busy || photoBusy || previewBusy || !image || !summary.sets} className="w-full py-3 rounded-xl bg-[#0F766E] text-white font-black flex justify-center items-center gap-2 disabled:opacity-40" onClick={async () => {
+        <button type="button" disabled={busy || photoBusy || previewBusy || !image || !summary.sets} className="w-full py-3 rounded-xl bg-accent text-white font-black flex justify-center items-center gap-2 disabled:opacity-40" onClick={async () => {
           setBusy(true); setMessage('');
           try { const result = await saveWorkoutImage(`iron-muscle-${date}.png`, image); setMessage(result.message); }
           catch { setMessage(t("이미지를 저장하지 못했습니다. 다시 시도해 주세요.")); }

@@ -176,10 +176,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const isGrouped = Boolean(exerciseItem.groupId);
 
   return (
-    <div id={`exercise-${exerciseItem.id}`} className={`scroll-mt-24 bg-[#F3F5F4] dark:bg-[#1C211E] rounded-2xl shadow-[0_5px_16px_rgba(30,70,49,0.045)] dark:shadow-[0_8px_28px_rgba(0,0,0,0.2)] overflow-hidden transition-all ${
+    <div id={`exercise-${exerciseItem.id}`} className={`scroll-mt-24 bg-[#F4F3F8] dark:bg-[#1E1B24] rounded-2xl shadow-[0_5px_16px_rgba(0,0,0,0.045)] dark:shadow-[0_8px_28px_rgba(0,0,0,0.2)] overflow-hidden transition-all ${
       isGrouped
         ? exerciseItem.groupType === 'superset'
-          ? 'border-l-4 border-l-[#19845D]'
+          ? 'border-l-4 border-l-accent-strong'
           : 'border-l-4 border-l-[#F47750]'
         : ''
     }`}>
@@ -187,7 +187,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       {isGrouped && (
         <div className={`px-4 py-1.5 flex items-center justify-between text-xs font-black text-white ${
           exerciseItem.groupType === 'superset'
-            ? 'bg-[#19845D]'
+            ? 'bg-accent-strong'
             : 'bg-[#D76F47]'
         }`}>
           <span className="flex items-center gap-1.5 tracking-tight">
@@ -220,7 +220,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <div className="flex items-center gap-2 flex-wrap mt-0.5">
             <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}{t("세트 완료")}{records.maxWeight > 0 ? ` · ${t("최고")} ${records.maxWeight}${currentUnit}` : ''}</span>
             {canRegisterInGym && (gymConfigs.length > 0 ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0F766E] dark:text-teal-300">
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent dark:text-accent-300">
                 <Check size={13} /> {t('헬스장에 등록됨')}
               </span>
             ) : (
@@ -228,13 +228,13 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 type="button"
                 onClick={handleRegisterInGym}
                 title={gymProfile.name}
-                className="inline-flex min-h-[32px] items-center gap-1 rounded-md border border-[#0F766E]/30 px-2 text-[11px] font-semibold text-[#0F766E] dark:text-teal-300 hover:bg-[#0F766E]/10"
+                className="inline-flex min-h-[32px] items-center gap-1 rounded-md border border-accent/30 px-2 text-[11px] font-semibold text-accent dark:text-accent-300 hover:bg-accent/10"
               >
                 <Plus size={13} /> {t('내 헬스장에 등록')}
               </button>
             ))}
             {(!collapsed && exerciseItem.machineBrand) && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] text-[10px] font-bold">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-accent/10 text-accent dark:text-accent-light text-[10px] font-bold">
                 <Tag size={11} /> {exerciseItem.machineBrand}
               </span>
             )}
@@ -249,7 +249,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               </span>
             )}
             {(!collapsed && isSmithEquipment) && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] dark:bg-[#0F766E]/20 text-[10px] font-bold tracking-tight">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/10 text-accent dark:bg-accent/20 text-[10px] font-bold tracking-tight">
                 <Lightbulb size={11} /> {t("스미스머신: 봉 무게 제외 (원판 무게만 기록)")}
               </span>
             )}
@@ -274,7 +274,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     }}
                     className={`min-h-[36px] disabled:opacity-50 px-2 py-0.5 rounded-md text-[10px] font-bold transition flex items-center gap-1 ${
                       isCurrent
-                        ? 'bg-[#0F766E] text-white shadow-2xs'
+                        ? 'bg-accent text-white shadow-2xs'
                         : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
                     }`}
                   >
@@ -306,12 +306,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             onClick={() => { if (collapsed) onToggleCollapsed?.(); setShow3DViewer(!show3DViewer); }}
             className={`min-w-[36px] min-h-[36px] justify-center px-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
               show3DViewer
-                ? 'bg-[#0F766E]/15 text-[#0F766E] ring-1 ring-[#0F766E]/30'
+                ? 'bg-accent/15 text-accent ring-1 ring-accent/30'
                 : 'text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'
             }`}
             title={t("타겟 근육 근육 해부도 및 3D 회전 모델 보기")}
           >
-            <Eye size={13} className={show3DViewer ? 'text-[#0F766E]' : 'text-gray-400'} />
+            <Eye size={13} className={show3DViewer ? 'text-accent' : 'text-gray-400'} />
             <span className="sr-only">{t("근육 보기")}</span>
           </button>
 
@@ -376,7 +376,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               onClick={() => onUpdate({ ...exerciseItem, executionMode: 'unilateral' })}
               className={`px-2 py-0.5 rounded-lg transition ${
                 exerciseItem.executionMode === 'unilateral'
-                  ? 'bg-[#0F766E] text-white shadow-xs'
+                  ? 'bg-accent text-white shadow-xs'
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
@@ -396,7 +396,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               }}
               className={`px-2 py-0.5 rounded-lg transition font-black ${
                 currentUnit === 'kg'
-                  ? 'bg-white dark:bg-[#1C1C1E] text-[#0F766E] shadow-xs'
+                  ? 'bg-white dark:bg-[#1C1C1E] text-accent shadow-xs'
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
@@ -409,7 +409,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               }}
               className={`px-2 py-0.5 rounded-lg transition font-black ${
                 currentUnit === 'lbs'
-                  ? 'bg-[#0F766E] text-white shadow-xs'
+                  ? 'bg-accent text-white shadow-xs'
                   : 'text-gray-500 hover:text-black dark:hover:text-white'
               }`}
             >
@@ -439,7 +439,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 onClick={() => onUpdate({ ...exerciseItem, loadType: 'pin-loaded' })}
                 className={`px-2 py-0.5 rounded-lg transition ${
                   currentLoadType === 'pin-loaded'
-                    ? 'bg-[#34C759] text-white shadow-xs'
+                    ? 'bg-accent-bright text-white shadow-xs'
                     : 'text-gray-500 hover:text-black dark:hover:text-white'
                 }`}
               >
@@ -495,7 +495,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <button
             type="button"
             onClick={() => setShowMachineSetting(!showMachineSetting)}
-            className="text-[11px] text-gray-400 hover:text-[#0F766E] underline ml-auto"
+            className="text-[11px] text-gray-400 hover:text-accent underline ml-auto"
           >
             {exerciseItem.machineSetting ? `${t("세팅:")} ${exerciseItem.machineSetting}` : t('+ 세팅(의자높이 등)')}
           </button>
@@ -522,7 +522,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           {/* 통합 해부도와 운동 동작 사진 */}
           <div className="flex items-center justify-between flex-wrap gap-2 min-w-0">
             <div className="flex items-center gap-1.5">
-              <Sparkles size={13} className="text-[#0F766E]" />
+              <Sparkles size={13} className="text-accent" />
               <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
                 {exerciseName} {t("자극 부위")}
               </span>
@@ -589,7 +589,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   <span className="font-bold text-gray-700 dark:text-gray-300 inline-flex items-center gap-1"><ListOrdered size={13} />{t("올바른 운동 순서")}</span>
                   {displayExerciseInstructions(baseExercise).slice(0, 4).map((step, idx) => (
                     <p key={idx} className="text-gray-600 dark:text-gray-400 text-[11px] leading-relaxed flex items-start gap-1.5">
-                      <span className="w-4 h-4 rounded-full bg-red-500/15 text-[#0F766E] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-4 h-4 rounded-full bg-red-500/15 text-accent text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                         {idx + 1}
                       </span>
                       <span>{step}</span>
@@ -603,9 +603,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           {/* 타겟 근육 안내 */}
           <div className="bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-md rounded-2xl p-2.5 border border-black/5 dark:border-white/5 text-xs space-y-1">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="w-2 h-2 rounded-full bg-[#0F766E] shadow-xs shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-accent shadow-xs shrink-0" />
               <span className="font-bold text-gray-700 dark:text-gray-300">{t("주동근")}:</span>
-              <span className="text-[#0F766E] font-semibold">
+              <span className="text-accent font-semibold">
                 {baseExercise.primaryMuscles?.map(displayMuscle).join(', ') || displayMuscle('full_body')}
               </span>
             </div>
@@ -623,7 +623,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Set Header */}
-      <button type="button" onClick={() => setShowQuickSets(v => !v)} aria-expanded={showQuickSets} className="m-2 px-3 py-2 rounded-lg text-xs font-bold text-[#0F766E] bg-[#0F766E]/10 flex items-center gap-1"><Zap size={14} />{t("세트 퀵 설정")}</button>
+      <button type="button" onClick={() => setShowQuickSets(v => !v)} aria-expanded={showQuickSets} className="m-2 px-3 py-2 rounded-lg text-xs font-bold text-accent bg-accent/10 flex items-center gap-1"><Zap size={14} />{t("세트 퀵 설정")}</button>
       {showQuickSets && <QuickSetEditor key={currentUnit} item={exerciseItem} unit={currentUnit} onApply={onUpdate} onClose={() => setShowQuickSets(false)} />}
       <div className="px-[15px] py-1 flex items-center gap-1.5 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
         <span className="w-6 shrink-0 text-center">{t("세트")}</span>
@@ -666,7 +666,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <button
           type="button"
           onClick={handleAddSet}
-          className="w-full py-1.5 mt-0.5 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] text-xs font-bold text-[#0F766E] rounded-lg flex items-center justify-center gap-1 transition active:scale-98"
+          className="w-full py-1.5 mt-0.5 bg-white dark:bg-[#1C1C1E] hover:bg-gray-50 dark:hover:bg-[#252528] text-xs font-bold text-accent rounded-lg flex items-center justify-center gap-1 transition active:scale-98"
         >
           <Plus size={14} />
           <span>{t("세트 추가")}</span>
@@ -682,7 +682,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
           <div className="flex items-center gap-1 font-semibold text-[11px]">
             <span>{t("추정 1RM:")}</span>
-            <span className="font-extrabold text-[#0F766E]">{records.max1RM}{currentUnit}</span>
+            <span className="font-extrabold text-accent">{records.max1RM}{currentUnit}</span>
           </div>
         </div>
       )}

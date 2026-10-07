@@ -59,7 +59,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between pb-2 border-b border-black/5 dark:border-white/10">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
+            <div className="p-2 rounded-xl bg-accent/10 text-accent">
               <Link2 size={18} />
             </div>
             <div>
@@ -84,7 +84,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
           <div className="space-y-3">
             <div className="p-3.5 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-2xl">
               <span className="text-xs text-gray-400 font-medium block mb-1">{t("현재 상태")}</span>
-              <p className="text-sm font-bold text-[#0F766E]">
+              <p className="text-sm font-bold text-accent">
                 {currentExercise.groupLabel ? t(currentExercise.groupLabel) : t('묶음 진행 중')}
               </p>
               <p className="text-xs text-gray-500 mt-1">
@@ -114,12 +114,12 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                   onClick={() => setSelectedGroupType('superset')}
                   className={`p-3 rounded-2xl border text-left transition ${
                     selectedGroupType === 'superset'
-                      ? 'border-[#0F766E] bg-[#0F766E]/10 text-[#0F766E]'
+                      ? 'border-accent bg-accent/10 text-accent'
                       : 'border-black/5 dark:border-white/10 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   <div className="flex items-center gap-1.5 font-bold text-xs mb-1">
-                    <Zap size={14} className="text-[#0F766E]" />
+                    <Zap size={14} className="text-accent" />
                     {t("슈퍼세트")}
                   </div>
                   <p className="text-[11px] text-gray-400 leading-tight">
@@ -168,7 +168,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                         onClick={() => toggleSelectTarget(target.id)}
                         className={`w-full p-2.5 rounded-xl border flex items-center justify-between text-left transition ${
                           isChecked
-                            ? 'border-[#0F766E] bg-[#0F766E]/10 text-[#0F766E]'
+                            ? 'border-accent bg-accent/10 text-accent'
                             : 'border-black/5 dark:border-white/10 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-300'
                         }`}
                       >
@@ -182,7 +182,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
                         </div>
                         <div className={`w-4 h-4 rounded flex items-center justify-center border ${
                           isChecked
-                            ? 'bg-[#0F766E] border-[#0F766E] text-white'
+                            ? 'bg-accent border-accent text-white'
                             : 'border-gray-400 dark:border-gray-600'
                         }`}>
                           {isChecked && <Check size={12} strokeWidth={3} />}
@@ -201,7 +201,7 @@ export const ExerciseGroupModal: React.FC<ExerciseGroupModalProps> = ({
               onClick={handleApply}
               className={`w-full py-3.5 rounded-2xl text-sm font-black flex items-center justify-center gap-1.5 transition ${
                 selectedTargetIds.length > 0
-                  ? 'bg-[#0F766E] text-white shadow-md shadow-teal-900/20 active:scale-98'
+                  ? 'bg-accent text-white shadow-md shadow-accent-900/20 active:scale-98'
                   : 'bg-gray-200 dark:bg-[#2C2C2E] text-gray-400 cursor-not-allowed'
               }`}
             >

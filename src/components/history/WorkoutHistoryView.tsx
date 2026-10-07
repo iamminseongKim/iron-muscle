@@ -327,7 +327,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
       <div className="flex items-center justify-between pt-1">
         <div>
           <h2 className="text-xl font-black text-[#1D1D1F] dark:text-white tracking-tight flex items-center gap-2">
-            <Calendar size={20} className="text-[#0F766E]" />{t("운동 기록 조회")}</h2>
+            <Calendar size={20} className="text-accent" />{t("운동 기록 조회")}</h2>
           <p className="text-xs text-gray-400">{t("날짜별, 월별, 연별 운동 일지 및 AI 분석 추출")}</p>
         </div>
 
@@ -335,7 +335,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
         <button
           type="button"
           onClick={handleOpenAiExport}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#0F766E] to-[#5856D6] hover:opacity-95 text-white rounded-full text-xs font-black shadow-md shadow-teal-900/20 active:scale-98 transition"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-accent to-[#5856D6] hover:opacity-95 text-white rounded-full text-xs font-black shadow-md shadow-accent-900/20 active:scale-98 transition"
         >
           <Bot size={14} />
           <span>{t("AI 분석 추출")}</span>
@@ -382,7 +382,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           {viewScope === 'daily' && (
             <div className="space-y-3">
               {/* 날짜 네비게이터 */}
-          <div className="flex items-center justify-between bg-white dark:bg-[#1C211E] p-3 soft-surface">
+          <div className="flex items-center justify-between bg-white dark:bg-[#1E1B24] p-3 soft-surface">
             <button
               onClick={handlePrevDay}
               className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-[#2C2C2E] text-gray-500 transition"
@@ -398,7 +398,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 className="bg-transparent font-black text-sm text-[#1D1D1F] dark:text-white text-center outline-none cursor-pointer"
               />
               {workoutDates.has(selectedDate) && (
-                <span className="w-2 h-2 rounded-full bg-[#34C759]" title={t("운동 완료일")} />
+                <span className="w-2 h-2 rounded-full bg-accent-bright" title={t("운동 완료일")} />
               )}
             </div>
 
@@ -410,19 +410,19 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             </button>
           </div>
 
-          {dailySessions.length > 0 && <button type="button" onClick={() => setIsShareCardOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#0F766E]/10 text-[#0F766E] font-black text-sm"><Share2 size={18}/>{t("운동 인증 카드 만들기")}</button>}
+          {dailySessions.length > 0 && <button type="button" onClick={() => setIsShareCardOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-accent/10 text-accent font-black text-sm"><Share2 size={18}/>{t("운동 인증 카드 만들기")}</button>}
 
           {/* 오늘 운동 기록이 2개 이상일 때 나타나는 합치기 배너 */}
           {dailySessions.length > 1 && (
-            <div className="bg-gradient-to-r from-[#0F766E]/10 to-indigo-500/10 border border-[#0F766E]/20 dark:border-[#0F766E]/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-xs animate-fade-in">
+            <div className="bg-gradient-to-r from-accent/10 to-indigo-500/10 border border-accent/20 dark:border-accent/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-xs animate-fade-in">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="p-2 rounded-xl bg-[#0F766E] text-white shrink-0">
+                <div className="p-2 rounded-xl bg-accent text-white shrink-0">
                   <Layers size={16} />
                 </div>
                 <div className="min-w-0">
                   <h4 className="text-xs font-black text-gray-900 dark:text-white flex items-center gap-1.5 flex-wrap">
                     <span>{t("오늘")} {dailySessions.length}{t("개의 운동 기록이 있습니다")}</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#0F766E]/20 text-[#0F766E] font-extrabold">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-accent/20 text-accent font-extrabold">
                       {dailySessions.length}{t("개 세션")}
                     </span>
                   </h4>
@@ -434,7 +434,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <button
                 type="button"
                 onClick={handleMergeDaySessions}
-                className="px-3 py-2 rounded-xl bg-[#0F766E] hover:bg-[#0d635c] text-white font-black text-xs shrink-0 shadow-sm active:scale-95 transition flex items-center gap-1"
+                className="px-3 py-2 rounded-xl bg-accent hover:bg-accent-hover text-white font-black text-xs shrink-0 shadow-sm active:scale-95 transition flex items-center gap-1"
               >
                 <span>{t("기록 합치기")}</span>
               </button>
@@ -442,7 +442,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           )}
 
           {mergeFeedback && (
-            <div className="p-2.5 rounded-xl bg-teal-500/15 text-[#0F766E] dark:text-teal-400 text-xs font-bold text-center animate-fade-in">
+            <div className="p-2.5 rounded-xl bg-accent-500/15 text-accent dark:text-accent-400 text-xs font-bold text-center animate-fade-in">
               {mergeFeedback}
             </div>
           )}
@@ -453,7 +453,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           {viewScope === 'monthly' && (
             <div className="space-y-3">
               {/* 월 네비게이터 */}
-          <div className="flex items-center justify-between bg-white dark:bg-[#1C211E] p-3 soft-surface">
+          <div className="flex items-center justify-between bg-white dark:bg-[#1E1B24] p-3 soft-surface">
             <button
               onClick={handlePrevMonth}
               aria-label={t("이전 달")}
@@ -469,7 +469,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 <button
                   type="button"
                   onClick={handleGoToToday}
-                  className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#0F766E]/10 text-[#0F766E] hover:bg-[#0F766E]/20 transition"
+                  className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-accent/10 text-accent hover:bg-accent/20 transition"
                 >
                   {t("오늘")}
                 </button>
@@ -485,20 +485,20 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           </div>
 
           {/* 월간 요약 카드 */}
-          <div className="grid grid-cols-3 gap-2 text-center bg-white dark:bg-[#1C211E] p-4 soft-surface">
+          <div className="grid grid-cols-3 gap-2 text-center bg-white dark:bg-[#1E1B24] p-4 soft-surface">
             <div>
               <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 운동 횟수")}</span>
               <span className="text-xl font-black text-[#1D1D1F] dark:text-white">{monthlySessions.length} <span className="text-xs font-normal text-gray-400">{t("회")}</span></span>
             </div>
             <div>
               <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("월 누적 볼륨")}</span>
-              <span className="text-xl font-black text-[#0F766E]">
+              <span className="text-xl font-black text-accent">
                 {monthlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0).toLocaleString()} <span className="text-xs font-normal text-gray-400">kg</span>
               </span>
             </div>
             <div>
               <span className="text-[10px] text-gray-400 font-bold block mb-0.5">{t("평균 운동시간")}</span>
-              <span className="text-xl font-black text-[#0F766E]">
+              <span className="text-xl font-black text-accent">
                 {monthlySessions.length > 0
                   ? Math.round(monthlySessions.reduce((s, x) => s + x.durationSeconds, 0) / monthlySessions.length / 60)
                   : 0} <span className="text-xs font-normal text-gray-400">{t("분")}</span>
@@ -507,7 +507,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           </div>
 
           {/* 월간 출석 체크 캘린더 히트맵 (잔디 달력) */}
-          <div className="bg-white dark:bg-[#1C211E] p-4 soft-surface space-y-2">
+          <div className="bg-white dark:bg-[#1E1B24] p-4 soft-surface space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-gray-500 mb-2">
               <span>{t("월간 출석 캘린더")}</span>
               <span className="text-[11px] text-gray-400">{t("날짜 클릭 시 해당 일지 조회")}</span>
@@ -552,13 +552,13 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       !cell.isCurrentMonth
                         ? 'text-gray-300 dark:text-gray-600 hover:bg-black/5 dark:hover:bg-white/5'
                         : hasSession
-                        ? 'bg-[#34C759] text-white shadow-xs font-black'
+                        ? 'bg-accent-bright text-white shadow-xs font-black'
                         : isSelected
-                        ? 'border-2 border-[#0F766E] text-[#0F766E] dark:text-teal-300 bg-[#0F766E]/5 font-black'
+                        ? 'border-2 border-accent text-accent dark:text-accent-300 bg-accent/5 font-black'
                         : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-300 hover:bg-black/10'
                     } ${
                       cell.isToday && cell.isCurrentMonth && !hasSession && !isSelected
-                        ? 'ring-2 ring-[#0F766E]/40 font-black'
+                        ? 'ring-2 ring-accent/40 font-black'
                         : ''
                     }`}
                   >
@@ -566,7 +566,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                     {cell.isToday && cell.isCurrentMonth && (
                       <span
                         className={`w-1 h-1 rounded-full absolute bottom-1 ${
-                          hasSession ? 'bg-white' : 'bg-[#0F766E]'
+                          hasSession ? 'bg-white' : 'bg-accent'
                         }`}
                       />
                     )}
@@ -605,13 +605,13 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-center">
-            <div className="bg-white dark:bg-[#1C211E] p-4 soft-surface">
+            <div className="bg-white dark:bg-[#1E1B24] p-4 soft-surface">
               <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 총 운동 일수")}</span>
               <span className="text-2xl font-black text-[#1D1D1F] dark:text-white">{yearlySessions.length} <span className="text-xs font-normal text-gray-400">{t("일")}</span></span>
             </div>
-            <div className="bg-white dark:bg-[#1C211E] p-4 soft-surface">
+            <div className="bg-white dark:bg-[#1E1B24] p-4 soft-surface">
               <span className="text-[11px] text-gray-400 font-bold block mb-1">{t("연간 누적 볼륨")}</span>
-              <span className="text-2xl font-black text-[#0F766E]">
+              <span className="text-2xl font-black text-accent">
                 {Math.round(yearlySessions.reduce((s, x) => s + calculateSessionVolume(x), 0) / 1000).toLocaleString()} <span className="text-xs font-normal text-gray-400">{t("톤")}</span>
               </span>
             </div>
@@ -626,7 +626,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             <div className="space-y-3">
                         {/* 해당 일자의 운동 목록 */}
           {dailySessions.length === 0 ? (
-            <div className="py-12 text-center bg-white dark:bg-[#1C211E] soft-surface p-6 space-y-3">
+            <div className="py-12 text-center bg-white dark:bg-[#1E1B24] soft-surface p-6 space-y-3">
               <Dumbbell size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
               <div>
                 <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
@@ -644,7 +644,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                     onClick={handleLoadSampleData}
                     className="px-3.5 py-1.5 rounded-xl bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-black/10 text-gray-600 dark:text-gray-300 text-xs font-bold transition inline-flex items-center gap-1.5"
                   >
-                    <RotateCcw size={13} className="text-[#0F766E]" />
+                    <RotateCcw size={13} className="text-accent" />
                     <span>{t("체험용 샘플 기록 불러오기")}</span>
                   </button>
                 </div>
@@ -659,7 +659,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               return (
                 <div
                   key={session.id}
-                  className="bg-white dark:bg-[#1C211E] soft-surface p-4 space-y-3"
+                  className="bg-white dark:bg-[#1E1B24] soft-surface p-4 space-y-3"
                 >
                   {/* 세션 헤더 */}
                   <div className="flex items-start justify-between pb-3 border-b border-black/5 dark:border-white/5 flex-wrap gap-2">
@@ -684,7 +684,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                     <div className="flex items-center gap-2.5">
                       <div className="text-right">
                         <span className="text-xs text-gray-400 block font-semibold">{t("총 볼륨")}</span>
-                        <span className="text-sm font-black text-[#0F766E]">
+                        <span className="text-sm font-black text-accent">
                           {sessionVol.toLocaleString()} <span className="text-[10px] font-normal text-gray-400">kg</span>
                         </span>
                       </div>
@@ -697,7 +697,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                           className="p-1.5 rounded-lg hover:bg-black/10 text-gray-600 dark:text-gray-300 transition"
                           title={t("이 운동 기록 수정")}
                         >
-                          <Edit3 size={14} className="text-[#0F766E]" />
+                          <Edit3 size={14} className="text-accent" />
                         </button>
                         <button
                           type="button"
@@ -714,7 +714,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                   {/* 세션 메모 */}
                   {session.notes && (
                     <div className="p-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-2xl text-xs text-gray-600 dark:text-gray-300 flex items-start gap-2">
-                      <MessageSquare size={14} className="text-[#0F766E] shrink-0 mt-0.5" />
+                      <MessageSquare size={14} className="text-accent shrink-0 mt-0.5" />
                       <span>{session.notes}</span>
                     </div>
                   )}
@@ -732,7 +732,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                           className={`p-3 rounded-2xl border ${
                             isGrouped
                               ? exItem.groupType === 'superset'
-                                ? 'border-l-4 border-l-[#0F766E] border-black/5 dark:border-white/5 bg-[#F9F9FB]/80 dark:bg-[#222226]'
+                                ? 'border-l-4 border-l-accent border-black/5 dark:border-white/5 bg-[#F9F9FB]/80 dark:bg-[#222226]'
                                 : 'border-l-4 border-l-[#FF9500] border-black/5 dark:border-white/5 bg-[#F9F9FB]/80 dark:bg-[#222226]'
                               : 'border-black/5 dark:border-white/5 bg-[#F9F9FB] dark:bg-[#222226]'
                           } space-y-2`}
@@ -744,7 +744,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                               </span>
                               {exItem.groupLabel && (
                                 <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold text-white ${
-                                  exItem.groupType === 'superset' ? 'bg-[#0F766E]' : 'bg-[#FF9500]'
+                                  exItem.groupType === 'superset' ? 'bg-accent' : 'bg-[#FF9500]'
                                 }`}>
                                   {exItem.groupLabel}
                                 </span>
@@ -753,7 +753,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                                 {exItem.loadType === 'plate-loaded' ? t('플레이트') : exItem.loadType === 'pin-loaded' ? t('핀머신') : t(exItem.equipmentType)}
                               </span>
                               {exItem.executionMode === 'unilateral' && (
-                                <span className="px-1.5 py-0.2 rounded bg-blue-500/10 text-[#0F766E] text-[10px] font-bold">
+                                <span className="px-1.5 py-0.2 rounded bg-blue-500/10 text-accent text-[10px] font-bold">
                                   {t("원암(편측)")}
                                 </span>
                               )}
@@ -830,7 +830,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                   setSelectedDate(s.date);
                   setViewScope('daily');
                 }}
-                className="p-3 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-between hover:border-[#0F766E] transition cursor-pointer"
+                className="p-3 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-between hover:border-accent transition cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <ConditionIcon condition={s.conditionEmoji} size={18} />
@@ -840,12 +840,12 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-black text-[#0F766E]">{calculateSessionVolume(s).toLocaleString()}kg</span>
+                  <span className="text-xs font-black text-accent">{calculateSessionVolume(s).toLocaleString()}kg</span>
                   <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
                       onClick={() => handleOpenEditSession(s)}
-                      className="p-1 rounded-lg hover:bg-black/10 text-gray-400 hover:text-[#0F766E] transition"
+                      className="p-1 rounded-lg hover:bg-black/10 text-gray-400 hover:text-accent transition"
                       title={t("수정")}
                     >
                       <Edit3 size={13} />
@@ -890,7 +890,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       <div
                         style={{ height: `${heightPercent}%` }}
                         className={`w-full rounded-t-md transition-all ${
-                          count > 0 ? 'bg-gradient-to-t from-[#0F766E] to-[#5856D6]' : ''
+                          count > 0 ? 'bg-gradient-to-t from-accent to-[#5856D6]' : ''
                         }`}
                       />
                     </div>
@@ -917,7 +917,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         setSelectedDate(s.date);
                         setViewScope('daily');
                       }}
-                      className="p-3 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-between hover:border-[#0F766E] transition cursor-pointer"
+                      className="p-3 bg-white dark:bg-[#1C1C1E] rounded-2xl border border-black/5 dark:border-white/5 flex items-center justify-between hover:border-accent transition cursor-pointer"
                     >
                       <div className="flex items-center gap-2.5">
                         <ConditionIcon condition={s.conditionEmoji} size={18} />
@@ -927,12 +927,12 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-black text-[#0F766E]">{calculateSessionVolume(s).toLocaleString()}kg</span>
+                        <span className="text-xs font-black text-accent">{calculateSessionVolume(s).toLocaleString()}kg</span>
                         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                           <button
                             type="button"
                             onClick={() => handleOpenEditSession(s)}
-                            className="p-1 rounded-lg hover:bg-black/10 text-gray-400 hover:text-[#0F766E] transition"
+                            className="p-1 rounded-lg hover:bg-black/10 text-gray-400 hover:text-accent transition"
                             title={t("수정")}
                           >
                             <Edit3 size={13} />
@@ -964,7 +964,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             {/* Modal Header */}
             <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-gradient-to-tr from-[#0F766E] to-[#5856D6] text-white">
+                <div className="p-2 rounded-xl bg-gradient-to-tr from-accent to-[#5856D6] text-white">
                   <Bot size={18} />
                 </div>
                 <div>
@@ -1048,7 +1048,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       type="date"
                       value={exportDate}
                       onChange={(e) => setExportDate(e.target.value)}
-                      className="flex-1 bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-[#0F766E]"
+                      className="flex-1 bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-accent"
                     />
                     <button
                       type="button"
@@ -1056,7 +1056,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         const today = new Date().toISOString().slice(0, 10);
                         setExportDate(today);
                       }}
-                      className="px-2 py-1 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-lg text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:text-[#0F766E]"
+                      className="px-2 py-1 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-lg text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:text-accent"
                     >{t("오늘")}</button>
                     <button
                       type="button"
@@ -1065,7 +1065,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         yest.setDate(yest.getDate() - 1);
                         setExportDate(yest.toISOString().slice(0, 10));
                       }}
-                      className="px-2 py-1 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-lg text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:text-[#0F766E]"
+                      className="px-2 py-1 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 rounded-lg text-[11px] font-bold text-gray-600 dark:text-gray-300 hover:text-accent"
                     >{t("어제")}</button>
                   </div>
                 )}
@@ -1077,7 +1077,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       type="date"
                       value={exportDate}
                       onChange={(e) => setExportDate(e.target.value)}
-                      className="bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-[#0F766E]"
+                      className="bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-accent"
                     />
                     <span className="text-[11px] text-gray-400 font-medium truncate">{t("(기준일 포함 직전 7일간 분석)")}</span>
                   </div>
@@ -1090,7 +1090,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                       type="month"
                       value={exportDate.slice(0, 7)}
                       onChange={(e) => setExportDate(`${e.target.value}-01`)}
-                      className="bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-[#0F766E]"
+                      className="bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-[#1D1D1F] dark:text-white focus:outline-hidden focus:ring-1 focus:ring-accent"
                     />
                     <span className="text-[11px] text-gray-400 font-medium">{t("(해당 월 전체 세션 분석)")}</span>
                   </div>
@@ -1125,7 +1125,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               <div className="pt-1">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[11px] font-bold text-gray-500 flex items-center gap-1">
-                    <Dumbbell size={12} className="text-[#0F766E]" />{t("운동 부위 필터:")}</span>
+                    <Dumbbell size={12} className="text-accent" />{t("운동 부위 필터:")}</span>
                   <span className="text-[10px] text-gray-400">
                     {exportLabels.sessions}: {exportTargetSessions.length}
                   </span>
@@ -1141,9 +1141,9 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                         onClick={() => setSelectedBodyPart(part.id)}
                         className={`shrink-0 px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1 transition ${
                           isSelected
-                            ? 'bg-[#0F766E] text-white shadow-xs'
+                            ? 'bg-accent text-white shadow-xs'
                             : hasSets
-                            ? 'bg-white dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-200 border border-black/5 dark:border-white/5 hover:border-[#0F766E]/40'
+                            ? 'bg-white dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-200 border border-black/5 dark:border-white/5 hover:border-accent/40'
                             : 'bg-white/50 dark:bg-[#2C2C2E]/40 text-gray-400 dark:text-gray-500 border border-dashed border-black/5 dark:border-white/5 opacity-60'
                         }`}
                       >
@@ -1154,7 +1154,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                             className={`text-[10px] px-1 py-0.2 rounded-full font-black ${
                               isSelected
                                 ? 'bg-white/20 text-white'
-                                : 'bg-black/5 dark:bg-white/10 text-[#0F766E] dark:text-[#2DD4BF]'
+                                : 'bg-black/5 dark:bg-white/10 text-accent dark:text-accent-light'
                             }`}
                           >
                             {part.totalSets}
@@ -1168,8 +1168,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             </div>
 
             {/* 4. AI 맞춤 프롬프트 안내 배지 */}
-            <div className="px-4 py-2 bg-[#0F766E]/10 dark:bg-[#0F766E]/20 border-b border-black/5 dark:border-white/5 flex items-center gap-2 text-xs text-[#0F766E] dark:text-[#2DD4BF] font-semibold">
-              <Sparkles size={14} className="shrink-0 text-[#0F766E] dark:text-[#2DD4BF]" />
+            <div className="px-4 py-2 bg-accent/10 dark:bg-accent/20 border-b border-black/5 dark:border-white/5 flex items-center gap-2 text-xs text-accent dark:text-accent-light font-semibold">
+              <Sparkles size={14} className="shrink-0 text-accent dark:text-accent-light" />
               <span className="truncate">{exportLabels.feedback} · {exportLabels[selectedBodyPart]} · {exportScope === 'all' ? exportLabels.allTime : exportLabels[exportScope]}
               </span>
             </div>
@@ -1180,7 +1180,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
             </div>
 
             {downloadFeedback && (
-              <div className="px-4 py-2 bg-[#34C759]/15 text-[#34C759] text-xs font-bold text-center border-t border-black/5 dark:border-white/5 animate-fade-in">
+              <div className="px-4 py-2 bg-accent-bright/15 text-accent-bright text-xs font-bold text-center border-t border-black/5 dark:border-white/5 animate-fade-in">
                 {downloadFeedback}
               </div>
             )}
@@ -1192,8 +1192,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                 onClick={handleCopyMarkdown}
                 className={`flex-1 py-3.5 rounded-2xl text-xs font-black flex items-center justify-center gap-1.5 transition ${
                   copied
-                    ? 'bg-[#34C759] text-white'
-                    : 'bg-[#0F766E] hover:bg-blue-600 text-white shadow-md shadow-teal-900/20 active:scale-98'
+                    ? 'bg-accent-bright text-white'
+                    : 'bg-accent hover:bg-blue-600 text-white shadow-md shadow-accent-900/20 active:scale-98'
                 }`}
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}

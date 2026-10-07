@@ -12,8 +12,9 @@ import { GymEquipmentModal } from './GymEquipmentModal';
 import type { WeightUnit } from '../../types/workout';
 import packageJson from '../../../package.json';
 
-export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }: {
-  isDark: boolean; onToggleTheme: () => void; weightUnit: WeightUnit; onToggleWeightUnit: () => void;
+export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange, weightUnit, onToggleWeightUnit }: {
+  isDark: boolean; onToggleTheme: () => void; accentTheme: 'green' | 'purple'; onAccentThemeChange: (theme: 'green' | 'purple') => void;
+  weightUnit: WeightUnit; onToggleWeightUnit: () => void;
 }) {
   const [gymState, setGymState] = useState<MultiGymState>(() => loadGymState());
   const [gymProfile, setGymProfile] = useState<GymEquipmentProfile>(() => loadGymProfile());
@@ -61,13 +62,13 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
   });
   const pending = jobs.filter(j => j.state !== 'sent').length;
   const lastSent = jobs.filter(j => j.state === 'sent').sort((a,b) => b.updatedAt.localeCompare(a.updatedAt))[0];
-  const section = 'soft-surface bg-white dark:bg-[#1C211E] p-5 space-y-4';
-  const button = 'rounded-xl px-4 py-3 bg-[#0F766E] text-white text-sm font-bold disabled:opacity-40';
+  const section = 'soft-surface bg-white dark:bg-[#1E1B24] p-5 space-y-4';
+  const button = 'rounded-xl px-4 py-3 bg-accent text-white text-sm font-bold disabled:opacity-40';
   return <div className="max-w-lg mx-auto px-4 pt-4 pb-32 space-y-4">
     <div>
       <div className="flex items-center gap-2">
         <h2 className="text-2xl font-black">{t('마이')}</h2>
-        <span className="text-xs font-black px-2 py-0.5 rounded-full bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF]">
+        <span className="text-xs font-black px-2 py-0.5 rounded-full bg-accent/10 text-accent dark:text-accent-light">
           MY
         </span>
       </div>
@@ -100,7 +101,7 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
         <span>{t(feature === 'autoExport' ? '완료한 운동 자동 보내기' : '최근 체중 자동 가져오기')}</span>
         <span className="relative inline-flex w-11 h-6 shrink-0">
           <input type="checkbox" role="switch" checked={preferences[feature]} disabled={busy || (!available && !preferences[feature])} onChange={() => void toggle(feature)} className="peer sr-only"/>
-          <span className="absolute inset-0 rounded-full bg-gray-200 dark:bg-white/15 peer-checked:bg-[#0F766E] peer-disabled:opacity-40 peer-focus-visible:ring-2 peer-focus-visible:ring-[#0F766E] peer-focus-visible:ring-offset-2"/>
+          <span className="absolute inset-0 rounded-full bg-gray-200 dark:bg-white/15 peer-checked:bg-accent peer-disabled:opacity-40 peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2"/>
           <span className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5 peer-disabled:opacity-60"/>
         </span>
       </label>)}
@@ -115,7 +116,7 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
       </div>
       <p className="text-xs text-gray-500">{t('스위치를 끄면 이후 동기화가 중단됩니다. 이미 전송한 운동은 건강 앱에서 직접 삭제할 수 있습니다.')}</p>
     </section>
-    {message && <p role="status" className="rounded-2xl bg-[#0F766E]/10 p-4 text-sm">{t(message)}</p>}
+    {message && <p role="status" className="rounded-2xl bg-accent/10 p-4 text-sm">{t(message)}</p>}
     <section className={section}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -126,7 +127,7 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
         </div>
         <button
           onClick={() => setIsGymModalOpen(true)}
-          className="text-xs font-bold text-[#0F766E] dark:text-[#2DD4BF] flex items-center hover:underline"
+          className="text-xs font-bold text-accent dark:text-accent-light flex items-center hover:underline"
         >
           {t('기구 편집')} <ChevronRight size={14} />
         </button>
@@ -148,7 +149,7 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
                 }}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
                   isActive
-                    ? 'bg-[#0F766E] text-white shadow-sm'
+                    ? 'bg-accent text-white shadow-sm'
                     : 'bg-[#F2F2F7] dark:bg-[#252528] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
                 }`}
               >
@@ -166,11 +167,11 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <span className="font-bold text-sm text-[#1D1D1F] dark:text-white">{gymProfile.name}</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] dark:text-[#2DD4BF] font-bold">
+            <span className="text-[10px] px-2 py-0.5 rounded-md bg-accent/10 text-accent dark:text-accent-light font-bold">
               {t('선택됨')}
             </span>
           </div>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] font-bold">
+          <span className="text-xs px-2.5 py-0.5 rounded-full bg-accent/15 text-accent dark:text-accent-light font-bold">
             {t('머신')} {Object.keys(gymProfile.machines).length}{t('개 등록')}
           </span>
         </div>
@@ -182,6 +183,17 @@ export function MyPage({ isDark, onToggleTheme, weightUnit, onToggleWeightUnit }
     <section className={section}>
       <h3 className="font-bold flex items-center gap-2"><Settings size={18}/>{t('앱 설정')}</h3>
       <div className="flex justify-between items-center text-sm"><span>{t('테마')}</span><button onClick={onToggleTheme} className="p-3 rounded-xl bg-gray-100 dark:bg-white/10">{t(isDark ? '다크' : '라이트')}</button></div>
+      <div className="flex justify-between items-center gap-3 text-sm">
+        <span>{t('강조 색상')}</span>
+        <div className="flex gap-2" role="group" aria-label={t('강조 색상')}>
+          {(['green', 'purple'] as const).map(theme => <button key={theme} type="button" aria-pressed={accentTheme === theme}
+            onClick={() => onAccentThemeChange(theme)}
+            className={`flex items-center gap-2 rounded-xl px-3 py-2 font-semibold border transition ${accentTheme === theme ? 'border-accent bg-accent/10' : 'border-transparent bg-gray-100 dark:bg-white/10'}`}>
+            <span className={`h-3 w-3 rounded-full ${theme === 'green' ? 'bg-[#0F766E]' : 'bg-[#6D28D9]'}`} aria-hidden="true" />
+            {t(theme === 'green' ? '초록색' : '보라색')}
+          </button>)}
+        </div>
+      </div>
       <div className="flex justify-between items-center text-sm"><span>{t('표시 무게 단위')}</span><button onClick={() => { onToggleWeightUnit(); setWeightInput(''); }} className="p-3 rounded-xl bg-gray-100 dark:bg-white/10">{weightUnit}</button></div>
     </section>
     <RoutineLibrary />

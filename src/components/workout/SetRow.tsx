@@ -177,7 +177,7 @@ export const SetRow: React.FC<SetRowProps> = ({
     <>
       <div className={`px-2 py-1 transition-colors border-b border-black/5 dark:border-white/5 ${
         set.completed
-          ? 'bg-[#EAF7EF] dark:bg-[#1E392A]'
+          ? 'bg-[var(--accent-soft)] dark:bg-[var(--accent-soft-dark)]'
           : 'bg-transparent'
       }`}>
         {/* Line 1: Core Inputs (Set #, Previous Record, Weight, Reps, Complete Check) */}
@@ -191,9 +191,9 @@ export const SetRow: React.FC<SetRowProps> = ({
                 onClick={handleCycleSide}
                 className={`mt-0.5 px-1 py-0.2 text-[9px] font-black rounded-md transition ${
                   set.side === 'left'
-                    ? 'bg-[#0F766E] text-white shadow-xs'
+                    ? 'bg-accent text-white shadow-xs'
                     : set.side === 'right'
-                    ? 'bg-[#0F766E] text-white shadow-xs'
+                    ? 'bg-accent text-white shadow-xs'
                     : 'bg-gray-200 dark:bg-[#3A3A3C] text-gray-600 dark:text-gray-300'
                 }`}
                 title={t("클릭하여 좌(L) / 우(R) / 양쪽 전환")}
@@ -217,7 +217,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           {/* 중량 (kg/lbs) 입력 */}
           <div className="flex-1 min-w-0 relative">
             {isAssisted && (
-              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-black text-[#0F766E] pointer-events-none select-none">
+              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-black text-accent pointer-events-none select-none">
                 -
               </span>
             )}
@@ -245,8 +245,8 @@ export const SetRow: React.FC<SetRowProps> = ({
                 isAssisted ? 'pl-4 pr-7' : 'pr-7'
               } text-sm font-extrabold transition outline-none border ${
                 isWeightFresh
-                  ? 'bg-[#0F766E]/10 dark:bg-[#0F766E]/15 text-[#0F766E] border-[#0F766E] ring-2 ring-[#0F766E]/10'
-                  : 'bg-[#F1F4F2] dark:bg-[#2A332D] text-[#202824] dark:text-white border-transparent focus:border-[#19845D] focus:bg-white dark:focus:bg-[#1C211E]'
+                  ? 'bg-accent/10 dark:bg-accent/15 text-accent border-accent ring-2 ring-accent/10'
+                  : 'bg-[#F4F3F8] dark:bg-[#302B37] text-[#24212B] dark:text-white border-transparent focus:border-accent-strong focus:bg-white dark:focus:bg-[#1E1B24]'
               }`}
             />
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">
@@ -277,8 +277,8 @@ export const SetRow: React.FC<SetRowProps> = ({
               onChange={(e) => handleRepsChange(e.target.value)}
               className={`numeric-set-input w-full text-center rounded-lg h-9 py-1 px-1 pr-5 text-sm font-extrabold transition outline-none border ${
                 isRepsFresh
-                  ? 'bg-[#0F766E]/10 dark:bg-[#0F766E]/15 text-[#0F766E] border-[#0F766E] ring-2 ring-[#0F766E]/10'
-                  : 'bg-[#F1F4F2] dark:bg-[#2A332D] text-[#202824] dark:text-white border-transparent focus:border-[#19845D] focus:bg-white dark:focus:bg-[#1C211E]'
+                  ? 'bg-accent/10 dark:bg-accent/15 text-accent border-accent ring-2 ring-accent/10'
+                  : 'bg-[#F4F3F8] dark:bg-[#302B37] text-[#24212B] dark:text-white border-transparent focus:border-accent-strong focus:bg-white dark:focus:bg-[#1E1B24]'
               }`}
             />
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">{t("회")}</span>
@@ -292,15 +292,15 @@ export const SetRow: React.FC<SetRowProps> = ({
             onClick={handleToggleComplete}
             className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center transition-all ${
               set.completed
-                ? 'bg-[#19845D] text-white active:scale-95'
-                : 'bg-[#F1F4F2] dark:bg-[#2A332D] text-gray-500 hover:text-[#19845D] active:scale-95'
+                ? 'bg-accent-strong text-white active:scale-95'
+                : 'bg-[#F4F3F8] dark:bg-[#302B37] text-gray-500 hover:text-accent-strong active:scale-95'
             }`}
           >
             <Check size={18} strokeWidth={2.5} />
           </button>
-          <button type="button" aria-label={`${index + 1}${t("세트 상세 옵션")}`} aria-expanded={showOptions} onClick={() => setShowOptions(!showOptions)} className={`relative w-7 h-9 shrink-0 flex items-center justify-center rounded-lg ${showOptions ? 'bg-[#0F766E]/10 text-[#0F766E]' : 'text-gray-400'}`}>
+          <button type="button" aria-label={`${index + 1}${t("세트 상세 옵션")}`} aria-expanded={showOptions} onClick={() => setShowOptions(!showOptions)} className={`relative w-7 h-9 shrink-0 flex items-center justify-center rounded-lg ${showOptions ? 'bg-accent/10 text-accent' : 'text-gray-400'}`}>
             <MoreHorizontal size={16} />
-            {(set.rpe !== undefined || hasTempo || hasCommentOrTags || hasRestTime) && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#0F766E]" />}
+            {(set.rpe !== undefined || hasTempo || hasCommentOrTags || hasRestTime) && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent" />}
           </button>
         </div>
 
@@ -357,7 +357,7 @@ export const SetRow: React.FC<SetRowProps> = ({
               onClick={() => setIsCommentModalOpen(true)}
               className={`px-2 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 transition ${
                 hasCommentOrTags
-                  ? 'bg-[#0F766E]/10 text-[#0F766E]'
+                  ? 'bg-accent/10 text-accent'
                   : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
               }`}
               title={t("세트별 메모/태그")}
@@ -370,7 +370,7 @@ export const SetRow: React.FC<SetRowProps> = ({
 
             {/* 실제 휴식 시간 표시 */}
             {hasRestTime && (
-              <span className="px-2 py-1 rounded-lg bg-[#34C759]/10 text-[#34C759] text-[11px] font-bold flex items-center gap-1 whitespace-nowrap">
+              <span className="px-2 py-1 rounded-lg bg-accent-bright/10 text-accent-bright text-[11px] font-bold flex items-center gap-1 whitespace-nowrap">
                 <Timer size={12} />
                 {set.restSeconds}{t("초 휴식")}
               </span>
@@ -392,7 +392,7 @@ export const SetRow: React.FC<SetRowProps> = ({
         {hasCommentOrTags && (
           <div className="mt-1.5 pt-1.5 border-t border-black/5 dark:border-white/5 flex flex-wrap items-center gap-1 text-[11px]">
             {set.tags?.map((tag) => (
-              <span key={tag} className="px-1.5 py-0.5 rounded-md bg-[#0F766E]/10 text-[#0F766E] font-semibold">
+              <span key={tag} className="px-1.5 py-0.5 rounded-md bg-accent/10 text-accent font-semibold">
                 #{t(tag)}
               </span>
             ))}

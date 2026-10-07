@@ -146,7 +146,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
         {/* 모달 헤더 */}
         <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-[#F9F9FB] dark:bg-[#161618]">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#0F766E]/15 text-[#0F766E] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-full bg-accent/15 text-accent flex items-center justify-center font-bold">
               ✏️
             </div>
             <div>
@@ -171,7 +171,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           <div className="grid grid-cols-2 gap-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-2xl">
             <div>
               <label className="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1">
-                <Calendar size={12} className="text-[#0F766E]" />
+                <Calendar size={12} className="text-accent" />
                 {t("날짜")}
               </label>
               <input
@@ -240,7 +240,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                 type="checkbox"
                 checked={isDeload}
                 onChange={(e) => setIsDeload(e.target.checked)}
-                className="w-4 h-4 rounded text-[#0F766E] accent-[#0F766E]"
+                className="w-4 h-4 rounded text-accent accent-accent"
               />
               <span className="font-bold text-[11px] text-gray-600 dark:text-gray-300">
                 {t("디로딩 세션으로 기록 (강도/볼륨 조절 주간)")}
@@ -251,7 +251,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           {/* 3. 운동 일지 메모 */}
           <div>
             <label className="block text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-1">
-              <MessageSquare size={12} className="text-[#30D158]" />
+              <MessageSquare size={12} className="text-accent-bright" />
               {t("운동 일지 메모 (식단, 통증, 집중도 등)")}
             </label>
             <textarea
@@ -267,13 +267,13 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between">
               <span className="font-extrabold text-sm text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
-                <Dumbbell size={14} className="text-[#0F766E]" />
+                <Dumbbell size={14} className="text-accent" />
                 {t("운동 종목")} ({exercises.length})
               </span>
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(true)}
-                className="px-2.5 py-1 bg-[#0F766E] hover:bg-[#0062CC] text-white font-bold rounded-xl flex items-center gap-1 text-[11px] transition shadow-xs"
+                className="px-2.5 py-1 bg-accent hover:bg-[#0062CC] text-white font-bold rounded-xl flex items-center gap-1 text-[11px] transition shadow-xs"
               >
                 <Plus size={13} />
                 <span>{t("종목 추가")}</span>
@@ -297,7 +297,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                     {/* 종목 헤더 */}
                     <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-md bg-[#0F766E]/15 text-[#0F766E] font-black flex items-center justify-center text-[10px]">
+                        <span className="w-5 h-5 rounded-md bg-accent/15 text-accent font-black flex items-center justify-center text-[10px]">
                           {eIdx + 1}
                         </span>
                         <span className="font-black text-sm text-[#1D1D1F] dark:text-white">
@@ -318,7 +318,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             newExs[eIdx] = { ...exItem, weightUnit: next };
                             setExercises(newExs);
                           }}
-                          className="px-2 py-0.5 rounded-lg bg-black/5 dark:bg-white/10 text-[10px] font-bold text-[#0F766E] hover:bg-[#0F766E]/10 transition"
+                          className="px-2 py-0.5 rounded-lg bg-black/5 dark:bg-white/10 text-[10px] font-bold text-accent hover:bg-accent/10 transition"
                           title={t("중량 단위")}
                         >
                           {t("단위")}: {exItem.weightUnit || 'kg'}
@@ -337,7 +337,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                     {/* 휴식 시간 일괄 적용 퀵 칩 */}
                     <div className="flex items-center justify-between text-[11px] bg-white/70 dark:bg-black/30 px-2.5 py-1.5 rounded-xl border border-black/5 dark:border-white/5 flex-wrap gap-1">
                       <span className="font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1 shrink-0">
-                        <Clock size={11} className="text-[#0F766E]" />
+                        <Clock size={11} className="text-accent" />
                         {t("휴식 시간")}:
                       </span>
                       <div className="flex items-center gap-1 font-bold flex-wrap">
@@ -346,7 +346,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             key={sec}
                             type="button"
                             onClick={() => handleBatchApplyRest(eIdx, sec)}
-                            className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-[#0F766E] hover:text-white text-gray-700 dark:text-gray-300 text-[10px] transition active:scale-95 shadow-xs"
+                            className="px-2 py-0.5 rounded-lg bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-accent hover:text-white text-gray-700 dark:text-gray-300 text-[10px] transition active:scale-95 shadow-xs"
                             title={`${sec}s`}
                           >
                             {sec}s
@@ -386,7 +386,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                               if (e.key === 'Enter') e.currentTarget.blur();
                             }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'weight', parseFloat(e.target.value) || 0)}
-                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-[#0F766E]"
+                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-accent"
                           />
 
                           <input
@@ -398,7 +398,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                               if (e.key === 'Enter') e.currentTarget.blur();
                             }}
                             onChange={(e) => handleUpdateSet(eIdx, sIdx, 'reps', parseInt(e.target.value) || 0)}
-                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-[#0F766E]"
+                            className="col-span-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-2 py-1 rounded-lg text-center font-black text-[#1D1D1F] dark:text-white outline-none focus:ring-1 focus:ring-accent"
                           />
 
                           <input
@@ -429,10 +429,10 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                               placeholder={t("초")}
                               value={set.restSeconds ?? ''}
                               onChange={(e) => handleUpdateSet(eIdx, sIdx, 'restSeconds', e.target.value === '' ? undefined : Math.max(0, parseInt(e.target.value) || 0))}
-                              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] px-1 py-1 rounded-lg text-center font-medium text-gray-700 dark:text-gray-300 outline-none focus:ring-1 focus:ring-[#0F766E]"
+                              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] px-1 py-1 rounded-lg text-center font-medium text-gray-700 dark:text-gray-300 outline-none focus:ring-1 focus:ring-accent"
                             />
                             {set.restSeconds !== undefined && set.restSeconds >= 60 && (
-                              <span className="text-[9px] font-bold text-[#0F766E] leading-none mt-0.5 pointer-events-none">
+                              <span className="text-[9px] font-bold text-accent leading-none mt-0.5 pointer-events-none">
                                 {Math.floor(set.restSeconds / 60)}{t("분")}{set.restSeconds % 60 ? ` ${set.restSeconds % 60}${t("초")}` : ''}
                               </span>
                             )}
@@ -473,7 +473,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 rounded-xl bg-[#0F766E] hover:bg-[#0062CC] text-white font-extrabold flex items-center gap-1.5 transition shadow-sm"
+            className="px-5 py-2 rounded-xl bg-accent hover:bg-[#0062CC] text-white font-extrabold flex items-center gap-1.5 transition shadow-sm"
           >
             <Save size={15} />
             <span>{t("수정 완료 저장")}</span>

@@ -36,7 +36,7 @@ export function RoutineLibrary() {
     if (loadActiveSession()?.id !== session.id) throw new Error('저장하지 못했습니다. 저장 공간을 확인하세요.');
     window.dispatchEvent(new Event('iron_open_workout'));
   });
-  const button = 'rounded-xl border border-teal-600/30 px-3 py-2 text-sm font-semibold text-teal-700 dark:text-teal-300';
+  const button = 'rounded-xl border border-accent-600/30 px-3 py-2 text-sm font-semibold text-accent-700 dark:text-accent-300';
   const field = 'w-full rounded-xl border border-black/15 dark:border-white/20 bg-transparent p-3 text-sm';
   return <section className="rounded-2xl bg-white dark:bg-[#1C1C1E] p-4 space-y-3" aria-labelledby="routine-title">
     <h2 id="routine-title" className="scroll-mt-24 text-lg font-bold">{t('루틴 레시피')}</h2>
@@ -69,7 +69,7 @@ export function RoutineLibrary() {
       }} />
       <button className={`${button} mt-2`} onClick={() => action(() => setPreview(parseRoutine(input)))}>{t('가져오기 미리보기')}</button>
     </details>
-    {preview && <div ref={previewRef} className="scroll-mt-24 rounded-xl bg-teal-600/5 p-3 space-y-3" data-testid="routine-preview">
+    {preview && <div ref={previewRef} className="scroll-mt-24 rounded-xl bg-accent-600/5 p-3 space-y-3" data-testid="routine-preview">
       <h3 className="font-bold break-words">{preview.name}</h3>
       <ol className="list-decimal pl-5 text-sm space-y-1">{preview.exercises.map((e, i) => {
         const resolved = resolveExercise(e.exerciseId);

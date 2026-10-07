@@ -307,7 +307,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     if (!session) return;
     const groupId = 'group-' + Date.now();
     const groupName = groupType === 'superset' ? t('슈퍼세트') : groupType === 'compound' ? t('컴파운드세트') : t('자이언트세트');
-    const groupColor = groupType === 'superset' ? '#0F766E' : '#FF9500';
+    const groupColor = groupType === 'superset' ? 'rgb(var(--accent-rgb))' : '#FF9500';
 
     const existingGroupIds = new Set(session.exercises.map((e) => e.groupId).filter(Boolean));
     const groupLetter = String.fromCharCode(65 + existingGroupIds.size);
@@ -469,11 +469,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       <div data-workout-idle className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
         {/* 상단 날짜 및 상태 카드 */}
         <div data-workout-intro className="pt-5 pb-1 text-left space-y-1.5">
-          <div data-workout-date className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#24835F] dark:text-[#79D9AA]">
-            <Calendar size={13} className="text-[#0F766E]" />
+          <div data-workout-date className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-strong dark:text-accent-light">
+            <Calendar size={13} className="text-accent" />
             {todayDateFormatted}
           </div>
-          <h2 className="text-2xl font-extrabold leading-tight text-[#202824] dark:text-white">{t("오늘의 운동 시작하기")}</h2>
+          <h2 className="text-2xl font-extrabold leading-tight text-[#24212B] dark:text-white">{t("오늘의 운동 시작하기")}</h2>
           <p data-workout-subtitle className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t("오늘 운동할 부위를 선택하면 첫 운동 추가 시 해당 부위가 자동 추천됩니다.")}</p>
         </div>
 
@@ -481,11 +481,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           {/* 좌측 패널 (목표 부위 선택 & 안내) */}
           <div className="space-y-4 md:col-span-6 lg:col-span-6 md:sticky md:top-16">
             {/* 1. 운동 부위 다중 선택 카드 */}
-        <div data-workout-target-card className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-3">
+        <div data-workout-target-card className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#36443C] dark:text-gray-200 flex items-center gap-1.5">
-              <Target size={14} className="text-[#0F766E]" />{t("오늘의 목표 부위 (다중 선택)")}</span>
-            <span className="text-[11px] font-bold text-[#0F766E]">
+            <span className="text-xs font-bold text-[#403A49] dark:text-gray-200 flex items-center gap-1.5">
+              <Target size={14} className="text-accent" />{t("오늘의 목표 부위 (다중 선택)")}</span>
+            <span className="text-[11px] font-bold text-accent">
               {selectedPartIds.length}{t("개 선택됨")}</span>
           </div>
 
@@ -499,8 +499,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   onClick={() => handleTogglePart(part.id)}
                   className={`min-w-0 p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1 text-center transition-colors duration-150 ${
                     isSelected
-                      ? 'bg-[#19845D] text-white shadow-[0_5px_12px_rgba(25,132,93,0.2)]'
-                      : 'bg-[#F1F4F2] dark:bg-[#2A332D] text-[#35443A] dark:text-gray-200 hover:bg-[#E8F3EC] dark:hover:bg-[#34443A]'
+                      ? 'bg-accent-strong text-white shadow-[0_5px_12px_rgba(0,0,0,0.14)]'
+                      : 'bg-[#F4F3F8] dark:bg-[#302B37] text-[#403A49] dark:text-gray-200 hover:bg-[var(--accent-soft)] dark:hover:bg-[#403A49]'
                   }`}
                 >
                   <BodyPartIcon part={part.id} />
@@ -511,7 +511,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           </div>
 
           {/* 선택 부위 설명 배지 */}
-          <div className="pt-3 border-t border-[#E9EFEB] dark:border-white/10 text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-2">
+          <div className="pt-3 border-t border-[#E9E7EF] dark:border-white/10 text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-2">
             <Sparkles size={14} className="text-[#FF9500] shrink-0" />
             <span>
               <strong className="text-[#1D1D1F] dark:text-white">
@@ -526,7 +526,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           <button
             type="button"
             onClick={handleStartWorkout}
-            className="w-full min-h-[58px] px-3 py-3 bg-[#17865F] hover:bg-[#126E4F] text-white rounded-2xl text-base font-bold flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(23,134,95,0.18)] transition active:scale-98"
+            className="w-full min-h-[58px] px-3 py-3 bg-accent-strong hover:bg-accent-hover text-white rounded-2xl text-base font-bold flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(0,0,0,0.14)] transition active:scale-98"
           >
             <Dumbbell size={22} />
             <span data-workout-start>{t("새 운동 시작하기")} ({recommendedTitle})</span>
@@ -534,7 +534,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           </button>
         </div>
             {/* 안내 카드 & 샘플 데이터 옵션 */}
-        <div className="py-3 border-t border-[#DDE8E1] dark:border-white/10 text-center text-xs text-gray-500 space-y-1">
+        <div className="py-3 border-t border-[#E9E7EF] dark:border-white/10 text-center text-xs text-gray-500 space-y-1">
           <p>
             {t("저장된 운동 일지")}: <strong className="text-gray-700 dark:text-gray-300">{savedCount}</strong> · {t("기록 조회")} / {t("AI 분석 추출")}
           </p>
@@ -546,7 +546,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                 alert(t('체험용 샘플 운동 일지가 불러와졌습니다. [기록 조회] 탭에서 확인해 보세요!'));
                 window.location.reload();
               }}
-              className="text-[#0F766E] hover:underline font-bold mt-1 inline-block"
+              className="text-accent hover:underline font-bold mt-1 inline-block"
             >{t("체험용 샘플 기록 불러오기")}</button>
           )}
         </div>
@@ -555,7 +555,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           {/* 우측 패널 (루틴 이름, 컨디션, 디로딩 & 시작 버튼) */}
           <div className="space-y-4 md:col-span-6 lg:col-span-6 mt-4 md:mt-0">
             {/* 2. 세션 설정 카드 (제목, 컨디션, 디로딩) */}
-        <div className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-3.5">
+        <div className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-3.5">
           <div>
             <label className="block text-xs font-black text-gray-400 mb-1.5">{t("루틴 이름 (자동 생성 또는 직접 입력)")}</label>
             <input
@@ -563,7 +563,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               value={customTitle}
               onChange={(e) => setCustomTitle(e.target.value)}
               placeholder={recommendedTitle}
-              className="w-full bg-[#F1F4F2] dark:bg-[#2A332D] text-sm font-semibold text-[#202824] dark:text-white px-3.5 py-2.5 rounded-xl border border-transparent focus:border-[#19845D] focus:bg-white dark:focus:bg-[#1C211E] outline-none transition"
+              className="w-full bg-[#F4F3F8] dark:bg-[#302B37] text-sm font-semibold text-[#24212B] dark:text-white px-3.5 py-2.5 rounded-xl border border-transparent focus:border-accent-strong focus:bg-white dark:focus:bg-[#1E1B24] outline-none transition"
             />
           </div>
 
@@ -578,7 +578,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   onClick={() => setIdleCondition(opt.emoji)}
                   className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
                     idleCondition === opt.emoji
-                      ? 'bg-[#0F766E] text-white shadow-xs'
+                      ? 'bg-accent text-white shadow-xs'
                       : 'bg-[#F2F2F7] dark:bg-[#252528] text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#333336]'
                   }`}
                 >
@@ -601,7 +601,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               type="button"
               onClick={() => setIdleDeload(!idleDeload)}
               className={`w-12 h-7 flex items-center rounded-full p-1 transition-colors duration-200 ease-in-out ${
-                idleDeload ? 'bg-[#0F766E]' : 'bg-gray-300 dark:bg-gray-700'
+                idleDeload ? 'bg-accent' : 'bg-gray-300 dark:bg-gray-700'
               }`}
             >
               <div
@@ -637,7 +637,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           {/* 상단 액션 바: 세션 정보 & 일지 & 취소 (타이머는 최상단 글로벌 헤더 시계로 일원화) */}
       <div className="flex items-center justify-between pt-1 px-1">
         <div>
-          <h3 className="text-xl font-extrabold leading-tight text-[#202824] dark:text-white">
+          <h3 className="text-xl font-extrabold leading-tight text-[#24212B] dark:text-white">
             {session.title}
           </h3>
           <div className="flex items-center gap-1.5 mt-0.5">
@@ -660,7 +660,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   return (
                     <span
                       key={id}
-                      className="px-1.5 py-0.2 rounded bg-[#0F766E]/15 text-[#0F766E] dark:text-[#2DD4BF] text-[9px] font-bold"
+                      className="px-1.5 py-0.2 rounded bg-accent/15 text-accent dark:text-accent-light text-[9px] font-bold"
                     >
                       {t(opt.label)}
                     </span>
@@ -708,20 +708,20 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       </div>
 
       {/* 한 줄 진행 요약. 세부 통계는 필요한 때만 펼친다. */}
-      <div className="soft-surface bg-white dark:bg-[#1C211E] overflow-hidden">
+      <div className="soft-surface bg-white dark:bg-[#1E1B24] overflow-hidden">
         <button type="button" aria-label={t("운동 통계 상세")} aria-expanded={showSessionStats} onClick={() => setShowSessionStats(!showSessionStats)} className="w-full px-3 min-h-[40px] flex items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
           <span><strong className="text-[#1D1D1F] dark:text-white">{session.exercises.length}</strong> {t("종목")}</span>
-          <span><strong className="text-[#0F766E]">{completedSetCount}/{sessionSets.length}</strong> {t("세트 완료")}</span>
+          <span><strong className="text-accent">{completedSetCount}/{sessionSets.length}</strong> {t("세트 완료")}</span>
           <span className="flex items-center gap-1"><strong className="text-[#1D1D1F] dark:text-white">{totalVolume.toLocaleString()}</strong> kg <span aria-hidden="true">{showSessionStats ? '⌃' : '⌄'}</span></span>
         </button>
         {showSessionStats && <div className="px-3 py-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"><span>{t("총 횟수")} <strong>{totalReps}{t("회")}</strong></span><span>{t("평균 RPE")} <strong>{avgRpe || '-'}</strong></span></div>}
         <div role="progressbar" aria-label={t("세트 완료율")} aria-valuemin={0} aria-valuemax={sessionSets.length || 1} aria-valuenow={completedSetCount} className="h-0.5 bg-black/5 dark:bg-white/5">
-          <div className="h-full bg-[#34C759] transition-[width] duration-300" style={{width: `${sessionSets.length ? completedSetCount / sessionSets.length * 100 : 0}%`}} />
+          <div className="h-full bg-accent-bright transition-[width] duration-300" style={{width: `${sessionSets.length ? completedSetCount / sessionSets.length * 100 : 0}%`}} />
         </div>
       </div>
 
           {/* 데스크톱/폴드 전용 상단 고정 운동 완료 버튼 */}
-          <div className="soft-surface p-4 bg-white dark:bg-[#1C211E] space-y-2 hidden md:block">
+          <div className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-2 hidden md:block">
             <span className="text-xs font-black text-gray-400 block">{t("운동 마무리")}</span>
             <HoldToCompleteButton
               onComplete={handleCompleteWorkout}
@@ -744,7 +744,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       )}
       <div className="space-y-2">
         {session.exercises.length === 0 ? (
-          <div className="soft-surface py-14 text-center bg-white dark:bg-[#1C211E] p-6 space-y-3">
+          <div className="soft-surface py-14 text-center bg-white dark:bg-[#1E1B24] p-6 space-y-3">
             <Dumbbell size={36} className="mx-auto text-gray-300 dark:text-gray-600" />
             <div>
               <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
@@ -760,7 +760,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                 clearFocusAndSelection();
                 setIsAddModalOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0F766E] text-white rounded-xl text-xs font-bold shadow-xs active:scale-95 transition"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-xl text-xs font-bold shadow-xs active:scale-95 transition"
             >
               <Plus size={15} />
               {t("첫 운동 종목 추가하기")}
@@ -794,7 +794,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             <button
               type="button"
               onClick={() => setIsAddModalOpen(true)}
-              className="w-full min-h-[48px] text-sm font-bold text-[#18714E] dark:text-[#8BE3B5] bg-[#E3F4E9] dark:bg-[#173D2B] hover:bg-[#D7EEDC] rounded-2xl flex items-center justify-center gap-2 transition active:scale-98"
+              className="w-full min-h-[48px] text-sm font-bold text-accent dark:text-accent-light bg-[var(--accent-soft)] dark:bg-[var(--accent-soft-dark)] hover:bg-[var(--accent-soft)] rounded-2xl flex items-center justify-center gap-2 transition active:scale-98"
             >
               <Plus size={18} />
               {t("운동 종목 추가하기")}

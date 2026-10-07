@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import puppeteer from 'puppeteer-core';
 
 const browser = await puppeteer.launch({
@@ -19,9 +21,9 @@ try {
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `idle overflow at ${width}px`);
     assert.ok(await page.$eval('.glass-dock', node => getComputedStyle(node).backdropFilter.includes('blur')));
     assert.ok(await page.evaluate(() => getComputedStyle(document.querySelector('.iron-app-shell')).backgroundColor === 'rgb(255, 255, 255)'));
-    assert.ok(await page.$eval('[data-workout-target-card]', node => getComputedStyle(node).backgroundColor === 'rgb(243, 245, 244)'));
+    assert.ok(await page.$eval('[data-workout-target-card]', node => getComputedStyle(node).backgroundColor === 'rgb(244, 243, 248)'));
     assert.ok(await page.evaluate(() => !document.querySelector('main').textContent.includes('루틴 레시피 · 복구함')));
-    if (width === 390) await page.screenshot({ path: '/tmp/iron-redesign-idle.png' });
+    if (width === 390) await page.screenshot({ path: join(tmpdir(), 'iron-redesign-idle.png') });
   }
 
   await page.evaluate(() => {
@@ -42,19 +44,19 @@ try {
     await page.setViewport({ width, height: 844, isMobile: true, hasTouch: true });
     assert.ok(await page.$('#exercise-redesign-exercise'));
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `active overflow at ${width}px`);
-    if (width === 390) await page.screenshot({ path: '/tmp/iron-redesign-active.png' });
+    if (width === 390) await page.screenshot({ path: join(tmpdir(), 'iron-redesign-active.png') });
   }
 
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
   await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('운동 종목 추가하기'))?.click());
   await page.waitForSelector('#exercise-picker-title');
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'picker overflow');
-  await page.screenshot({ path: '/tmp/iron-redesign-picker.png' });
+  await page.screenshot({ path: join(tmpdir(), 'iron-redesign-picker.png') });
   await page.keyboard.press('Escape');
   await page.waitForSelector('#exercise-picker-title', { hidden: true });
   await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.trim() === '다크')?.click());
-  await page.waitForFunction(() => document.documentElement.classList.contains('dark') && getComputedStyle(document.querySelector('.iron-app-shell')).backgroundColor === 'rgb(16, 23, 21)');
-  await page.screenshot({ path: '/tmp/iron-redesign-active-dark.png' });
+  await page.waitForFunction(() => document.documentElement.classList.contains('dark') && getComputedStyle(document.querySelector('.iron-app-shell')).backgroundColor === 'rgb(18, 16, 25)');
+  await page.screenshot({ path: join(tmpdir(), 'iron-redesign-active-dark.png') });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'dark mode overflow');
   await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.trim() === '라이트')?.click());
   await page.waitForFunction(() => !document.documentElement.classList.contains('dark'));
@@ -68,7 +70,7 @@ try {
     await page.waitForFunction(label => [...document.querySelectorAll('[data-bottom-navigation] button')].some(button => button.textContent.includes(label) && button.getAttribute('aria-current') === 'page'), {}, label);
     await page.waitForFunction(() => !document.querySelector('main > [role="status"]'));
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${name} overflow`);
-    await page.screenshot({ path: `/tmp/iron-redesign-${name}.png` });
+    await page.screenshot({ path: join(tmpdir(), `iron-redesign-${name}.png`) });
   }
   await page.setViewport({ width: 320, height: 844, isMobile: true, hasTouch: true });
   for (const [language, label] of [

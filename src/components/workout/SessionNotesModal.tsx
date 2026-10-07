@@ -104,7 +104,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
         {/* Header */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between bg-[#F9F9FB] dark:bg-[#161618] shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
+            <div className="p-2 rounded-xl bg-accent/10 text-accent">
               <FileText size={18} />
             </div>
             <div>
@@ -135,13 +135,13 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                     onClick={() => setSelectedEmoji(item.emoji)}
                     className={`py-2 px-1 rounded-2xl flex flex-col items-center gap-1 transition ${
                       isSelected
-                        ? 'bg-[#0F766E]/10 border-2 border-[#0F766E] scale-105 shadow-sm'
+                        ? 'bg-accent/10 border-2 border-accent scale-105 shadow-sm'
                         : 'bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/5 hover:border-black/20'
                     }`}
                   >
                     <ConditionIcon condition={item.emoji} size={22} />
                     <span className={`text-[10px] text-center leading-tight font-medium ${
-                      isSelected ? 'text-[#0F766E] font-bold' : 'text-gray-500 dark:text-gray-400'
+                      isSelected ? 'text-accent font-bold' : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {t(item.label)}
                     </span>
@@ -155,7 +155,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
           <div className="p-3.5 bg-[#F9F9FB] dark:bg-[#252528] rounded-2xl border border-black/5 dark:border-white/5 space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
-                <Target size={14} className="text-[#0F766E]" />
+                <Target size={14} className="text-accent" />
                 {t("운동 부위 재설정")}
                 <span className="text-[11px] font-normal text-gray-400">({selectedPartIds.length})</span>
               </span>
@@ -165,7 +165,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAutoDetect}
-                  className="px-2 py-1 bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 hover:border-[#0F766E] text-[#0F766E] dark:text-[#2DD4BF] rounded-lg text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-xs"
+                  className="px-2 py-1 bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 hover:border-accent text-accent dark:text-accent-light rounded-lg text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-xs"
                   title={t("종목 기반으로 부위가 자동 체크됩니다")}
                 >
                   <Wand2 size={12} />
@@ -178,7 +178,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
             {unselectedDetectedLabels.length > 0 && (
               <div
                 onClick={handleAutoDetect}
-                className="cursor-pointer p-2 bg-[#0F766E]/10 dark:bg-[#0F766E]/20 border border-[#0F766E]/20 rounded-xl text-[11px] text-[#0F766E] dark:text-[#2DD4BF] flex items-center justify-between gap-1.5 transition hover:bg-[#0F766E]/15"
+                className="cursor-pointer p-2 bg-accent/10 dark:bg-accent/20 border border-accent/20 rounded-xl text-[11px] text-accent dark:text-accent-light flex items-center justify-between gap-1.5 transition hover:bg-accent/15"
               >
                 <div className="flex items-center gap-1.5 truncate">
                   <Sparkles size={13} className="shrink-0" />
@@ -202,7 +202,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                     onClick={() => handleTogglePart(part.id)}
                     className={`p-2 rounded-2xl flex flex-col items-center justify-center gap-1 text-center transition-all duration-150 relative ${
                       isSelected
-                        ? 'bg-gradient-to-b from-[#1D1D1F] to-[#2C2C2E] dark:from-white dark:to-gray-100 text-white dark:text-black shadow-md scale-102 ring-2 ring-[#0F766E]/40'
+                        ? 'bg-gradient-to-b from-[#1D1D1F] to-[#2C2C2E] dark:from-white dark:to-gray-100 text-white dark:text-black shadow-md scale-102 ring-2 ring-accent/40'
                         : 'bg-white dark:bg-[#2C2C2E] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3A3A3C] border border-black/5 dark:border-white/5'
                     }`}
                   >
@@ -211,8 +211,8 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                       <span
                         className={`absolute top-1 right-1 text-[9px] px-1 py-0.2 rounded-full font-black ${
                           isSelected
-                            ? 'bg-[#0F766E] text-white'
-                            : 'bg-black/10 dark:bg-white/15 text-[#0F766E] dark:text-[#2DD4BF]'
+                            ? 'bg-accent text-white'
+                            : 'bg-black/10 dark:bg-white/15 text-accent dark:text-accent-light'
                         }`}
                       >
                         {count}
@@ -231,10 +231,10 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
                 type="checkbox"
                 checked={shouldUpdateTitle}
                 onChange={(e) => setShouldUpdateTitle(e.target.checked)}
-                className="rounded text-[#0F766E] focus:ring-[#0F766E]"
+                className="rounded text-accent focus:ring-accent"
               />
               <span className="text-[11px]">
-                {t("루틴 제목 자동 동기화")}: <strong className="text-[#0F766E] dark:text-[#2DD4BF] font-semibold">{recommendedTitle}</strong>
+                {t("루틴 제목 자동 동기화")}: <strong className="text-accent dark:text-accent-light font-semibold">{recommendedTitle}</strong>
               </span>
             </label>
           </div>
@@ -273,7 +273,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={t("오늘 운동 일지 및 특이사항 입력...")}
-              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition resize-none leading-relaxed"
+              className="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 rounded-2xl p-3 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent transition resize-none leading-relaxed"
             />
           </div>
         </div>
@@ -288,7 +288,7 @@ export const SessionNotesModal: React.FC<SessionNotesModalProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#0F766E] to-[#115E59] hover:opacity-95 transition shadow-sm"
+            className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-accent to-accent-hover hover:opacity-95 transition shadow-sm"
           >
             {t("저장하기")}
           </button>

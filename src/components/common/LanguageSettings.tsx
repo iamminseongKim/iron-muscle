@@ -20,7 +20,7 @@ export function LanguageSettings() {
     <div className="w-full space-y-2.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-xs font-bold text-[#1D1D1F] dark:text-white">
-          <Globe size={15} className="text-[#0F766E] dark:text-[#2DD4BF]" />
+          <Globe size={15} className="text-accent dark:text-accent-light" />
           <span>Language · 언어 · 言語 · 语言</span>
         </div>
         <span className="text-[10px] text-gray-400 font-medium">
@@ -38,7 +38,7 @@ export function LanguageSettings() {
               onClick={() => setLanguage(id)}
               className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition active:scale-95 ${
                 isSelected
-                  ? 'bg-[#0F766E] text-white shadow-xs'
+                  ? 'bg-accent text-white shadow-xs'
                   : 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/15'
               }`}
             >

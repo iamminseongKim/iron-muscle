@@ -821,5 +821,8 @@
   "종목·반복수·휴식만 공유합니다. 무게, 날짜, 메모, 신체 정보는 포함하지 않습니다. 루틴 이름과 사용자 종목 이름은 공유됩니다.": "Solo se comparten ejercicios, repeticiones y descansos. Se excluyen pesos, fechas, notas y datos corporales. Se comparten los nombres de la rutina y de ejercicios personalizados.",
   "준비 완료 후에는 인터넷 없이 다시 열어 운동을 기록할 수 있습니다. 처음 보는 3D 모델은 인터넷이 필요합니다. 브라우저 데이터 삭제에 대비해 파일 백업도 보관하세요.": "Cuando esté listo, podrás abrir y registrar entrenamientos sin internet. Los modelos 3D nuevos necesitan conexión. Guarda una copia por si se borran los datos del navegador.",
   "진행 중인 운동": "Entrenamiento actual",
-  "파일을 저장하지 못했습니다.": "No se pudo guardar el archivo."
+  "파일을 저장하지 못했습니다.": "No se pudo guardar el archivo.",
+  "강조 색상": "Color de acento",
+  "초록색": "Verde",
+  "보라색": "Morado"
 }

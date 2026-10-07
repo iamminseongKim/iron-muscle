@@ -2,15 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+:root[data-accent="green"] {
+  --accent-rgb: 15 118 110;
+  --accent-light-rgb: 45 212 191;
+  --accent-strong-rgb: 25 132 93;
+  --accent-bright-rgb: 52 199 89;
+  --accent-hover-rgb: 13 101 94;
+  --accent-50-rgb: 240 253 250;
+  --accent-100-rgb: 204 251 241;
+  --accent-200-rgb: 153 246 228;
+  --accent-300-rgb: 94 234 212;
+  --accent-400-rgb: 45 212 191;
+  --accent-500-rgb: 20 184 166;
+  --accent-600-rgb: 13 148 136;
+  --accent-700-rgb: 15 118 110;
+  --accent-800-rgb: 17 94 89;
+  --accent-900-rgb: 19 78 74;
+  --accent-950-rgb: 4 47 46;
+  --accent-soft: #EAF7EF;
+  --accent-soft-dark: #173D2B;
+}
+
+:root {
+  --accent-rgb: 109 40 217;
+  --accent-light-rgb: 196 181 253;
+  --accent-strong-rgb: 124 58 237;
+  --accent-bright-rgb: 139 92 246;
+  --accent-hover-rgb: 91 33 182;
+  --accent-50-rgb: 245 243 255;
+  --accent-100-rgb: 237 233 254;
+  --accent-200-rgb: 221 214 254;
+  --accent-300-rgb: 196 181 253;
+  --accent-400-rgb: 167 139 250;
+  --accent-500-rgb: 139 92 246;
+  --accent-600-rgb: 124 58 237;
+  --accent-700-rgb: 109 40 217;
+  --accent-800-rgb: 91 33 182;
+  --accent-900-rgb: 76 29 149;
+  --accent-950-rgb: 46 16 101;
+  --accent-soft: #EDE9FE;
+  --accent-soft-dark: #33234E;
+}
+
 /* Soft surface separation inspired by the reference. The floating dock keeps its glass treatment below. */
 .soft-surface {
-  background-color: #F3F5F4;
+  background-color: #F4F3F8;
   border: 0;
   border-radius: 20px;
-  box-shadow: 0 5px 16px rgba(30, 70, 49, .045);
+  box-shadow: 0 5px 16px rgba(40, 35, 55, .045);
 }
 .dark .soft-surface {
-  background-color: #1C211E;
+  background-color: #1E1B24;
   box-shadow: 0 8px 28px rgba(0, 0, 0, .2);
 }
 
@@ -188,8 +230,8 @@ input, textarea, select { scroll-margin-block: 72px; }
   -webkit-tap-highlight-color: transparent;
   transition: color 160ms ease;
 }
-.glass-dock-tab[aria-current="page"] { color: #0b756d; }
-.glass-dock-tab:focus-visible { outline: 2px solid #0f766e; outline-offset: -2px; }
+.glass-dock-tab[aria-current="page"] { color: rgb(var(--accent-rgb)); }
+.glass-dock-tab:focus-visible { outline: 2px solid rgb(var(--accent-rgb)); outline-offset: -2px; }
 .dark .glass-dock {
   border-color: rgba(255, 255, 255, .26);
   background: linear-gradient(135deg, rgba(70, 73, 79, .20), rgba(25, 27, 32, .10) 50%, rgba(50, 54, 61, .16));
@@ -198,7 +240,7 @@ input, textarea, select { scroll-margin-block: 72px; }
 .dark .glass-dock::before { box-shadow: inset 1px 0 2px rgba(255, 255, 255, .12), inset -1px 0 2px rgba(255, 255, 255, .1); }
 .dark .glass-dock-selection { background: rgba(255, 255, 255, .14); box-shadow: inset 0 1px 1px rgba(255, 255, 255, .12); }
 .dark .glass-dock-tab { color: #c0c2c7; }
-.dark .glass-dock-tab[aria-current="page"] { color: #5eead4; }
+.dark .glass-dock-tab[aria-current="page"] { color: rgb(var(--accent-light-rgb)); }
 
 /* Keep the primary action in thumb reach without letting it sit behind the dock. */
 @media (max-height: 700px) {
