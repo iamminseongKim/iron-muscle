@@ -1,5 +1,5 @@
 import { t } from '../../i18n';
-import React from 'react';
+import React, { useState } from 'react';
 import { Dumbbell, Calendar, BarChart2, Search, User } from 'lucide-react';
 
 interface TabNavigationProps {
@@ -8,6 +8,7 @@ interface TabNavigationProps {
 }
 
 export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange }) => {
+  const [keyboardNavigation, setKeyboardNavigation] = useState(false);
   const tabs = [
     { id: 'workout', label: '운동 기록', icon: Dumbbell },
     { id: 'explore', label: '운동 탐색', icon: Search },
@@ -22,7 +23,9 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
       className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto select-none w-[calc(100%-24px)] max-w-md"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      <div className="glass-dock" style={{ '--dock-active-index': tabs.findIndex(tab => tab.id === activeTab) } as React.CSSProperties}>
+      <div className="glass-dock" data-keyboard-navigation={keyboardNavigation || undefined}
+        onKeyDown={() => setKeyboardNavigation(true)} onPointerDown={() => setKeyboardNavigation(false)}
+        style={{ '--dock-active-index': tabs.findIndex(tab => tab.id === activeTab) } as React.CSSProperties}>
         <span className="glass-dock-selection" aria-hidden="true" />
         {tabs.map((tab) => {
           const Icon = tab.icon;

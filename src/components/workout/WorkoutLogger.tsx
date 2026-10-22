@@ -496,6 +496,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                 <button
                   key={part.id}
                   type="button"
+                  aria-pressed={isSelected}
                   onClick={() => handleTogglePart(part.id)}
                   className={`min-w-0 p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1 text-center transition-colors duration-150 ${
                     isSelected

@@ -283,3 +283,89 @@ input, textarea, select { scroll-margin-block: 72px; }
 }
 
 .exercise-picker input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+/* Quiet, tactile controls: no animation on repeated page entry. */
+.header-control,
+[data-workout-target-grid] button,
+[data-workout-start-section] button,
+.glass-dock-tab {
+  touch-action: manipulation;
+  transition: transform 150ms ease-out,
+    background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.header-control { min-height: 40px; min-width: 40px; }
+.header-control:not(:disabled):active,
+[data-workout-target-grid] button:not(:disabled):active,
+[data-workout-start-section] button:not(:disabled):active,
+.glass-dock-tab:not(:disabled):active { transform: scale(.96); }
+.header-control:focus-visible,
+[data-workout-target-grid] button:focus-visible,
+[data-workout-start-section] button:focus-visible {
+  outline: 2px solid rgb(var(--accent-rgb));
+  outline-offset: 3px;
+}
+[data-workout-intro] h2 { letter-spacing: -.035em; text-wrap: balance; }
+[data-workout-subtitle] { line-height: 1.7; }
+[data-workout-target-card] {
+  box-shadow: 0 0 0 1px rgba(40, 35, 55, .035), 0 6px 20px rgba(40, 35, 55, .04);
+}
+.dark [data-workout-target-card] {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .055), 0 6px 20px rgba(0, 0, 0, .16);
+}
+[data-workout-target-grid] button { position: relative; }
+[data-workout-target-grid] button[aria-pressed="false"] {
+  background-color: rgba(255, 255, 255, .7);
+  box-shadow: 0 0 0 1px rgba(40, 35, 55, .045);
+}
+.dark [data-workout-target-grid] button[aria-pressed="false"] {
+  background-color: #302b37;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+[data-workout-target-grid] button[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px rgb(var(--accent-rgb) / .18), 0 4px 10px rgb(var(--accent-rgb) / .16);
+}
+[data-workout-target-grid] button[aria-pressed="true"]::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 7px;
+  height: 4px;
+  border-left: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+}
+[data-workout-start-section] button {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 5px 14px rgb(var(--accent-rgb) / .2);
+}
+[data-workout-start-section] button > span { min-width: 0; overflow-wrap: anywhere; }
+[data-workout-start-section] button > svg { flex-shrink: 0; }
+.glass-dock[data-keyboard-navigation] .glass-dock-selection { transition: none; }
+[data-rest-timer-overlay] { overscroll-behavior: none; }
+[data-rest-timer-dialog] { overscroll-behavior: contain; touch-action: pan-y; }
+@media (hover: hover) and (pointer: fine) {
+  [data-workout-target-grid] button[aria-pressed="false"]:hover {
+    background-color: var(--accent-soft);
+  }
+  .dark [data-workout-target-grid] button[aria-pressed="false"]:hover {
+    background-color: var(--accent-soft-dark);
+  }
+  .header-control:hover { box-shadow: 0 0 0 3px rgb(var(--accent-rgb) / .08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .header-control, [data-workout-target-grid] button,
+  [data-workout-start-section] button, .glass-dock-tab { transition: none; }
+  .header-control:not(:disabled):active, [data-workout-target-grid] button:not(:disabled):active,
+  [data-workout-start-section] button:not(:disabled):active, .glass-dock-tab:active { transform: none; }
+  [data-rest-timer-dialog] { transition: none !important; }
+}
+
+/* Palette changes are a single visual update, independent of control transitions. */
+html[data-theme-changing] *,
+html[data-theme-changing] *::before,
+html[data-theme-changing] *::after { transition: none !important; }
+[data-workout-target-grid] button { border: 1px solid transparent; }
+[data-workout-subtitle] { text-wrap: pretty; }
+@media (forced-colors: active) {
+  [data-workout-target-grid] button[aria-pressed="true"] { border-color: Highlight; }
+}

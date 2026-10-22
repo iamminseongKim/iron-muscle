@@ -1,7 +1,7 @@
 import { useLanguage, getLanguage, t } from './i18n';
 import { MyPage } from './components/profile/MyPage';
 import { refreshHealth } from './services/health/healthService';
-import React, { useState, useEffect, lazy, Suspense, memo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, lazy, Suspense, memo, useCallback, useRef } from 'react';
 import { useKeyboardViewport } from './hooks/useKeyboardViewport';
 import { Lock } from 'lucide-react';
 import { HoldToCompleteButton } from './components/workout/HoldToCompleteButton';
@@ -149,18 +149,6 @@ export const App: React.FC = () => {
     }
   });
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    try {
-      localStorage.setItem('iron_theme_dark', JSON.stringify(isDark));
-    } catch {}
-  }, [isDark]);
-
   const toggleTheme = () => {
     setIsDark((prev) => !prev);
   };
@@ -170,10 +158,25 @@ export const App: React.FC = () => {
     catch { return 'purple'; }
   });
 
-  useEffect(() => {
-    document.documentElement.dataset.accent = accentTheme;
-    try { localStorage.setItem('iron_accent_theme', accentTheme); } catch {}
-  }, [accentTheme]);
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-theme-changing', '');
+    root.classList.toggle('dark', isDark);
+    root.dataset.accent = accentTheme;
+    // Commit all palette changes together before restoring interaction transitions.
+    void document.body.offsetHeight;
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => root.removeAttribute('data-theme-changing'));
+    });
+    try {
+      localStorage.setItem('iron_theme_dark', JSON.stringify(isDark));
+      localStorage.setItem('iron_accent_theme', accentTheme);
+    } catch {}
+    return () => {
+      cancelAnimationFrame(frame);
+      root.removeAttribute('data-theme-changing');
+    };
+  }, [isDark, accentTheme]);
 
   return (
     <div className="iron-app-shell min-h-screen bg-white dark:bg-[#121019] text-[#24212B] dark:text-[#F5F3F8] flex flex-col transition-colors duration-200">

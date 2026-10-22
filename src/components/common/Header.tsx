@@ -1,6 +1,6 @@
 import { t } from '../../i18n';
 import React from 'react';
-import { Flame, Sun, Moon, Play, Pause } from 'lucide-react';
+import { Sun, Moon, Play, Pause } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'workout' | 'history' | 'analytics' | 'explore' | 'my';
@@ -48,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={onToggleWorkoutTimer}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-xs transition-all duration-150 active:scale-95 cursor-pointer ${
+            className={`header-control flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-xs cursor-pointer ${
               isWorkoutTimerRunning
                 ? 'bg-white dark:bg-[#1C1C1E] border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white hover:border-accent-bright/50'
                 : 'bg-[#FF9500]/15 dark:bg-[#FF9500]/25 border-[#FF9500]/50 text-[#FF9500] ring-2 ring-[#FF9500]/20'
@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             {isWorkoutTimerRunning ? (
               <span className="flex items-center gap-1 shrink-0">
-                <span className="w-2 h-2 rounded-full bg-accent-bright animate-pulse inline-block" />
+                <span className="w-2 h-2 rounded-full bg-accent-bright inline-block" />
                 <Pause size={10} className="text-gray-400 dark:text-gray-500" />
               </span>
             ) : (
@@ -69,11 +69,11 @@ export const Header: React.FC<HeaderProps> = ({
             <span className={`header-timer-label text-[11px] font-bold ${isWorkoutTimerRunning ? 'text-gray-400' : 'text-[#FF9500]'}`}>
               {isWorkoutTimerRunning ? t("총운동") : t("일시정지")}
             </span>
-            <span className={`font-mono font-extrabold text-xs tracking-tight ${isWorkoutTimerRunning ? 'text-[#1D1D1F] dark:text-white' : 'text-[#FF9500]'}`}>
+            <span className={`font-mono tabular-nums font-extrabold text-xs tracking-tight ${isWorkoutTimerRunning ? 'text-[#1D1D1F] dark:text-white' : 'text-[#FF9500]'}`}>
               {formatDuration(totalWorkoutSeconds)}
             </span>
             {!isWorkoutTimerRunning && (
-              <span className="text-[10px] font-black px-1.5 py-0.2 bg-[#FF9500] text-white rounded-md animate-pulse">{t("재개")}</span>
+              <span className="text-[10px] font-black px-1.5 py-0.2 bg-[#FF9500] text-white rounded-md">{t("재개")}</span>
             )}
           </button>
         )}
@@ -85,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onToggleTheme}
             aria-label={t(isDark ? '라이트' : '다크')}
             title={t(isDark ? '라이트' : '다크')}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-xs font-semibold text-gray-700 dark:text-gray-200 shadow-xs hover:opacity-80 transition"
+            className="header-control flex items-center gap-1 px-2.5 py-1 rounded-full bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-xs font-semibold text-gray-700 dark:text-gray-200 shadow-xs"
           >
             {isDark ? (
               <>

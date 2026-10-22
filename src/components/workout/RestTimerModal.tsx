@@ -74,7 +74,47 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
 
   // 2. 대형 모달 아래로 쓸어내리기(Swipe Down) 제스처 추적
   const swipeStartYRef = useRef<number | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const [dragOffsetVisualY, setDragOffsetVisualY] = useState<number>(0);
+
+  // Keep the workout at its original position while the expanded timer owns gestures.
+  useEffect(() => {
+    if (!isOpen || isMinimized) return;
+    const body = document.body;
+    const root = document.documentElement;
+    const { scrollX, scrollY } = window;
+    const previous = { position: body.style.position, top: body.style.top,
+      left: body.style.left, width: body.style.width, overflow: body.style.overflow,
+      rootOverflow: root.style.overflow };
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = `-${scrollX}px`;
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+    root.style.overflow = 'hidden';
+
+    const modal = modalRef.current;
+    // React touch listeners can be passive. Cancel native vertical panning before
+    // it takes over a downward minimize gesture, while allowing tall content to scroll.
+    const preventSwipeScroll = (event: TouchEvent) => {
+      if (event.touches.length === 1 && swipeStartYRef.current !== null &&
+          modal && modal.scrollTop <= 0 && event.touches[0].clientY > swipeStartYRef.current) {
+        if (event.cancelable) event.preventDefault();
+      }
+    };
+    modal?.addEventListener('touchmove', preventSwipeScroll, { passive: false });
+    return () => {
+      modal?.removeEventListener('touchmove', preventSwipeScroll);
+      Object.assign(body.style, { position: previous.position, top: previous.top,
+        left: previous.left, width: previous.width, overflow: previous.overflow });
+      root.style.overflow = previous.rootOverflow;
+      const behavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(scrollX, scrollY);
+      root.style.scrollBehavior = behavior;
+      swipeStartYRef.current = null;
+    };
+  }, [isOpen, isMinimized]);
 
   useEffect(() => {
     if (isOpen) {
@@ -187,10 +227,19 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   // 👉 1) 대형 모달 아래로 쓸어내리기 (Swipe Down) 핸들러
   // ----------------------------------------------------
   const handleModalTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1 || (modalRef.current?.scrollTop ?? 0) > 0) {
+      swipeStartYRef.current = null;
+      return;
+    }
     swipeStartYRef.current = e.touches[0].clientY;
   };
 
   const handleModalTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) {
+      swipeStartYRef.current = null;
+      setDragOffsetVisualY(0);
+      return;
+    }
     if (swipeStartYRef.current === null) return;
     const currentY = e.touches[0].clientY;
     const diff = currentY - swipeStartYRef.current;
@@ -217,6 +266,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   // 👉 2) 최소화 플로팅 캡슐 터치 드래그 앤 드롭 핸들러
   // ----------------------------------------------------
   const handleFloatingTouchStart = (e: React.TouchEvent) => {
+    if (isDraggingRef.current || e.touches.length !== 1) return;
     isDraggingRef.current = true;
     hasMovedRef.current = false;
     const touch = e.touches[0];
@@ -273,6 +323,8 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
         onTouchStart={handleFloatingTouchStart}
         onTouchMove={handleFloatingTouchMove}
         onTouchEnd={handleFloatingTouchEnd}
+        onTouchCancel={handleFloatingTouchEnd}
+        data-rest-timer-capsule
         className="fixed z-50 touch-none select-none cursor-move animate-fade-in"
       >
         <div className="bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-xl border border-black/15 dark:border-white/15 rounded-full pl-3 pr-2 py-1.5 shadow-2xl flex items-center gap-2.5 max-w-[260px] ring-1 ring-black/5 dark:ring-white/10">
@@ -294,7 +346,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               <Bell size={13} className={isCompleted ? 'animate-bounce' : ''} />
             </div>
             <div className="leading-tight">
-              <span className={`text-[13px] font-black font-mono block ${
+              <span className={`text-[13px] font-black font-mono tabular-nums block ${
                 isCompleted ? 'text-accent-bright' : 'text-[#1D1D1F] dark:text-white'
               }`}>
                 {isCompleted ? `${t("완료!")} ${elapsedSeconds}s` : formatTime(remainingSeconds)}
@@ -334,15 +386,19 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   // ----------------------------------------------------
   return (
     <div
+      data-rest-timer-overlay
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-md animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleDismiss();
       }}
     >
       <div
+        ref={modalRef}
+        data-rest-timer-dialog
         onTouchStart={handleModalTouchStart}
         onTouchMove={handleModalTouchMove}
         onTouchEnd={handleModalTouchEnd}
+        onTouchCancel={() => { swipeStartYRef.current = null; setDragOffsetVisualY(0); }}
         style={{
           transform: dragOffsetVisualY > 0 ? `translateY(${dragOffsetVisualY}px)` : undefined,
           transition: dragOffsetVisualY === 0 ? 'transform 0.2s ease-out' : 'none',
@@ -453,7 +509,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
                 <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-accent-bright/15 text-accent-bright mb-1 animate-pulse">
                   {t("목표 휴식 완료")}
                 </span>
-                <span className="text-4xl font-black font-mono tracking-tighter text-accent-bright">
+                <span className="text-4xl font-black font-mono tabular-nums tracking-tighter text-accent-bright">
                   {formatTime(targetSeconds)}
                 </span>
                 <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">
@@ -465,7 +521,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               </div>
             ) : (
               <>
-                <span className="text-5xl font-black font-mono tracking-tighter text-[#1D1D1F] dark:text-white">
+                <span className="text-5xl font-black font-mono tabular-nums tracking-tighter text-[#1D1D1F] dark:text-white">
                   {formatTime(remainingSeconds)}
                 </span>
                 <span className="text-xs font-semibold text-gray-400 mt-1">
