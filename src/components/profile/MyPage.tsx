@@ -1,3 +1,4 @@
+import { countGymEquipment } from '../../utils/gymStorage';
 import { AppUpdates } from './AppUpdates';
 import { Capacitor } from '@capacitor/core';
 import { RoutineLibrary } from '../library/RoutineLibrary';
@@ -157,7 +158,7 @@ export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange
               >
                 <span>{gym.name}</span>
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-black/5 dark:bg-white/10 text-gray-500'}`}>
-                  {Object.keys(gym.machines || {}).length}
+                  {countGymEquipment(gym)}
                 </span>
               </button>
             );
@@ -174,7 +175,7 @@ export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange
             </span>
           </div>
           <span className="text-xs px-2.5 py-0.5 rounded-full bg-accent/15 text-accent dark:text-accent-light font-bold">
-            {t('머신')} {Object.keys(gymProfile.machines).length}{t('개 등록')}
+            {t('장비')} {countGymEquipment(gymProfile)}{t('개 등록')}
           </span>
         </div>
         <p className="text-xs text-gray-500">

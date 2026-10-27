@@ -1,0 +1,52 @@
+import assert from 'node:assert/strict';
+import puppeteer from 'puppeteer-core';
+const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: 'new', args: ['--no-sandbox'] });
+try {
+ const page = await browser.newPage();
+ const errors = [];
+ page.on('pageerror', e => errors.push(e.message));
+ await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
+ await page.goto(process.env.TEST_URL || 'http://127.0.0.1:3000/', { waitUntil: 'networkidle2' });
+ await page.evaluate(async () => { const f = await import('/scripts/fixtures/equipment-review.tsx'); f.setup(); f.gym(); });
+ await page.waitForSelector('[role="checkbox"][aria-label="스미스"]');
+ assert.equal(await page.$$eval('[role="checkbox"][aria-label="스미스"]', els => els.length), 1);
+ await page.click('[role="checkbox"][aria-label="스미스"]');
+ await page.click('[role="checkbox"][aria-label="케이블"]');
+ await page.evaluate(() => {
+   const boxes = [...document.querySelectorAll('[role="checkbox"]')];
+   const cable = boxes.find(el => el.getAttribute('aria-label') === '케이블').parentElement;
+   [...cable.querySelectorAll('button')].find(b => b.textContent === 'lbs').click();
+ });
+ const state = await page.evaluate(() => JSON.parse(localStorage.getItem('iron_gym_equipment_profile_v1')));
+ assert.equal(state.gyms[0].sharedEquipment.cable[0].weightUnit, 'lbs');
+ assert.equal(state.gyms[0].sharedEquipment.smith.length, 1);
+ assert.equal(state.gyms[0].machines.Machine_Bench_Press[0].id, 'one');
+ await page.screenshot({ path: '/tmp/iron-shared-equipment-390.png' });
+ await page.evaluate(async () => { const f = await import('/scripts/fixtures/equipment-review.tsx'); f.gym(1); });
+ await page.waitForFunction(() => document.querySelector('[role="checkbox"][aria-label="케이블"]')?.getAttribute('aria-checked') === 'true');
+ await page.evaluate(async () => { const f = await import('/scripts/fixtures/equipment-review.tsx'); f.picker((...args) => { window.sharedEquipmentSelection = args; }); });
+ await page.waitForSelector('[aria-labelledby="exercise-picker-title"]');
+ const text = await page.evaluate(() => document.body.textContent);
+ assert.ok(text.includes('내 헬스장'));
+ const cableName = await page.evaluate(async () => {
+   const { EXERCISES_DATABASE } = await import('/src/data/exercises.ts');
+   const ex = EXERCISES_DATABASE.find(ex => ex.equipment === 'cable' && ex.nameEn && !ex.id.startsWith('custom'));
+   window.expectedCable = ex.id;
+   return ex.nameEn;
+ });
+ await page.type('input[placeholder="운동명·브랜드·초성 검색"]', cableName);
+ await page.waitForFunction(name => [...document.querySelectorAll('button')].some(b => b.textContent.includes(name)), {}, cableName);
+ await page.evaluate(name => [...document.querySelectorAll('button')].find(b => b.textContent.includes(name)).click(), cableName);
+ const selected = await page.evaluate(() => ({ args: window.sharedEquipmentSelection, id: window.expectedCable, brandIsUndefined: window.sharedEquipmentSelection[2] === undefined }));
+ assert.equal(selected.args[0].id, selected.id);
+ assert.equal(selected.brandIsUndefined, true);
+ assert.equal(selected.args[5], 'lbs');
+ assert.equal(selected.args[6], `test:${state.gyms[0].sharedEquipment.cable[0].id}`);
+ await page.setViewport({ width: 320, height: 740, deviceScaleFactor: 1 });
+ await page.evaluate(async () => { const f = await import('/scripts/fixtures/equipment-review.tsx'); f.gym(2); });
+ await page.waitForSelector('[role="checkbox"][aria-label="스미스"]');
+ assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+ await page.screenshot({ path: '/tmp/iron-shared-equipment-320.png' });
+ assert.deepEqual(errors, []);
+ console.log('PASS shared config and lbs passed through exercise selection, 390/320px shared registration, unit changes, existing config preservation, remount persistence, exercise picker render and no horizontal overflow');
+} finally { await browser.close(); }

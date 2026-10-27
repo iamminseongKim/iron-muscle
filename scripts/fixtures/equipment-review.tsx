@@ -13,7 +13,7 @@ export function setup() {
  saveGymState({activeGymId:'test',gyms:[{id:'test',name:'테스트',includeFreeWeights:true,updatedAt:new Date().toISOString(),machines:{Machine_Bench_Press:[{id:'one',exerciseId:'Machine_Bench_Press',brand:'기타 (직접 입력)',weightUnit:'lbs',loadType:'pin-loaded',machineSetting:'Seat 3'},{id:'two',exerciseId:'Machine_Bench_Press',brand:'Other brand'}]}}]});
 }
 export function gym(key=0) { root.render(<GymEquipmentModal key={key} isOpen onClose={()=>root.render(null)} />); }
-export function picker() { root.render(<AddExerciseModal isOpen onClose={()=>root.render(null)} onSelect={()=>{}} />); }
+export function picker(onSelect: React.ComponentProps<typeof AddExerciseModal>['onSelect'] = () => {}) { root.render(<AddExerciseModal isOpen onClose={()=>root.render(null)} onSelect={onSelect} />); }
 export function quickAddCard() {
  root.render(<ExerciseCard
   exerciseItem={{id:'quick-add-row',exerciseId:'Machine_Bench_Press',equipmentType:'machine',weightUnit:'lbs',machineBrand:'Workout brand',sets:[]}}

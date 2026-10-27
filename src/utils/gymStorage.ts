@@ -5,6 +5,31 @@ export const GYM_EQUIPMENT_CHANGE_EVENT = 'iron_gym_equipment_change';
 
 export const MAX_GYMS_COUNT = 3;
 
+export type SharedEquipmentType = 'smith' | 'cable';
+export const sharedEquipmentKey = (equipment: SharedEquipmentType) => `@equipment:${equipment}`;
+export function sharedEquipmentType(key: string): SharedEquipmentType | undefined {
+  return key === sharedEquipmentKey('smith') ? 'smith' : key === sharedEquipmentKey('cable') ? 'cable' : undefined;
+}
+function parseSharedEquipment(value: any): GymEquipmentProfile['sharedEquipment'] {
+  if (!value || typeof value !== 'object') return undefined;
+  return Object.fromEntries(['smith', 'cable'].filter(key => Array.isArray(value[key])).map(key => [key,
+    value[key].filter((cfg: any) => cfg && typeof cfg === 'object' && typeof cfg.id === 'string' && cfg.id)
+  ]));
+}
+export function withGymConfigs(profile: GymEquipmentProfile, key: string, configs: GymMachineConfig[]): GymEquipmentProfile {
+  const shared = sharedEquipmentType(key);
+  if (shared) return { ...profile, sharedEquipment: { ...profile.sharedEquipment, [shared]: configs } };
+  const machines = { ...profile.machines };
+  if (configs.length) machines[key] = configs;
+  else delete machines[key];
+  return { ...profile, machines };
+}
+export function countGymEquipment(profile: GymEquipmentProfile): number {
+  const count = (entry: GymMachineConfig | GymMachineConfig[] | undefined) => Array.isArray(entry) ? entry.length : entry ? 1 : 0;
+  return Object.values(profile.machines).reduce((sum, entry) => sum + count(entry), 0) +
+    Object.values(profile.sharedEquipment || {}).reduce((sum, entry) => sum + count(entry), 0);
+}
+
 export interface GymMachineConfig {
   id?: string;
   exerciseId: string;
@@ -19,6 +44,7 @@ export interface GymEquipmentProfile {
   name: string;
   includeFreeWeights: boolean;
   machines: Record<string, GymMachineConfig | GymMachineConfig[]>;
+  sharedEquipment?: Partial<Record<SharedEquipmentType, GymMachineConfig[]>>;
   updatedAt: string;
 }
 
@@ -50,6 +76,7 @@ export function loadGymState(): MultiGymState {
         id: parsed.id || 'gym-1',
         name: typeof parsed.name === 'string' && parsed.name.trim() ? parsed.name.trim() : '내 헬스장',
         includeFreeWeights: typeof parsed.includeFreeWeights === 'boolean' ? parsed.includeFreeWeights : true,
+        sharedEquipment: parseSharedEquipment(parsed.sharedEquipment),
         machines: parsed.machines && typeof parsed.machines === 'object' ? parsed.machines : {},
         updatedAt: parsed.updatedAt || new Date().toISOString(),
       };
@@ -60,6 +87,7 @@ export function loadGymState(): MultiGymState {
       id: g.id || `gym-${idx + 1}`,
       name: typeof g.name === 'string' && g.name.trim() ? g.name.trim() : `헬스장 ${idx + 1}`,
       includeFreeWeights: typeof g.includeFreeWeights === 'boolean' ? g.includeFreeWeights : true,
+      sharedEquipment: parseSharedEquipment(g.sharedEquipment),
       machines: g.machines && typeof g.machines === 'object' ? g.machines : {},
       updatedAt: g.updatedAt || new Date().toISOString(),
     }));
@@ -151,10 +179,18 @@ export function switchActiveGym(gymId: string): void {
 
 export function getExerciseConfigs(
   profile: GymEquipmentProfile | undefined,
-  exerciseId: string
+  exerciseId: string,
+  equipment?: string
 ): GymMachineConfig[] {
   if (!profile || !profile.machines) return [];
-  const entry = profile.machines[exerciseId];
+  const shared = sharedEquipmentType(exerciseId);
+  const individual = profile.machines[exerciseId];
+  // Existing per-exercise machine identities remain the first choice.
+  let entry: GymMachineConfig | GymMachineConfig[] | undefined = individual;
+  if (shared) entry = profile.sharedEquipment?.[shared];
+  else if (!(Array.isArray(individual) ? individual.length : individual) && (equipment === 'smith' || equipment === 'cable')) {
+    entry = profile.sharedEquipment?.[equipment];
+  }
   if (!entry) return [];
   if (Array.isArray(entry)) {
     return entry.map((cfg, idx) => ({
@@ -174,8 +210,5 @@ export function isExerciseInGymProfile(
   if (profile.includeFreeWeights && (equipment === 'barbell' || equipment === 'dumbbell' || equipment === 'bodyweight')) {
     return true;
   }
-  const entry = profile.machines[exerciseId];
-  if (!entry) return false;
-  if (Array.isArray(entry)) return entry.length > 0;
-  return true;
+  return getExerciseConfigs(profile, exerciseId, equipment).length > 0;
 }

@@ -28,6 +28,7 @@ const testFiles = [
   'test-localized-exports.mjs',
   'test-health.mjs',
   'test-gym-workout.mjs',
+  'test-shared-equipment.mjs',
   'test-equipment.mjs',
   'test-calendar.mjs',
   'test-web-features.mjs',

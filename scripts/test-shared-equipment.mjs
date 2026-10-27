@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict';
+import { build } from 'esbuild';
+const bundle = await build({ entryPoints: ['src/utils/gymStorage.ts', 'src/utils/equipment.ts', 'src/data/exercises.ts', 'src/utils/backup.ts'], outdir: 'out', bundle: true, write: false, platform: 'node', format: 'esm' });
+const [gym, equipment, catalog, backup] = await Promise.all(bundle.outputFiles.map(f => import(`data:text/javascript;base64,${Buffer.from(f.text).toString('base64')}`)));
+const store = new Map();
+globalThis.localStorage = { getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: k => store.delete(k) };
+globalThis.window = { dispatchEvent() {} };
+globalThis.CustomEvent = class {};
+const empty = { id: 'gym-a', name: 'A', includeFreeWeights: false, machines: {}, updatedAt: '' };
+const shared = { id: 'shared-cable-1', exerciseId: gym.sharedEquipmentKey('cable'), weightUnit: 'lbs', loadType: 'pin-loaded', machineSetting: '2:1' };
+const profile = gym.withGymConfigs(empty, gym.sharedEquipmentKey('cable'), [shared]);
+assert.deepEqual(empty.machines, {});
+assert.equal(empty.sharedEquipment, undefined);
+assert.equal(gym.countGymEquipment(profile), 1);
+const snapshot = JSON.stringify(catalog.EXERCISES_DATABASE);
+const cable = catalog.EXERCISES_DATABASE.filter(ex => equipment.getExerciseEquipment(ex) === 'cable');
+assert.ok(cable.length > 10);
+for (const ex of cable) {
+  const configs = gym.getExerciseConfigs(profile, ex.id, equipment.getExerciseEquipment(ex));
+  assert.equal(configs.length, 1);
+  assert.equal(configs[0].exerciseId, ex.id);
+  assert.equal(configs[0].id, shared.id);
+  assert.equal(configs[0].weightUnit, 'lbs');
+  assert.equal(configs[0].brand, undefined);
+  assert.ok(gym.isExerciseInGymProfile(ex.id, 'cable', profile));
+}
+assert.equal(gym.getExerciseConfigs(profile, 'future_custom_exercise', 'cable')[0].id, shared.id);
+assert.deepEqual(gym.getExerciseConfigs(profile, 'dedicated', 'machine'), []);
+assert.deepEqual(gym.getExerciseConfigs(empty, cable[0].id, 'cable'), []);
+const legacy = { id: 'old-id', exerciseId: cable[0].id, brand: 'User brand', weightUnit: 'kg', machineSetting: 'Seat 4' };
+const overridden = gym.withGymConfigs(profile, cable[0].id, [legacy]);
+assert.deepEqual(gym.getExerciseConfigs(overridden, cable[0].id, 'cable'), [legacy]);
+const removedShared = gym.withGymConfigs(overridden, gym.sharedEquipmentKey('cable'), []);
+assert.deepEqual(gym.getExerciseConfigs(removedShared, cable[0].id, 'cable'), [legacy]);
+assert.deepEqual(gym.getExerciseConfigs(removedShared, cable[1].id, 'cable'), []);
+const removedOverride = gym.withGymConfigs(overridden, cable[0].id, []);
+assert.equal(gym.getExerciseConfigs(removedOverride, cable[0].id, 'cable')[0].id, shared.id);
+const smithProfile = gym.withGymConfigs(profile, gym.sharedEquipmentKey('smith'), [{ ...shared, id: 'smith-1', exerciseId: gym.sharedEquipmentKey('smith'), loadType: 'plate-loaded' }]);
+for (const ex of catalog.EXERCISES_DATABASE.filter(ex => equipment.getExerciseEquipment(ex) === 'smith')) {
+  assert.equal(gym.getExerciseConfigs(smithProfile, ex.id, equipment.getExerciseEquipment(ex))[0].id, 'smith-1');
+}
+assert.equal(gym.countGymEquipment(smithProfile), 2);
+gym.saveGymState({ activeGymId: profile.id, gyms: [overridden, { ...empty, id: 'gym-b' }] });
+assert.deepEqual(gym.loadGymState().gyms[0].sharedEquipment, profile.sharedEquipment);
+assert.deepEqual(gym.loadGymState().gyms[0].machines, overridden.machines);
+const saved = backup.createBackup();
+store.clear();
+backup.restoreBackup(saved);
+assert.deepEqual(gym.loadGymState().gyms[0].sharedEquipment, profile.sharedEquipment);
+gym.switchActiveGym('gym-b');
+assert.deepEqual(gym.getExerciseConfigs(gym.getActiveGym(), cable[0].id, 'cable'), []);
+assert.equal(JSON.stringify(catalog.EXERCISES_DATABASE), snapshot);
+localStorage.setItem(gym.GYM_EQUIPMENT_STORAGE_KEY, JSON.stringify({ ...overridden, sharedEquipment: { cable: 'bad', smith: [null, {}, { id: 12 }] } }));
+assert.deepEqual(gym.loadGymState().gyms[0].machines, overridden.machines);
+assert.deepEqual(gym.loadGymState().gyms[0].sharedEquipment, { smith: [] });
+console.log('PASS shared Smith/cable equipment, future/custom exercise support, exact override preservation, removal fallback, gym isolation, reload, backup and malformed shared config handling');

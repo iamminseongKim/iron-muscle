@@ -9,7 +9,7 @@ import { DISCOVERY_ADDITIONS } from '../../data/discoveryAdditions';
 import { ADDITIONAL_MACHINES } from '../../data/additionalMachines';
 import { buildExerciseUsage, isCoreExercise, rankExercises } from '../../utils/exerciseDiscovery';
 import { loadCustomExercises, loadSavedSessions } from '../../utils/storage';
-import { loadGymProfile, GYM_EQUIPMENT_CHANGE_EVENT, GymEquipmentProfile, GymMachineConfig, getExerciseConfigs } from '../../utils/gymStorage';
+import { loadGymProfile, GYM_EQUIPMENT_CHANGE_EVENT, GymEquipmentProfile, GymMachineConfig, getExerciseConfigs, isExerciseInGymProfile, countGymEquipment } from '../../utils/gymStorage';
 import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
 
 interface AddExerciseModalProps {
@@ -155,18 +155,9 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
   const gymEquipmentIds = useMemo(() => {
     const ids = new Set<string>();
-    Object.keys(gymProfile.machines).forEach(id => {
-      if (getExerciseConfigs(gymProfile, id).length > 0) {
-        ids.add(id);
-      }
+    allExercises.forEach(ex => {
+      if (isExerciseInGymProfile(ex.id, getExerciseEquipment(ex), gymProfile)) ids.add(ex.id);
     });
-    if (gymProfile.includeFreeWeights) {
-      allExercises.forEach(ex => {
-        if (ex.equipment === 'barbell' || ex.equipment === 'dumbbell' || ex.equipment === 'bodyweight') {
-          ids.add(ex.id);
-        }
-      });
-    }
     return ids;
   }, [gymProfile, allExercises]);
 
@@ -299,7 +290,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
               }`}
             >
               <span className="inline-flex items-center gap-1"><Tag size={13} />{gymProfile.name || t('내 헬스장')}</span>
-              <span className="text-[10px] opacity-90">({Object.keys(gymProfile.machines).length})</span>
+              <span className="text-[10px] opacity-90">({countGymEquipment(gymProfile)})</span>
             </button>
             {hasTargets && (
               <button
@@ -374,7 +365,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
             </div>
           ) : (
             filteredExercises.slice(0, visibleCount).map((ex) => {
-              const configs = getExerciseConfigs(gymProfile, ex.id);
+              const configs = getExerciseConfigs(gymProfile, ex.id, getExerciseEquipment(ex));
               return (
               <button
                 key={ex.id}

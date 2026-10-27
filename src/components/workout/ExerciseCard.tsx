@@ -15,7 +15,7 @@ import { getExerciseRecords, convertWeight, isAssistedExercise } from '../../uti
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { applyGymMachineConfig } from '../../utils/gymWorkout';
-import { loadGymProfile, saveGymProfile, getExerciseConfigs, GYM_EQUIPMENT_CHANGE_EVENT } from '../../utils/gymStorage';
+import { loadGymProfile, saveGymProfile, getExerciseConfigs, withGymConfigs, sharedEquipmentKey, GYM_EQUIPMENT_CHANGE_EVENT } from '../../utils/gymStorage';
 
 interface ExerciseCardProps {
   exerciseItem: WorkoutExercise;
@@ -75,10 +75,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     window.addEventListener(GYM_EQUIPMENT_CHANGE_EVENT, refresh);
     return () => window.removeEventListener(GYM_EQUIPMENT_CHANGE_EVENT, refresh);
   }, []);
-  const gymConfigs = useMemo(() => getExerciseConfigs(gymProfile, exerciseItem.exerciseId), [gymProfile, exerciseItem.exerciseId]);
 
   // 안전한 종목 해석 (구버전 ID 및 오타 자동 복구)
   const baseExercise: Exercise = resolveRecordedExercise(exerciseItem);
+  const gymConfigs = getExerciseConfigs(gymProfile, baseExercise.id, getExerciseEquipment(baseExercise));
   const isMachineEquipment = ['machine', 'smith'].includes(exerciseItem.equipmentType);
   const isSmithEquipment = exerciseItem.equipmentType === 'smith' || getExerciseEquipment(baseExercise) === 'smith';
   const isAssisted = isAssistedExercise(baseExercise);
@@ -89,19 +89,13 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
   const handleRegisterInGym = () => {
     const activeGym = loadGymProfile();
-    if (getExerciseConfigs(activeGym, baseExercise.id).length > 0) return;
-    saveGymProfile({
-      ...activeGym,
-      machines: {
-        ...activeGym.machines,
-        [baseExercise.id]: [{
-          id: `config-${Date.now()}-1`,
-          exerciseId: baseExercise.id,
-          loadType: currentLoadType,
-          weightUnit: currentUnit,
-        }],
-      },
-    });
+    if (getExerciseConfigs(activeGym, baseExercise.id, getExerciseEquipment(baseExercise)).length > 0) return;
+    const equipment = getExerciseEquipment(baseExercise);
+    const key = equipment === 'smith' || equipment === 'cable' ? sharedEquipmentKey(equipment) : baseExercise.id;
+    saveGymProfile(withGymConfigs(activeGym, key, [{
+      id: `config-${Date.now()}-1`, exerciseId: key,
+      loadType: currentLoadType, weightUnit: currentUnit,
+    }]));
   };
 
   // ID가 보정된 경우 부모 상태 자동 동기화

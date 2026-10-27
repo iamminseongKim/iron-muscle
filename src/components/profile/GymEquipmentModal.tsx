@@ -3,7 +3,7 @@ import { getExerciseEquipment } from '../../utils/equipment';
 import { EquipmentType } from '../../types/workout';
 import React, { useState, useMemo } from 'react';
 import { X, Search, Check, Plus, Sliders, Dumbbell, Trash2, Building2 } from 'lucide-react';
-import { t } from '../../i18n';
+import { t, displayExercise } from '../../i18n';
 import { matchesExerciseSearch } from '../../utils/exerciseSearch';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { DISCOVERY_ADDITIONS } from '../../data/discoveryAdditions';
@@ -19,6 +19,7 @@ import {
   GymEquipmentProfile,
   GymMachineConfig,
   getExerciseConfigs,
+  sharedEquipmentKey, sharedEquipmentType, withGymConfigs, countGymEquipment,
 } from '../../utils/gymStorage';
 import { Category, Exercise, POPULAR_MACHINE_BRANDS, WeightUnit } from '../../types/workout';
 import { CreateCustomExerciseModal } from '../workout/CreateCustomExerciseModal';
@@ -74,15 +75,22 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
 
   if (!isOpen) return null;
 
+  const sharedRows: Exercise[] = (['smith', 'cable'] as const).map(type => ({
+    id: sharedEquipmentKey(type), name: type === 'smith' ? '스미스' : '케이블', nameEn: type === 'smith' ? 'Smith' : 'Cable',
+    equipment: type, category: 'chest', categories: [], primaryMuscles: [], secondaryMuscles: [], description: '', instructions: [], tips: [],
+  }));
+  // 공용 장비는 한 번만 표시하고 기존 개별 설정은 수정할 수 있도록 보존합니다.
+  const equipmentRows = [...sharedRows, ...allMachineExercises.filter(ex =>
+    getExerciseEquipment(ex) === 'machine' || getExerciseConfigs(activeGym, ex.id).length > 0)];
   // 검색 및 카테고리 필터링
-  const filteredExercises = allMachineExercises.filter(ex => {
-    const matchCat = selectedCategory === 'all' || ex.category === selectedCategory || ex.categories?.includes(selectedCategory);
+  const filteredExercises = equipmentRows.filter(ex => {
+    const matchCat = !!sharedEquipmentType(ex.id) || selectedCategory === 'all' || ex.category === selectedCategory || ex.categories?.includes(selectedCategory);
     if (!matchCat || (equipment !== 'all' && getExerciseEquipment(ex) !== equipment)) return false;
     if (!searchQuery.trim()) return true;
-    return matchesExerciseSearch(ex, searchQuery);
+    return matchesExerciseSearch(ex, searchQuery) || (!!sharedEquipmentType(ex.id) && matchesExerciseSearch({ ...ex, name: t(ex.name) }, searchQuery));
   });
 
-  const selectedCount = Object.keys(activeGym.machines).length;
+  const selectedCount = countGymEquipment(activeGym);
 
   const handleSwitchGym = (gymId: string) => {
     const nextState = { ...gymState, activeGymId: gymId };
@@ -119,65 +127,34 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
   };
 
   const handleToggleExercise = (exercise: Exercise) => {
-    const nextMachines = { ...activeGym.machines };
-    if (nextMachines[exercise.id]) {
-      delete nextMachines[exercise.id];
-      if (expandedConfigId === exercise.id) setExpandedConfigId(null);
-    } else {
-      nextMachines[exercise.id] = [{
-        id: `config-${Date.now()}-1`,
-        exerciseId: exercise.id,
-        loadType: exercise.loadType === 'plate-loaded' ? 'plate-loaded' : 'pin-loaded',
-        weightUnit: 'kg',
-      }];
-      setExpandedConfigId(exercise.id);
-    }
-    handleUpdateActiveGym({ machines: nextMachines });
+    const configs = getExerciseConfigs(activeGym, exercise.id);
+    const shared = sharedEquipmentType(exercise.id);
+    const nextConfigs: GymMachineConfig[] = configs.length ? [] : [{
+      id: `config-${exercise.id}-${Date.now()}-1`, exerciseId: exercise.id,
+      loadType: shared === 'smith' || exercise.loadType === 'plate-loaded' ? 'plate-loaded' : 'pin-loaded', weightUnit: 'kg',
+    }];
+    handleUpdateActiveGym(withGymConfigs(activeGym, exercise.id, nextConfigs));
+    setExpandedConfigId(nextConfigs.length ? exercise.id : null);
   };
 
   const handleAddMachineToExercise = (exerciseId: string) => {
     const configs = getExerciseConfigs(activeGym, exerciseId);
     if (configs.length >= 3) return;
-    const newConfig: GymMachineConfig = {
-      id: `config-${Date.now()}-${configs.length + 1}`,
-      exerciseId,
-      loadType: 'pin-loaded',
-      weightUnit: 'kg',
-    };
-    const nextConfigs = [...configs, newConfig];
-    handleUpdateActiveGym({
-      machines: {
-        ...activeGym.machines,
-        [exerciseId]: nextConfigs,
-      },
-    });
+    handleUpdateActiveGym(withGymConfigs(activeGym, exerciseId, [...configs, {
+      id: `config-${exerciseId}-${Date.now()}-${configs.length + 1}`, exerciseId,
+      loadType: sharedEquipmentType(exerciseId) === 'smith' ? 'plate-loaded' : 'pin-loaded', weightUnit: 'kg',
+    }]));
   };
 
   const handleRemoveMachineFromExercise = (exerciseId: string, configId: string) => {
     const configs = getExerciseConfigs(activeGym, exerciseId);
     if (configs.length <= 1) return;
-    const nextConfigs = configs.filter(c => c.id !== configId);
-    handleUpdateActiveGym({
-      machines: {
-        ...activeGym.machines,
-        [exerciseId]: nextConfigs,
-      },
-    });
+    handleUpdateActiveGym(withGymConfigs(activeGym, exerciseId, configs.filter(c => c.id !== configId)));
   };
 
-  const handleUpdateSingleConfig = (
-    exerciseId: string,
-    configId: string,
-    updates: Partial<GymMachineConfig>
-  ) => {
+  const handleUpdateSingleConfig = (exerciseId: string, configId: string, updates: Partial<GymMachineConfig>) => {
     const configs = getExerciseConfigs(activeGym, exerciseId);
-    const nextConfigs = configs.map(c => (c.id === configId ? { ...c, ...updates } : c));
-    handleUpdateActiveGym({
-      machines: {
-        ...activeGym.machines,
-        [exerciseId]: nextConfigs,
-      },
-    });
+    handleUpdateActiveGym(withGymConfigs(activeGym, exerciseId, configs.map(c => c.id === configId ? { ...c, ...updates } : c)));
   };
 
   const handleSave = () => {
@@ -188,16 +165,15 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
 
   const handleCustomCreated = (newExercise: Exercise) => {
     setIsCreateModalOpen(false);
-    handleUpdateActiveGym({
-      machines: {
-        ...activeGym.machines,
-        [newExercise.id]: {
-          exerciseId: newExercise.id,
-          loadType: newExercise.loadType === 'plate-loaded' ? 'plate-loaded' : 'pin-loaded',
-        },
-      },
-    });
-    setExpandedConfigId(newExercise.id);
+    const equipment = getExerciseEquipment(newExercise);
+    const key = equipment === 'smith' || equipment === 'cable' ? sharedEquipmentKey(equipment) : newExercise.id;
+    if (!getExerciseConfigs(activeGym, key).length) {
+      handleUpdateActiveGym(withGymConfigs(activeGym, key, [{
+        id: `config-${key}-${Date.now()}-1`, exerciseId: key,
+        loadType: equipment === 'smith' || newExercise.loadType === 'plate-loaded' ? 'plate-loaded' : 'pin-loaded', weightUnit: 'kg',
+      }]));
+    }
+    setExpandedConfigId(key);
   };
 
   return (
@@ -219,7 +195,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                 {t('내 헬스장 기구 관리')}
               </h3>
               <p className="text-xs text-gray-400">
-                {activeGym.name} · {t('등록된 머신')} <span className="font-bold text-accent dark:text-accent-light">{selectedCount}</span>{t('개')}
+                {activeGym.name} · {t('등록된 장비')} <span className="font-bold text-accent dark:text-accent-light">{selectedCount}</span>{t('개')}
               </p>
             </div>
             <button
@@ -381,6 +357,11 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
           <div className="px-3 pb-2"><EquipmentFilter value={equipment} onChange={setEquipment} machinesOnly /></div>
           {/* 머신 목록 */}
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            <div className="rounded-xl bg-accent/5 p-3 space-y-1 text-xs">
+              <p className="font-bold text-accent">{t('공용 장비와 전용 머신')}</p>
+              <p className="text-gray-500">{t('스미스·케이블은 한 번 등록하면 관련 운동에 공통 적용됩니다. 전용 머신은 종목별로 등록하세요.')}</p>
+              <p className="text-gray-500">{t('기존 개별 설정은 우선 적용됩니다. 개별 등록을 해제하면 공용 장비 설정을 사용합니다.')}</p>
+            </div>
             {filteredExercises.length === 0 ? (
               <div className="py-12 text-center text-xs text-gray-400">
                 {t('검색된 머신이 없습니다.')}
@@ -408,6 +389,9 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                     }`}
                   >
                     <div
+                      role="checkbox" aria-checked={isSelected} tabIndex={0}
+                      aria-label={sharedEquipmentType(ex.id) ? t(ex.name) : displayExercise(ex)}
+                      onKeyDown={event => { if (event.target === event.currentTarget && (event.key === ' ' || event.key === 'Enter')) { event.preventDefault(); handleToggleExercise(ex); } }}
                       onClick={() => handleToggleExercise(ex)}
                       className="p-3 flex items-center justify-between cursor-pointer select-none"
                     >
@@ -423,9 +407,9 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                         </div>
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-[#1D1D1F] dark:text-white truncate">
-                            {t(ex.name)}
+                            {sharedEquipmentType(ex.id) ? t(ex.name) : displayExercise(ex)}
                           </p>
-                          <p className="text-[10px] text-gray-400 truncate">{ex.nameEn}</p>
+                          <p className="text-[10px] text-gray-400 truncate">{sharedEquipmentType(ex.id) ? t('여러 운동에서 함께 사용하는 장비') : getExerciseEquipment(ex) !== 'machine' ? t('기존 개별 설정') : ex.nameEn}</p>
                         </div>
                       </div>
 
@@ -453,14 +437,14 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                           >
                             <div className="flex items-center justify-between">
                               <span className="text-[11px] font-extrabold text-accent dark:text-accent-light">
-                                {t('머신')} {cfgIdx + 1}{cfg.brand ? ` (${cfg.brand})` : ''}
+                                {t(sharedEquipmentType(ex.id) ? '장비' : '머신')} {cfgIdx + 1}{cfg.brand ? ` (${cfg.brand})` : ''}
                               </span>
                               {configs.length > 1 && (
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveMachineFromExercise(ex.id, cfg.id!)}
                                   className="text-gray-400 hover:text-red-500 p-0.5 rounded transition"
-                                  title={t('이 머신 삭제')}
+                                  title={t(sharedEquipmentType(ex.id) ? '이 장비 삭제' : '이 머신 삭제')}
                                 >
                                   <Trash2 size={12} />
                                 </button>
@@ -564,7 +548,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                 type="text"
                                 value={cfg.machineSetting || ''}
                                 onChange={e => handleUpdateSingleConfig(ex.id, cfg.id!, { machineSetting: e.target.value })}
-                                placeholder={t('의자 높이/각도 메모 (예: 의자 4단, 등받이 2단)')}
+                                placeholder={t(sharedEquipmentType(ex.id) ? '장비 공통 메모 (예: 케이블 비율, 위치)' : '의자 높이/각도 메모 (예: 의자 4단, 등받이 2단)')}
                                 className="w-full px-2.5 py-1.5 text-xs rounded-lg bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white"
                               />
                             </div>
@@ -579,7 +563,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                             className="w-full py-1.5 bg-white dark:bg-[#1C1C1E] border border-dashed border-accent/40 hover:bg-accent/10 text-accent dark:text-accent-light text-xs font-bold rounded-xl flex items-center justify-center gap-1 transition"
                           >
                             <Plus size={13} strokeWidth={2.5} />
-                            <span>{t('다른 머신 추가')} ({configs.length}/3)</span>
+                            <span>{t(sharedEquipmentType(ex.id) ? '다른 장비 추가' : '다른 머신 추가')} ({configs.length}/3)</span>
                           </button>
                         )}
                       </div>
@@ -591,14 +575,14 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="shrink-0 p-3 border-t border-black/5 dark:border-white/10 bg-[#F2F2F7] dark:bg-[#252528] flex justify-between items-center text-xs">
+          <div className="shrink-0 p-3 border-t border-black/5 dark:border-white/10 bg-[#F2F2F7] dark:bg-[#252528] flex justify-between items-center gap-3 text-xs">
             <span className="text-gray-500">
               {t('선택된 기구는 운동 추가 시 최상단에 노출됩니다.')}
             </span>
             <button
               type="button"
               onClick={handleSave}
-              className="px-4 py-2 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl transition"
+              className="shrink-0 whitespace-nowrap px-4 py-2 bg-accent hover:bg-accent-hover text-white font-bold rounded-xl transition"
             >
               {t('저장하기')}
             </button>
