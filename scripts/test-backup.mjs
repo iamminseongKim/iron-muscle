@@ -14,7 +14,7 @@ assert.equal(api.restoreBackup(backup).skipped,1);
 assert.equal(api.createBackup().sessions.length,1);
 const other=structuredClone(backup);other.sessions[0].id='test-2';
 assert.equal(api.restoreBackup(other).sessions.length,2);
-const invalid=structuredClone(backup);invalid.sessions[0].exercises[0].sets[0].weight=-5;
+const invalid=structuredClone(backup);invalid.sessions[0].exercises[0].sets[0].reps=-5;
 assert.throws(()=>api.parseBackup(JSON.stringify(invalid)));
 assert.throws(()=>api.parseBackup('{}'));
 const before=[...memory.entries()];let writes=0;const original=localStorage.setItem;

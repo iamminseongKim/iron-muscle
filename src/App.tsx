@@ -112,6 +112,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     let interval: any = null;
     if (activeSession && !activeSession.completed && isWorkoutTimerRunning) {
+      const sessionId = activeSession.id;
       // 안드로이드/iOS 백그라운드 전환 시 setInterval이 지연/일시정지되는 문제 보정:
       // 틱 횟수가 아니라 실제 경과 시간(Date.now() 차이)만큼 더한다.
       let lastTick = Date.now();
@@ -122,7 +123,7 @@ export const App: React.FC = () => {
         setTotalWorkoutSeconds((prev) => {
           const next = prev + deltaSec;
           const active = loadActiveSession();
-          if (active && !active.completed) {
+          if (active && active.id === sessionId && !active.completed) {
             active.durationSeconds = next;
             try {
               localStorage.setItem('iron_active_session_v1', JSON.stringify(active));
@@ -133,7 +134,7 @@ export const App: React.FC = () => {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [activeSession, isWorkoutTimerRunning]);
+  }, [activeSession?.id, activeSession?.completed, isWorkoutTimerRunning]);
 
   const toggleWorkoutTimer = () => {
     setIsWorkoutTimerRunning((prev) => !prev);

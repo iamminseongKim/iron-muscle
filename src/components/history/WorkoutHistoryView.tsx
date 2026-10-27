@@ -1,4 +1,5 @@
 import exportMessages from '../../i18n/exportMessages.json';
+import { copyText } from '../../utils/clipboard';
 import { useLanguage, t, displayExercise } from '../../i18n';
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
@@ -106,6 +107,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
   const [selectedBodyPart, setSelectedBodyPart] = useState<TargetBodyPart>('all');
   const [copied, setCopied] = useState(false);
   const [downloadFeedback, setDownloadFeedback] = useState<string | null>(null);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const handleOpenAiExport = () => {
     setExportDate(selectedDate);
@@ -282,21 +284,10 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
   }, [exportTargetSessions, exportScope, exportDate, exportCustomStart, exportCustomEnd, selectedBodyPart, language]);
 
   const handleCopyMarkdown = async () => {
-    try {
-      await navigator.clipboard.writeText(currentMarkdown);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback
-      const ta = document.createElement('textarea');
-      ta.value = currentMarkdown;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    const success = await copyText(currentMarkdown);
+    setCopied(success);
+    setCopyFailed(!success);
+    if (success) setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownloadMarkdown = async () => {
@@ -1174,6 +1165,11 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
               </span>
             </div>
 
+            {copyFailed && <div className="px-4 py-3 space-y-2">
+              <p role="status" className="text-xs">{t('복사하지 못했습니다. 아래 기록을 직접 선택해 복사하세요.')}</p>
+              <textarea aria-label={t('복사할 기록')} value={currentMarkdown} readOnly onFocus={event => event.target.select()}
+                className="w-full h-32 bg-transparent border border-black/15 dark:border-white/15 rounded-xl p-2 text-xs" />
+            </div>}
             {/* Markdown Preview Area */}
             <div className="flex-1 overflow-y-auto p-4 bg-[#121214] text-gray-200 font-mono text-xs leading-relaxed select-all whitespace-pre-wrap">
               {currentMarkdown}

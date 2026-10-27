@@ -90,14 +90,14 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                   ? 'bg-red-500/10 text-accent'
                   : 'bg-indigo-500/10 text-indigo-500'
               }`}>
-                {deloadAnalysis.shouldDeload ? t("디로딩 권장") : t("컨디션 최적")}
+                {!deloadAnalysis.hasEnoughData ? t('데이터 부족') : deloadAnalysis.shouldDeload ? t("디로딩 권장") : t("컨디션 최적")}
               </span>
             </div>
 
             <div className="bg-[#F9F9FB] dark:bg-[#252528] p-3.5 rounded-2xl text-xs leading-relaxed space-y-1.5">
               <div className="flex items-center justify-between text-[11px] text-gray-400">
                 <span>{t("최근 평균 강도:")}</span>
-                <span className="font-bold text-[#FF9500]">{t("평균 RPE")} {deloadAnalysis.recentAvgRpe} / 10</span>
+                <span className="font-bold text-[#FF9500]">{t("평균 RPE")} {deloadAnalysis.recentAvgRpe ?? '—'} / 10</span>
               </div>
               <p className="text-gray-600 dark:text-gray-300 text-xs">
                 {t(deloadAnalysis.message)}

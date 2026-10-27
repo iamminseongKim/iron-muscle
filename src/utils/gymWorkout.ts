@@ -1,12 +1,14 @@
 import { WorkoutExercise, WorkoutSession, WeightUnit } from '../types/workout';
 import { GymMachineConfig } from './gymStorage';
-import { convertWeight } from './calculations';
+import { convertWeight, recentCompletedSessions } from './calculations';
 
 export function findPreviousMachineExercise(sessions: WorkoutSession[], exerciseId: string, brand?: string, configId?: string) {
-  for (let i = sessions.length - 1; i >= 0; i--) {
-    const match = sessions[i].exercises.find(exercise => exercise.exerciseId === exerciseId &&
-      (configId ? exercise.machineConfigId === configId : (!brand || exercise.machineBrand === brand)) && exercise.sets.length > 0);
-    if (match) return match;
+  for (const session of recentCompletedSessions(sessions)) {
+    const match = session.exercises.find(exercise => exercise.exerciseId === exerciseId &&
+      (configId ? exercise.machineConfigId === configId :
+        !exercise.machineConfigId && (brand ? exercise.machineBrand === brand : !exercise.machineBrand)) &&
+      exercise.sets.some(set => set.completed));
+    if (match) return { ...match, weightUnit: match.weightUnit || session.weightUnit || 'kg', sets: match.sets.filter(set => set.completed) };
   }
   return undefined;
 }

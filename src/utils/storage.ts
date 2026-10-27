@@ -52,6 +52,51 @@ export function saveSessions(sessions: WorkoutSession[]): void {
   }
 }
 
+/** Commit completion without discarding an active workout on a failed write. */
+export function completeWorkoutSession(session: WorkoutSession): WorkoutSession[] {
+  const failure = () => new Error('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.');
+  let previousHistoryRaw: string | null;
+  let previousActiveRaw: string | null;
+  let previous: WorkoutSession[];
+  let serialized: string;
+  try {
+    if (!session || typeof session.id !== 'string' || !session.id.trim() || session.completed !== true || !Array.isArray(session.exercises)) throw failure();
+    // Read strictly: a broken history must never become an empty history on save.
+    previousHistoryRaw = localStorage.getItem(STORAGE_KEYS.SESSIONS);
+    previousActiveRaw = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
+    const parsed: unknown = previousHistoryRaw === null ? [] : JSON.parse(previousHistoryRaw);
+    const active: unknown = previousActiveRaw === null ? null : JSON.parse(previousActiveRaw);
+    const validSession = (value: unknown): value is WorkoutSession => {
+      if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+      const candidate = value as WorkoutSession;
+      return typeof candidate.id === 'string' && !!candidate.id.trim() && Array.isArray(candidate.exercises);
+    };
+    if (!Array.isArray(parsed) || !parsed.every(validSession) || !validSession(active) || active.id !== session.id) throw failure();
+    previous = parsed.map(sanitizeSessionExercises);
+    const completed = sanitizeSessionExercises(session);
+    serialized = JSON.stringify([completed, ...previous.filter(saved => saved.id !== session.id)]);
+  } catch { throw failure(); }
+  try {
+    localStorage.setItem(STORAGE_KEYS.SESSIONS, serialized);
+    if (localStorage.getItem(STORAGE_KEYS.SESSIONS) !== serialized) throw failure();
+    localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
+    if (localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION) !== null || localStorage.getItem(STORAGE_KEYS.SESSIONS) !== serialized) throw failure();
+  } catch {
+    // Restore both exact raw snapshots, rather than rewriting through permissive loaders.
+    for (const [key, raw] of [[STORAGE_KEYS.SESSIONS, previousHistoryRaw], [STORAGE_KEYS.ACTIVE_SESSION, previousActiveRaw]] as const) {
+      try {
+        if (raw === null) localStorage.removeItem(key); else localStorage.setItem(key, raw);
+      } catch { /* Retain any successfully written copy if storage becomes unavailable. */ }
+    }
+    throw failure();
+  }
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('iron_sessions_change'));
+    window.dispatchEvent(new CustomEvent('iron_active_session_change', { detail: null }));
+  }
+  return previous;
+}
+
 export function loadActiveSession(): WorkoutSession | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);

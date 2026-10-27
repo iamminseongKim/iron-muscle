@@ -180,35 +180,39 @@ export function calculateProgression(exerciseId: string, history: WorkoutSession
   return { records, growthRate };
 }
 
+/** Sort a copy: imports and restored backups do not guarantee storage order. */
+export function recentCompletedSessions(history: WorkoutSession[]): WorkoutSession[] {
+  const timestamp = (session: WorkoutSession) => {
+    const time = Date.parse(session.startTime || '');
+    return Number.isFinite(time) ? time : 0;
+  };
+  return history.filter(session => session.completed !== false).sort((a, b) =>
+    b.date.localeCompare(a.date) || timestamp(b) - timestamp(a) || b.id.localeCompare(a.id));
+}
+
 // 9. 디로딩(Deload) 권장 분석
 export function checkDeloadRecommendation(history: WorkoutSession[]): {
   shouldDeload: boolean;
-  recentAvgRpe: number;
+  hasEnoughData: boolean;
+  recentAvgRpe: number | null;
   message: string;
 } {
-  const recentSessions = history.slice(-8);
-  if (recentSessions.length < 4) {
-    return { shouldDeload: false, recentAvgRpe: 7.5, message: '훈련 데이터 수집 중입니다. 꾸준히 기록을 남겨보세요!' };
+  const recordedRpes = recentCompletedSessions(history).slice(0, 8)
+    .map(calculateAverageRPE).filter((rpe): rpe is number => rpe !== null);
+  const recentAvg = recordedRpes.length ? recordedRpes.reduce((sum, rpe) => sum + rpe, 0) / recordedRpes.length : null;
+  if (recordedRpes.length < 4 || recentAvg === null) {
+    return { shouldDeload: false, hasEnoughData: false,
+      recentAvgRpe: recentAvg === null ? null : Math.round(recentAvg * 10) / 10,
+      message: '훈련 데이터 수집 중입니다. 꾸준히 기록을 남겨보세요!' };
   }
-
-  let totalRpe = 0;
-  let count = 0;
-  recentSessions.forEach(s => {
-    const r = calculateAverageRPE(s);
-    if (r) {
-      totalRpe += r;
-      count++;
-    }
-  });
-
-  const recentAvg = count > 0 ? totalRpe / count : 7.5;
   const isHighFatigue = recentAvg >= 8.5;
 
   return {
     shouldDeload: isHighFatigue,
+    hasEnoughData: true,
     recentAvgRpe: Math.round(recentAvg * 10) / 10,
     message: isHighFatigue
-      ? '최근 훈련 강도(평균 RPE ' + Math.round(recentAvg * 10) / 10 + ')가 매우 높습니다! 신경계 회복과 근비대 초회복을 위해 이번 주는 중량/볼륨을 50~60%로 줄인 디로딩 주간을 강력히 권장합니다.'
-      : '현재 훈련 강도가 적절한 피로도 범위 내에서 진행되고 있습니다. 좋은 컨디션을 유지하며 점진적 과부하를 이어가세요!'
+      ? '최근 운동의 RPE가 높습니다. 컨디션과 회복 상태를 확인하세요.'
+      : '최근 기록의 평균 RPE입니다. 실제 컨디션과 함께 참고하세요.'
   };
 }

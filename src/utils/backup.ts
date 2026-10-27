@@ -4,15 +4,16 @@ import { isMarkdownWorkout, parseMarkdownWorkout } from './markdownParser';
 import { GYM_EQUIPMENT_STORAGE_KEY, GymEquipmentProfile } from './gymStorage';
 
 export interface WorkoutBackup { format: 'iron-muscle-backup'; version: 1; exportedAt: string; sessions: WorkoutSession[]; customExercises: Exercise[]; activeSession: WorkoutSession | null; gymProfile?: GymEquipmentProfile | null; routines?: Routine[]; }
-const keys = ['iron_workout_sessions_v1', 'iron_custom_exercises_v1', 'iron_active_session_v1', 'iron_routines_v1'] as const;
+const keys = ['iron_workout_sessions_v1', 'iron_custom_exercises_v1', 'iron_active_session_v1', 'iron_routines_v1', GYM_EQUIPMENT_STORAGE_KEY] as const;
 const object = (v: any) => v && typeof v === 'object' && !Array.isArray(v);
 const str = (v: any) => typeof v === 'string';
 const optionalStrings = (v: any, fields: string[]) => fields.every(k => v[k] === undefined || str(v[k]));
 const num = (v: any) => typeof v === 'number' && Number.isFinite(v) && v >= 0;
+const signedNum = (v: any) => typeof v === 'number' && Number.isFinite(v);
 function checkSession(s: any): boolean {
   return object(s) && optionalStrings(s,['notes','conditionEmoji','endTime']) && str(s.id) && str(s.title) && /^\d{4}-\d{2}-\d{2}$/.test(s.date) && str(s.startTime) && num(s.durationSeconds) && typeof s.completed === 'boolean' && Array.isArray(s.exercises) && s.exercises.every((e: any) =>
     object(e) && optionalStrings(e,['exerciseName','machineConfigId','machineBrand','machineSetting','notes','groupId','groupLabel','groupColor']) && (e.executionMode === undefined || ['bilateral','unilateral','alternating'].includes(e.executionMode)) && str(e.id) && str(e.exerciseId) && ['smith','barbell','dumbbell','machine','cable','bodyweight','other'].includes(e.equipmentType) && (!e.weightUnit || ['kg','lbs'].includes(e.weightUnit)) && Array.isArray(e.sets) && e.sets.every((t: any) =>
-      object(t) && (t.side === undefined || ['both','left','right'].includes(t.side)) && (t.restSeconds === undefined || num(t.restSeconds)) && (t.plannedRestSeconds === undefined || (num(t.plannedRestSeconds) && t.plannedRestSeconds <= 3600)) && str(t.id) && num(t.setNumber) && num(t.weight) && num(t.reps) && typeof t.completed === 'boolean' && (t.rpe === undefined || (num(t.rpe) && t.rpe <= 10)) && (t.tempo === undefined || (object(t.tempo) && ['eccentric','pause','concentric'].every(k => num(t.tempo[k])))) && (t.tags === undefined || (Array.isArray(t.tags) && t.tags.every(str))) && (t.comment === undefined || str(t.comment))));
+      object(t) && (t.side === undefined || ['both','left','right'].includes(t.side)) && (t.restSeconds === undefined || num(t.restSeconds)) && (t.plannedRestSeconds === undefined || (num(t.plannedRestSeconds) && t.plannedRestSeconds <= 3600)) && str(t.id) && num(t.setNumber) && signedNum(t.weight) && num(t.reps) && typeof t.completed === 'boolean' && (t.rpe === undefined || (num(t.rpe) && t.rpe <= 10)) && (t.tempo === undefined || (object(t.tempo) && ['eccentric','pause','concentric'].every(k => num(t.tempo[k])))) && (t.tags === undefined || (Array.isArray(t.tags) && t.tags.every(str))) && (t.comment === undefined || str(t.comment))));
 }
 export function parseBackup(raw: string): WorkoutBackup {
   if (raw.length > 10_000_000) throw new Error('백업 파일은 10MB 이하만 지원합니다.');

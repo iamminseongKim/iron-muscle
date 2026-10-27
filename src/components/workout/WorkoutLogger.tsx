@@ -21,8 +21,11 @@ import { RpeGuideModal } from './RpeGuideModal';
 import { RestTimerModal } from './RestTimerModal';
 import { ExerciseGroupModal } from './ExerciseGroupModal';
 import { HoldToCompleteButton } from './HoldToCompleteButton';
+import { RepeatWorkoutPanel } from './RepeatWorkoutPanel';
+import { WorkoutCompleteSummary } from './WorkoutCompleteSummary';
+import { repeatWorkout, moveWorkoutExercise, getExerciseMoveAvailability } from '../../utils/workoutFlow';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, convertWeight } from '../../utils/calculations';
-import { saveActiveSession, loadActiveSession, saveSessions, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
+import { saveActiveSession, loadActiveSession, completeWorkoutSession, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { findPreviousMachineExercise, convertExerciseSets } from '../../utils/gymWorkout';
 import { soundManager } from '../../utils/audio';
 import { resolveRecordedExercise, sanitizeSessionExercises } from '../../utils/exerciseResolver';
@@ -51,6 +54,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const [showSessionStats, setShowSessionStats] = useState(false);
   const [collapsedExerciseIds, setCollapsedExerciseIds] = useState<Set<string>>(new Set());
   const [session, setSession] = useState<WorkoutSession | null>(() => loadActiveSession());
+  const [completion, setCompletion] = useState<{ session: WorkoutSession; history: WorkoutSession[]; healthMessage: string } | null>(null);
+  const [isReordering, setIsReordering] = useState(false);
+  const [flowMessage, setFlowMessage] = useState('');
 
   useEffect(() => {
     const refresh = () => setSession(loadActiveSession());
@@ -155,6 +161,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   // [운동 시작하기] 버튼 클릭 시 세션 생성 및 첫 종목 모달 오픈
   const handleStartWorkout = () => {
+    if (loadActiveSession()) {
+      setFlowMessage('먼저 진행 중인 운동을 완료하거나 취소하세요.');
+      setSession(loadActiveSession());
+      return;
+    }
     clearFocusAndSelection();
     const selectedOptions = TARGET_BODY_PARTS.filter((p) => selectedPartIds.includes(p.id));
     const targetCategories = Array.from(new Set(selectedOptions.map((p) => p.category))) as Category[];
@@ -177,10 +188,42 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       targetPartIds: selectedPartIds,
     };
 
-    setSession(newSession);
     saveActiveSession(newSession);
+    if (loadActiveSession()?.id !== newSession.id) {
+      setFlowMessage('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.');
+      return;
+    }
+    setSession(newSession);
+    setFlowMessage('');
     // 운동 시작과 동시에 첫 종목 모달 자동 활성화
     setIsAddModalOpen(true);
+  };
+
+  const handleRepeatWorkout = (source: WorkoutSession) => {
+    try {
+      if (loadActiveSession()) {
+        setSession(loadActiveSession());
+        throw new Error('먼저 진행 중인 운동을 완료하거나 취소하세요.');
+      }
+      const next = repeatWorkout(source, { bodyWeight: loadHealthPreferences().weight?.kg });
+      saveActiveSession(next);
+      if (loadActiveSession()?.id !== next.id) throw new Error('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.');
+      setCompletion(null);
+      setCollapsedExerciseIds(new Set());
+      setIsReordering(false);
+      setSession(next);
+      setFlowMessage('');
+    } catch (error) { setFlowMessage((error as Error).message); }
+  };
+
+  const handleMoveExercise = (id: string, direction: 'up' | 'down') => {
+    const current = loadActiveSession();
+    if (!current || current.id !== session?.id) return;
+    const exercises = moveWorkoutExercise(current.exercises, id, direction);
+    try {
+      saveWithRecovery({ ...current, exercises }, 'active');
+      setFlowMessage('정렬 순서가 저장되었습니다.');
+    } catch (error) { setFlowMessage((error as Error).message); }
   };
 
   // 운동 취소 (확인 팝업 후 초기화)
@@ -194,10 +237,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   // 총 운동 시간 보존 헬퍼 (세트 수정 시 1분대에서 리셋되는 치명적 버그 방지)
   const getLatestDuration = (): number => {
     const fromStorage = loadActiveSession()?.durationSeconds;
-    const fromStart = session?.startTime
-      ? Math.max(0, Math.round((Date.now() - new Date(session.startTime).getTime()) / 1000))
-      : 0;
-    return Math.max(session?.durationSeconds || 0, fromStorage || 0, fromStart);
+    // The global timer accounts for background time and pauses; wall time would add paused time back.
+    return Math.max(session?.durationSeconds || 0, fromStorage || 0);
   };
 
   // 종목 추가 핸들러
@@ -413,7 +454,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       }
     }
 
-    soundManager.playSuccessSound();
     const finalDuration = getLatestDuration();
 
     const finalSession: WorkoutSession = {
@@ -424,13 +464,14 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       overallRpe: calculateAverageRPE(session) || undefined,
     };
 
-    const history = loadSavedSessions();
-    saveSessions([finalSession, ...history]);
-    // Verify persistence before discarding the active workout or starting external writes.
-    if (!loadSavedSessions().some(saved => saved.id === finalSession.id)) {
-      alert(t('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.'));
+    let history: WorkoutSession[];
+    try {
+      history = completeWorkoutSession(finalSession);
+    } catch (error) {
+      setFlowMessage((error as Error).message);
       return;
     }
+    soundManager.playSuccessSound();
     let healthMessage = '';
     try {
       if (enqueueWorkout(finalSession)) {
@@ -438,21 +479,19 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         void flushWorkoutExports().catch(() => {});
       }
     } catch { healthMessage = '\n' + t('운동은 저장했지만 건강 앱 전송을 예약하지 못했습니다.'); }
-    saveActiveSession(null);
     setSession(null);
 
-    const mins = Math.floor(finalDuration / 60);
-    const secs = finalDuration % 60;
-    const timeStr = `${mins > 0 ? `${mins}m ` : ''}${secs}s`;
-
-    alert(`${t('오늘 운동 완료!')}\n${t('총 운동 시간:')} ${timeStr}\n${t('총 볼륨:')} ${calculateSessionVolume(finalSession).toLocaleString()}kg\n${t('총 횟수:')} ${calculateSessionReps(finalSession)}${t('회')}\n${t('기록이 성공적으로 저장되었습니다.')}${healthMessage}`);
-
-    if (onWorkoutCompleted) {
-      onWorkoutCompleted();
-    }
+    setRestTimerState(previous => ({ ...previous, isOpen: false }));
+    setIsReordering(false);
+    setFlowMessage('');
+    setCompletion({ session: finalSession, history, healthMessage });
   };
 
   const savedCount = useMemo(() => loadSavedSessions().length, [session]);
+
+  if (completion && !session) return <WorkoutCompleteSummary {...completion}
+    onHistory={() => { setCompletion(null); onWorkoutCompleted?.(); }}
+    onDismiss={() => setCompletion(null)} />;
 
   // ==========================================
   // 1. 대기 화면 (Session === null)
@@ -476,6 +515,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           <h2 className="text-2xl font-extrabold leading-tight text-[#24212B] dark:text-white">{t("오늘의 운동 시작하기")}</h2>
           <p data-workout-subtitle className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t("오늘 운동할 부위를 선택하면 첫 운동 추가 시 해당 부위가 자동 추천됩니다.")}</p>
         </div>
+
+        {flowMessage && <p role="status" className="text-sm text-accent dark:text-accent-light">{t(flowMessage)}</p>}
 
         <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
           {/* 좌측 패널 (목표 부위 선택 & 안내) */}
@@ -555,6 +596,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
           {/* 우측 패널 (루틴 이름, 컨디션, 디로딩 & 시작 버튼) */}
           <div className="space-y-4 md:col-span-6 lg:col-span-6 mt-4 md:mt-0">
+        <RepeatWorkoutPanel onRepeat={handleRepeatWorkout} />
             {/* 2. 세션 설정 카드 (제목, 컨디션, 디로딩) */}
         <div className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-3.5">
           <div>
@@ -738,11 +780,14 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         <div className="flex items-center justify-between text-xs">
           <span className="font-bold text-gray-500">{t("운동")} {session.exercises.length}{t("종목")}</span>
           <div className="flex gap-3 text-gray-500 dark:text-gray-400 font-semibold">
+            <button type="button" aria-pressed={isReordering} className="min-h-[32px]" onClick={() => setIsReordering(previous => !previous)}>{t(isReordering ? '순서 변경 완료' : '순서 변경')}</button>
             <button type="button" className="min-h-[32px]" onClick={() => setCollapsedExerciseIds(new Set(session.exercises.map(item => item.id)))}>{t("모두 접기")}</button>
             <button type="button" className="min-h-[32px]" onClick={() => setCollapsedExerciseIds(new Set())}>{t("모두 펼치기")}</button>
           </div>
         </div>
       )}
+      {flowMessage && <p role="status" className="text-sm text-accent dark:text-accent-light">{t(flowMessage)}</p>}
+      {isReordering && <p className="text-xs text-gray-500">{t('묶인 종목은 함께 이동합니다.')}</p>}
       <div className="space-y-2">
         {session.exercises.length === 0 ? (
           <div className="soft-surface py-14 text-center bg-white dark:bg-[#1E1B24] p-6 space-y-3">
@@ -769,8 +814,19 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           </div>
         ) : (
           session.exercises.map((item, idx) => (
+            <div key={item.id} data-workout-exercise={item.id}>
+            {isReordering && (!item.groupId || session.exercises.findIndex(exercise => exercise.groupId === item.groupId) === idx) && (
+              <div className="flex items-center justify-end gap-2 pb-2">
+                {(['up', 'down'] as const).map(direction => <button type="button" key={direction}
+                  aria-label={`${t(direction === 'up' ? '위로 이동' : '아래로 이동')} · ${displayExercise(resolveRecordedExercise(item))}`}
+                  disabled={!getExerciseMoveAvailability(session.exercises, item.id)[direction]}
+                  onClick={() => handleMoveExercise(item.id, direction)}
+                  className="min-h-[44px] rounded-xl bg-accent/10 px-3 py-2 text-xs font-bold text-accent dark:text-accent-light disabled:opacity-30">
+                  {t(direction === 'up' ? '위로 이동' : '아래로 이동')}
+                </button>)}
+              </div>
+            )}
             <ExerciseCard
-              key={item.id}
               exerciseItem={item}
               collapsed={collapsedExerciseIds.has(item.id)}
               onToggleCollapsed={() => setCollapsedExerciseIds(previous => {
@@ -787,6 +843,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               onUnlinkGroup={() => handleUnlinkExercise(item.id)}
               isDark={isDark}
             />
+            </div>
           ))
         )}
       </div>
