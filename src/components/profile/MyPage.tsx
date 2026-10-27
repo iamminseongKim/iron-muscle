@@ -1,3 +1,5 @@
+import { AppUpdates } from './AppUpdates';
+import { Capacitor } from '@capacitor/core';
 import { RoutineLibrary } from '../library/RoutineLibrary';
 import { RecoveryPanel } from '../library/RecoveryPanel';
 import React, { useEffect, useState } from 'react';
@@ -196,6 +198,7 @@ export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange
       </div>
       <div className="flex justify-between items-center text-sm"><span>{t('표시 무게 단위')}</span><button onClick={() => { onToggleWeightUnit(); setWeightInput(''); }} className="p-3 rounded-xl bg-gray-100 dark:bg-white/10">{weightUnit}</button></div>
     </section>
+    {Capacitor.getPlatform() === 'android' && <AppUpdates />}
     <RoutineLibrary />
     <RecoveryPanel />
     <BackupPanel onRestored={() => {}}/>

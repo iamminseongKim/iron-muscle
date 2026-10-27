@@ -1,4 +1,4 @@
-name: Build & Release Mobile Apps (Android APK & iOS IPA)
+name: Build & Release Android App (APK)
 
 on:
   push:
@@ -114,61 +114,12 @@ jobs:
           path: release-apk/*.apk
           retention-days: 30
 
-  # 2. iOS 빌드 및 IPA 패키징 (즉시 병렬 시작)
-  build-ios:
-    name: Build iOS Project & Package IPA
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check exercise data and record preservation
-        run: npm test
-
-      - name: Build Web Application
-        run: npm run build
-
-      - name: Sync Capacitor iOS
-        run: |
-          npx cap sync ios
-
-      - name: Compile iOS Project with Xcode CLI
-        run: |
-          cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
-
-      - name: Package Unsigned iOS IPA
-        run: |
-          mkdir -p release-ios/Payload
-          cp -r ios/App/build/Build/Products/Release-iphoneos/App.app release-ios/Payload/
-          cd release-ios
-          zip -r IronMuscle-iOS.ipa Payload
-          rm -rf Payload
-          ls -lh
-
-      - name: Upload iOS IPA Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: IronMuscle-iOS-IPA
-          path: release-ios/IronMuscle-iOS.ipa
-          retention-days: 30
-
-  # 3. 릴리즈 배포 (Android APK & iOS IPA 산출물 등록)
+  # Publish Android release packages.
   release:
     name: Publish Release Packages
     permissions:
       contents: write
-    needs: [build-android, build-ios]
+    needs: [build-android]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
 
@@ -180,12 +131,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: IronMuscle-Android-APK
-          path: release-assets
-
-      - name: Download iOS IPA
-        uses: actions/download-artifact@v4
-        with:
-          name: IronMuscle-iOS-IPA
           path: release-assets
 
       - name: Determine Release Tag
@@ -200,12 +145,12 @@ jobs:
       - name: Generate version-specific release notes
         run: node scripts/release-notes.mjs "${{ steps.release_tag.outputs.tag }}"
 
-      - name: Publish GitHub Release (Android APK & iOS IPA)
+      - name: Publish GitHub Release (Android APK)
         uses: softprops/action-gh-release@v2
         with:
           target_commitish: ${{ github.sha }}
           tag_name: ${{ steps.release_tag.outputs.tag }}
-          name: "Iron Muscle Tracker ${{ steps.release_tag.outputs.tag }} (Android & iOS)"
+          name: "Iron Muscle Tracker ${{ steps.release_tag.outputs.tag }} (Android)"
           body_path: release-notes.md
           files: release-assets/*
           draft: false

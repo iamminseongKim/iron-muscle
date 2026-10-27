@@ -6,6 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const testFiles = [
+  'test-app-updates.mjs',
   'test-data-integrity.mjs',
   'test-workout-flow.mjs',
   'test-clipboard.mjs',

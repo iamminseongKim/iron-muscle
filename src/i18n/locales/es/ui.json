@@ -851,5 +851,18 @@
   "선택한 운동과 같은 기구·수행 방식의 기록을 비교합니다.": "Se comparan registros con el mismo equipo y modo de ejecución que el entrenamiento seleccionado.",
   "최근 운동의 RPE가 높습니다. 컨디션과 회복 상태를 확인하세요.": "El RPE de tus entrenamientos recientes es alto. Revisa cómo te sientes y cómo te has recuperado.",
   "최근 기록의 평균 RPE입니다. 실제 컨디션과 함께 참고하세요.": "Este es el RPE medio de tus registros recientes. Ten en cuenta también cómo te sientes.",
-  "최고 중량": "Peso máximo"
+  "최고 중량": "Peso máximo",
+  "앱 업데이트": "Actualizaciones de la app",
+  "현재 버전": "Versión actual",
+  "확인 중...": "Comprobando...",
+  "업데이트 확인": "Buscar actualizaciones",
+  "새 버전이 있습니다.": "Hay una nueva versión disponible.",
+  "최신 버전을 사용하고 있습니다.": "Estás usando la última versión.",
+  "업데이트 내용": "Notas de la versión",
+  "새 버전 APK 다운로드": "Descargar nuevo APK",
+  "설치 파일이 아직 준비되지 않았습니다. 잠시 후 다시 확인하세요.": "El instalador aún no está listo. Vuelve a comprobarlo más tarde.",
+  "업데이트 확인에 실패했습니다. 인터넷 연결을 확인하고 다시 시도하세요.": "No se pudo buscar actualizaciones. Comprueba tu conexión a internet e inténtalo de nuevo.",
+  "다운로드를 시작했습니다. 완료되면 알림에서 APK를 열어 설치하세요.": "Descarga iniciada. Al terminar, abre el APK desde la notificación para instalarlo.",
+  "다운로드를 시작하지 못했습니다. 다시 시도하세요.": "No se pudo iniciar la descarga. Inténtalo de nuevo.",
+  "설치는 Android 확인 화면에서 직접 승인합니다. 기존 앱을 삭제하지 말고 업데이트로 설치하세요.": "Autoriza la instalación en la pantalla de confirmación de Android. Instala como actualización sin eliminar la app existente."
 }

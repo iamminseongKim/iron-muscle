@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { build } from 'esbuild';
+const result = await build({ entryPoints: ['src/services/updates/releases.ts'], bundle: true, write: false, format: 'esm', platform: 'node' });
+const { isNewerVersion, parseRelease } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`);
+for (const [next, current, expected] of [['3.36.0','3.35.9',true],['3.100.0','3.99.0',true],['v4.0.0','3.99.9',true],['3.35.0','3.35.0',false],['3.34.1','3.35.0',false],['3.36.0-beta.1','3.35.0',false],['garbage','3.35.0',false]]) assert.equal(isNewerVersion(next,current),expected);
+const release = { tag_name: 'v3.36.0', body: 'Notes', assets: [{ state: 'uploaded', name: 'IronMuscle-v3.36.0.apk', browser_download_url: 'https://github.com/iamminseongKim/iron-muscle/releases/download/v3.36.0/IronMuscle-v3.36.0.apk' }] };
+assert.ok(parseRelease(release).apkUrl);
+assert.equal(parseRelease({ ...release, assets: [] }).apkUrl, undefined);
+assert.equal(parseRelease({ ...release, assets: [{ ...release.assets[0], browser_download_url: 'https://evil.example/app.apk' }] }).apkUrl, undefined);
+assert.equal(parseRelease({ ...release, assets: [{ ...release.assets[0], state: 'new' }] }).apkUrl, undefined);
+assert.throws(() => parseRelease({ ...release, prerelease: true }));
+assert.throws(() => parseRelease({ ...release, draft: true }));
+assert.throws(() => parseRelease({ ...release, tag_name: 'build-123' }));
+console.log('App update version comparison and release asset validation passed.');
