@@ -891,5 +891,8 @@
   "운동일": "Workout date",
   "항목": "Items",
   "이 기기의 데이터를 지우면 복구함도 삭제됩니다.": "Clearing this device’s app data also clears recently deleted items.",
-  "복구할 데이터가 올바르지 않습니다.": "The data to restore is invalid."
+  "복구할 데이터가 올바르지 않습니다.": "The data to restore is invalid.",
+  "브라우저에서 APK 다운로드": "Download APK in browser",
+  "브라우저에서 다운로드를 진행한 뒤 APK를 열어 설치하세요.": "Download in your browser, then open the APK to install.",
+  "브라우저를 열지 못했습니다. 다시 시도하세요.": "Could not open the browser. Please try again."
 }

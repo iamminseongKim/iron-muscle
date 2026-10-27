@@ -891,5 +891,8 @@
   "운동일": "Fecha del entrenamiento",
   "항목": "Elementos",
   "이 기기의 데이터를 지우면 복구함도 삭제됩니다.": "Al borrar los datos de la aplicación en este dispositivo también se borran los elementos eliminados recientemente.",
-  "복구할 데이터가 올바르지 않습니다.": "Los datos para restaurar no son válidos."
+  "복구할 데이터가 올바르지 않습니다.": "Los datos para restaurar no son válidos.",
+  "브라우저에서 APK 다운로드": "Descargar APK en el navegador",
+  "브라우저에서 다운로드를 진행한 뒤 APK를 열어 설치하세요.": "Descarga el APK en el navegador y ábrelo para instalarlo.",
+  "브라우저를 열지 못했습니다. 다시 시도하세요.": "No se pudo abrir el navegador. Inténtalo de nuevo."
 }

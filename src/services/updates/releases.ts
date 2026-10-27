@@ -3,7 +3,7 @@ import { CapacitorHttp, registerPlugin } from '@capacitor/core';
 export const RELEASE_API = 'https://api.github.com/repos/iamminseongKim/iron-muscle/releases/latest';
 const ASSET_PREFIX = 'https://github.com/iamminseongKim/iron-muscle/releases/download/';
 export interface AppRelease { version: string; notes: string; apkUrl?: string }
-export const AppUpdater = registerPlugin<{ download(options: { url: string }): Promise<void> }>('AppUpdater');
+export const AppUpdater = registerPlugin<{ openInBrowser(options: { url: string }): Promise<void> }>('AppUpdater');
 
 export function isNewerVersion(candidate: string, current: string): boolean {
   const parse = (v: string) => /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.exec(v)?.slice(1).map(Number);

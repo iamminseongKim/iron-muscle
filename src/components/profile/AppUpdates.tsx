@@ -34,10 +34,10 @@ export function AppUpdates() {
         {release.notes && <details><summary className="cursor-pointer font-semibold">{t('업데이트 내용')}</summary><p className="whitespace-pre-wrap break-words mt-3 max-h-64 overflow-y-auto">{release.notes}</p></details>}
         {newer && android && (release.apkUrl ? <button disabled={busy} className="rounded-xl px-4 py-3 bg-accent text-white font-bold disabled:opacity-40" onClick={async () => {
           setBusy(true); setMessage('');
-          try { await AppUpdater.download({ url: release.apkUrl! }); setMessage('다운로드를 시작했습니다. 완료되면 알림에서 APK를 열어 설치하세요.'); }
-          catch { setMessage('다운로드를 시작하지 못했습니다. 다시 시도하세요.'); }
+          try { await AppUpdater.openInBrowser({ url: release.apkUrl! }); setMessage('브라우저에서 다운로드를 진행한 뒤 APK를 열어 설치하세요.'); }
+          catch { setMessage('브라우저를 열지 못했습니다. 다시 시도하세요.'); }
           finally { setBusy(false); }
-        }}>{t('새 버전 APK 다운로드')}</button> : <p>{t('설치 파일이 아직 준비되지 않았습니다. 잠시 후 다시 확인하세요.')}</p>)}
+        }}>{t('브라우저에서 APK 다운로드')}</button> : <p>{t('설치 파일이 아직 준비되지 않았습니다. 잠시 후 다시 확인하세요.')}</p>)}
       </>}
       {message && <p>{t(message)}</p>}
     </div>
