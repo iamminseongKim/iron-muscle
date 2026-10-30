@@ -2,13 +2,17 @@ import { EQUIPMENT_OPTIONS } from '../../utils/equipment';
 import { t, displayMuscle } from '../../i18n';
 import React, { useState, useMemo } from 'react';
 import { X, Plus, Dumbbell, Sparkles, Check } from 'lucide-react';
-import { Exercise, Category, EquipmentType, MuscleTarget, MovementPlane } from '../../types/workout';
-import { saveCustomExercise } from '../../utils/storage';
+import { Exercise, Category, EquipmentType, MuscleTarget, MovementPlane, LoadType } from '../../types/workout';
+import { saveCustomExercise, loadCustomExercises } from '../../utils/storage';
+import type { ImportedExerciseProposal } from '../../utils/aiRoutineImport';
+import { EXERCISES_DATABASE } from '../../data/exercises';
+import { normalizeSearch, getExerciseSearchFields } from '../../utils/exerciseSearch';
 
 interface CreateCustomExerciseModalProps {
   isOpen: boolean;
   initialName?: string;
   initialCategory?: Category;
+  importReview?: { kind: 'ai-import'; proposal?: ImportedExerciseProposal; equipmentType?: EquipmentType; loadType?: LoadType };
   onClose: () => void;
   onCreated: (newExercise: Exercise) => void;
 }
@@ -72,48 +76,48 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
   isOpen,
   initialName = '',
   initialCategory = 'legs',
+  importReview,
   onClose,
   onCreated,
 }) => {
   const [name, setName] = useState(initialName);
-  const [nameEn, setNameEn] = useState('');
-  const [category, setCategory] = useState<Category>(initialCategory);
-  const [equipment, setEquipment] = useState<EquipmentType>('machine');
-  const [loadType, setLoadType] = useState<'plate-loaded' | 'pin-loaded' | 'barbell' | 'dumbbell' | 'bodyweight'>('plate-loaded');
-  const [selectedMuscle, setSelectedMuscle] = useState<MuscleTarget>(CATEGORY_PRIMARY_MUSCLES[initialCategory]?.[0] || 'quads');
-  const [selectedSecondaryMuscles, setSelectedSecondaryMuscles] = useState<MuscleTarget[]>([]);
-  const [showAllMuscles, setShowAllMuscles] = useState(false);
+  const [nameEn, setNameEn] = useState(importReview?.proposal?.nameEn || '');
+  const [category, setCategory] = useState<Category | undefined>(importReview ? importReview.proposal?.category : initialCategory);
+  const [equipment, setEquipment] = useState<EquipmentType>(importReview?.equipmentType || 'machine');
+  const [loadType, setLoadType] = useState<LoadType>(importReview?.loadType === 'pin-loaded' ? 'pin-loaded' : 'plate-loaded');
+  const [selectedMuscles, setSelectedMuscles] = useState<MuscleTarget[]>(importReview ? importReview.proposal?.primaryMuscles || [] : [CATEGORY_PRIMARY_MUSCLES[initialCategory][0]]);
+  const [message, setMessage] = useState('');
+  const [selectedSecondaryMuscles, setSelectedSecondaryMuscles] = useState<MuscleTarget[]>(importReview?.proposal?.secondaryMuscles || []);
+  const [showAllMuscles, setShowAllMuscles] = useState(Boolean(importReview));
 
   React.useEffect(() => {
-    if (isOpen) {
-      setName(initialName);
-      if (initialCategory) {
-        setCategory(initialCategory);
-        const defaultMuscle = CATEGORY_PRIMARY_MUSCLES[initialCategory]?.[0] || 'quads';
-        setSelectedMuscle(defaultMuscle);
-        setSelectedSecondaryMuscles([]);
-        setShowAllMuscles(false);
-      }
-    }
-  }, [isOpen, initialName, initialCategory]);
+    if (!isOpen) return;
+    setName(initialName);
+    setNameEn(importReview?.proposal?.nameEn || '');
+    setCategory(importReview ? importReview.proposal?.category : initialCategory);
+    setSelectedMuscles(importReview ? importReview.proposal?.primaryMuscles || [] : [CATEGORY_PRIMARY_MUSCLES[initialCategory][0]]);
+    setSelectedSecondaryMuscles(importReview?.proposal?.secondaryMuscles || []);
+    setEquipment(importReview?.equipmentType || 'machine');
+    setLoadType(importReview?.loadType === 'pin-loaded' ? 'pin-loaded' : 'plate-loaded');
+    setShowAllMuscles(Boolean(importReview));
+    setMessage('');
+  }, [isOpen, initialName, initialCategory, importReview]);
 
   const handleCategoryChange = (newCat: Category) => {
     setCategory(newCat);
-    const defaultMuscle = CATEGORY_PRIMARY_MUSCLES[newCat]?.[0] || 'quads';
-    setSelectedMuscle(defaultMuscle);
-    setSelectedSecondaryMuscles(prev => prev.filter(m => m !== defaultMuscle));
+    if (!importReview) {
+      const main = CATEGORY_PRIMARY_MUSCLES[newCat][0];
+      setSelectedMuscles([main]);
+      setSelectedSecondaryMuscles(prev => prev.filter(m => m !== main));
+    }
   };
-
-  const handleSelectPrimaryMuscle = (m: MuscleTarget) => {
-    setSelectedMuscle(m);
-    setSelectedSecondaryMuscles(prev => prev.filter(muscle => muscle !== m));
+  const handleSelectPrimaryMuscle = (muscle: MuscleTarget) => {
+    setSelectedMuscles(prev => importReview ? prev.includes(muscle) ? prev.filter(m => m !== muscle) : [...prev, muscle] : [muscle]);
+    setSelectedSecondaryMuscles(prev => prev.filter(m => m !== muscle));
   };
-
-  const handleToggleSecondaryMuscle = (m: MuscleTarget) => {
-    if (m === selectedMuscle) return;
-    setSelectedSecondaryMuscles(prev =>
-      prev.includes(m) ? prev.filter(item => item !== m) : [...prev, m]
-    );
+  const handleToggleSecondaryMuscle = (muscle: MuscleTarget) => {
+    if (selectedMuscles.includes(muscle)) return;
+    setSelectedSecondaryMuscles(prev => prev.includes(muscle) ? prev.filter(m => m !== muscle) : [...prev, muscle]);
   };
 
   const displayCandidateMuscles = useMemo(() => {
@@ -121,12 +125,12 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
       ? ALL_MUSCLE_TARGETS
       : Array.from(
           new Set([
-            ...(CATEGORY_SECONDARY_RECOMMENDATIONS[category] || []),
+            ...(category ? CATEGORY_SECONDARY_RECOMMENDATIONS[category] : []),
             ...selectedSecondaryMuscles,
           ])
         );
-    return baseList.filter(m => m !== selectedMuscle);
-  }, [showAllMuscles, category, selectedSecondaryMuscles, selectedMuscle]);
+    return baseList.filter(m => !selectedMuscles.includes(m));
+  }, [showAllMuscles, category, selectedSecondaryMuscles, selectedMuscles]);
 
   if (!isOpen) return null;
 
@@ -138,7 +142,16 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
       return;
     }
 
-    const customId = `custom_${Date.now()}_${cleanName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'ex'}`;
+    if (!category || !selectedMuscles.length) {
+      setMessage('운동 부위와 주동근을 선택하세요.');
+      return;
+    }
+    const proposedNames = [cleanName, nameEn.trim()].filter(Boolean).map(normalizeSearch);
+    if (importReview && [...loadCustomExercises(), ...EXERCISES_DATABASE].some(exercise => getExerciseSearchFields(exercise).some(field => field.trim() && proposedNames.includes(normalizeSearch(field))))) {
+      setMessage('같은 이름의 종목이 있습니다. 취소한 뒤 기존 종목을 선택하세요.');
+      return;
+    }
+    const customId = importReview ? `custom_${crypto.randomUUID()}` : `custom_${Date.now()}_${cleanName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'ex'}`;
     const defaultPlane: Record<Category, MovementPlane> = {
       legs: 'squat-pattern',
       chest: 'flat-press',
@@ -158,7 +171,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
       equipment,
       loadType: equipment === 'smith' ? 'plate-loaded' : equipment === 'machine' ? loadType : equipment,
       movementPlane: defaultPlane[category] || 'squat-pattern',
-      primaryMuscles: [selectedMuscle],
+      primaryMuscles: [...selectedMuscles],
       secondaryMuscles: selectedSecondaryMuscles,
       description: `${t('사용자 정의 커스텀 운동:')} ${cleanName}`,
       instructions: [t('바른 자세와 통제된 템포로 안전하게 운동을 수행하세요.')],
@@ -167,8 +180,9 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
       aliases: [cleanName.replace(/\s+/g, '')],
     };
 
-    if (!saveCustomExercise(newEx)) {
-      alert(t('종목을 저장하지 못했습니다. 저장 공간이나 브라우저 저장 권한을 확인한 뒤 다시 시도해 주세요.'));
+    if (!saveCustomExercise(newEx) || !loadCustomExercises().some(item => item.id === newEx.id)) {
+      if (importReview) setMessage('종목을 저장하지 못했습니다. 저장 공간이나 브라우저 저장 권한을 확인한 뒤 다시 시도해 주세요.');
+      else alert(t('종목을 저장하지 못했습니다. 저장 공간이나 브라우저 저장 권한을 확인한 뒤 다시 시도해 주세요.'));
       return;
     }
     onCreated(newEx);
@@ -176,7 +190,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
   };
 
   return (
-    <div className="keyboard-aware-modal fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div data-custom-exercise-modal role="dialog" aria-modal="true" aria-label={t("새 운동 직접 등록")} className="keyboard-aware-modal fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
       <div className="bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
         {/* 헤더 */}
         <div className="p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
@@ -191,6 +205,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
           </div>
           <button
             type="button"
+            data-custom-cancel
             onClick={onClose}
             aria-label={t("닫기")}
             className="p-1.5 rounded-full text-gray-400 hover:text-black dark:hover:text-white transition"
@@ -201,6 +216,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
 
         {/* 폼 */}
         <form onSubmit={handleSubmit} className="p-4 space-y-4 overflow-y-auto max-h-[75vh]">
+          {importReview && <p data-ai-muscle-review className="text-xs text-orange-600 dark:text-orange-400">{t('AI의 부위와 근육 정보는 제안입니다. 동작을 확인하고 수정한 뒤 등록하세요. 모르면 추측해 저장하지 마세요.')}</p>}
           {/* 운동 종목명 */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
@@ -208,6 +224,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
             </label>
             <input
               type="text"
+              aria-label={t("운동 종목명")}
               required
               autoFocus
               value={name}
@@ -226,6 +243,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
               type="text"
               value={nameEn}
               onChange={(e) => setNameEn(e.target.value)}
+              aria-label={t('영문 명칭 (선택)')}
               placeholder={t("예: V-Squat Machine, Viking Press")}
               className="w-full bg-gray-50 dark:bg-[#2C2C2E] border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2 text-xs text-[#1D1D1F] dark:text-white outline-none"
             />
@@ -241,6 +259,8 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                 <button
                   key={c.id}
                   type="button"
+                  data-custom-category={c.id}
+                  aria-pressed={category === c.id}
                   onClick={() => handleCategoryChange(c.id)}
                   className={`py-2 rounded-xl text-xs font-extrabold transition ${
                     category === c.id
@@ -264,6 +284,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                 <button
                   key={eq.id}
                   type="button"
+                  data-custom-equipment={eq.id}
                   onClick={() => setEquipment(eq.id)}
                   className={`py-2 rounded-xl text-xs font-bold transition ${
                     equipment === eq.id
@@ -286,6 +307,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
               <div className="flex gap-2">
                 <button
                   type="button"
+                  data-custom-load="plate-loaded"
                   onClick={() => setLoadType('plate-loaded')}
                   className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition ${
                     loadType === 'plate-loaded'
@@ -297,6 +319,7 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                 </button>
                 <button
                   type="button"
+                  data-custom-load="pin-loaded"
                   onClick={() => setLoadType('pin-loaded')}
                   className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition ${
                     loadType === 'pin-loaded'
@@ -316,13 +339,15 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
               {t("주 타겟 근육 (주동근)")} <span className="text-accent">*</span>
             </label>
             <div className="flex flex-wrap gap-1.5">
-              {(CATEGORY_PRIMARY_MUSCLES[category] || []).map((m) => (
+              {(importReview ? ALL_MUSCLE_TARGETS : category ? CATEGORY_PRIMARY_MUSCLES[category] : []).map((m) => (
                 <button
                   key={m}
                   type="button"
+                  data-custom-primary={m}
+                  aria-pressed={selectedMuscles.includes(m)}
                   onClick={() => handleSelectPrimaryMuscle(m)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
-                    selectedMuscle === m
+                    selectedMuscles.includes(m)
                       ? 'bg-[#5856D6] text-white shadow-xs font-bold'
                       : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#3A3A3C]'
                   }`}
@@ -362,6 +387,8 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
                   <button
                     key={m}
                     type="button"
+                    data-custom-secondary={m}
+                    aria-pressed={isSelected}
                     onClick={() => handleToggleSecondaryMuscle(m)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
                       isSelected
@@ -377,11 +404,14 @@ export const CreateCustomExerciseModal: React.FC<CreateCustomExerciseModalProps>
             </div>
           </div>
 
+          {message && <p role="status" className="text-xs text-orange-600 dark:text-orange-400">{t(message)}</p>}
           {/* 등록 버튼 */}
           <div className="pt-2">
             <button
+              data-custom-submit
+              disabled={Boolean(importReview) && (!category || !selectedMuscles.length)}
               type="submit"
-              className="w-full py-3.5 bg-accent hover:opacity-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-accent-900/20 active:scale-98 transition flex items-center justify-center gap-2"
+              className="disabled:opacity-40 w-full py-3.5 bg-accent hover:opacity-95 text-white font-black text-sm rounded-2xl shadow-lg shadow-accent-900/20 active:scale-98 transition flex items-center justify-center gap-2"
             >
               <Plus size={18} strokeWidth={3} />
               {t("라이브러리에 등록하고 선택하기")}

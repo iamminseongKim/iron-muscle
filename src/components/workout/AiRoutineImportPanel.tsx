@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { displayExercise, t } from '../../i18n';
+import React, { useState, useEffect } from 'react';
+import { displayExercise, displayMuscle, t } from '../../i18n';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import type { EquipmentType, ExecutionMode, LoadType, WorkoutSession } from '../../types/workout';
 import { loadCustomExercises } from '../../utils/storage';
 import { matchesExerciseSearch } from '../../utils/exerciseSearch';
 import { copyText } from '../../utils/clipboard';
 import { AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, buildAiRoutinePrompt, parseImportedWorkout, sessionFromImportedWorkout } from '../../utils/aiRoutineImport';
+import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
 import type { ImportedWorkout } from '../../utils/aiRoutineImport';
 
 const equipmentLabels: Record<EquipmentType, string> = { smith: '스미스 머신', barbell: '바벨', dumbbell: '덤벨', machine: '머신', cable: '케이블', bodyweight: '맨몸', other: '기타' };
@@ -17,13 +18,20 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
   const [input, setInput] = useState('');
   const [state, setState] = useState<ImportState>({ kind: 'input' });
   const [message, setMessage] = useState('');
+  const [registration, setRegistration] = useState<{ index: number; draft: ImportedWorkout; name: string; review: NonNullable<React.ComponentProps<typeof CreateCustomExerciseModal>['importReview']> } | null>(null);
+  const [custom, setCustom] = useState(loadCustomExercises);
+  useEffect(() => {
+    const refresh = () => setCustom(loadCustomExercises());
+    window.addEventListener('iron_custom_exercises_change', refresh);
+    return () => window.removeEventListener('iron_custom_exercises_change', refresh);
+  }, []);
   const [queries, setQueries] = useState<Record<number, string>>({});
-  const custom = loadCustomExercises();
   const catalog = [...custom, ...EXERCISES_DATABASE.filter(item => !custom.some(entry => entry.id === item.id))];
   const field = 'w-full min-w-0 rounded-xl border border-black/15 dark:border-white/20 bg-white dark:bg-[#302B37] p-3 text-sm';
   const button = 'min-h-[44px] rounded-xl bg-accent/10 px-3 py-2 text-sm font-bold text-accent dark:text-accent-light';
-  const updateInput = (value: string) => { setInput(value); setState({ kind: 'input' }); setMessage(''); setQueries({}); };
+  const updateInput = (value: string) => { setInput(value); setState({ kind: 'input' }); setMessage(''); setQueries({}); setRegistration(null); };
   const preview = () => {
+    setRegistration(null);
     try { setState({ kind: 'preview', draft: parseImportedWorkout(input, catalog) }); setMessage(''); }
     catch (error) { setState({ kind: 'input' }); setMessage(error instanceof Error ? error.message : 'AI 루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.'); }
   };
@@ -37,6 +45,7 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
     <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t('AI가 만든 JSON 또는 Markdown 표를 붙여넣고 종목과 세트를 확인하세요.')}</p>
     <details className="text-xs space-y-2">
       <summary className="cursor-pointer font-semibold">{t('지원 형식과 AI 요청문')}</summary>
+      <p>{t('종목에 category, primaryMuscles, secondaryMuscles, nameEn을 추가할 수 있습니다. Markdown 근육 열은 ID를 쉼표로 구분하세요. 미등록 종목은 부위와 근육을 확인한 뒤 새 운동으로 등록할 수 있습니다.')}</p>
       <p>{t('JSON은 title과 exercises를 사용합니다. 종목마다 name, sets, reps, weight, restSeconds, weightUnit을 지정하세요. sets에는 세트별 객체 배열도 사용할 수 있습니다.')}</p>
       <p>{t('종목은 최대 50개, 종목당 세트는 최대 50개입니다. 반복수는 1~1000, 무게는 0~2000, 휴식은 0~3600초입니다. 생략하면 3세트, 10회, 0kg, 90초를 사용합니다.')}</p>
       <p>{t('선택 필드: 루틴 notes, 종목 equipmentType·executionMode·loadType·notes, 세트 rpe·tempo·comment·side. RPE는 6~10에서 0.5 단위, tempo는 eccentric·pause·concentric 각각 0~30초입니다.')}</p>
@@ -67,7 +76,12 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
           const options = catalog.filter(item => item.id === row.exerciseId || matchesExerciseSearch(item, query));
           return <li key={index} className="space-y-2 rounded-xl bg-black/5 dark:bg-white/5 p-3">
             <p className="break-words text-sm font-semibold">{index + 1}. {row.sourceName}</p>
-            {!row.exerciseId && <p className="text-xs text-orange-600 dark:text-orange-400">{t('일치하는 종목을 확인할 수 없습니다. 직접 선택하세요.')}</p>}
+            {!row.exerciseId && <>
+              <p className="text-xs text-orange-600 dark:text-orange-400">{t('일치하는 종목을 확인할 수 없습니다. 직접 선택하세요.')}</p>
+              {row.proposal && <div data-ai-muscle-proposal className="text-xs space-y-1"><p>{t('AI 근육 제안')}</p><p>{t('주동근')} · {row.proposal.primaryMuscles?.map(displayMuscle).join(', ') || t('미지정')}</p><p>{t('보조근')} · {row.proposal.secondaryMuscles?.map(displayMuscle).join(', ') || t('미지정')}</p></div>}
+              <button data-ai-register-exercise type="button" className={button} onClick={() => setRegistration({ index, draft: state.draft, name: row.sourceName, review: { kind: 'ai-import', proposal: row.proposal, equipmentType: row.equipmentType, loadType: row.loadType } })}>{t('새 운동으로 등록')}</button>
+            </>}
+            {selected && <div data-confirmed-muscles className="text-xs space-y-1"><p>{t('선택한 종목의 근육')}</p><p>{t('주동근')} · {selected.primaryMuscles.map(displayMuscle).join(', ') || t('미지정')}</p><p>{t('보조근')} · {selected.secondaryMuscles.map(displayMuscle).join(', ') || t('미지정')}</p></div>}
             <label className="block text-xs space-y-1"><span>{t('종목 검색')}</span><input className={field} value={query} onChange={event => setQueries(previous => ({ ...previous, [index]: event.target.value }))} /></label>
             <label className="block text-xs space-y-1"><span>{t('적용할 종목')}</span><select data-ai-exercise-select className={field} value={row.exerciseId || ''} onChange={event => {
               const exerciseId = event.target.value || null;
@@ -89,6 +103,13 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
       }}>{t('이 루틴으로 운동 시작')}</button>
     </section>}
     </details>
+    {registration && <CreateCustomExerciseModal isOpen initialName={registration.name} importReview={registration.review}
+      onClose={() => setRegistration(null)} onCreated={created => {
+        setCustom(loadCustomExercises());
+        setState(current => current.kind === 'preview' && current.draft === registration.draft ? {
+          kind: 'preview', draft: { ...current.draft, exercises: current.draft.exercises.map((row, index) => index === registration.index ? { ...row, exerciseId: created.id, equipmentType: created.equipment, loadType: created.loadType } : row) },
+        } : current);
+      }} />}
     {message && <p role="status" className="text-sm text-orange-600 dark:text-orange-400">{t(message)}</p>}
   </section>;
 }

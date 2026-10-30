@@ -1,14 +1,22 @@
-import type { Exercise, WeightUnit, WorkoutSession, WorkoutSet, EquipmentType, ExecutionMode, LoadType } from '../types/workout';
+import type { Exercise, WeightUnit, WorkoutSession, WorkoutSet, EquipmentType, ExecutionMode, LoadType, Category, MuscleTarget } from '../types/workout';
 import { getExerciseSearchFields, normalizeSearch } from './exerciseSearch';
 import { getTodayString } from './calendar';
-import { t } from '../i18n';
+import { t, displayMuscle } from '../i18n';
+import { MUSCLE_INFO_MAP } from '../data/muscleMap';
 
 export interface ImportedSet extends Pick<WorkoutSet, 'rpe' | 'tempo' | 'comment' | 'side'> {
   reps: number;
   weight: number;
   restSeconds: number;
 }
+export interface ImportedExerciseProposal {
+  category?: Category;
+  primaryMuscles?: MuscleTarget[];
+  secondaryMuscles?: MuscleTarget[];
+  nameEn?: string;
+}
 export interface ImportedExercise {
+  proposal?: ImportedExerciseProposal;
   sourceName: string;
   exerciseId: string | null;
   weightUnit: WeightUnit;
@@ -73,6 +81,24 @@ function set(value: Record<string, unknown>, defaults: Record<string, unknown>, 
     side: choice(inherited('side'), ['left', 'right', 'both'], mode === 'unilateral' ? 'left' : 'both'),
   };
 }
+function muscles(value: unknown): MuscleTarget[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value) || value.length > 17) throw invalid();
+  return [...new Set(value.map(id => {
+    const found = Object.values(MUSCLE_INFO_MAP).find(muscle => muscle.id === id);
+    if (!found) throw invalid();
+    return found.id;
+  }))];
+}
+function proposal(row: Record<string, unknown>): ImportedExerciseProposal | undefined {
+  const category = choice(row.category, ['chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'fullbody']);
+  const primaryMuscles = muscles(row.primaryMuscles);
+  const secondaryMuscles = muscles(row.secondaryMuscles);
+  const nameEn = row.nameEn === undefined ? undefined : name(row.nameEn);
+  if (primaryMuscles?.some(id => secondaryMuscles?.includes(id))) throw invalid();
+  if (category === undefined && primaryMuscles === undefined && secondaryMuscles === undefined && nameEn === undefined) return undefined;
+  return { category, primaryMuscles, secondaryMuscles, nameEn };
+}
 function exercise(value: unknown, catalog: Exercise[]): ImportedExercise {
   const row = record(value);
   const sourceName = name(row.name === undefined ? row.exerciseId : row.name);
@@ -100,10 +126,11 @@ function exercise(value: unknown, catalog: Exercise[]): ImportedExercise {
     if (count < 1) throw invalid();
     sets = Array.from({ length: count }, () => set(row, {}, executionMode));
   }
-  return { sourceName, exerciseId, weightUnit: unit(row.weightUnit), equipmentType, executionMode, loadType, notes: note(row.notes), sets };
+  return { sourceName, exerciseId, proposal: proposal(row), weightUnit: unit(row.weightUnit), equipmentType, executionMode, loadType, notes: note(row.notes), sets };
 }
 
 const headers: Record<string, string> = {
+  category: 'category', '부위': 'category', '운동부위': 'category', primarymuscles: 'primaryMuscles', '주동근': 'primaryMuscles', secondarymuscles: 'secondaryMuscles', '보조근': 'secondaryMuscles', nameen: 'nameEn', '영문명': 'nameEn',
   name: 'name', exercise: 'name', '종목': 'name', '운동': 'name', '운동명': 'name', '종목명': 'name',
   sets: 'sets', '세트': 'sets', '세트수': 'sets', reps: 'reps', '반복': 'reps', '반복수': 'reps', '횟수': 'reps',
   weight: 'weight', '무게': 'weight', '중량': 'weight', rest: 'restSeconds', restseconds: 'restSeconds', '휴식': 'restSeconds', '휴식초': 'restSeconds',
@@ -134,7 +161,8 @@ function markdown(raw: string): Record<string, unknown> {
     const row: Record<string, unknown> = {};
     columns.forEach((column, index) => {
       const value = values[index];
-      if (['name', 'notes', 'comment', 'executionMode', 'loadType', 'equipmentType', 'side'].includes(column)) row[column] = value;
+      if (['primaryMuscles', 'secondaryMuscles'].includes(column)) row[column] = value ? value.split(',').map(id => id.trim()) : [];
+      else if (['name', 'notes', 'comment', 'executionMode', 'loadType', 'equipmentType', 'side', 'category', 'nameEn'].includes(column)) row[column] = value;
       else if (column === 'tempo') {
         const parts = value.match(/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/);
         if (!parts) throw invalid();
@@ -201,7 +229,7 @@ export function sessionFromImportedWorkout(draft: ImportedWorkout, catalog: Exer
 }
 
 const AI_ROUTINE_SAMPLE = { title: 'Upper body', notes: 'Stay within a comfortable range', exercises: [
-  { name: 'Barbell Bench Press', exerciseId: 'bench-press', sets: 3, reps: 10, weight: 0, restSeconds: 90, weightUnit: 'kg', executionMode: 'bilateral', rpe: 8, tempo: { eccentric: 3, pause: 1, concentric: 1 }, notes: 'Adjust load to your ability', comment: 'Controlled movement' },
+  { name: 'Barbell Bench Press', category: 'chest', primaryMuscles: ['chest'], secondaryMuscles: ['triceps'], exerciseId: 'bench-press', sets: 3, reps: 10, weight: 0, restSeconds: 90, weightUnit: 'kg', executionMode: 'bilateral', rpe: 8, tempo: { eccentric: 3, pause: 1, concentric: 1 }, notes: 'Adjust load to your ability', comment: 'Controlled movement' },
   { name: 'Lat Pulldown', exerciseId: 'lat-pulldown', equipmentType: 'machine', loadType: 'pin-loaded', executionMode: 'bilateral', weightUnit: 'kg', sets: [
     { reps: 12, weight: 0, restSeconds: 120, rpe: 7.5, tempo: { eccentric: 2, pause: 1, concentric: 1 }, side: 'both', comment: 'First set' },
     { reps: 12, weight: 0, restSeconds: 120, side: 'both', comment: 'Second set' },
@@ -222,6 +250,9 @@ export function buildAiRoutinePrompt(): string {
     t('executionMode는 bilateral·unilateral·alternating, loadType은 pin-loaded·plate-loaded·barbell·dumbbell·cable·bodyweight·other, equipmentType은 smith·barbell·dumbbell·machine·cable·bodyweight·other입니다. side는 left·right·both이며 단위는 종목별로 지정합니다.'),
     t('종목은 최대 50개, 종목당 세트는 최대 50개입니다. 반복수는 1~1000, 무게는 0~2000, 휴식은 0~3600초입니다. 생략하면 3세트, 10회, 0kg, 90초를 사용합니다.'),
     t('executionMode는 동작의 한팔·한발 여부가 아니라 기록 방식입니다. 한팔·한발 종목도 기본은 bilateral과 side=both입니다. 사용자가 좌우를 따로 기록하겠다고 명시적으로 요청한 경우에만 unilateral과 left·right를 사용하세요.'),
+    t('새 종목의 category, primaryMuscles, secondaryMuscles를 제안해 주세요. 근육은 아래 ID를 사용하고 불확실하면 생략하세요. 제안은 앱에서 사용자가 확인한 뒤 신규 운동에만 저장하며 기존 종목의 근육 정보는 바꾸지 않습니다.'),
+    [['chest', '가슴'], ['back', '등'], ['legs', '하체'], ['shoulders', '어깨'], ['arms', '팔'], ['core', '복근'], ['fullbody', '전신']].map(([id, label]) => `${id}=${t(label)}`).join(', '),
+    Object.values(MUSCLE_INFO_MAP).map(muscle => `${muscle.id}=${displayMuscle(muscle.id)}`).join(', '),
     t('restSeconds는 권장 휴식 시간입니다. 세트 완료 후 타이머의 기본값으로 사용하며 사용자가 직접 조절하거나 종료할 수 있습니다.'),
     JSON.stringify(example, null, 2),
   ].join('\n\n');
