@@ -1,4 +1,4 @@
-import type { WeightUnit, WorkoutExercise, WorkoutSession, WorkoutSet } from '../types/workout';
+import type { EquipmentType, LoadType, WeightUnit, WorkoutExercise, WorkoutSession, WorkoutSet } from '../types/workout';
 import { calculateSessionReps, calculateSessionVolume, isAssistedExercise, KG_TO_LBS } from './calculations';
 import { resolveRecordedExercise } from './exerciseResolver';
 import { getTodayString } from './calendar';
@@ -83,6 +83,70 @@ export function moveWorkoutExercise(exercises: WorkoutExercise[], id: string, di
   if (index < 0 || destination < 0 || destination >= blocks.length) return [...exercises];
   [blocks[index], blocks[destination]] = [blocks[destination], blocks[index]];
   return blocks.flat();
+}
+
+export function replaceWorkoutExercise(
+  exercises: WorkoutExercise[],
+  targetId: string,
+  replacement: {
+    exerciseId: string;
+    exerciseName?: string;
+    equipmentType: EquipmentType;
+    loadType?: LoadType;
+    machineBrand?: string;
+    machineConfigId?: string;
+    machineSetting?: string;
+    weightUnit?: WeightUnit;
+    initialSets?: WorkoutSet[];
+  }
+): WorkoutExercise[] {
+  const index = exercises.findIndex(ex => ex.id === targetId);
+  if (index === -1) return [...exercises];
+  const target = exercises[index];
+
+  const sets: WorkoutSet[] = replacement.initialSets && replacement.initialSets.length > 0
+    ? replacement.initialSets.map((s, i) => ({
+        id: crypto.randomUUID(),
+        setNumber: i + 1,
+        weight: s.weight,
+        reps: s.reps,
+        completed: false,
+        previousWeight: s.previousWeight ?? s.weight,
+        previousReps: s.previousReps ?? s.reps,
+        side: s.side,
+        tags: s.tags,
+      }))
+    : target.sets.map((s, i) => ({
+        id: crypto.randomUUID(),
+        setNumber: i + 1,
+        weight: s.weight,
+        reps: s.reps,
+        completed: false,
+        previousWeight: s.previousWeight ?? s.weight,
+        previousReps: s.previousReps ?? s.reps,
+        side: s.side,
+        tags: s.tags,
+      }));
+
+  const updated: WorkoutExercise = {
+    ...target,
+    exerciseId: replacement.exerciseId,
+    exerciseName: replacement.exerciseName || target.exerciseName,
+    equipmentType: replacement.equipmentType,
+    loadType: replacement.loadType,
+    machineBrand: replacement.machineBrand,
+    machineConfigId: replacement.machineConfigId,
+    machineSetting: replacement.machineSetting,
+    weightUnit: replacement.weightUnit || target.weightUnit,
+    sets: sets.length > 0 ? sets : [
+      { id: crypto.randomUUID(), setNumber: 1, weight: 20, reps: 10, completed: false },
+      { id: crypto.randomUUID(), setNumber: 2, weight: 20, reps: 10, completed: false },
+    ],
+  };
+
+  const next = [...exercises];
+  next[index] = updated;
+  return next;
 }
 
 // Compare recorded machine and execution conditions, regardless of exercise order.

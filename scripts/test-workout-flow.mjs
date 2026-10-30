@@ -3,7 +3,7 @@ import { build } from 'esbuild';
 import { webcrypto } from 'node:crypto';
 globalThis.crypto ??= webcrypto;
 const bundle = await build({ entryPoints: ['src/utils/workoutFlow.ts'], bundle: true, write: false, platform: 'node', format: 'esm' });
-const { repeatWorkout, getExerciseMoveAvailability, moveWorkoutExercise, workoutSummary } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
+const { repeatWorkout, getExerciseMoveAvailability, moveWorkoutExercise, replaceWorkoutExercise, workoutSummary } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
 const set = (id, extra = {}) => ({ id, setNumber: 1, weight: 50, reps: 10, completed: true, rpe: 9, comment: 'private', restSeconds: 120, tags: ['웜업', '실패지점'], plannedRestSeconds: 90, tempo: { eccentric: 2, pause: 0, concentric: 1 }, ...extra });
 const exercise = (id, extra = {}) => ({ id, exerciseId: 'custom-press', exerciseName: 'Personal exercise', equipmentType: 'machine', weightUnit: 'kg', machineBrand: 'User brand', machineConfigId: 'gym-1:machine-1', machineSetting: 'Seat 3', executionMode: 'unilateral', notes: 'private', sets: [set(`set-${id}`)], ...extra });
 const source = { id: 'source', title: 'Chest day', date: '2026-10-20', startTime: '2026-10-20T10:00:00Z', endTime: '2026-10-20T11:00:00Z', durationSeconds: 3600, completed: true, weightUnit: 'lbs', bodyWeight: 80, notes: 'private', overallRpe: 9, conditionEmoji: '🔥', isDeload: true, targetCategories: ['chest'], targetPartIds: ['chest'], exercises: [exercise('a', { groupId: 'old-group', groupType: 'superset', groupLabel: 'A-1' }), exercise('b', { groupId: 'old-group', groupType: 'superset', groupLabel: 'A-2', weightUnit: undefined, sets: [set('assisted', { weight: -30 }), set('skipped', { completed: false })] }), exercise('untouched', { sets: [set('uncompleted', { completed: false })] })] };
@@ -69,6 +69,22 @@ assert.deepEqual(moveWorkoutExercise(list, 'missing', 'down'), list);
 assert.deepEqual(moveWorkoutExercise([a, b, d, c], 'b', 'up').map(ex => ex.id), ['b', 'c', 'a', 'd']);
 assert.equal(JSON.stringify(list), listBefore);
 assert.strictEqual(moveWorkoutExercise(list, 'a', 'down')[2], a);
+
+const replaced = replaceWorkoutExercise(list, 'b', {
+  exerciseId: 'dumbbell-press',
+  exerciseName: '덤벨 프레스',
+  equipmentType: 'dumbbell',
+});
+assert.equal(replaced.length, list.length);
+assert.equal(replaced[1].id, 'b');
+assert.equal(replaced[1].exerciseId, 'dumbbell-press');
+assert.equal(replaced[1].exerciseName, '덤벨 프레스');
+assert.equal(replaced[1].equipmentType, 'dumbbell');
+assert.equal(replaced[1].sets.length, list[1].sets.length);
+assert.equal(replaced[1].sets[0].completed, false);
+assert.equal(replaced[0].id, 'a');
+assert.equal(replaced[2].id, 'c');
+assert.deepEqual(replaceWorkoutExercise(list, 'nonexistent', { exerciseId: 'foo', equipmentType: 'barbell' }), list);
 
 const makeSession = (id, date, extra = {}) => ({ ...source, id, date, startTime: `${date}T10:00:00Z`, exercises: [exercise('summary')], ...extra });
 const old = makeSession('old', '2026-10-18');

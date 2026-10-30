@@ -8,7 +8,7 @@ import { ConditionIcon } from '../common/ConditionIcon';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Play, Pause, Plus, CheckCircle2, Clock, Dumbbell, Sparkles, X, Flame,
-  Target, ArrowRight, Calendar
+  Target, ArrowRight, Calendar, ArrowUpDown
 } from 'lucide-react';
 import { 
   WorkoutSession, WorkoutExercise, Exercise, EquipmentType, ExerciseGroupType, Category,
@@ -24,7 +24,8 @@ import { HoldToCompleteButton } from './HoldToCompleteButton';
 import { RepeatWorkoutPanel } from './RepeatWorkoutPanel';
 import { AiRoutineImportPanel } from './AiRoutineImportPanel';
 import { WorkoutCompleteSummary } from './WorkoutCompleteSummary';
-import { repeatWorkout, moveWorkoutExercise, getExerciseMoveAvailability } from '../../utils/workoutFlow';
+import { ReorderExercisesModal } from './ReorderExercisesModal';
+import { repeatWorkout, moveWorkoutExercise, getExerciseMoveAvailability, replaceWorkoutExercise } from '../../utils/workoutFlow';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, convertWeight } from '../../utils/calculations';
 import { saveActiveSession, loadActiveSession, completeWorkoutSession, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { findPreviousMachineExercise, convertExerciseSets } from '../../utils/gymWorkout';
@@ -77,6 +78,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const [isNotesModalOpen, setIsNotesModalOpen] = useState<boolean>(false);
   const [isRpeGuideOpen, setIsRpeGuideOpen] = useState<boolean>(false);
   const [groupModalTarget, setGroupModalTarget] = useState<WorkoutExercise | null>(null);
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState<boolean>(false);
+  const [replacingExerciseItem, setReplacingExerciseItem] = useState<WorkoutExercise | null>(null);
 
   // 대형 원형 휴식 타이머 상태
   const [restTimerState, setRestTimerState] = useState<{
@@ -283,6 +286,33 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           { id: 'set-' + Date.now() + '-1', setNumber: 1, weight: 20, reps: 10, completed: false },
           { id: 'set-' + Date.now() + '-2', setNumber: 2, weight: 20, reps: 10, completed: false },
         ];
+
+    if (replacingExerciseItem) {
+      const current = loadActiveSession();
+      if (!current) return;
+      const exercises = replaceWorkoutExercise(current.exercises, replacingExerciseItem.id, {
+        exerciseId: exercise.id,
+        exerciseName: exercise.name,
+        equipmentType,
+        loadType: loadType || exercise.loadType,
+        machineBrand: brand,
+        machineConfigId,
+        machineSetting: setting,
+        weightUnit: targetUnit,
+        initialSets,
+      });
+      const updated = {
+        ...current,
+        durationSeconds: getLatestDuration(),
+        exercises,
+      };
+      setSession(updated);
+      saveActiveSession(updated);
+      setReplacingExerciseItem(null);
+      setIsAddModalOpen(false);
+      setFlowMessage('운동 종목이 교체되었습니다.');
+      return;
+    }
 
     const newExerciseItem: WorkoutExercise = {
       id: 'ex-item-' + Date.now(),
@@ -792,9 +822,17 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         <div className="space-y-4 md:col-span-7 lg:col-span-7 mt-4 md:mt-0">
           {/* 운동 종목 리스트 */}
       {session.exercises.length > 0 && (
-        <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center justify-between text-xs flex-wrap gap-2">
           <span className="font-bold text-gray-500">{t("운동")} {session.exercises.length}{t("종목")}</span>
-          <div className="flex gap-3 text-gray-500 dark:text-gray-400 font-semibold">
+          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-semibold flex-wrap">
+            <button
+              type="button"
+              onClick={() => setIsReorderModalOpen(true)}
+              className="min-h-[32px] px-2.5 py-1 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent dark:text-accent-light text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+            >
+              <ArrowUpDown size={13} />
+              <span>{t("종목 순서 변경")}</span>
+            </button>
             <button type="button" aria-pressed={isReordering} className="min-h-[32px]" onClick={() => setIsReordering(previous => !previous)}>{t(isReordering ? '순서 변경 완료' : '순서 변경')}</button>
             <button type="button" className="min-h-[32px]" onClick={() => setCollapsedExerciseIds(new Set(session.exercises.map(item => item.id)))}>{t("모두 접기")}</button>
             <button type="button" className="min-h-[32px]" onClick={() => setCollapsedExerciseIds(new Set())}>{t("모두 펼치기")}</button>
@@ -856,6 +894,13 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               onOpenRpeGuide={() => setIsRpeGuideOpen(true)}
               onOpenGroupModal={() => setGroupModalTarget(item)}
               onUnlinkGroup={() => handleUnlinkExercise(item.id)}
+              onMove={(direction) => handleMoveExercise(item.id, direction)}
+              canMoveUp={getExerciseMoveAvailability(session.exercises, item.id).up}
+              canMoveDown={getExerciseMoveAvailability(session.exercises, item.id).down}
+              onReplace={() => {
+                setReplacingExerciseItem(item);
+                setIsAddModalOpen(true);
+              }}
               isDark={isDark}
             />
             </div>
@@ -904,13 +949,26 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         onFinishAndSave={handleSaveRestTimeToSet}
       />
 
-      {/* 운동 추가 모달 (오늘 선택한 부위 자동 우선 추천 연동) */}
+      {/* 운동 추가 및 종목 교체 모달 */}
       <AddExerciseModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setReplacingExerciseItem(null);
+        }}
         onSelect={handleAddExercise}
-        targetCategories={session.targetCategories}
-        targetPartIds={session.targetPartIds}
+        initialCategory={replacingExerciseItem ? resolveRecordedExercise(replacingExerciseItem).category : undefined}
+        targetCategories={replacingExerciseItem ? [resolveRecordedExercise(replacingExerciseItem).category] : session.targetCategories}
+        targetPartIds={replacingExerciseItem ? resolveRecordedExercise(replacingExerciseItem).primaryMuscles : session.targetPartIds}
+        replacementTitle={replacingExerciseItem ? displayExercise(resolveRecordedExercise(replacingExerciseItem)) : undefined}
+      />
+
+      {/* 종목 순서 변경 모달 */}
+      <ReorderExercisesModal
+        isOpen={isReorderModalOpen}
+        onClose={() => setIsReorderModalOpen(false)}
+        exercises={session.exercises}
+        onMove={handleMoveExercise}
       />
 
       {/* 세션 메모 및 부위 재설정 모달 */}

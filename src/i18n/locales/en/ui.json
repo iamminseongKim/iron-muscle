@@ -955,5 +955,13 @@
   "같은 이름의 종목이 있습니다. 취소한 뒤 기존 종목을 선택하세요.": "An exercise with this name already exists. Cancel and select the existing exercise.",
   "AI의 부위와 근육 정보는 제안입니다. 동작을 확인하고 수정한 뒤 등록하세요. 모르면 추측해 저장하지 마세요.": "AI body-area and muscle information is a suggestion. Check the movement and edit it before saving. Do not guess if unsure.",
   "종목에 category, primaryMuscles, secondaryMuscles, nameEn을 추가할 수 있습니다. Markdown 근육 열은 ID를 쉼표로 구분하세요. 미등록 종목은 부위와 근육을 확인한 뒤 새 운동으로 등록할 수 있습니다.": "Exercises may include category, primaryMuscles, secondaryMuscles, and nameEn. Separate muscle IDs with commas in Markdown columns. Review the body area and muscles before registering an unknown exercise.",
-  "새 종목의 category, primaryMuscles, secondaryMuscles를 제안해 주세요. 근육은 아래 ID를 사용하고 불확실하면 생략하세요. 제안은 앱에서 사용자가 확인한 뒤 신규 운동에만 저장하며 기존 종목의 근육 정보는 바꾸지 않습니다.": "Suggest category, primaryMuscles, and secondaryMuscles for new exercises. Use the muscle IDs below and omit uncertain information. Users review suggestions in the app before saving new exercises. Existing exercise muscle definitions stay unchanged."
+  "새 종목의 category, primaryMuscles, secondaryMuscles를 제안해 주세요. 근육은 아래 ID를 사용하고 불확실하면 생략하세요. 제안은 앱에서 사용자가 확인한 뒤 신규 운동에만 저장하며 기존 종목의 근육 정보는 바꾸지 않습니다.": "Suggest category, primaryMuscles, and secondaryMuscles for new exercises. Use the muscle IDs below and omit uncertain information. Users review suggestions in the app before saving new exercises. Existing exercise muscle definitions stay unchanged.",
+  "종목 순서 변경": "Reorder Exercises",
+  "오늘의 운동 순서 변경": "Reorder Today's Workout",
+  "기구가 사용 중일 때 순서를 손쉽게 바꿀 수 있습니다.": "Easily adjust exercise order when equipment is in use.",
+  "기구가 사용 중일 때 대체할 운동을 선택하세요.": "Select an alternative exercise while equipment is occupied.",
+  "다른 종목으로 교체 (기구 사용 중/대체)": "Replace with alternative exercise (equipment in use)",
+  "운동 종목 교체": "Replace Exercise",
+  "종목 교체": "Replace",
+  "운동 종목이 교체되었습니다.": "Exercise has been replaced."
 }

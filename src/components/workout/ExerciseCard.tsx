@@ -4,7 +4,7 @@ import { t } from '../../i18n';
 import { lazy, Suspense } from 'react';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  ChevronDown, ChevronRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
+  ChevronDown, ChevronUp, ChevronRight, ArrowLeftRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
   Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame, Check, Tag, Ruler, Lightbulb, Camera, ListOrdered
 } from 'lucide-react';
 import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
@@ -30,6 +30,10 @@ interface ExerciseCardProps {
   isDark?: boolean;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
+  onMove?: (direction: 'up' | 'down') => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+  onReplace?: () => void;
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
@@ -45,6 +49,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   isDark = false,
   collapsed = false,
   onToggleCollapsed,
+  onMove,
+  canMoveUp = false,
+  canMoveDown = false,
+  onReplace,
 }) => {
   // 이 종목 고유의 단위 (없으면 기본값 'kg')
   const currentUnit: WeightUnit = exerciseItem.weightUnit || fallbackUnit;
@@ -281,8 +289,46 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           )}
         </div>
 
-        {/* 액션 버튼: 묶기, 3D 해부도, 삭제 */}
+        {/* 액션 버튼: 순서 이동, 대체 교체, 묶기, 3D 해부도, 삭제 */}
         <div className="flex items-center gap-0.5 shrink-0">
+          {onMove && (
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => onMove('up')}
+                disabled={!canMoveUp}
+                title={t("위로 이동")}
+                aria-label={`${t("위로 이동")} · ${exerciseName}`}
+                className="min-w-[32px] min-h-[32px] flex items-center justify-center rounded-xl text-gray-400 hover:text-accent hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-20 transition"
+              >
+                <ChevronUp size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => onMove('down')}
+                disabled={!canMoveDown}
+                title={t("아래로 이동")}
+                aria-label={`${t("아래로 이동")} · ${exerciseName}`}
+                className="min-w-[32px] min-h-[32px] flex items-center justify-center rounded-xl text-gray-400 hover:text-accent hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-20 transition"
+              >
+                <ChevronDown size={16} />
+              </button>
+            </div>
+          )}
+
+          {onReplace && (
+            <button
+              type="button"
+              onClick={onReplace}
+              className="min-w-[32px] min-h-[32px] justify-center px-1.5 rounded-xl text-xs font-bold transition flex items-center text-gray-500 dark:text-gray-400 hover:text-accent hover:bg-black/5 dark:hover:bg-white/5"
+              title={t("다른 종목으로 교체 (기구 사용 중/대체)")}
+              aria-label={`${exerciseName} ${t("종목 교체")}`}
+            >
+              <ArrowLeftRight size={14} className="text-gray-400 hover:text-accent" />
+              <span className="sr-only">{t("종목 교체")}</span>
+            </button>
+          )}
+
           {onOpenGroupModal && !isGrouped && (
             <button
               type="button"

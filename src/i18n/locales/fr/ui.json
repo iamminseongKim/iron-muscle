@@ -955,5 +955,13 @@
   "같은 이름의 종목이 있습니다. 취소한 뒤 기존 종목을 선택하세요.": "Un exercice porte déjà ce nom. Annulez et sélectionnez-le.",
   "AI의 부위와 근육 정보는 제안입니다. 동작을 확인하고 수정한 뒤 등록하세요. 모르면 추측해 저장하지 마세요.": "La zone et les muscles proposés par l’IA sont des suggestions. Vérifiez le mouvement et corrigez avant d’enregistrer. Ne devinez pas en cas de doute.",
   "종목에 category, primaryMuscles, secondaryMuscles, nameEn을 추가할 수 있습니다. Markdown 근육 열은 ID를 쉼표로 구분하세요. 미등록 종목은 부위와 근육을 확인한 뒤 새 운동으로 등록할 수 있습니다.": "Les exercices peuvent inclure category, primaryMuscles, secondaryMuscles et nameEn. Séparez les ID musculaires par des virgules en Markdown. Vérifiez la zone et les muscles avant de créer un exercice.",
-  "새 종목의 category, primaryMuscles, secondaryMuscles를 제안해 주세요. 근육은 아래 ID를 사용하고 불확실하면 생략하세요. 제안은 앱에서 사용자가 확인한 뒤 신규 운동에만 저장하며 기존 종목의 근육 정보는 바꾸지 않습니다.": "Proposez category, primaryMuscles et secondaryMuscles pour les nouveaux exercices. Utilisez les ID ci-dessous et omettez les données incertaines. L’utilisateur vérifie avant l’enregistrement. Ne modifiez pas les muscles des exercices existants."
+  "새 종목의 category, primaryMuscles, secondaryMuscles를 제안해 주세요. 근육은 아래 ID를 사용하고 불확실하면 생략하세요. 제안은 앱에서 사용자가 확인한 뒤 신규 운동에만 저장하며 기존 종목의 근육 정보는 바꾸지 않습니다.": "Proposez category, primaryMuscles et secondaryMuscles pour les nouveaux exercices. Utilisez les ID ci-dessous et omettez les données incertaines. L’utilisateur vérifie avant l’enregistrement. Ne modifiez pas les muscles des exercices existants.",
+  "종목 순서 변경": "Réorganiser les exercices",
+  "오늘의 운동 순서 변경": "Réorganiser la séance du jour",
+  "기구가 사용 중일 때 순서를 손쉽게 바꿀 수 있습니다.": "Modifiez facilement l'ordre quand l'équipement est occupé.",
+  "기구가 사용 중일 때 대체할 운동을 선택하세요.": "Choisissez un exercice de substitution si l'équipement est pris.",
+  "다른 종목으로 교체 (기구 사용 중/대체)": "Remplacer par un autre exercice (appareil occupé)",
+  "운동 종목 교체": "Remplacer l'exercice",
+  "종목 교체": "Remplacer",
+  "운동 종목이 교체되었습니다.": "L'exercice a été remplacé."
 }

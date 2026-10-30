@@ -27,6 +27,7 @@ interface AddExerciseModalProps {
   initialCategory?: Category;
   targetCategories?: Category[];
   targetPartIds?: string[];
+  replacementTitle?: string;
 }
 
 const BASE_CATEGORIES: { id: Category | 'all'; label: string }[] = [
@@ -49,12 +50,22 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
   initialCategory,
   targetCategories,
   targetPartIds,
+  replacementTitle,
 }) => {
   const hasTargets = Boolean(targetCategories && targetCategories.length > 0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(
     initialCategory || (hasTargets ? 'targets' : 'all')
   );
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialCategory) setSelectedCategory(initialCategory);
+      else if (hasTargets) setSelectedCategory('targets');
+      else setSelectedCategory('all');
+      setSearchQuery('');
+    }
+  }, [isOpen, initialCategory, hasTargets]);
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
   const [customExercises, setCustomExercises] = useState<Exercise[]>(() => loadCustomExercises());
   const [gymProfile, setGymProfile] = useState<GymEquipmentProfile>(() => loadGymProfile());
@@ -222,9 +233,11 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
           <div>
             <h3 id="exercise-picker-title" className="font-extrabold text-base text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
               <Dumbbell size={18} className="text-accent" />
-              {t("운동 종목 선택")}
+              {replacementTitle ? `${t("운동 종목 교체")} (${replacementTitle})` : t("운동 종목 선택")}
             </h3>
-            <p className="exercise-picker-description text-xs text-gray-500 dark:text-gray-300">{t("총")} {allExercises.length}{t("종의 전문 운동 라이브러리")}</p>
+            <p className="exercise-picker-description text-xs text-gray-500 dark:text-gray-300">
+              {replacementTitle ? t("기구 사용 중일 때 대체할 운동을 선택하세요.") : `${t("총")} ${allExercises.length}${t("종의 전문 운동 라이브러리")}`}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <button
