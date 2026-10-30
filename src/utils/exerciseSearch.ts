@@ -9,23 +9,47 @@ const initialConsonants = (text: string): string => [...text].map(char => {
   return code >= 0 && code <= 11171 ? CHOSUNG[Math.floor(code / 588)] : char;
 }).join('');
 
-const searchFields = new WeakMap<Exercise, string[]>();
-export function getExerciseSearchFields(exercise: Exercise): string[] {
-  const cached = searchFields.get(exercise);
+interface ExerciseSearchIndex {
+  fields: string[];
+  normalized: string[];
+  chosungNormalized: string[];
+}
+
+const searchIndices = new WeakMap<Exercise, ExerciseSearchIndex>();
+
+export function getExerciseSearchIndex(exercise: Exercise): ExerciseSearchIndex {
+  const cached = searchIndices.get(exercise);
   if (cached) return cached;
   const translations = getAllExerciseTranslations(exercise);
   const fields = [exercise.name, exercise.nameEn, exercise.defaultBrand || '', ...(exercise.aliases || []), ...(DISCOVERY_ALIASES[exercise.id] || []), ...translations];
-  searchFields.set(exercise, fields);
-  return fields;
+  const normalized = fields.map(normalizeSearch);
+  const chosungNormalized = fields.map(field => normalizeSearch(initialConsonants(field)));
+  const index: ExerciseSearchIndex = { fields, normalized, chosungNormalized };
+  searchIndices.set(exercise, index);
+  return index;
+}
+
+export function getExerciseSearchFields(exercise: Exercise): string[] {
+  return getExerciseSearchIndex(exercise).fields;
+}
+
+export function getExerciseNormalizedFields(exercise: Exercise): string[] {
+  return getExerciseSearchIndex(exercise).normalized;
 }
 
 export function matchesExerciseSearch(exercise: Exercise, query: string): boolean {
-  const fields = getExerciseSearchFields(exercise);
-  const normalized = fields.map(normalizeSearch);
   const trimmed = query.trim();
   if (!trimmed) return true;
-  if (/^[ㄱ-ㅎ\s]+$/.test(trimmed)) return fields.some(field => normalizeSearch(initialConsonants(field)).includes(normalizeSearch(trimmed)));
+  const index = getExerciseSearchIndex(exercise);
+  const normQuery = normalizeSearch(trimmed);
+  if (/^[ㄱ-ㅎ\s]+$/.test(trimmed)) {
+    return index.chosungNormalized.some(field => field.includes(normQuery));
+  }
   // A full compact name or separate brand/name words can both match.
-  return normalized.some(field => field.includes(normalizeSearch(trimmed))) ||
-    trimmed.split(/\s+/).every(word => normalized.some(field => field.includes(normalizeSearch(word))));
+  if (index.normalized.some(field => field.includes(normQuery))) return true;
+  const words = trimmed.split(/\s+/).map(normalizeSearch).filter(Boolean);
+  if (words.length > 1) {
+    return words.every(word => index.normalized.some(field => field.includes(word)));
+  }
+  return false;
 }

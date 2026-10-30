@@ -19,6 +19,33 @@ const LEGACY_ID_MAP: Record<string, string> = {
   'ohp': 'barbell-overhead-press',
 };
 
+let cachedCustomRaw: string | null = null;
+const cachedCustomMap = new Map<string, Exercise>();
+
+function getCustomExercise(id: string): Exercise | undefined {
+  if (typeof window === 'undefined') return undefined;
+  try {
+    const raw = localStorage.getItem('iron_custom_exercises_v1');
+    if (raw !== cachedCustomRaw) {
+      cachedCustomRaw = raw;
+      cachedCustomMap.clear();
+      if (raw) {
+        const list: unknown = JSON.parse(raw);
+        if (Array.isArray(list)) {
+          for (const item of list) {
+            if (item && typeof item === 'object' && typeof (item as Exercise).id === 'string') {
+              cachedCustomMap.set((item as Exercise).id, item as Exercise);
+            }
+          }
+        }
+      }
+    }
+    return cachedCustomMap.get(id);
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * 어떤 ID가 들어와도 항상 유효한 Exercise 객체를 안전하게 반환 (절대 undefined 없음)
  */
@@ -27,15 +54,9 @@ export function resolveExercise(exerciseId?: string | null): Exercise {
     return EXERCISES_DATABASE[0] || getEmergencyFallbackExercise();
   }
 
-  // 0. 사용자 정의 커스텀 운동 우선 검사
-  try {
-    const rawCustom = typeof window !== 'undefined' ? localStorage.getItem('iron_custom_exercises_v1') : null;
-    if (rawCustom) {
-      const customList: Exercise[] = JSON.parse(rawCustom);
-      const customMatch = customList.find((e) => e.id === exerciseId);
-      if (customMatch) return customMatch;
-    }
-  } catch {}
+  // 0. 사용자 정의 커스텀 운동 우선 검사 (O(1) 캐시 인덱스)
+  const customMatch = getCustomExercise(exerciseId);
+  if (customMatch) return customMatch;
 
   // 1. 정확한 ID 일치 검사
   const exact = exerciseIndex.get(exerciseId);
