@@ -27837,15 +27837,15 @@ export const EXERCISES_DATABASE: Exercise[] = [
     "id": "Reverse_Machine_Flyes",
     "name": "리버스 펙덱 플라이 (후면 삼각근)",
     "nameEn": "Reverse Machine Flyes",
-    "category": "chest",
+    "category": "shoulders",
     "categories": [
-      "chest"
+      "shoulders"
     ],
     "equipment": "machine",
     "loadType": "pin-loaded",
-    "movementPlane": "arm-isolation",
+    "movementPlane": "rear-delt",
     "primaryMuscles": [
-      "deltoid_side"
+      "deltoid_rear"
     ],
     "secondaryMuscles": [],
     "description": "리버스 펙덱 플라이 (후면 삼각근)은(는) 목표 부위의 근비대와 스트렝스 향상을 이끌어내는 전문 웨이트 트레이닝 운동입니다.",

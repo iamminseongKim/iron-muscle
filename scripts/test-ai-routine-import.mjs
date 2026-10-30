@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 import { webcrypto } from 'node:crypto';
 globalThis.crypto ??= webcrypto;
-const built = await build({ stdin: { contents: "export * from './src/utils/aiRoutineImport'; export { EXERCISES_DATABASE } from './src/data/exercises'; export { getAllExerciseTranslations } from './src/i18n';", resolveDir: process.cwd() }, bundle: true, write: false, platform: 'node', format: 'esm' });
-const { parseImportedWorkout: parse, sessionFromImportedWorkout: session, AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, buildAiRoutinePrompt, EXERCISES_DATABASE: catalog, getAllExerciseTranslations } = await import(`data:text/javascript;base64,${Buffer.from(built.outputFiles[0].text).toString('base64')}`);
+const built = await build({ stdin: { contents: "export * from './src/utils/aiRoutineImport'; export { EXERCISES_DATABASE } from './src/data/exercises'; export { getAllExerciseTranslations } from './src/i18n'; export { summarizeWorkoutDay } from './src/utils/workoutCard';", resolveDir: process.cwd() }, bundle: true, write: false, platform: 'node', format: 'esm' });
+const { parseImportedWorkout: parse, sessionFromImportedWorkout: session, AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, buildAiRoutinePrompt, EXERCISES_DATABASE: catalog, getAllExerciseTranslations, summarizeWorkoutDay } = await import(`data:text/javascript;base64,${Buffer.from(built.outputFiles[0].text).toString('base64')}`);
 const wrap = row => JSON.stringify({ title: 'AI test', exercises: [row] });
 for (const sample of [AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE]) {
   const parsed = parse(sample, catalog);
@@ -109,3 +109,24 @@ assert.deepEqual(muscleMd.exercises[0].proposal.secondaryMuscles,['biceps']);
 assert.ok(buildAiRoutinePrompt().includes('primaryMuscles'));
 assert.ok(buildAiRoutinePrompt().includes('lats='));
 console.log('AI proposals validate category and muscle IDs without registering or rewriting existing catalog exercises.');
+
+const suppliedEnglishNames = [
+  ['Smith Machine Romanian Deadlift', 'smith-romanian-deadlift'],
+  ['Leg Press', 'leg-press'],
+  ['Leg Extension', 'leg-extension'],
+  ['Leg Curl', null],
+  ['Dumbbell Lateral Raise', 'lateral-raise'],
+  ['Reverse Pec Deck', 'Reverse_Machine_Flyes'],
+];
+for (const [name, expectedId] of suppliedEnglishNames) assert.equal(parse(wrap({ name }), catalog).exercises[0].exerciseId, expectedId, name);
+const reverseFly = catalog.find(item => item.id === 'Reverse_Machine_Flyes');
+assert.equal(reverseFly.category, 'shoulders', 'Reverse pec deck belongs to shoulders');
+assert.deepEqual(reverseFly.categories, ['shoulders']);
+assert.equal(reverseFly.movementPlane, 'rear-delt');
+const rearSession = session(parse(wrap({ name: 'Reverse Pec Deck', sets: 1, weight: 20, reps: 12 }), catalog), catalog);
+rearSession.exercises[0].sets[0].completed = true;
+const rearSummary = summarizeWorkoutDay([rearSession], rearSession.date);
+assert.deepEqual(rearSummary.primaryMuscles, ['deltoid_rear'], 'Reverse pec deck completed sets highlight rear deltoids');
+assert.equal(rearSummary.primaryMuscles.includes('deltoid_side'), false);
+assert.equal(rearSession.exercises[0].exerciseId, 'Reverse_Machine_Flyes', 'Existing exercise identity is preserved');
+console.log('User-supplied English names match safely and reverse pec deck records target rear deltoids.');
