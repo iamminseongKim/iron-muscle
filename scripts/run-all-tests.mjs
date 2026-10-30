@@ -23,6 +23,7 @@ const testFiles = [
   'test-workout-safety.mjs',
   'test-session-merge.mjs',
   'test-ai-prompts.mjs',
+  'test-ai-routine-import.mjs',
   'test-session-bodyparts.mjs',
   'test-i18n.mjs',
   'test-localized-exports.mjs',

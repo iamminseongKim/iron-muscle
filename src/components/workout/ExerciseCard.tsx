@@ -321,6 +321,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       </div>
 
       <div hidden={collapsed}>
+      {exerciseItem.notes && <p data-exercise-notes className="px-3 py-2 text-xs whitespace-pre-wrap break-words text-gray-600 dark:text-gray-300">{t('메모')} · {exerciseItem.notes}</p>}
       <details className="border-b border-black/5 dark:border-white/5">
         <summary className="px-3 py-2 cursor-pointer text-xs text-gray-500 dark:text-gray-400 marker:text-gray-400">
           <span className="font-bold text-gray-500 dark:text-gray-400">{t("운동 설정")}</span>

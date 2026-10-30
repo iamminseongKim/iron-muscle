@@ -22,6 +22,7 @@ import { RestTimerModal } from './RestTimerModal';
 import { ExerciseGroupModal } from './ExerciseGroupModal';
 import { HoldToCompleteButton } from './HoldToCompleteButton';
 import { RepeatWorkoutPanel } from './RepeatWorkoutPanel';
+import { AiRoutineImportPanel } from './AiRoutineImportPanel';
 import { WorkoutCompleteSummary } from './WorkoutCompleteSummary';
 import { repeatWorkout, moveWorkoutExercise, getExerciseMoveAvailability } from '../../utils/workoutFlow';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, convertWeight } from '../../utils/calculations';
@@ -197,6 +198,18 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     setFlowMessage('');
     // 운동 시작과 동시에 첫 종목 모달 자동 활성화
     setIsAddModalOpen(true);
+  };
+
+  const handleImportedWorkout = (next: WorkoutSession) => {
+    let existing: string | null;
+    try { existing = localStorage.getItem('iron_active_session_v1'); }
+    catch { throw new Error('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.'); }
+    if (existing !== null) throw new Error('먼저 진행 중인 운동을 완료하거나 취소하세요.');
+    const prepared = { ...next, title: next.title === 'AI 루틴' ? t('AI 루틴') : next.title, conditionEmoji: idleCondition, isDeload: idleDeload, bodyWeight: loadHealthPreferences().weight?.kg };
+    saveActiveSession(prepared);
+    if (loadActiveSession()?.id !== prepared.id) throw new Error('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.');
+    setSession(prepared);
+    setFlowMessage('');
   };
 
   const handleRepeatWorkout = (source: WorkoutSession) => {
@@ -517,6 +530,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         </div>
 
         {flowMessage && <p role="status" className="text-sm text-accent dark:text-accent-light">{t(flowMessage)}</p>}
+
+        <AiRoutineImportPanel onStart={handleImportedWorkout} />
 
         <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
           {/* 좌측 패널 (목표 부위 선택 & 안내) */}
