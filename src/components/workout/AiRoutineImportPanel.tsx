@@ -29,6 +29,8 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
   const catalog = [...custom, ...EXERCISES_DATABASE.filter(item => !custom.some(entry => entry.id === item.id))];
   const field = 'w-full min-w-0 rounded-xl border border-black/15 dark:border-white/20 bg-white dark:bg-[#302B37] p-3 text-sm';
   const button = 'min-h-[44px] rounded-xl bg-accent/10 px-3 py-2 text-sm font-bold text-accent dark:text-accent-light';
+  const primaryButton = 'min-h-[44px] rounded-xl bg-accent hover:opacity-90 active:scale-98 px-4 py-2 text-sm font-bold text-white shadow-xs transition disabled:opacity-40';
+  const secondaryButton = 'min-h-[44px] rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition';
   const updateInput = (value: string) => { setInput(value); setState({ kind: 'input' }); setMessage(''); setQueries({}); setRegistration(null); };
   const preview = () => {
     setRegistration(null);
@@ -56,16 +58,40 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
       <p>{t('Markdown 표는 name, sets, reps 열이 필요합니다. weight와 rest는 선택입니다. 한국어 열 이름도 지원합니다. 범위 대신 숫자 하나를 써주세요.')}</p>
     </details>
     <label className="block text-xs font-semibold space-y-2">
-      <span>{t('루틴 Markdown 또는 JSON')}</span>
-      <textarea data-ai-routine-input aria-label={t('루틴 Markdown 또는 JSON')} rows={7} maxLength={100000} className={field} value={input} onChange={event => updateInput(event.target.value)} />
+      <div className="flex items-center justify-between">
+        <span>{t('루틴 Markdown 또는 JSON')}</span>
+        {input && (
+          <button
+            type="button"
+            className="text-xs text-red-500 hover:text-red-600 dark:text-red-400 font-normal transition-colors"
+            onClick={() => updateInput('')}
+          >
+            {t('전체 삭제')}
+          </button>
+        )}
+      </div>
+      <textarea
+        data-ai-routine-input
+        aria-label={t('루틴 Markdown 또는 JSON')}
+        rows={8}
+        maxLength={100000}
+        spellCheck={false}
+        autoCapitalize="none"
+        autoCorrect="off"
+        className={`${field} font-mono text-xs leading-relaxed`}
+        value={input}
+        onChange={event => updateInput(event.target.value)}
+      />
     </label>
     <div className="flex flex-wrap gap-2">
-      <button data-ai-routine-preview-button type="button" className={button} onClick={preview} disabled={!input.trim()}>{t('구성 확인')}</button>
-      <button type="button" className={button} onClick={() => updateInput(AI_ROUTINE_EXAMPLE)}>{t('JSON 예시 넣기')}</button>
-      <button type="button" className={button} onClick={() => updateInput(AI_ROUTINE_MARKDOWN_EXAMPLE)}>{t('Markdown 예시 넣기')}</button>
+      <button data-ai-routine-preview-button type="button" className={primaryButton} onClick={preview} disabled={!input.trim()}>{t('운동 시작')}</button>
+      {input && <button type="button" className={secondaryButton} onClick={() => updateInput('')}>{t('전체 삭제')}</button>}
     </div>
     {state.kind === 'preview' && <section data-ai-routine-preview className="space-y-3 border-t border-black/10 dark:border-white/10 pt-3" aria-label={t('가져오기 미리보기')}>
-      <h3 className="font-bold break-words">{state.draft.title === 'AI 루틴' ? t('AI 루틴') : state.draft.title}</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-bold break-words">{state.draft.title === 'AI 루틴' ? t('AI 루틴') : state.draft.title}</h3>
+        <span className="text-xs text-accent dark:text-accent-light font-semibold">{t('루틴 구성 확인')}</span>
+      </div>
       {state.draft.notes && <p className="whitespace-pre-wrap break-words text-xs">{t('메모')} · {state.draft.notes}</p>}
       <ol className="space-y-3">
         {state.draft.exercises.map((row, index) => {
@@ -97,7 +123,7 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
       <p className="text-xs text-gray-500 dark:text-gray-400">{t('모든 세트는 미완료로 시작합니다. 무게와 횟수는 시작 후 수정할 수 있습니다.')}</p>
       <p className="text-xs text-gray-500 dark:text-gray-400">{t('기본은 양측 기록입니다. 한팔·한발 종목도 좌우를 합쳐 기록하며, 원하면 시작 후 운동 설정에서 좌우 개별 기록으로 바꿀 수 있습니다.')}</p>
       <p className="text-xs text-gray-500 dark:text-gray-400">{t('권장 휴식은 타이머의 기본값입니다. 직접 조절하거나 종료할 수 있으며 실제 쉰 시간은 따로 기록됩니다.')}</p>
-      <button data-ai-routine-start type="button" className={`${button} w-full disabled:opacity-40`} disabled={state.draft.exercises.some(row => !row.exerciseId)} onClick={() => {
+      <button data-ai-routine-start type="button" className={`${primaryButton} w-full`} disabled={state.draft.exercises.some(row => !row.exerciseId)} onClick={() => {
         try { onStart(sessionFromImportedWorkout(state.draft, catalog)); }
         catch (error) { setMessage(error instanceof Error ? error.message : '모든 종목을 선택하세요.'); }
       }}>{t('이 루틴으로 운동 시작')}</button>

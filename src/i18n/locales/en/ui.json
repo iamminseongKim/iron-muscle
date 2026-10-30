@@ -963,5 +963,8 @@
   "다른 종목으로 교체 (기구 사용 중/대체)": "Replace with alternative exercise (equipment in use)",
   "운동 종목 교체": "Replace Exercise",
   "종목 교체": "Replace",
-  "운동 종목이 교체되었습니다.": "Exercise has been replaced."
+  "운동 종목이 교체되었습니다.": "Exercise has been replaced.",
+  "운동 시작": "Start Workout",
+  "전체 삭제": "Clear all",
+  "루틴 구성 확인": "Check routine structure"
 }
