@@ -46,8 +46,7 @@ iron-muscle/
 │   ├── components/
 │   │   ├── 3d/                 # Three.js 통합 3D 인체/근육 해부도
 │   │   │   ├── HumanMuscle3DViewer.tsx  # 통합 3D 뷰어 (전면/후면/동시 뷰포트, 회전/선택 인터랙션)
-│   │   │   ├── anatomyModel.ts          # GLB 로더, 좌표 정규화, 지오메트리 병합 및 타깃 매핑
-│   │   │   └── AnatomyDualViewer.tsx    # 레거시 2D 아틀라스 해부도 컴포넌트
+│   │   │   └── anatomyModel.ts          # GLB 로더, 좌표 정규화, 지오메트리 병합 및 타깃 매핑
 │   │   ├── common/             # 공통 UI 컴포넌트
 │   │   │   ├── Header.tsx      # 총 운동시간 시계, 다크모드 스위처, 탭 헤더
 │   │   │   └── TabNavigation.tsx # 하단 3단 탭 네비게이션

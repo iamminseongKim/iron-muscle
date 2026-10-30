@@ -1,4 +1,4 @@
-import { WorkoutSet, WorkoutSession, Tempo, WeightUnit } from '../types/workout';
+import { WorkoutSet, WorkoutSession, WeightUnit } from '../types/workout';
 
 export const KG_TO_LBS = 2.20462;
 
@@ -40,20 +40,7 @@ export function calculate1RM(weight: number, reps: number, rpe?: number): number
   return Math.round(oneRm * 10) / 10;
 }
 
-// 2. TUT (Time Under Tension - 긴장 지속시간) 계산 (초 단위)
-export function calculateSetTUT(reps: number, tempo?: Tempo): number {
-  if (!tempo || reps <= 0) return 0;
-  const secPerRep = (tempo.eccentric || 2) + (tempo.pause || 0) + (tempo.concentric || 1);
-  return reps * secPerRep;
-}
-
-// 3. TUT 기반 근비대 과부하 지표 (무게 * 총 긴장시간)
-export function calculateTUTLoad(weight: number, reps: number, tempo?: Tempo): number {
-  const tut = calculateSetTUT(reps, tempo);
-  return Math.round(weight * tut);
-}
-
-// 4. 세션 총 볼륨 (kg 기본, unit 지정 시 해당 단위로 환산) 계산
+// 2. 세션 총 볼륨 (kg 기본, unit 지정 시 해당 단위로 환산) 계산
 export function calculateSessionVolume(session: WorkoutSession, unit: WeightUnit = 'kg'): number {
   let totalVolumeKg = 0;
   session.exercises.forEach(ex => {
