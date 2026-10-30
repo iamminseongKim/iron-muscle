@@ -43,4 +43,37 @@ assert.ok(resolvedSecondary,'Saved custom exercise must resolve');
 assert.deepEqual(resolvedSecondary.primaryMuscles,['chest']);
 assert.deepEqual(resolvedSecondary.secondaryMuscles,['triceps','deltoid_front']);
 console.log('PASS: custom exercise secondaryMuscles preservation and resolution');
+const customKey='iron_custom_exercises_v1';
+const dispatchEvent=window.dispatchEvent;
+let changes=0;
+window.dispatchEvent=()=>{changes++;};
+console.error=()=>{};
+try {
+  for (const raw of ['[{"id":"custom_old"', 'null', '{}', '[null]', '[{"name":"missing ID"}]']) {
+    memory.set(customKey,raw);
+    const beforeChanges=changes;
+    assert.equal(storage.saveCustomExercise(custom),false,'Unreadable custom data must block saves');
+    assert.equal(memory.get(customKey),raw,'Failed saves must preserve the original data for recovery');
+    storage.deleteCustomExercise(custom.id);
+    assert.equal(memory.get(customKey),raw,'Deletion must not replace unreadable data with an empty catalog');
+    assert.deepEqual(storage.loadCustomExercises(),[],'Invalid catalogs must not escape into the exercise picker');
+    assert.equal(changes,beforeChanges,'Rejected changes must not emit success events');
+  }
+  memory.set(customKey,JSON.stringify([customWithSecondary]));
+  const getItem=localStorage.getItem;
+  try {
+    localStorage.getItem=()=>{throw new Error('Storage unavailable');};
+    assert.equal(storage.saveCustomExercise(custom),false,'A read failure must never become a replacement catalog');
+    storage.deleteCustomExercise(customWithSecondary.id);
+  } finally {localStorage.getItem=getItem;}
+  assert.deepEqual(JSON.parse(memory.get(customKey)),[customWithSecondary]);
+  assert.equal(storage.saveCustomExercise(custom),true);
+  assert.deepEqual(storage.loadCustomExercises(),[custom,customWithSecondary]);
+  assert.equal(storage.saveCustomExercise({...custom,name:'Updated curl'}),true);
+  assert.equal(storage.loadCustomExercises().length,2);
+  assert.equal(storage.loadCustomExercises()[0].name,'Updated curl');
+  storage.deleteCustomExercise(custom.id);
+  assert.deepEqual(storage.loadCustomExercises(),[customWithSecondary]);
+} finally {window.dispatchEvent=dispatchEvent;console.error=log;}
+console.log('PASS: corrupt custom catalogs and read failures preserve data; valid saves, updates and deletion still work');
 console.log('PASS: legacy custom names, saved name snapshots, reload, lbs/brand/set preservation, backup validation and failed custom save');

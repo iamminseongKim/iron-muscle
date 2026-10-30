@@ -145,11 +145,22 @@ export function saveActiveSession(session: WorkoutSession | null): void {
 // 🌟 사용자 정의 커스텀 운동 종목 관리 (Custom Exercises)
 // ----------------------------------------------------
 
+function readCustomExercises(): Exercise[] {
+  const raw = localStorage.getItem(STORAGE_KEYS.CUSTOM_EXERCISES);
+  if (raw === null) return [];
+  const parsed: unknown = JSON.parse(raw);
+  if (!Array.isArray(parsed) || !parsed.every(exercise =>
+    exercise && typeof exercise === 'object' && !Array.isArray(exercise)
+    && typeof exercise.id === 'string' && exercise.id.trim()
+  )) {
+    throw new Error('Invalid custom exercise catalog');
+  }
+  return parsed;
+}
+
 export function loadCustomExercises(): Exercise[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.CUSTOM_EXERCISES);
-    if (!raw) return [];
-    return JSON.parse(raw);
+    return readCustomExercises();
   } catch (e) {
     console.error('Failed to load custom exercises', e);
     return [];
@@ -158,7 +169,7 @@ export function loadCustomExercises(): Exercise[] {
 
 export function saveCustomExercise(exercise: Exercise): boolean {
   try {
-    const current = loadCustomExercises();
+    const current = readCustomExercises();
     const existingIndex = current.findIndex((e) => e.id === exercise.id);
     let updated: Exercise[];
     if (existingIndex >= 0) {
@@ -180,7 +191,7 @@ export function saveCustomExercise(exercise: Exercise): boolean {
 
 export function deleteCustomExercise(exerciseId: string): void {
   try {
-    const current = loadCustomExercises();
+    const current = readCustomExercises();
     const updated = current.filter((e) => e.id !== exerciseId);
     localStorage.setItem(STORAGE_KEYS.CUSTOM_EXERCISES, JSON.stringify(updated));
     if (typeof window !== 'undefined') {
