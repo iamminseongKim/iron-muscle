@@ -93,6 +93,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const currentLoadType = exerciseItem.loadType || baseExercise.loadType || 'plate-loaded';
   const exerciseName = displayExercise(baseExercise);
   const exerciseNameEn = baseExercise.nameEn || '';
+  const isDumbbellEquipment = exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes(t("덤벨")) || exerciseNameEn.toLowerCase().includes('dumbbell');
   const canRegisterInGym = ['machine', 'smith', 'cable'].includes(getExerciseEquipment(baseExercise));
 
   const handleRegisterInGym = () => {
@@ -208,91 +209,22 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Main Header */}
-      <div className="px-3 py-2 border-b border-black/5 dark:border-white/5 flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-            <h3 className="w-full text-base font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
-              <button type="button" onClick={onToggleCollapsed} aria-expanded={!collapsed} className="w-full text-left flex items-center gap-1 min-h-[28px]">
-                {collapsed ? <ChevronRight size={14} className="shrink-0 text-gray-400" /> : <ChevronDown size={14} className="shrink-0 text-gray-400" />}
-                <span>{exerciseName}</span>
-              </button>
-            </h3>
-
-          </div>
-          <div className="flex items-center gap-2 flex-wrap mt-0.5">
+      <div data-exercise-header className="border-b border-black/5 dark:border-white/5">
+        <div className="min-w-0 px-3 pt-3 pb-2">
+          <h3 className="w-full text-base font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
+            <button type="button" onClick={onToggleCollapsed} aria-expanded={!collapsed} className="w-full text-left flex items-start gap-1.5 min-h-[28px]">
+              {collapsed ? <ChevronRight size={14} className="shrink-0 mt-1 text-gray-400" /> : <ChevronDown size={14} className="shrink-0 mt-1 text-gray-400" />}
+              <span className="min-w-0 break-words">{exerciseName}</span>
+            </button>
+          </h3>
+          <div className="pl-5 mt-1">
             <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}{t("세트 완료")}{records.maxWeight > 0 ? ` · ${t("최고")} ${records.maxWeight}${currentUnit}` : ''}</span>
-            {canRegisterInGym && (gymConfigs.length > 0 ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent dark:text-accent-300">
-                <Check size={13} /> {t('헬스장에 등록됨')}
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={handleRegisterInGym}
-                title={gymProfile.name}
-                className="inline-flex min-h-[32px] items-center gap-1 rounded-md border border-accent/30 px-2 text-[11px] font-semibold text-accent dark:text-accent-300 hover:bg-accent/10"
-              >
-                <Plus size={13} /> {t('내 헬스장에 등록')}
-              </button>
-            ))}
-            {(!collapsed && exerciseItem.machineBrand) && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-accent/10 text-accent dark:text-accent-light text-[10px] font-bold">
-                <Tag size={11} /> {exerciseItem.machineBrand}
-              </span>
-            )}
-            {(!collapsed && exerciseItem.machineSetting) && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-gray-100 dark:bg-white/10 text-gray-500 text-[10px] font-medium truncate max-w-[150px]">
-                <Ruler size={11} /> {exerciseItem.machineSetting}
-              </span>
-            )}
-            {(!collapsed && (exerciseItem.equipmentType === 'dumbbell' || baseExercise.equipment === 'dumbbell' || exerciseName.includes(t("덤벨")) || exerciseNameEn.toLowerCase().includes('dumbbell'))) && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
-                <Lightbulb size={11} /> {t("덤벨: 한쪽(편측) 무게 기준")}
-              </span>
-            )}
-            {(!collapsed && isSmithEquipment) && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/10 text-accent dark:bg-accent/20 text-[10px] font-bold tracking-tight">
-                <Lightbulb size={11} /> {t("스미스머신: 봉 무게 제외 (원판 무게만 기록)")}
-              </span>
-            )}
           </div>
-
-          {/* 등록된 머신이 2대 이상일 때 헤더 바로 아래 원터치 빠른 스위칭 칩 */}
-          {!collapsed && gymConfigs.length > 1 && (
-            <div className="flex items-center gap-1.5 flex-wrap mt-1.5 pt-1 border-t border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold text-gray-400 shrink-0">{t('머신 전환')}:</span>
-              {exerciseItem.sets.some(set => set.completed) && <span className="text-[10px] text-gray-500">{t('완료한 세트가 있으면 다른 머신은 종목을 추가해 기록하세요.')}</span>}
-              {gymConfigs.map((gc, idx) => {
-                const isCurrent = exerciseItem.machineConfigId === `${gymProfile.id}:${gc.id}`;
-                const locked = exerciseItem.sets.some(set => set.completed);
-                return (
-                  <button
-                    key={gc.id || idx}
-                    type="button"
-                    aria-pressed={isCurrent}
-                    disabled={locked}
-                    onClick={() => {
-                      onUpdate(applyGymMachineConfig(exerciseItem, gc, gymProfile.id, currentUnit));
-                    }}
-                    className={`min-h-[36px] disabled:opacity-50 px-2 py-0.5 rounded-md text-[10px] font-bold transition flex items-center gap-1 ${
-                      isCurrent
-                        ? 'bg-accent text-white shadow-2xs'
-                        : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
-                    }`}
-                  >
-                    <span>{idx + 1}{t('호기')}</span>
-                    {gc.brand && <span className="opacity-90">({gc.brand})</span>}
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </div>
-
         {/* 액션 버튼: 순서 이동, 대체 교체, 묶기, 3D 해부도, 삭제 */}
-        <div className="flex items-center gap-0.5 shrink-0">
+        <div data-exercise-actions className="px-3 py-1 flex items-center justify-end gap-1 border-y border-black/5 dark:border-white/5 bg-white/50 dark:bg-black/10">
           {onMove && (
-            <div className="flex items-center">
+            <div className="flex items-center mr-auto pr-2 border-r border-black/10 dark:border-white/10">
               <button
                 type="button"
                 onClick={() => onMove('up')}
@@ -364,11 +296,80 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             <Trash2 size={16} />
           </button>
         </div>
+        {(canRegisterInGym || (!collapsed && (exerciseItem.machineBrand || exerciseItem.machineSetting || isDumbbellEquipment || isSmithEquipment))) && <div data-exercise-equipment className="px-3 py-2.5 space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {canRegisterInGym && (gymConfigs.length > 0 ? (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent dark:text-accent-300">
+                <Check size={13} /> {t('헬스장에 등록됨')}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleRegisterInGym}
+                title={gymProfile.name}
+                className="inline-flex min-h-[32px] items-center gap-1 rounded-md border border-accent/30 px-2 text-[11px] font-semibold text-accent dark:text-accent-300 hover:bg-accent/10"
+              >
+                <Plus size={13} /> {t('내 헬스장에 등록')}
+              </button>
+            ))}
+            {(!collapsed && exerciseItem.machineBrand) && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-accent/10 text-accent dark:text-accent-light text-[10px] font-bold">
+                <Tag size={11} /> {exerciseItem.machineBrand}
+              </span>
+            )}
+            {(!collapsed && exerciseItem.machineSetting) && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-gray-100 dark:bg-white/10 text-gray-500 text-[10px] font-medium truncate max-w-[150px]">
+                <Ruler size={11} /> {exerciseItem.machineSetting}
+              </span>
+            )}
+            {(!collapsed && isDumbbellEquipment) && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF9500]/10 text-[#FF9500] dark:bg-[#FF9500]/20 text-[10px] font-bold tracking-tight">
+                <Lightbulb size={11} /> {t("덤벨: 한쪽(편측) 무게 기준")}
+              </span>
+            )}
+            {(!collapsed && isSmithEquipment) && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/10 text-accent dark:bg-accent/20 text-[10px] font-bold tracking-tight">
+                <Lightbulb size={11} /> {t("스미스머신: 봉 무게 제외 (원판 무게만 기록)")}
+              </span>
+            )}
+          </div>
+
+          {/* 등록된 머신이 2대 이상일 때 머신 정보 아래 빠른 전환 칩 */}
+          {!collapsed && gymConfigs.length > 1 && (
+            <div className="flex items-center gap-1.5 flex-wrap mt-1.5 pt-1 border-t border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold text-gray-400 shrink-0">{t('머신 전환')}:</span>
+              {exerciseItem.sets.some(set => set.completed) && <span className="text-[10px] text-gray-500">{t('완료한 세트가 있으면 다른 머신은 종목을 추가해 기록하세요.')}</span>}
+              {gymConfigs.map((gc, idx) => {
+                const isCurrent = exerciseItem.machineConfigId === `${gymProfile.id}:${gc.id}`;
+                const locked = exerciseItem.sets.some(set => set.completed);
+                return (
+                  <button
+                    key={gc.id || idx}
+                    type="button"
+                    aria-pressed={isCurrent}
+                    disabled={locked}
+                    onClick={() => {
+                      onUpdate(applyGymMachineConfig(exerciseItem, gc, gymProfile.id, currentUnit));
+                    }}
+                    className={`min-h-[36px] disabled:opacity-50 px-2 py-0.5 rounded-md text-[10px] font-bold transition flex items-center gap-1 ${
+                      isCurrent
+                        ? 'bg-accent text-white shadow-2xs'
+                        : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
+                    }`}
+                  >
+                    <span>{idx + 1}{t('호기')}</span>
+                    {gc.brand && <span className="opacity-90">({gc.brand})</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>}
       </div>
 
       <div hidden={collapsed}>
-      {exerciseItem.notes && <p data-exercise-notes className="px-3 py-2 text-xs whitespace-pre-wrap break-words text-gray-600 dark:text-gray-300">{t('메모')} · {exerciseItem.notes}</p>}
-      <details className="border-b border-black/5 dark:border-white/5">
+      {exerciseItem.notes && <p data-exercise-notes className="mx-3 my-2.5 px-3 py-2 border-l-2 border-accent/40 rounded-r-lg bg-white/60 dark:bg-white/5 text-xs whitespace-pre-wrap break-words text-gray-600 dark:text-gray-300">{t('메모')} · {exerciseItem.notes}</p>}
+      <details className="border-y border-black/5 dark:border-white/5 bg-white/40 dark:bg-black/10">
         <summary className="px-3 py-2 cursor-pointer text-xs text-gray-500 dark:text-gray-400 marker:text-gray-400">
           <span className="font-bold text-gray-500 dark:text-gray-400">{t("운동 설정")}</span>
           <span className="ml-2">{exerciseItem.executionMode === 'unilateral' ? t('편측') : t('양측')} · {currentUnit}{isMachineEquipment ? ` · ${currentLoadType === 'pin-loaded' ? t('핀머신') : t('원판')} · ${exerciseItem.machineBrand?.split(' (')[0] || t('브랜드 미지정')}` : ''}</span>
