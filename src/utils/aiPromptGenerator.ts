@@ -247,6 +247,6 @@ export function extractAvailableBodyParts(sessions: WorkoutSession[]): Array<{
   });
 }
 
-export function generateAiCoachingMarkdown(targetSessions: WorkoutSession[], options: AiExportOptions): string {
-  return adaptiveExport(targetSessions, options.language || getLanguage());
+export function generateAiCoachingMarkdown(targetSessions: WorkoutSession[], options: AiExportOptions, history: WorkoutSession[] = targetSessions): string {
+  return adaptiveExport(targetSessions, options.language || getLanguage(), history);
 }

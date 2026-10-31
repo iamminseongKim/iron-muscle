@@ -10,7 +10,7 @@ import { calculate1RM } from './calculations';
 
 const cell = (value: unknown) => String(value).replace(/\|/g, '\\|').replace(/\r?\n/g, '<br>');
 const tempo = (value: WorkoutSet['tempo']) => value ? `${value.eccentric}-${value.pause}-${value.concentric}` : null;
-export function adaptiveExport(sessions: WorkoutSession[], language: Language = getLanguage()): string {
+export function adaptiveExport(sessions: WorkoutSession[], language: Language = getLanguage(), history: WorkoutSession[] = sessions): string {
   const m = messages[language];
   const a = adaptiveMessages[language];
   const value = (raw: unknown) => raw === undefined || raw === null || raw === '' ? a.missing : cell(raw);
@@ -79,7 +79,7 @@ export function adaptiveExport(sessions: WorkoutSession[], language: Language = 
           if (feedback !== undefined && feedback !== '') md += `- ${a[key]}: ${value(feedback)}\n`;
         }
       }
-      const { comparison, equipmentChanged } = compareExercise(exercise, session, sessions);
+      const { comparison, equipmentChanged } = compareExercise(exercise, session, history);
       if (equipmentChanged) md += `\n- ${a.equipmentChanged}\n`;
       if (comparison) {
         md += `\n#### ${a.previous} · ${cell(comparison.previousDate)}\n\n`;

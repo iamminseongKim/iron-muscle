@@ -51,4 +51,7 @@ assert.ok(md.includes('Low readiness recorded'));
 assert.ok(md.includes('Recovery'));
 assert.ok(md.includes('Do not diagnose overtraining from one session'));
 assert.ok(!md.includes('following 4'));
+const dayWithHistory = api.generateAiCoachingMarkdown([session()], { language: 'en', scope: 'day', selectedDate: '2026-10-31' }, history);
+assert.ok(dayWithHistory.includes('Previous performance · 2026-10-30'));
+assert.ok(!dayWithHistory.includes('## 2026-10-30'), 'prior history supports comparison without exporting unrelated sessions');
 console.log('PASS adaptive working-set summaries, nullable provenance, drop segments, pain and RPE gates, approval-only suggestions, comparable history and eight-language actual-only exports');
