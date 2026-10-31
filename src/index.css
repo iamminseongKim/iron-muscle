@@ -178,6 +178,16 @@
 
 html[data-keyboard-open="true"] [data-bottom-navigation] { display: none; }
 input, textarea, select { scroll-margin-block: 72px; }
+
+/* Prevent iOS Safari from auto-zooming viewport when focusing text inputs */
+@media screen and (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
 /* Parent stack spacing must not offset viewport-fixed dialogs. */
 .keyboard-aware-modal { margin: 0 !important; }
 

@@ -179,7 +179,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
   return (
     <>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-md animate-fade-in"
+        className="keyboard-aware-modal fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-md animate-fade-in"
         style={{
           paddingTop: 'max(20px, env(safe-area-inset-top, 20px))',
           paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',

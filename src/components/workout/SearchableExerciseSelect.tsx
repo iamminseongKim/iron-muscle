@@ -186,6 +186,9 @@ export const SearchableExerciseSelect: React.FC<SearchableExerciseSelectProps> =
                   type="search"
                   value={query}
                   onChange={event => setQuery(event.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') searchInputRef.current?.blur();
+                  }}
                   placeholder={t('운동명·부위·초성 검색')}
                   className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1E1B24] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:border-accent-strong focus:outline-none transition shadow-2xs"
                 />

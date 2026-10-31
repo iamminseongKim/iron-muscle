@@ -29,6 +29,10 @@ export function loadAdaptiveSettings(): AdaptiveSettings {
 }
 
 export function saveAdaptiveSettings(patch: Partial<AdaptiveSettings>): void {
-  localStorage.setItem(key, JSON.stringify({ ...loadAdaptiveSettings(), ...patch }));
+  try {
+    localStorage.setItem(key, JSON.stringify({ ...loadAdaptiveSettings(), ...patch }));
+  } catch (e) {
+    console.warn('Failed to save adaptive settings', e);
+  }
   window.dispatchEvent(new Event(ADAPTIVE_SETTINGS_CHANGE));
 }

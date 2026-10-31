@@ -1,7 +1,7 @@
 import { useLanguage, getLanguage, t } from './i18n';
-import { MyPage } from './components/profile/MyPage';
 import { refreshHealth } from './services/health/healthService';
 import React, { useState, useEffect, useLayoutEffect, lazy, Suspense, memo, useCallback, useRef } from 'react';
+const MyPage = lazy(() => import('./components/profile/MyPage').then(module => ({ default: module.MyPage })));
 import { useKeyboardViewport } from './hooks/useKeyboardViewport';
 import { Lock } from 'lucide-react';
 import { HoldToCompleteButton } from './components/workout/HoldToCompleteButton';
@@ -9,6 +9,7 @@ import { OfflineStatus } from './components/common/OfflineStatus';
 import { RecoveryUndo } from './components/library/RecoveryPanel';
 import { Header } from './components/common/Header';
 import { TabNavigation } from './components/common/TabNavigation';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 const ExerciseExplorer = lazy(() => import('./components/explore/ExerciseExplorer').then(module => ({default: module.ExerciseExplorer})));
 import { WorkoutLogger as WorkoutLoggerComponent } from './components/workout/WorkoutLogger';
 const WorkoutLogger = memo(WorkoutLoggerComponent);
@@ -207,20 +208,22 @@ export const App: React.FC = () => {
       <RecoveryUndo />
       {/* 메인 컨텐츠 */}
       <main className="flex-1 w-full pt-2"><Suspense fallback={<div role="status" className="p-8 text-center">…</div>}>
-        {(activeTab === 'workout' || activeSession) && (<div hidden={activeTab !== 'workout'}>
-          <WorkoutLogger
-            onWorkoutCompleted={onWorkoutCompleted}
-            isDark={isDark}
-          />
-        </div>)}
-        {activeTab === 'my' && <MyPage isDark={isDark} onToggleTheme={toggleTheme} accentTheme={accentTheme} onAccentThemeChange={setAccentTheme} weightUnit={weightUnit} onToggleWeightUnit={toggleWeightUnit} />}
-        {activeTab === 'explore' && <ExerciseExplorer isDark={isDark} />}
-        {activeTab === 'history' && (
-          <WorkoutHistoryView weightUnit={weightUnit} />
-        )}
-        {activeTab === 'analytics' && (
-          <HistoryDashboard weightUnit={weightUnit} />
-        )}
+        <ErrorBoundary scoped>
+          {(activeTab === 'workout' || activeSession) && (<div hidden={activeTab !== 'workout'}>
+            <WorkoutLogger
+              onWorkoutCompleted={onWorkoutCompleted}
+              isDark={isDark}
+            />
+          </div>)}
+          {activeTab === 'my' && <MyPage isDark={isDark} onToggleTheme={toggleTheme} accentTheme={accentTheme} onAccentThemeChange={setAccentTheme} weightUnit={weightUnit} onToggleWeightUnit={toggleWeightUnit} />}
+          {activeTab === 'explore' && <ExerciseExplorer isDark={isDark} />}
+          {activeTab === 'history' && (
+            <WorkoutHistoryView weightUnit={weightUnit} />
+          )}
+          {activeTab === 'analytics' && (
+            <HistoryDashboard weightUnit={weightUnit} />
+          )}
+        </ErrorBoundary>
       </Suspense></main>
 
       {/* 하단 탭 네비게이션 */}

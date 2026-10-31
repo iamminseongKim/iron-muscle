@@ -32,12 +32,25 @@ export function useKeyboardViewport() {
         active.scrollIntoView({ block: 'center', behavior: 'auto' });
       }
     };
+    // Tap-to-dismiss keyboard when tapping empty space or non-interactive backdrop
+    const handleTapOutside = (event: MouseEvent | TouchEvent) => {
+      const active = document.activeElement as HTMLElement | null;
+      if (!active || !active.matches('input, textarea')) return;
+      const target = event.target as HTMLElement | null;
+      if (!target || target === active) return;
+      if (target.closest('input, textarea, select, button, a, label, [role="button"], [role="option"], [contenteditable="true"]')) {
+        return;
+      }
+      active.blur();
+    };
+
     update();
     viewport?.addEventListener('resize', revealInput);
     viewport?.addEventListener('scroll', update);
     window.addEventListener('resize', revealInput);
     document.addEventListener('focusin', update);
     document.addEventListener('focusout', update);
+    document.addEventListener('pointerdown', handleTapOutside, { passive: true });
     return () => {
       cancelAnimationFrame(frame);
       viewport?.removeEventListener('resize', revealInput);
@@ -45,6 +58,7 @@ export function useKeyboardViewport() {
       window.removeEventListener('resize', revealInput);
       document.removeEventListener('focusin', update);
       document.removeEventListener('focusout', update);
+      document.removeEventListener('pointerdown', handleTapOutside);
       delete root.dataset.keyboardOpen;
       root.style.removeProperty('--input-viewport-height');
       root.style.removeProperty('--input-viewport-top');

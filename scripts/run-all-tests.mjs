@@ -35,6 +35,7 @@ const testFiles = [
   'test-equipment.mjs',
   'test-calendar.mjs',
   'test-web-features.mjs',
+  'test-mobile-resilience.mjs',
 ];
 
 const startTime = Date.now();

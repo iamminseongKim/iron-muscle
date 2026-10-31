@@ -143,8 +143,13 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white dark:bg-[#1C1C1E] w-full max-w-xl rounded-3xl shadow-2xl border border-black/10 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden my-auto animate-fade-in">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={t("운동 일지 수정")}
+      className="keyboard-aware-modal fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 overflow-y-auto"
+    >
+      <div className="bg-white dark:bg-[#1C1C1E] w-full max-w-xl rounded-3xl shadow-2xl border border-black/10 dark:border-white/10 flex flex-col max-h-[90dvh] overflow-hidden my-auto animate-fade-in">
         
         {/* 모달 헤더 */}
         <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-[#F9F9FB] dark:bg-[#161618]">

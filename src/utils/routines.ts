@@ -57,16 +57,31 @@ export function recipeFromSession(session: WorkoutSession, name: string, rest: n
       ...(e.groupId && e.groupType && e.groupType !== 'single' ? { group: groups.indexOf(e.groupId), groupType: e.groupType } : {}),
       sets: e.sets.map(s => ({ reps: s.reps, rest: s.plannedRestSeconds ?? rest, side: s.side || 'both', plannedWeight: s.plannedWeight, plannedReps: s.plannedReps, targetRpe: s.targetRpe, plannedSetType: s.plannedSetType ?? s.setType, plannedTempo: s.plannedTempo, plannedNotes: s.plannedNotes })) })) }));
 }
-export function loadRoutines(): Routine[] { return JSON.parse(localStorage.getItem(key) || '[]').map((r: Routine) => parseRoutine(JSON.stringify(r))); }
+export function loadRoutines(): Routine[] {
+  try {
+    return JSON.parse(localStorage.getItem(key) || '[]').map((r: Routine) => parseRoutine(JSON.stringify(r)));
+  } catch {
+    return [];
+  }
+}
 export function saveRoutine(recipe: Routine) {
   const safe = parseRoutine(JSON.stringify(recipe));
   const list = loadRoutines();
   if (list.length >= 100 && !list.some(r => r.id === safe.id)) throw error();
-  localStorage.setItem(key, JSON.stringify([safe, ...list.filter(r => r.id !== safe.id)]));
+  try {
+    localStorage.setItem(key, JSON.stringify([safe, ...list.filter(r => r.id !== safe.id)]));
+  } catch (e) {
+    console.error('Failed to save routine', e);
+    throw new Error('저장 공간이 부족하여 루틴을 저장할 수 없습니다.');
+  }
   window.dispatchEvent(new Event(ROUTINES_CHANGE));
 }
 export function deleteRoutine(id: string) {
-  localStorage.setItem(key, JSON.stringify(loadRoutines().filter(r => r.id !== id)));
+  try {
+    localStorage.setItem(key, JSON.stringify(loadRoutines().filter(r => r.id !== id)));
+  } catch (e) {
+    console.error('Failed to delete routine', e);
+  }
   window.dispatchEvent(new Event(ROUTINES_CHANGE));
 }
 export function routineLink(recipe: Routine) {
