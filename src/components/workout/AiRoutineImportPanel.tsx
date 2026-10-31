@@ -31,6 +31,7 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
     setInput(value);
     setMessage('');
     setPreviewDraft(null);
+    setIsPreviewOpen(false);
   };
 
   const handleOpenPreview = () => {
@@ -151,11 +152,17 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
           catalog={catalog}
           onClose={() => setIsPreviewOpen(false)}
           onStart={session => {
-            setIsPreviewOpen(false);
-            onStart(session);
+            try {
+              onStart(session);
+              setIsPreviewOpen(false);
+            } catch (error) {
+              const msg = error instanceof Error ? error.message : '운동을 시작하지 못했습니다.';
+              setMessage(msg);
+              throw error;
+            }
           }}
           onUpdateDraft={updated => setPreviewDraft(updated)}
-          onCustomExerciseCreated={created => {
+          onCustomExerciseCreated={() => {
             setCustom(loadCustomExercises());
           }}
         />

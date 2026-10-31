@@ -8,9 +8,9 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         def envVersionCode = System.getenv("ANDROID_VERSION_CODE")
-        versionCode envVersionCode ? envVersionCode.toInteger() : 38
+        versionCode envVersionCode ? envVersionCode.toInteger() : 39
         def envVersionName = System.getenv("ANDROID_VERSION_NAME")
-        versionName (envVersionName ?: "3.43.0")
+        versionName (envVersionName ?: "3.43.1")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

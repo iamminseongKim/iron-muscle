@@ -20,6 +20,9 @@ test_*.js
 *.txt
 __pycache__/
 *.pyc
+output/
+tmp/
+.agents/
 
 # Android
 android/app/build/

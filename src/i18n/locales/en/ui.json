@@ -1069,5 +1069,8 @@
   "예: 오른쪽 손목, 왼쪽 무릎 등": "e.g. Right wrist, left knee, etc.",
   "오늘의 컨디션 특이사항, 목표 등을 적어보세요.": "Note today's condition specifics, targets, etc.",
   "저장해 둔 루틴 JSON 또는 Markdown 표를 여기에 붙여넣으세요.": "Paste your saved routine JSON or Markdown table here.",
-  "매칭할 운동 이름 검색": "Search exercise name to match"
+  "매칭할 운동 이름 검색": "Search exercise name to match",
+  "추천": "Recommended",
+  "종목을 검색하여 선택하세요": "Search and select exercise",
+  "운동명·부위·초성 검색": "Search exercise, muscle, or initials"
 }

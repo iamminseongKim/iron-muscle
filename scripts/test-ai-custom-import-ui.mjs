@@ -61,7 +61,7 @@ try {
  assert.equal(await page.$eval('[data-ai-routine-start]',node=>node.disabled),false);
  assert.ok((await page.$eval('[data-confirmed-muscles]',node=>node.textContent)).includes('승모근'));
  await page.screenshot({path:'output/ai-custom-confirmed.png',fullPage:true});
- await press('[data-ai-routine-start]');await page.waitForSelector('button[aria-label="1세트 완료"]');
+ await press('[data-ai-routine-start]');await page.waitForSelector('button[aria-label="1세트 시작"], button[aria-label="1세트 완료"]');
  const reviewedActive=await page.evaluate(()=>JSON.parse(localStorage.getItem('iron_active_session_v1')));
  assert.equal(reviewedActive.exercises[0].loadType,'plate-loaded','reviewed loading correction carries into first session');
  assert.equal(reviewedActive.exercises[0].equipmentType,'machine');
@@ -81,10 +81,10 @@ try {
  assert.equal(await page.$eval('[data-ai-exercise-select]',node=>node.value),'bench-press','English catalog lookup remains unique');
  await page.reload({waitUntil:'networkidle2'});await paste(raw);
  assert.equal(await page.$('[data-ai-register-exercise]'),null,'registered name resolves after reload');
- await press('[data-ai-routine-start]');await page.waitForSelector('button[aria-label="1세트 완료"]');
+ await press('[data-ai-routine-start]');await page.waitForSelector('button[aria-label="1세트 시작"], button[aria-label="1세트 완료"]');
  const active=await page.evaluate(()=>JSON.parse(localStorage.getItem('iron_active_session_v1')));
  const exercise=active.exercises[0];assert.equal(exercise.exerciseId,saved.id);assert.equal(exercise.loadType,'pin-loaded','reimport preserves explicitly supplied equipment override');
- assert.equal(exercise.sets[0].rpe,7.5);assert.equal(exercise.sets[0].tempo.eccentric,3);assert.equal(exercise.sets[0].comment,'Preserve set comment');assert.equal(exercise.sets[0].plannedRestSeconds,120);
+ assert.equal(exercise.sets[0].targetRpe,7.5);assert.equal(exercise.sets[0].plannedTempo.eccentric,3);assert.equal(exercise.sets[0].plannedNotes,'Preserve set comment');assert.equal(exercise.sets[0].plannedRestSeconds,120);
  const summary=await page.evaluate(async()=>{const {summarizeWorkoutDay}=await import('/src/utils/workoutCard.ts');const active=JSON.parse(localStorage.getItem('iron_active_session_v1'));active.exercises[0].sets[0].completed=true;return summarizeWorkoutDay([active],active.date);});
  assert.deepEqual(summary.primaryMuscles,['traps']);assert.deepEqual(summary.secondaryMuscles,['lats']);
  assert.deepEqual(errors,[]);console.log('AI custom import passed registration, reviewed muscles, multi-primary, missing values, cancel, corrupt/quota failures, duplicate prevention, reload resolution, metadata, and eight locale UIs.');
