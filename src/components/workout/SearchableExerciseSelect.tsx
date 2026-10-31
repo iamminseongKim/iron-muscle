@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, ChevronDown, Check, X, Dumbbell, Tag } from 'lucide-react';
+import { Search, ChevronDown, Check, X, Dumbbell } from 'lucide-react';
 import { displayExercise, displayMuscle, t } from '../../i18n';
 import type { Category, Exercise } from '../../types/workout';
 import { matchesExerciseSearch } from '../../utils/exerciseSearch';
@@ -38,7 +38,6 @@ export const SearchableExerciseSelect: React.FC<SearchableExerciseSelectProps> =
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'all' | Category>('all');
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const selectedExercise = useMemo(
@@ -46,41 +45,22 @@ export const SearchableExerciseSelect: React.FC<SearchableExerciseSelectProps> =
     [exercises, value]
   );
 
-  // Focus search input when dropdown opens
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => searchInputRef.current?.focus(), 50);
+      setTimeout(() => searchInputRef.current?.focus({ preventScroll: true }), 50);
     } else {
       setQuery('');
       setSelectedCategory('all');
     }
   }, [isOpen]);
 
-  // Click outside to close & Escape key
   useEffect(() => {
     if (!isOpen) return;
-
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
+      if (event.key === 'Escape') setIsOpen(false);
     };
-
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('touchstart', handlePointerDown);
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('touchstart', handlePointerDown);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
   const filteredExercises = useMemo(() => {
@@ -101,7 +81,7 @@ export const SearchableExerciseSelect: React.FC<SearchableExerciseSelectProps> =
   };
 
   return (
-    <div ref={containerRef} className={`relative w-full ${className}`}>
+    <div className={`w-full ${className}`}>
       {/* Hidden native select for test & accessibility automation */}
       <select
         data-ai-exercise-select={dataAiExerciseSelect ? '' : undefined}
@@ -122,9 +102,9 @@ export const SearchableExerciseSelect: React.FC<SearchableExerciseSelectProps> =
       {/* Styled Trigger Button */}
       <button
         type="button"
-        aria-haspopup="listbox"
+        aria-haspopup="dialog"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen(prev => !prev)}
+        onClick={() => setIsOpen(true)}
         className="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#25222E] flex items-center justify-between text-left text-sm text-[#1D1D1F] dark:text-white hover:border-accent focus:border-accent-strong focus:outline-none transition shadow-2xs cursor-pointer group"
       >
         <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
@@ -148,109 +128,160 @@ export const SearchableExerciseSelect: React.FC<SearchableExerciseSelectProps> =
         </div>
         <ChevronDown
           size={16}
-          className={`text-gray-400 group-hover:text-accent shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className="text-gray-400 group-hover:text-accent shrink-0 transition-transform duration-200"
         />
       </button>
 
-      {/* Custom Search & Selection Popover */}
+      {/* Full-view, Keyboard-aware Exercise Picker Modal */}
       {isOpen && (
         <div
-          role="listbox"
-          className="absolute left-0 right-0 top-full mt-1.5 z-40 bg-white dark:bg-[#1E1B24] rounded-2xl border border-black/10 dark:border-white/15 shadow-2xl p-2.5 space-y-2 animate-fade-in"
-          style={{ maxHeight: '360px' }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('운동 종목 선택')}
+          className="exercise-picker keyboard-aware-modal fixed inset-0 z-[60] flex items-center justify-center p-3 bg-black/60 backdrop-blur-md animate-fade-in"
+          style={{
+            paddingTop: 'max(16px, env(safe-area-inset-top, 16px))',
+            paddingBottom: 'max(16px, env(safe-area-inset-bottom, 16px))',
+          }}
+          onClick={event => {
+            if (event.target === event.currentTarget) setIsOpen(false);
+          }}
         >
-          {/* Search input with clear button */}
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={query}
-              onChange={event => setQuery(event.target.value)}
-              placeholder={t('운동명·부위·초성 검색')}
-              className="w-full pl-8 pr-8 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/80 dark:bg-[#25222E] text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:border-accent-strong focus:outline-none transition"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={() => setQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded"
-                aria-label={t('검색어 지우기')}
-              >
-                <X size={13} />
-              </button>
-            )}
-          </div>
-
-          {/* Category filter tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[11px]">
-            {CATEGORIES.map(category => (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() => setSelectedCategory(category.id)}
-                className={`px-2 py-1 rounded-lg font-semibold shrink-0 transition cursor-pointer ${
-                  selectedCategory === category.id
-                    ? 'bg-accent text-white shadow-2xs'
-                    : 'bg-black/[0.04] dark:bg-white/5 text-gray-500 hover:bg-black/8 dark:hover:bg-white/10'
-                }`}
-              >
-                {t(category.label)}
-              </button>
-            ))}
-          </div>
-
-          {/* Results count */}
-          <div className="flex items-center justify-between px-1 text-[11px] text-gray-400">
-            <span>{t('검색 결과')} {filteredExercises.length}{t('개')}</span>
-            {value && (
-              <button
-                type="button"
-                onClick={() => handleSelect(null)}
-                className="text-red-500 hover:text-red-600 dark:text-red-400 transition"
-              >
-                {t('선택 해제')}
-              </button>
-            )}
-          </div>
-
-          {/* Scrollable list */}
-          <div className="max-h-52 overflow-y-auto space-y-1 overscroll-contain pr-1">
-            {filteredExercises.length === 0 ? (
-              <div className="py-8 text-center text-xs text-gray-400">
-                {t('검색 결과가 없습니다.')}
+          <div
+            className="exercise-picker-dialog bg-white dark:bg-[#1E1B24] rounded-3xl w-full max-w-lg max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl border border-black/10 dark:border-white/10"
+          >
+            {/* Header */}
+            <div className="exercise-picker-header shrink-0 p-4 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center text-accent shrink-0">
+                  <Dumbbell size={18} />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white truncate">
+                    {t('운동 종목 선택')}
+                  </h3>
+                  {sourceName && (
+                    <p className="exercise-picker-description text-xs text-gray-400 truncate">
+                      {t('추천')} · {sourceName}
+                    </p>
+                  )}
+                </div>
               </div>
-            ) : (
-              filteredExercises.map(exercise => {
-                const isSelected = exercise.id === value;
-                return (
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-2 rounded-xl text-gray-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer"
+                aria-label={t('닫기')}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Search Input & Category Filters */}
+            <div className="shrink-0 p-3 border-b border-black/5 dark:border-white/10 bg-gray-50/80 dark:bg-[#25222E] space-y-2.5">
+              <div className="relative">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  value={query}
+                  onChange={event => setQuery(event.target.value)}
+                  placeholder={t('운동명·부위·초성 검색')}
+                  className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1E1B24] text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:border-accent-strong focus:outline-none transition shadow-2xs"
+                />
+                {query && (
                   <button
-                    key={exercise.id}
                     type="button"
-                    role="option"
-                    aria-selected={isSelected}
-                    onClick={() => handleSelect(exercise.id)}
-                    className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between gap-2 text-xs transition cursor-pointer ${
-                      isSelected
-                        ? 'bg-accent/15 text-accent font-bold ring-1 ring-accent/30'
-                        : 'hover:bg-black/5 dark:hover:bg-white/5 text-[#1D1D1F] dark:text-gray-200'
+                    onClick={() => setQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded"
+                    aria-label={t('검색어 지우기')}
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Category filter tabs */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none text-xs">
+                {CATEGORIES.map(category => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`px-3 py-1.5 rounded-xl font-bold shrink-0 transition cursor-pointer ${
+                      selectedCategory === category.id
+                        ? 'bg-accent text-white shadow-2xs'
+                        : 'bg-black/[0.04] dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-black/8 dark:hover:bg-white/10'
                     }`}
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="font-bold truncate text-[#1D1D1F] dark:text-white">
-                        {displayExercise(exercise)}
-                      </div>
-                      <div className="text-[10px] text-gray-400 truncate mt-0.5">
-                        {exercise.category && t(exercise.category)}
-                        {exercise.primaryMuscles?.[0] && ` · ${displayMuscle(exercise.primaryMuscles[0])}`}
-                        {exercise.equipment && ` · ${t(exercise.equipment)}`}
-                      </div>
-                    </div>
-                    {isSelected && <Check size={14} className="text-accent shrink-0" />}
+                    {t(category.label)}
                   </button>
-                );
-              })
-            )}
+                ))}
+              </div>
+            </div>
+
+            {/* Results count & Clear button */}
+            <div className="shrink-0 px-4 py-2 flex items-center justify-between text-xs text-gray-400 border-b border-black/5 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.01]">
+              <span>{t('검색 결과')} {filteredExercises.length}{t('개')}</span>
+              {value && (
+                <button
+                  type="button"
+                  onClick={() => handleSelect(null)}
+                  className="text-red-500 hover:text-red-600 dark:text-red-400 font-medium transition cursor-pointer"
+                >
+                  {t('선택 해제')}
+                </button>
+              )}
+            </div>
+
+            {/* Scrollable Exercises List */}
+            <div className="flex-1 overflow-y-auto p-2.5 space-y-1 overscroll-contain">
+              {filteredExercises.length === 0 ? (
+                <div className="py-12 text-center text-xs text-gray-400">
+                  {t('검색 결과가 없습니다.')}
+                </div>
+              ) : (
+                filteredExercises.map(exercise => {
+                  const isSelected = exercise.id === value;
+                  return (
+                    <button
+                      key={exercise.id}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => handleSelect(exercise.id)}
+                      className={`w-full text-left p-3 rounded-2xl flex items-center justify-between gap-3 transition cursor-pointer ${
+                        isSelected
+                          ? 'bg-accent/15 text-accent font-bold ring-1 ring-accent/30'
+                          : 'hover:bg-black/5 dark:hover:bg-white/5 text-[#1D1D1F] dark:text-gray-200'
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-sm truncate text-[#1D1D1F] dark:text-white">
+                          {displayExercise(exercise)}
+                        </div>
+                        <div className="text-xs text-gray-400 truncate mt-0.5 flex items-center gap-1.5 flex-wrap">
+                          {exercise.category && (
+                            <span className="px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5 font-medium">
+                              {t(exercise.category)}
+                            </span>
+                          )}
+                          {exercise.primaryMuscles?.[0] && (
+                            <span className="text-accent font-medium">
+                              {displayMuscle(exercise.primaryMuscles[0])}
+                            </span>
+                          )}
+                          {exercise.equipment && (
+                            <span>· {t(exercise.equipment)}</span>
+                          )}
+                        </div>
+                      </div>
+                      {isSelected && <Check size={18} className="text-accent shrink-0" />}
+                    </button>
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       )}
