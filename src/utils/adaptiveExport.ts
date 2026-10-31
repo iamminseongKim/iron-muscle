@@ -56,13 +56,13 @@ export function adaptiveExport(sessions: WorkoutSession[], language: Language = 
       if (exercise.machineConfigId) md += `- ID: ${cell(exercise.machineConfigId)}\n`;
       if (exercise.machineSetting) md += `- ${m.setting}: ${cell(exercise.machineSetting)}\n`;
       if (exercise.notes) md += `- ${m.notes}: ${cell(exercise.notes)}\n`;
-      const headings = [m.set, a.type, `${a.plan} ${m.weight}`, `${a.actual} ${m.weight}`, `${a.plan} ${m.reps}`, `${a.actual} ${m.reps}`, `${a.plan} RPE`, `${a.actual} RPE`, `${a.plan} ${m.rest}`, `${a.actual} ${m.rest}`, `${a.plan} ${m.tempo}`, `${a.actual} ${m.tempo}`, a.failure, a.stimulus, a.pain, m.estimated1rm, m.side, m.notes];
+      const headings = [m.set, `${a.plan} ${a.type}`, `${a.actual} ${a.type}`, `${a.plan} ${m.weight}`, `${a.actual} ${m.weight}`, `${a.plan} ${m.reps}`, `${a.actual} ${m.reps}`, `${a.plan} RPE`, `${a.actual} RPE`, `${a.plan} ${m.rest}`, `${a.actual} ${m.rest}`, `${a.plan} ${m.tempo}`, `${a.actual} ${m.tempo}`, a.failure, a.stimulus, a.pain, m.estimated1rm, m.side, m.notes];
       md += `\n| ${headings.join(' | ')} |\n| ${headings.map(() => '---').join(' | ')} |\n`;
       for (const set of exercise.sets) {
         const performed = set.completed;
         const confirmed = set.provenance === 'recorded';
-        const notes = [set.plannedNotes ? `${a.plan}: ${set.plannedNotes}` : '', set.comment, ...(set.tags || []).map(tag => t(tag, language)), !confirmed ? `${a.unknown} RPE=${value(set.rpe)}; ${m.rest}=${value(set.restSeconds)}` : '', !performed ? m.pending : ''].filter(Boolean).join('; ');
-        const values = [set.setNumber, typed(set.setType), set.plannedWeight === undefined ? null : `${set.plannedWeight} ${unit}`, performed ? `${set.weight} ${unit}` : null,
+        const notes = [set.plannedNotes ? `${a.plan}: ${set.plannedNotes}` : '', set.comment ? `${a.actual}: ${set.comment}` : '', ...(set.tags || []).map(tag => t(tag, language)), !confirmed ? `${a.unknown} RPE=${value(set.rpe)}; ${m.rest}=${value(set.restSeconds)}` : '', !performed ? m.pending : ''].filter(Boolean).join('; ');
+        const values = [set.setNumber, set.plannedSetType ? typed(set.plannedSetType) : null, performed ? typed(set.setType) : null, set.plannedWeight === undefined ? null : `${set.plannedWeight} ${unit}`, performed ? `${set.weight} ${unit}` : null,
           set.plannedReps, performed ? set.reps : null, set.targetRpe, actualRpe(set), set.plannedRestSeconds === undefined ? null : `${set.plannedRestSeconds} ${m.seconds}`,
           performed && confirmed && set.restSeconds !== undefined ? `${set.restSeconds} ${m.seconds}` : null, tempo(set.plannedTempo), performed ? tempo(set.tempo) : null,
           set.failureType ? a[set.failureType] : null, performed ? set.stimulusFeedback : null, set.painFeedback ? `${cell(set.painFeedback.location)} ${set.painFeedback.intensity}/10` : null,
