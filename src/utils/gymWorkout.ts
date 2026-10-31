@@ -17,6 +17,7 @@ export function convertExerciseSets(exercise: WorkoutExercise, targetUnit: Weigh
   return exercise.sets.map(set => ({
     ...set,
     weight: convertWeight(set.weight, exercise.weightUnit || fallbackUnit, targetUnit),
+    plannedWeight: set.plannedWeight === undefined ? undefined : convertWeight(set.plannedWeight, exercise.weightUnit || fallbackUnit, targetUnit),
     previousWeight: set.previousWeight === undefined ? undefined : convertWeight(set.previousWeight, exercise.weightUnit || fallbackUnit, targetUnit),
   }));
 }

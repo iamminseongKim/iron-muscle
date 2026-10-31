@@ -1,4 +1,5 @@
 import type { Exercise, WeightUnit, WorkoutSession, WorkoutSet, EquipmentType, ExecutionMode, LoadType, Category, MuscleTarget } from '../types/workout';
+import { SET_TYPES } from '../types/workout';
 import { getExerciseSearchFields, normalizeSearch } from './exerciseSearch';
 import { getTodayString } from './calendar';
 import { t, displayMuscle } from '../i18n';
@@ -8,6 +9,7 @@ export interface ImportedSet extends Pick<WorkoutSet, 'rpe' | 'tempo' | 'comment
   reps: number;
   weight: number;
   restSeconds: number;
+  setType?: WorkoutSet['setType'];
 }
 export interface ImportedExerciseProposal {
   category?: Category;
@@ -24,9 +26,13 @@ export interface ImportedExercise {
   executionMode: ExecutionMode;
   loadType?: LoadType;
   notes?: string;
+  machineConfigId?: string;
+  machineBrand?: string;
+  machineSetting?: string;
+  weightIncrement?: number;
   sets: ImportedSet[];
 }
-export interface ImportedWorkout {
+export interface ImportedWorkout extends Pick<WorkoutSession, 'programId' | 'programWeek' | 'trainingPhase' | 'sessionGoal'> {
   title: string;
   notes?: string;
   exercises: ImportedExercise[];
@@ -70,14 +76,16 @@ function tempo(value: unknown): WorkoutSet['tempo'] {
 }
 function set(value: Record<string, unknown>, defaults: Record<string, unknown>, mode: ExecutionMode): ImportedSet {
   const inherited = (key: string) => value[key] === undefined ? defaults[key] : value[key];
-  const reps = number(inherited('reps'), 10, 1000, true);
+  const first = (...keys: string[]) => keys.map(inherited).find(value => value !== undefined);
+  const reps = number(first('plannedReps', 'reps'), 10, 1000, true);
   if (reps < 1) throw invalid();
-  const rawRpe = inherited('rpe');
+  const rawRpe = first('targetRpe', 'rpe');
   const rpe = rawRpe === undefined ? undefined : number(rawRpe, 0, 10);
   if (rpe !== undefined && (rpe < 6 || !Number.isInteger(rpe * 2))) throw invalid();
   return {
-    reps, weight: number(inherited('weight'), 0, 2000), restSeconds: number(inherited('restSeconds'), 90, 3600, true),
-    rpe, tempo: tempo(inherited('tempo')), comment: note(inherited('comment')),
+    reps, weight: number(first('plannedWeight', 'weight'), 0, 2000), restSeconds: number(first('targetRestSeconds', 'plannedRestSeconds', 'restSeconds'), 90, 3600, true),
+    rpe, tempo: tempo(first('plannedTempo', 'tempo')), comment: note(first('plannedNotes', 'comment')),
+    setType: choice(first('plannedSetType', 'setType'), SET_TYPES, 'UNSPECIFIED'),
     side: choice(inherited('side'), ['left', 'right', 'both'], mode === 'unilateral' ? 'left' : 'both'),
   };
 }
@@ -112,6 +120,7 @@ function exercise(value: unknown, catalog: Exercise[]): ImportedExercise {
   }
   const executionMode = choice(row.executionMode, ['bilateral', 'unilateral', 'alternating'], 'bilateral') || 'bilateral';
   const equipmentType = choice(row.equipmentType, ['smith', 'barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'other']);
+  if (row.weightIncrement !== undefined && (typeof row.weightIncrement !== 'number' || row.weightIncrement <= 0)) throw invalid();
   const loadType = choice(row.loadType, ['plate-loaded', 'pin-loaded', 'barbell', 'dumbbell', 'cable', 'bodyweight', 'other']);
   let sets: ImportedSet[];
   if (Array.isArray(row.sets)) {
@@ -126,7 +135,7 @@ function exercise(value: unknown, catalog: Exercise[]): ImportedExercise {
     if (count < 1) throw invalid();
     sets = Array.from({ length: count }, () => set(row, {}, executionMode));
   }
-  return { sourceName, exerciseId, proposal: proposal(row), weightUnit: unit(row.weightUnit), equipmentType, executionMode, loadType, notes: note(row.notes), sets };
+  return { sourceName, exerciseId, proposal: proposal(row), weightUnit: unit(row.weightUnit), equipmentType, executionMode, loadType, notes: note(row.notes), machineConfigId: note(row.machineConfigId), machineBrand: note(row.machineBrand), machineSetting: note(row.machineSetting), weightIncrement: row.weightIncrement === undefined ? undefined : number(row.weightIncrement, 0, 100), sets };
 }
 
 const headers: Record<string, string> = {
@@ -134,7 +143,7 @@ const headers: Record<string, string> = {
   name: 'name', exercise: 'name', '종목': 'name', '운동': 'name', '운동명': 'name', '종목명': 'name',
   sets: 'sets', '세트': 'sets', '세트수': 'sets', reps: 'reps', '반복': 'reps', '반복수': 'reps', '횟수': 'reps',
   weight: 'weight', '무게': 'weight', '중량': 'weight', rest: 'restSeconds', restseconds: 'restSeconds', '휴식': 'restSeconds', '휴식초': 'restSeconds',
-  rpe: 'rpe', '운동강도': 'rpe', tempo: 'tempo', '템포': 'tempo', notes: 'notes', '메모': 'notes', comment: 'comment', '세트메모': 'comment',
+  settype: 'setType', plannedsettype: 'plannedSetType', targetrpe: 'targetRpe', rpe: 'rpe', '운동강도': 'rpe', tempo: 'tempo', '템포': 'tempo', notes: 'notes', '메모': 'notes', comment: 'comment', '세트메모': 'comment',
   executionmode: 'executionMode', '수행방식': 'executionMode', loadtype: 'loadType', '로딩방식': 'loadType', equipmenttype: 'equipmentType', '기구유형': 'equipmentType', side: 'side', '방향': 'side',
   unit: 'weightUnit', weightunit: 'weightUnit', '단위': 'weightUnit',
 };
@@ -162,7 +171,7 @@ function markdown(raw: string): Record<string, unknown> {
     columns.forEach((column, index) => {
       const value = values[index];
       if (['primaryMuscles', 'secondaryMuscles'].includes(column)) row[column] = value ? value.split(',').map(id => id.trim()) : [];
-      else if (['name', 'notes', 'comment', 'executionMode', 'loadType', 'equipmentType', 'side', 'category', 'nameEn'].includes(column)) row[column] = value;
+      else if (['name', 'notes', 'comment', 'executionMode', 'loadType', 'equipmentType', 'side', 'category', 'nameEn', 'setType', 'plannedSetType'].includes(column)) row[column] = value;
       else if (column === 'tempo') {
         const parts = value.match(/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/);
         if (!parts) throw invalid();
@@ -206,14 +215,15 @@ export function parseImportedWorkout(raw: string, catalog: Exercise[]): Imported
   const root = record(value);
   if (!Array.isArray(root.exercises) || !root.exercises.length || root.exercises.length > 50) throw invalid();
   const title = root.title === undefined ? 'AI 루틴' : name(root.title);
-  return { title, notes: note(root.notes), exercises: root.exercises.map(value => exercise(value, catalog)) };
+  if (root.programWeek !== undefined && (typeof root.programWeek !== 'number' || root.programWeek < 1)) throw invalid();
+  return { title, notes: note(root.notes), programId: note(root.programId), programWeek: root.programWeek === undefined ? undefined : number(root.programWeek, 1, 1000, true), trainingPhase: choice(root.trainingPhase, ['RECOVERY', 'HYPERTROPHY', 'STRENGTH', 'DELOAD']), sessionGoal: note(root.sessionGoal), exercises: root.exercises.map(value => exercise(value, catalog)) };
 }
 
 export function sessionFromImportedWorkout(draft: ImportedWorkout, catalog: Exercise[]): WorkoutSession {
   if (!draft.exercises.length || draft.exercises.some(row => !row.exerciseId || !catalog.some(item => item.id === row.exerciseId))) throw new Error('모든 종목을 선택하세요.');
   return {
     id: crypto.randomUUID(), title: draft.title, date: getTodayString(), startTime: new Date().toISOString(),
-    durationSeconds: 0, completed: false, weightUnit: 'kg', notes: draft.notes,
+    durationSeconds: 0, completed: false, weightUnit: 'kg', notes: draft.notes, programId: draft.programId, programWeek: draft.programWeek, trainingPhase: draft.trainingPhase, sessionGoal: draft.sessionGoal,
     exercises: draft.exercises.map(row => {
       const item = catalog.find(item => item.id === row.exerciseId);
       if (!item) throw new Error('모든 종목을 선택하세요.');
@@ -221,8 +231,8 @@ export function sessionFromImportedWorkout(draft: ImportedWorkout, catalog: Exer
       const loadType = row.loadType || item.loadType || (equipmentType === 'machine' || equipmentType === 'smith' ? 'plate-loaded' : undefined);
       return {
         id: crypto.randomUUID(), exerciseId: item.id, exerciseName: item.name, equipmentType, executionMode: row.executionMode, loadType, notes: row.notes,
-        weightUnit: row.weightUnit,
-        sets: row.sets.map((set, index) => ({ id: crypto.randomUUID(), setNumber: index + 1, weight: set.weight, reps: set.reps, plannedRestSeconds: set.restSeconds, rpe: set.rpe, tempo: set.tempo ? { ...set.tempo } : undefined, comment: set.comment, side: set.side, completed: false })),
+        weightUnit: row.weightUnit, machineConfigId: row.machineConfigId, machineBrand: row.machineBrand, machineSetting: row.machineSetting, weightIncrement: row.weightIncrement,
+        sets: row.sets.map((set, index) => ({ id: crypto.randomUUID(), setNumber: index + 1, weight: set.weight, reps: set.reps, plannedRestSeconds: set.restSeconds, plannedWeight: set.weight, plannedReps: set.reps, targetRpe: set.rpe ?? undefined, plannedTempo: set.tempo ? { ...set.tempo } : undefined, plannedNotes: set.comment, plannedSetType: set.setType, setType: set.setType, provenance: 'recorded', rpe: null, side: set.side, completed: false })),
       };
     }),
   };

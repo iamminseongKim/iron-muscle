@@ -1,14 +1,15 @@
 import { Capacitor } from '@capacitor/core';
-import type { WorkoutSession, WorkoutExercise, EquipmentType, ExecutionMode } from '../types/workout';
+import type { WorkoutSession, WorkoutExercise, EquipmentType, ExecutionMode, WorkoutSet, WeightUnit } from '../types/workout';
 import { resolveRecordedExercise } from './exerciseResolver';
+import { SET_TYPES } from '../types/workout';
 import { getTodayString } from './calendar';
 
 const key = 'iron_routines_v1';
 export const ROUTINES_CHANGE = 'iron_routines_change';
 export interface Routine {
   format: 'iron-muscle-routine'; version: 1; id: string; name: string;
-  exercises: { exerciseId: string; name: string; equipment: EquipmentType; mode: ExecutionMode; group?: number;
-    groupType?: WorkoutExercise['groupType']; sets: { reps: number; rest: number; side: 'both' | 'left' | 'right' }[] }[];
+  exercises: { exerciseId: string; name: string; equipment: EquipmentType; mode: ExecutionMode; weightUnit?: WeightUnit; group?: number;
+    groupType?: WorkoutExercise['groupType']; sets: ({ reps: number; rest: number; side: 'both' | 'left' | 'right' } & Pick<WorkoutSet, 'plannedWeight' | 'plannedReps' | 'targetRpe' | 'plannedTempo' | 'plannedSetType' | 'plannedNotes'>)[] }[];
 }
 const error = () => new Error('루틴 형식이 올바르지 않거나 너무 큽니다.');
 const text = (v: unknown, max: number) => typeof v === 'string' && v.trim().length > 0 && v.length <= max;
@@ -25,12 +26,26 @@ export function parseRoutine(raw: string): Routine {
   return { format: 'iron-muscle-routine', version: 1, id: text(value.id, 100) ? value.id : crypto.randomUUID(), name: value.name.trim(),
     exercises: value.exercises.map((e: any) => {
       if (!e || !text(e.exerciseId, 160) || !text(e.name, 160) || !['smith','barbell','dumbbell','machine','cable','bodyweight','other'].includes(e.equipment) || !['bilateral','unilateral','alternating'].includes(e.mode) || !Array.isArray(e.sets) || e.sets.length < 1 || e.sets.length > 50) throw error();
+      if (e.weightUnit !== undefined && !['kg', 'lbs'].includes(e.weightUnit)) throw error();
       if (e.group !== undefined && (!Number.isInteger(e.group) || e.group < 0 || e.group > 49 || !['superset','compound','giant'].includes(e.groupType))) throw error();
-      return { exerciseId: e.exerciseId, name: e.name, equipment: e.equipment, mode: e.mode,
+      return { exerciseId: e.exerciseId, name: e.name, equipment: e.equipment, mode: e.mode, ...(e.weightUnit === undefined ? {} : { weightUnit: e.weightUnit }),
         ...(e.group !== undefined ? { group: e.group, groupType: e.groupType } : {}),
         sets: e.sets.map((s: any) => {
           if (!s || !Number.isInteger(s.reps) || s.reps < 0 || s.reps > 1000 || !Number.isInteger(s.rest) || s.rest < 0 || s.rest > 3600 || !['both','left','right'].includes(s.side)) throw error();
-          return { reps: s.reps, rest: s.rest, side: s.side };
+          if (s.plannedWeight !== undefined && (!Number.isFinite(s.plannedWeight) || Math.abs(s.plannedWeight) > 2000)) throw error();
+          if (s.plannedReps !== undefined && (!Number.isInteger(s.plannedReps) || s.plannedReps < 0 || s.plannedReps > 1000)) throw error();
+          if (s.targetRpe !== undefined && (!Number.isFinite(s.targetRpe) || s.targetRpe < 6 || s.targetRpe > 10 || !Number.isInteger(s.targetRpe * 2))) throw error();
+          if (s.plannedSetType !== undefined && !SET_TYPES.includes(s.plannedSetType)) throw error();
+          if (s.plannedNotes !== undefined && (typeof s.plannedNotes !== 'string' || s.plannedNotes.length > 2000)) throw error();
+          if (s.plannedTempo !== undefined && (!s.plannedTempo || !['eccentric','pause','concentric'].every(k => Number.isFinite(s.plannedTempo[k]) && s.plannedTempo[k] >= 0 && s.plannedTempo[k] <= 30))) throw error();
+          return { reps: s.reps, rest: s.rest, side: s.side,
+            ...(s.plannedWeight === undefined ? {} : { plannedWeight: s.plannedWeight }),
+            ...(s.plannedReps === undefined ? {} : { plannedReps: s.plannedReps }),
+            ...(s.targetRpe === undefined ? {} : { targetRpe: s.targetRpe }),
+            ...(s.plannedSetType === undefined ? {} : { plannedSetType: s.plannedSetType }),
+            ...(s.plannedNotes === undefined ? {} : { plannedNotes: s.plannedNotes }),
+            ...(s.plannedTempo === undefined ? {} : { plannedTempo: { eccentric: s.plannedTempo.eccentric, pause: s.plannedTempo.pause, concentric: s.plannedTempo.concentric } }),
+          };
         }) };
     }) };
 }
@@ -38,9 +53,9 @@ export function recipeFromSession(session: WorkoutSession, name: string, rest: n
   const groups = [...new Set(session.exercises.map(e => e.groupId).filter(Boolean))];
   return parseRoutine(JSON.stringify({ format: 'iron-muscle-routine', version: 1, id: crypto.randomUUID(), name,
     exercises: session.exercises.filter(e => e.sets.length).map(e => ({ exerciseId: e.exerciseId,
-      name: resolveRecordedExercise(e).name, equipment: e.equipmentType, mode: e.executionMode || 'bilateral',
+      name: resolveRecordedExercise(e).name, equipment: e.equipmentType, mode: e.executionMode || 'bilateral', ...(e.sets.some(set => set.plannedWeight !== undefined) ? { weightUnit: e.weightUnit || session.weightUnit || 'kg' } : {}),
       ...(e.groupId && e.groupType && e.groupType !== 'single' ? { group: groups.indexOf(e.groupId), groupType: e.groupType } : {}),
-      sets: e.sets.map(s => ({ reps: s.reps, rest: s.plannedRestSeconds ?? rest, side: s.side || 'both' })) })) }));
+      sets: e.sets.map(s => ({ reps: s.reps, rest: s.plannedRestSeconds ?? rest, side: s.side || 'both', plannedWeight: s.plannedWeight, plannedReps: s.plannedReps, targetRpe: s.targetRpe, plannedSetType: s.plannedSetType ?? s.setType, plannedTempo: s.plannedTempo, plannedNotes: s.plannedNotes })) })) }));
 }
 export function loadRoutines(): Routine[] { return JSON.parse(localStorage.getItem(key) || '[]').map((r: Routine) => parseRoutine(JSON.stringify(r))); }
 export function saveRoutine(recipe: Routine) {
@@ -66,7 +81,7 @@ export function sessionFromRoutine(recipe: Routine): WorkoutSession {
   const routine = parseRoutine(JSON.stringify(recipe));
   const id = crypto.randomUUID();
   return { id, title: routine.name, date: getTodayString(), startTime: new Date().toISOString(), durationSeconds: 0, completed: false, weightUnit: 'kg',
-    exercises: routine.exercises.map(e => ({ id: crypto.randomUUID(), exerciseId: e.exerciseId, exerciseName: e.name, equipmentType: e.equipment, executionMode: e.mode, weightUnit: 'kg',
+    exercises: routine.exercises.map(e => ({ id: crypto.randomUUID(), exerciseId: e.exerciseId, exerciseName: e.name, equipmentType: e.equipment, executionMode: e.mode, weightUnit: e.weightUnit || 'kg',
       ...(e.group !== undefined ? { groupId: `${id}-group-${e.group}`, groupType: e.groupType } : {}),
-      sets: e.sets.map((s, i) => ({ id: crypto.randomUUID(), setNumber: i + 1, reps: s.reps, weight: 0, completed: false, side: s.side, plannedRestSeconds: s.rest })) })) };
+      sets: e.sets.map((s, i) => ({ id: crypto.randomUUID(), setNumber: i + 1, reps: s.plannedReps ?? s.reps, weight: s.plannedWeight ?? 0, completed: false, provenance: 'recorded', rpe: null, plannedWeight: s.plannedWeight, plannedReps: s.plannedReps, targetRpe: s.targetRpe, plannedSetType: s.plannedSetType, setType: s.plannedSetType, plannedTempo: s.plannedTempo, plannedNotes: s.plannedNotes, side: s.side, plannedRestSeconds: s.rest })) })) };
 }

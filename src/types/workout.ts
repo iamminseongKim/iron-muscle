@@ -43,13 +43,55 @@ export interface Tempo {
   concentric: number; // 수축/단축 (초)
 }
 
+export const SET_TYPES = ['WARMUP', 'ACTIVATION', 'WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET', 'UNSPECIFIED'] as const;
+export type SetType = typeof SET_TYPES[number];
+export type FailureType = 'NONE' | 'TECHNICAL' | 'MUSCULAR' | 'OTHER' | 'UNKNOWN';
+export type TrainingPhase = 'RECOVERY' | 'HYPERTROPHY' | 'STRENGTH' | 'DELOAD';
+export interface TrainingCheckIn {
+  sleepHours?: number;
+  sleepQuality?: number;
+  hoursAwake?: number;
+  energy?: number;
+  fatigue?: number;
+  soreness?: string;
+  jointPain?: string;
+  preWorkoutMeal?: boolean;
+  notes?: string;
+}
+export interface ExerciseFeedback {
+  stimulus?: number;
+  fatigue?: number;
+  compensation?: string;
+  painLocation?: string;
+  painIntensity?: number;
+  notes?: string;
+}
+
 export interface WorkoutSet {
+  plannedWeight?: number;
+  plannedReps?: number;
+  targetRpe?: number;
+  plannedTempo?: Tempo;
+  plannedSetType?: SetType;
+  plannedNotes?: string;
+  setType?: SetType;
+  failureType?: FailureType;
+  painFeedback?: { location: string; intensity: number };
+  stimulusFeedback?: number;
+  startedAt?: string;
+  completedAt?: string;
+  provenance?: 'recorded' | 'legacy-unknown';
+  startPausedSeconds?: number;
+  completionPausedSeconds?: number;
+  restKind?: 'transition' | 'round' | 'between-sets';
+  dropSegments?: { weight: number; reps: number }[];
+
   id: string;
   setNumber: number;
   weight: number;
   reps: number;
   completed: boolean;
-  rpe?: number; // 6.0 ~ 10.0 (0.5 단위)
+  rpe?: number | null; // 6.0 ~ 10.0 (0.5 단위)
   tempo?: Tempo;
   comment?: string;
   tags?: string[]; // '웜업', '탑세트', '백오프', '드롭세트', '실패지점', '스트랩 착용' 등
@@ -145,6 +187,8 @@ export interface Exercise {
 }
 
 export interface WorkoutExercise {
+  feedback?: ExerciseFeedback;
+  weightIncrement?: number;
   id: string;
   exerciseId: string;
   exerciseName?: string; // Name snapshot, preserved if a custom catalog entry is removed.
@@ -166,6 +210,13 @@ export interface WorkoutExercise {
 }
 
 export interface WorkoutSession {
+  programId?: string;
+  programWeek?: number;
+  trainingPhase?: TrainingPhase;
+  sessionGoal?: string;
+  checkIn?: TrainingCheckIn;
+  pausedAt?: string;
+  pausedSeconds?: number;
   id: string;
   title: string;
   date: string; // YYYY-MM-DD

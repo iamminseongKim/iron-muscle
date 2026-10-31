@@ -30,18 +30,18 @@ for (const ex of result.exercises) for (const s of ex.sets) {
   assert.equal(s.completed, false);
   assert.equal(s.previousWeight, s.weight);
   assert.equal(s.previousReps, s.reps);
-  assert.equal(s.rpe, undefined);
+  assert.equal(s.rpe, null);
   assert.equal(s.restSeconds, undefined);
   assert.equal(s.comment, undefined);
   assert.deepEqual(s.tags, ['웜업']);
   assert.equal(s.plannedRestSeconds, 90);
-  assert.deepEqual(s.tempo, { eccentric: 2, pause: 0, concentric: 1 });
+  assert.deepEqual(s.plannedTempo, { eccentric: 2, pause: 0, concentric: 1 });
 }
 const sourceIds = new Set([source.id, ...source.exercises.flatMap(ex => [ex.id, ...ex.sets.map(s => s.id)])]);
 const newIds = [result.id, ...result.exercises.flatMap(ex => [ex.id, ...ex.sets.map(s => s.id)])];
 assert.equal(new Set(newIds).size, newIds.length);
 assert.ok(newIds.every(id => !sourceIds.has(id)));
-result.exercises[0].sets[0].tempo.eccentric = 5;
+result.exercises[0].sets[0].plannedTempo.eccentric = 5;
 result.targetPartIds.push('back');
 assert.equal(JSON.stringify(source), snapshot);
 assert.equal(repeatWorkout(source).bodyWeight, undefined);

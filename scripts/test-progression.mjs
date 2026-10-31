@@ -120,10 +120,13 @@ assert.equal(progMixed.records[1].weight, 40);
 assert.equal(progMixed.records[1].weightUnit, 'lbs');
 assert.equal(progMixed.records[1].max1RM, 75.8);
 
-// 성장률 계산 검증: 단위를 통일하지 않은 단순 수치 비교(75.8 vs 47.4 -> +59.9%)가 아니라,
-// 단위(kg) 정규화 비교(34.38kg vs 47.4kg)로 -27.5%가 되어야 함!
-assert.ok(progMixed.growthRate < 0, `Expected negative growth rate, got ${progMixed.growthRate}`);
-assert.equal(progMixed.growthRate, -27.5);
+assert.equal(progMixed.growthRate, 0, 'different machines do not produce a growth rate');
+assert.equal(progMixed.comparisonLimited, true);
+const comparable = structuredClone(historyMixed);
+comparable[1].exercises[0].machineBrand = comparable[0].exercises[0].machineBrand;
+const comparableProgress = calculateProgression('leg-extension', comparable);
+assert.equal(comparableProgress.growthRate, -27.5, 'same machine normalizes kg and lbs');
+assert.equal(comparableProgress.comparisonLimited, false);
 
 // 단위 변환 함수 검증: 75.8 lbs -> 34.5 kg
 assert.equal(convertWeight(75.8, 'lbs', 'kg'), 34.5);

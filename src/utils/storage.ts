@@ -1,3 +1,4 @@
+import { normalizeAdaptiveSession } from './adaptiveTraining';
 import { WorkoutSession, Exercise } from '../types/workout';
 import { INITIAL_SAMPLE_HISTORY } from '../data/sampleHistory';
 import { sanitizeSessionExercises } from './exerciseResolver';
@@ -17,7 +18,7 @@ export function loadSavedSessions(): WorkoutSession[] {
       return []; // 기본 더미 데이터 없이 깨끗한 빈 상태로 시작!
     }
     const parsed: WorkoutSession[] = JSON.parse(raw);
-    const sanitized = parsed.map(sanitizeSessionExercises);
+    const sanitized = parsed.map(session => normalizeAdaptiveSession(sanitizeSessionExercises(session)));
     const { sessions: migrated, migratedCount } = migrateLegacySessionDates(sanitized);
     if (migratedCount > 0) {
       saveSessions(migrated);
@@ -102,7 +103,7 @@ export function loadActiveSession(): WorkoutSession | null {
     const raw = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
     if (!raw) return null;
     const parsed: WorkoutSession = JSON.parse(raw);
-    const sanitized = sanitizeSessionExercises(parsed);
+    const sanitized = normalizeAdaptiveSession(sanitizeSessionExercises(parsed));
     const { sessions: migrated, migratedCount } = migrateLegacySessionDates([sanitized]);
     if (migratedCount > 0) {
       saveActiveSession(migrated[0]);

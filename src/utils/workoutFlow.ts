@@ -24,9 +24,9 @@ export function repeatWorkout(source: WorkoutSession, options: { now?: Date; bod
       groupType: ex.groupType, groupLabel: ex.groupLabel, groupColor: ex.groupColor,
       sets: ex.sets.filter(usableSet).map((set, i) => ({
         id: crypto.randomUUID(), setNumber: i + 1, weight: set.weight, reps: set.reps,
-        completed: false, previousWeight: set.weight, previousReps: set.reps, side: set.side,
+        completed: false, provenance: 'recorded', rpe: null, plannedWeight: set.weight, plannedReps: set.reps, plannedSetType: set.setType, setType: set.setType, previousWeight: set.weight, previousReps: set.reps, side: set.side,
         plannedRestSeconds: set.plannedRestSeconds,
-        tempo: set.tempo ? { ...set.tempo } : undefined,
+        plannedTempo: set.tempo ? { ...set.tempo } : undefined,
         tags: set.tags?.filter(tag => planTags.has(tag)),
       })),
     };
@@ -170,7 +170,7 @@ function personalBestRecords(session: WorkoutSession, history: WorkoutSession[])
   const visited = new Set<string>();
   const inKg = (weight: number, exercise: WorkoutExercise, owner: WorkoutSession) =>
     (exercise.weightUnit || owner.weightUnit) === 'lbs' ? weight / KG_TO_LBS : weight;
-  const maxWeight = (exercise: WorkoutExercise) => Math.max(0, ...exercise.sets.filter(usableSet).map(set => set.weight));
+  const maxWeight = (exercise: WorkoutExercise) => Math.max(0, ...exercise.sets.filter(set => usableSet(set) && (!set.setType || ['WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET'].includes(set.setType))).map(set => set.weight));
   for (const exercise of session.exercises) {
     const key = exerciseKey(exercise);
     if (visited.has(key) || exercise.equipmentType === 'bodyweight' || isAssistedExercise(resolveRecordedExercise(exercise))) continue;

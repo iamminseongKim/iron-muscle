@@ -26,7 +26,7 @@ export function isAssistedExercise(exercise?: { name?: string; nameEn?: string; 
 }
 
 // 1. 추정 1RM 계산 (Brzycki 공식 및 RPE 반영)
-export function calculate1RM(weight: number, reps: number, rpe?: number): number {
+export function calculate1RM(weight: number, reps: number, rpe?: number | null): number {
   if (weight <= 0 || reps <= 0) return 0;
   if (reps === 1 && (!rpe || rpe === 10)) return Math.round(weight);
 
@@ -47,8 +47,8 @@ export function calculateSessionVolume(session: WorkoutSession, unit: WeightUnit
     const isLbs = (ex.weightUnit || session.weightUnit) === 'lbs';
     ex.sets.forEach(s => {
       if (s.completed && s.weight > 0 && s.reps > 0) {
-        const weightInKg = isLbs ? s.weight / KG_TO_LBS : s.weight;
-        totalVolumeKg += weightInKg * s.reps;
+        const segments = s.dropSegments?.length ? s.dropSegments : [{ weight: s.weight, reps: s.reps }];
+        totalVolumeKg += segments.reduce((sum, segment) => sum + Math.max(0, isLbs ? segment.weight / KG_TO_LBS : segment.weight) * segment.reps, 0);
       }
     });
   });
@@ -62,7 +62,7 @@ export function calculateSessionReps(session: WorkoutSession): number {
   session.exercises.forEach(ex => {
     ex.sets.forEach(s => {
       if (s.completed && s.reps > 0) {
-        totalReps += s.reps;
+        totalReps += s.dropSegments?.length ? s.dropSegments.reduce((sum, segment) => sum + segment.reps, 0) : s.reps;
       }
     });
   });
@@ -74,7 +74,7 @@ export function calculateAverageRPE(session: WorkoutSession): number | null {
   const rpes: number[] = [];
   session.exercises.forEach(ex => {
     ex.sets.forEach(s => {
-      if (s.completed && s.rpe) {
+      if (s.completed && s.provenance !== 'legacy-unknown' && s.rpe) {
         rpes.push(s.rpe);
       }
     });
@@ -93,13 +93,13 @@ export function getExerciseRecords(sets: WorkoutSet[]) {
   let totalVolume = 0;
 
   sets.forEach(set => {
-    if (set.completed && set.weight > 0 && set.reps > 0) {
+    if (set.completed && (!set.setType || ['WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET'].includes(set.setType)) && set.weight > 0 && set.reps > 0) {
       totalSets += 1;
       const vol = set.weight * set.reps;
       totalVolume += vol;
       if (vol > maxSetVolume) maxSetVolume = vol;
       if (set.weight > maxWeight) maxWeight = set.weight;
-      const est1RM = calculate1RM(set.weight, set.reps, set.rpe);
+      const est1RM = calculate1RM(set.weight, set.reps, set.provenance === 'legacy-unknown' ? undefined : set.rpe);
       if (est1RM > max1RM) max1RM = est1RM;
     }
   });
@@ -112,6 +112,7 @@ export interface ProgressionRecord {
   max1RM: number;
   weightUnit: WeightUnit;
   brand?: string;
+  conditionKey?: string;
   weight: number;
   reps: number;
 }
@@ -128,8 +129,8 @@ export function calculateProgression(exerciseId: string, history: WorkoutSession
         let bestWeight = 0;
         let bestReps = 0;
         ex.sets.forEach(s => {
-          if (s.completed && s.weight > 0 && s.reps > 0) {
-            const oneRm = calculate1RM(s.weight, s.reps, s.rpe);
+          if (s.completed && (!s.setType || ['WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET'].includes(s.setType)) && s.weight > 0 && s.reps > 0) {
+            const oneRm = calculate1RM(s.weight, s.reps, s.provenance === 'legacy-unknown' ? undefined : s.rpe);
             if (oneRm > best1RM) {
               best1RM = oneRm;
               bestWeight = s.weight;
@@ -143,6 +144,7 @@ export function calculateProgression(exerciseId: string, history: WorkoutSession
             max1RM: best1RM,
             weightUnit: exUnit,
             brand: ex.machineBrand,
+            conditionKey: JSON.stringify([ex.equipmentType, ex.loadType || '', ex.executionMode || 'bilateral', ex.machineConfigId || '', ex.machineBrand || '', ex.machineSetting || '']),
             weight: bestWeight,
             reps: bestReps
           });
@@ -159,12 +161,12 @@ export function calculateProgression(exerciseId: string, history: WorkoutSession
     const last = records[records.length - 1];
     const firstInKg = first.weightUnit === 'lbs' ? first.max1RM / KG_TO_LBS : first.max1RM;
     const lastInKg = last.weightUnit === 'lbs' ? last.max1RM / KG_TO_LBS : last.max1RM;
-    if (firstInKg > 0) {
+    if (firstInKg > 0 && first.conditionKey === last.conditionKey) {
       growthRate = Math.round(((lastInKg - firstInKg) / firstInKg) * 1000) / 10;
     }
   }
 
-  return { records, growthRate };
+  return { records, growthRate, comparisonLimited: records.length >= 2 && records[0].conditionKey !== records[records.length - 1].conditionKey };
 }
 
 /** Sort a copy: imports and restored backups do not guarantee storage order. */
