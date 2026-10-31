@@ -9,7 +9,7 @@ for(const language of ['en','ja','zh-CN','zh-TW','es','fr','de'])for(const scope
  const md=generateAiCoachingMarkdown(fixture,{language,scope,selectedBodyPart,selectedDate:'2026-09-13'});
  assert.ok(!/[가-힣]/.test(md),`${language}/${scope}/${selectedBodyPart} contains untranslated generated text`);
  assert.ok(md.includes('22.5 lbs'));assert.ok(md.includes('CUSTOM COMMENT'));assert.ok(md.includes('KEEP \\| USER<br>TEXT'));
- assert.ok(md.includes('1. ')&&md.includes('4. '));
+ assert.ok(md.includes('v3.0')); assert.ok(!md.includes('following four'));
  assert.ok(!/[가-힣]/.test(generateAiCoachingMarkdown([],{language,scope,selectedBodyPart,selectedDate:'2026-09-13'})));
 }
 assert.equal(JSON.stringify(fixture),before);

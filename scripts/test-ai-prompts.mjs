@@ -104,52 +104,10 @@ assert.ok(chestSummary);
 assert.equal(chestSummary.totalSets, 1);
 assert.equal(chestSummary.sessionCount, 1);
 
-// 4. 상황별/부위별 맞춤형 AI 프롬프트 멘트 검증
-// 4-1. 가슴 특화 멘트
-const mdChest = generateAiCoachingMarkdown(chestFiltered, {
-  scope: 'all',
-  selectedDate: '2026-09-13',
-  selectedBodyPart: 'chest',
-});
-assert.ok(mdChest.includes('대흉근 상부/중부/하부 각도 밸런스'));
-assert.ok(mdChest.includes('프레스 중량 및 점진적 과부하 달성도'));
-assert.ok(mdChest.includes('가슴 집중 보완을 위한 4주 증량 프로그램'));
-
-// 4-2. 등 특화 멘트
-const backFiltered = filterSessionsForAiExport(dummySessions, {
-  scope: 'all',
-  selectedDate: '2026-09-13',
-  selectedBodyPart: 'back',
-});
-const mdBack = generateAiCoachingMarkdown(backFiltered, {
-  scope: 'all',
-  selectedDate: '2026-09-13',
-  selectedBodyPart: 'back',
-});
-assert.ok(mdBack.includes('등 너비(광배) vs 두께(승모/능형근) 밸런스'));
-assert.ok(mdBack.includes('척추기립근 및 허리 피로도 관리'));
-
-// 4-3. 팔/이두/삼두 특화 멘트
-const mdArms = generateAiCoachingMarkdown(armsFiltered, {
-  scope: 'all',
-  selectedDate: '2026-09-13',
-  selectedBodyPart: 'arms',
-});
-assert.ok(mdArms.includes('팔 둘레 1인치 성장을 위한 4주 슈퍼세트/드롭세트'));
-assert.ok(mdArms.includes('팔꿈치/손목 관절 부담 관리'));
-
-// 4-4. 하루(당일) 전체 분석 멘트
-const daySessions = filterSessionsForAiExport(dummySessions, {
-  scope: 'day',
-  selectedDate: '2026-09-13',
-  selectedBodyPart: 'all',
-});
-const mdDay = generateAiCoachingMarkdown(daySessions, {
-  scope: 'day',
-  selectedDate: '2026-09-13',
-  selectedBodyPart: 'all',
-});
-assert.ok(mdDay.includes('오늘 세션 강도 및 RPE 적절성'));
-assert.ok(mdDay.includes('내일/다음 세션을 위한 회복 및 식단 가이드'));
-
-console.log('PASS: Body part matching, filtering, set counting, and specialized AI coaching prompts all verified.');
+const markdown = generateAiCoachingMarkdown(chestFiltered, { language: 'ko', scope: 'all', selectedDate: '2026-09-13', selectedBodyPart: 'chest' });
+assert.ok(markdown.includes('v3.0'));
+assert.ok(markdown.includes('처방과 실제 수행'));
+assert.ok(markdown.includes('본세트'));
+assert.ok(markdown.includes('단일 세션만으로 오버트레이닝을 진단하지 마세요'));
+assert.ok(!markdown.includes('4가지 핵심 질문'));
+console.log('PASS body part matching, filtering, set counting, and adaptive evidence-based coaching prompt');
