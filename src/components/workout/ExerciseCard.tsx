@@ -222,9 +222,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
         </div>
         {/* 액션 버튼: 순서 이동, 대체 교체, 묶기, 3D 해부도, 삭제 */}
-        <div data-exercise-actions className="px-3 py-1 flex items-center justify-end gap-1 border-y border-black/5 dark:border-white/5 bg-white/50 dark:bg-black/10">
+        <div data-exercise-actions className="mx-3 px-1 py-0.5 flex items-center justify-end gap-1 rounded-2xl bg-white/60 dark:bg-white/5">
           {onMove && (
-            <div className="flex items-center mr-auto pr-2 border-r border-black/10 dark:border-white/10">
+            <div className="flex items-center mr-auto rounded-xl bg-black/[0.03] dark:bg-white/5">
               <button
                 type="button"
                 onClick={() => onMove('up')}
@@ -368,8 +368,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       </div>
 
       <div hidden={collapsed}>
-      {exerciseItem.notes && <p data-exercise-notes className="mx-3 my-2.5 px-3 py-2 border-l-2 border-accent/40 rounded-r-lg bg-white/60 dark:bg-white/5 text-xs whitespace-pre-wrap break-words text-gray-600 dark:text-gray-300">{t('메모')} · {exerciseItem.notes}</p>}
-      <details className="border-y border-black/5 dark:border-white/5 bg-white/40 dark:bg-black/10">
+      {exerciseItem.notes && <p data-exercise-notes className="mx-3 my-2.5 px-3 py-2 rounded-xl bg-white/50 dark:bg-white/5 text-xs whitespace-pre-wrap break-words text-gray-600 dark:text-gray-300">{t('메모')} · {exerciseItem.notes}</p>}
+      <details className="mx-3 mb-2 rounded-xl bg-white/40 dark:bg-white/5 overflow-hidden">
         <summary className="px-3 py-2 cursor-pointer text-xs text-gray-500 dark:text-gray-400 marker:text-gray-400">
           <span className="font-bold text-gray-500 dark:text-gray-400">{t("운동 설정")}</span>
           <span className="ml-2">{exerciseItem.executionMode === 'unilateral' ? t('편측') : t('양측')} · {currentUnit}{isMachineEquipment ? ` · ${currentLoadType === 'pin-loaded' ? t('핀머신') : t('원판')} · ${exerciseItem.machineBrand?.split(' (')[0] || t('브랜드 미지정')}` : ''}</span>
