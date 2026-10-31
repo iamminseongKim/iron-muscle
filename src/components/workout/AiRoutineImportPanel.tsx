@@ -1,143 +1,165 @@
 import React, { useState, useEffect } from 'react';
-import { displayExercise, displayMuscle, t } from '../../i18n';
+import { t } from '../../i18n';
 import { EXERCISES_DATABASE } from '../../data/exercises';
-import type { EquipmentType, ExecutionMode, LoadType, WorkoutSession } from '../../types/workout';
+import type { WorkoutSession } from '../../types/workout';
 import { loadCustomExercises } from '../../utils/storage';
-import { matchesExerciseSearch } from '../../utils/exerciseSearch';
 import { copyText } from '../../utils/clipboard';
-import { AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, buildAiRoutinePrompt, parseImportedWorkout, sessionFromImportedWorkout } from '../../utils/aiRoutineImport';
-import { CreateCustomExerciseModal } from './CreateCustomExerciseModal';
+import { AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, buildAiRoutinePrompt, parseImportedWorkout } from '../../utils/aiRoutineImport';
 import type { ImportedWorkout } from '../../utils/aiRoutineImport';
-
-const equipmentLabels: Record<EquipmentType, string> = { smith: '스미스 머신', barbell: '바벨', dumbbell: '덤벨', machine: '머신', cable: '케이블', bodyweight: '맨몸', other: '기타' };
-const modeLabels: Record<ExecutionMode, string> = { bilateral: '양측', unilateral: '편측', alternating: '교대' };
-const loadLabels: Record<LoadType, string> = { 'plate-loaded': '플레이트', 'pin-loaded': '핀머신', barbell: '바벨', dumbbell: '덤벨', cable: '케이블', bodyweight: '맨몸', other: '기타' };
-type ImportState = { kind: 'input' } | { kind: 'preview'; draft: ImportedWorkout };
+import { RoutinePreviewModal } from './RoutinePreviewModal';
 
 export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSession) => void }) {
   const [input, setInput] = useState('');
-  const [state, setState] = useState<ImportState>({ kind: 'input' });
+  const [previewDraft, setPreviewDraft] = useState<ImportedWorkout | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [registration, setRegistration] = useState<{ index: number; draft: ImportedWorkout; name: string; review: NonNullable<React.ComponentProps<typeof CreateCustomExerciseModal>['importReview']> } | null>(null);
   const [custom, setCustom] = useState(loadCustomExercises);
+
   useEffect(() => {
     const refresh = () => setCustom(loadCustomExercises());
     window.addEventListener('iron_custom_exercises_change', refresh);
     return () => window.removeEventListener('iron_custom_exercises_change', refresh);
   }, []);
-  const [queries, setQueries] = useState<Record<number, string>>({});
+
   const catalog = [...custom, ...EXERCISES_DATABASE.filter(item => !custom.some(entry => entry.id === item.id))];
-  const field = 'w-full min-w-0 rounded-xl border border-black/15 dark:border-white/20 bg-white dark:bg-[#302B37] p-3 text-sm';
-  const button = 'min-h-[44px] rounded-xl bg-accent/10 px-3 py-2 text-sm font-bold text-accent dark:text-accent-light';
-  const primaryButton = 'min-h-[44px] rounded-xl bg-accent hover:opacity-90 active:scale-98 px-4 py-2 text-sm font-bold text-white shadow-xs transition disabled:opacity-40';
-  const secondaryButton = 'min-h-[44px] rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition';
-  const updateInput = (value: string) => { setInput(value); setState({ kind: 'input' }); setMessage(''); setQueries({}); setRegistration(null); };
-  const preview = () => {
-    setRegistration(null);
-    try { setState({ kind: 'preview', draft: parseImportedWorkout(input, catalog) }); setMessage(''); }
-    catch (error) { setState({ kind: 'input' }); setMessage(error instanceof Error ? error.message : '루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.'); }
+  const field = 'w-full min-w-0 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#25222E] p-3 text-sm text-[#1D1D1F] dark:text-white placeholder-gray-400 focus:border-accent-strong focus:outline-none transition shadow-2xs';
+  const button = 'min-h-[44px] rounded-xl bg-accent/10 hover:bg-accent/15 px-3 py-2 text-sm font-bold text-accent dark:text-accent-light transition';
+  const primaryButton = 'min-h-[44px] rounded-xl bg-accent hover:opacity-90 active:scale-98 px-5 py-2 text-sm font-bold text-white shadow-xs transition disabled:opacity-40 cursor-pointer';
+  const secondaryButton = 'min-h-[44px] rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition cursor-pointer';
+
+  const updateInput = (value: string) => {
+    setInput(value);
+    setMessage('');
+    setPreviewDraft(null);
   };
-  const copyPrompt = async () => setMessage(await copyText(buildAiRoutinePrompt()) ? 'AI 요청문을 복사했습니다.' : '복사하지 못했습니다. 예시를 직접 복사하세요.');
-  return <section data-ai-routine className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-3">
-    <details data-ai-routine-helper className="space-y-3">
-    <summary className="text-sm font-bold cursor-pointer">{t('외부 AI로 루틴 준비하기')}</summary>
-    <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t('질문을 복사해 ChatGPT 등 외부 AI에 붙여넣고 대화한 뒤, 완성된 루틴을 가져오세요.')}</p>
-    <button data-ai-routine-copy type="button" className={`${button} w-full`} onClick={copyPrompt}>{t('외부 AI용 질문 복사')}</button>
-    </details>
-    <details data-ai-routine-paste className="space-y-3">
-    <summary className="cursor-pointer text-sm font-bold">{t('루틴 붙여넣기')}</summary>
-    <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t('저장해 둔 JSON 또는 Markdown 루틴을 붙여넣고 종목과 세트를 확인하세요.')}</p>
-    <details className="text-xs space-y-2">
-      <summary className="cursor-pointer font-semibold">{t('지원 형식과 AI 요청문')}</summary>
-      <p>{t('종목에 category, primaryMuscles, secondaryMuscles, nameEn을 추가할 수 있습니다. Markdown 근육 열은 ID를 쉼표로 구분하세요. 미등록 종목은 부위와 근육을 확인한 뒤 새 운동으로 등록할 수 있습니다.')}</p>
-      <p>{t('JSON은 title과 exercises를 사용합니다. 종목마다 name, sets, reps, weight, restSeconds, weightUnit을 지정하세요. sets에는 세트별 객체 배열도 사용할 수 있습니다.')}</p>
-      <p>{t('종목은 최대 50개, 종목당 세트는 최대 50개입니다. 반복수는 1~1000, 무게는 0~2000, 휴식은 0~3600초입니다. 생략하면 3세트, 10회, 0kg, 90초를 사용합니다.')}</p>
-      <p>{t('선택 필드: 루틴 notes, 종목 equipmentType·executionMode·loadType·notes, 세트 rpe·tempo·comment·side. RPE는 6~10에서 0.5 단위, tempo는 eccentric·pause·concentric 각각 0~30초입니다.')}</p>
-      <p>{t('executionMode는 bilateral·unilateral·alternating, loadType은 pin-loaded·plate-loaded·barbell·dumbbell·cable·bodyweight·other, equipmentType은 smith·barbell·dumbbell·machine·cable·bodyweight·other입니다. side는 left·right·both이며 단위는 종목별로 지정합니다.')} </p>
-      <p>{t('Markdown 선택 열: rpe, tempo, notes, comment, executionMode, loadType, equipmentType, side, unit. tempo는 3-1-1처럼 작성하세요.')} </p>
-      <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2">{AI_ROUTINE_EXAMPLE}</pre>
-      <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2">{AI_ROUTINE_MARKDOWN_EXAMPLE}</pre>
-      <p>{t('Markdown 표는 name, sets, reps 열이 필요합니다. weight와 rest는 선택입니다. 한국어 열 이름도 지원합니다. 범위 대신 숫자 하나를 써주세요.')}</p>
-    </details>
-    <label className="block text-xs font-semibold space-y-2">
-      <div className="flex items-center justify-between">
-        <span>{t('루틴 Markdown 또는 JSON')}</span>
-        {input && (
+
+  const handleOpenPreview = () => {
+    setMessage('');
+    try {
+      const parsed = parseImportedWorkout(input, catalog);
+      setPreviewDraft(parsed);
+      setIsPreviewOpen(true);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : t('루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.'));
+    }
+  };
+
+  const copyPrompt = async () => {
+    const success = await copyText(buildAiRoutinePrompt());
+    setMessage(success ? t('AI 요청문을 복사했습니다.') : t('복사하지 못했습니다. 예시를 직접 복사하세요.'));
+  };
+
+  return (
+    <section data-ai-routine className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-3 rounded-2xl border border-black/5 dark:border-white/5">
+      <details data-ai-routine-helper className="space-y-3">
+        <summary className="text-sm font-bold cursor-pointer select-none text-[#24212B] dark:text-white">
+          {t('외부 AI로 루틴 준비하기')}
+        </summary>
+        <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+          {t('질문을 복사해 ChatGPT 등 외부 AI에 붙여넣고 대화한 뒤, 완성된 루틴을 가져오세요.')}
+        </p>
+        <button
+          data-ai-routine-copy
+          type="button"
+          className={`${button} w-full`}
+          onClick={copyPrompt}
+        >
+          {t('외부 AI용 질문 복사')}
+        </button>
+      </details>
+
+      <details data-ai-routine-paste className="space-y-3" open={Boolean(input)}>
+        <summary className="cursor-pointer text-sm font-bold select-none text-[#24212B] dark:text-white">
+          {t('루틴 붙여넣기')}
+        </summary>
+        <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+          {t('저장해 둔 JSON 또는 Markdown 루틴을 붙여넣고 종목과 세트를 확인하세요.')}
+        </p>
+        <details className="text-xs space-y-2 text-gray-600 dark:text-gray-300">
+          <summary className="cursor-pointer font-semibold">{t('지원 형식과 AI 요청문')}</summary>
+          <p>{t('종목에 category, primaryMuscles, secondaryMuscles, nameEn을 추가할 수 있습니다. Markdown 근육 열은 ID를 쉼표로 구분하세요. 미등록 종목은 부위와 근육을 확인한 뒤 새 운동으로 등록할 수 있습니다.')}</p>
+          <p>{t('JSON은 title과 exercises를 사용합니다. 종목마다 name, sets, reps, weight, restSeconds, weightUnit을 지정하세요. sets에는 세트별 객체 배열도 사용할 수 있습니다.')}</p>
+          <p>{t('종목은 최대 50개, 종목당 세트는 최대 50개입니다. 반복수는 1~1000, 무게는 0~2000, 휴식은 0~3600초입니다. 생략하면 3세트, 10회, 0kg, 90초를 사용합니다.')}</p>
+          <p>{t('선택 필드: 루틴 notes, 종목 equipmentType·executionMode·loadType·notes, 세트 rpe·tempo·comment·side. RPE는 6~10에서 0.5 단위, tempo는 eccentric·pause·concentric 각각 0~30초입니다.')}</p>
+          <p>{t('executionMode는 bilateral·unilateral·alternating, loadType은 pin-loaded·plate-loaded·barbell·dumbbell·cable·bodyweight·other, equipmentType은 smith·barbell·dumbbell·machine·cable·bodyweight·other입니다. side는 left·right·both이며 단위는 종목별로 지정합니다.')} </p>
+          <p>{t('Markdown 선택 열: rpe, tempo, notes, comment, executionMode, loadType, equipmentType, side, unit. tempo는 3-1-1처럼 작성하세요.')} </p>
+          <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2 font-mono text-[11px]">{AI_ROUTINE_EXAMPLE}</pre>
+          <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2 font-mono text-[11px]">{AI_ROUTINE_MARKDOWN_EXAMPLE}</pre>
+          <p>{t('Markdown 표는 name, sets, reps 열이 필요합니다. weight와 rest는 선택입니다. 한국어 열 이름도 지원합니다. 범위 대신 숫자 하나를 써주세요.')}</p>
+        </details>
+
+        <label className="block text-xs font-semibold space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-700 dark:text-gray-300">{t('루틴 Markdown 또는 JSON')}</span>
+            {input && (
+              <button
+                type="button"
+                className="text-xs text-red-500 hover:text-red-600 dark:text-red-400 font-normal transition-colors"
+                onClick={() => updateInput('')}
+              >
+                {t('전체 삭제')}
+              </button>
+            )}
+          </div>
+          <textarea
+            data-ai-routine-input
+            aria-label={t('루틴 Markdown 또는 JSON')}
+            rows={3}
+            maxLength={100000}
+            spellCheck={false}
+            autoCapitalize="none"
+            autoCorrect="off"
+            placeholder={t('저장해 둔 루틴 JSON 또는 Markdown 표를 여기에 붙여넣으세요.')}
+            className={`${field} font-mono text-xs leading-relaxed resize-y`}
+            value={input}
+            onChange={event => updateInput(event.target.value)}
+          />
+        </label>
+
+        <div className="flex flex-wrap gap-2 items-center">
           <button
+            data-ai-routine-preview-button
             type="button"
-            className="text-xs text-red-500 hover:text-red-600 dark:text-red-400 font-normal transition-colors"
-            onClick={() => updateInput('')}
+            className={primaryButton}
+            onClick={handleOpenPreview}
+            disabled={!input.trim()}
           >
-            {t('전체 삭제')}
+            {t('운동 시작')}
           </button>
-        )}
-      </div>
-      <textarea
-        data-ai-routine-input
-        aria-label={t('루틴 Markdown 또는 JSON')}
-        rows={8}
-        maxLength={100000}
-        spellCheck={false}
-        autoCapitalize="none"
-        autoCorrect="off"
-        className={`${field} font-mono text-xs leading-relaxed`}
-        value={input}
-        onChange={event => updateInput(event.target.value)}
-      />
-    </label>
-    <div className="flex flex-wrap gap-2">
-      <button data-ai-routine-preview-button type="button" className={primaryButton} onClick={preview} disabled={!input.trim()}>{t('운동 시작')}</button>
-      {input && <button type="button" className={secondaryButton} onClick={() => updateInput('')}>{t('전체 삭제')}</button>}
-    </div>
-    {state.kind === 'preview' && <section data-ai-routine-preview className="space-y-3 border-t border-black/10 dark:border-white/10 pt-3" aria-label={t('가져오기 미리보기')}>
-      <div className="flex items-center justify-between">
-        <h3 className="font-bold break-words">{state.draft.title === 'AI 루틴' ? t('AI 루틴') : state.draft.title}</h3>
-        <span className="text-xs text-accent dark:text-accent-light font-semibold">{t('루틴 구성 확인')}</span>
-      </div>
-      {state.draft.notes && <p className="whitespace-pre-wrap break-words text-xs">{t('메모')} · {state.draft.notes}</p>}
-      <ol className="space-y-3">
-        {state.draft.exercises.map((row, index) => {
-          const selected = catalog.find(item => item.id === row.exerciseId);
-          const equipmentType = row.equipmentType || selected?.equipment;
-          const loadType = row.loadType || selected?.loadType || (equipmentType === 'machine' || equipmentType === 'smith' ? 'plate-loaded' : undefined);
-          const query = queries[index] || '';
-          const options = catalog.filter(item => item.id === row.exerciseId || matchesExerciseSearch(item, query));
-          return <li key={index} className="space-y-2 rounded-xl bg-black/5 dark:bg-white/5 p-3">
-            <p className="break-words text-sm font-semibold">{index + 1}. {row.sourceName}</p>
-            {!row.exerciseId && <>
-              <p className="text-xs text-orange-600 dark:text-orange-400">{t('일치하는 종목을 확인할 수 없습니다. 직접 선택하세요.')}</p>
-              {row.proposal && <div data-ai-muscle-proposal className="text-xs space-y-1"><p>{t('근육 정보 확인')}</p><p>{t('주동근')} · {row.proposal.primaryMuscles?.map(displayMuscle).join(', ') || t('미지정')}</p><p>{t('보조근')} · {row.proposal.secondaryMuscles?.map(displayMuscle).join(', ') || t('미지정')}</p></div>}
-              <button data-ai-register-exercise type="button" className={button} onClick={() => setRegistration({ index, draft: state.draft, name: row.sourceName, review: { kind: 'ai-import', proposal: row.proposal, equipmentType: row.equipmentType, loadType: row.loadType } })}>{t('새 운동으로 등록')}</button>
-            </>}
-            {selected && <div data-confirmed-muscles className="text-xs space-y-1"><p>{t('선택한 종목의 근육')}</p><p>{t('주동근')} · {selected.primaryMuscles.map(displayMuscle).join(', ') || t('미지정')}</p><p>{t('보조근')} · {selected.secondaryMuscles.map(displayMuscle).join(', ') || t('미지정')}</p></div>}
-            <label className="block text-xs space-y-1"><span>{t('종목 검색')}</span><input className={field} value={query} onChange={event => setQueries(previous => ({ ...previous, [index]: event.target.value }))} /></label>
-            <label className="block text-xs space-y-1"><span>{t('적용할 종목')}</span><select data-ai-exercise-select className={field} value={row.exerciseId || ''} onChange={event => {
-              const exerciseId = event.target.value || null;
-              setState({ kind: 'preview', draft: { ...state.draft, exercises: state.draft.exercises.map((item, i) => i === index ? { ...item, exerciseId } : item) } });
-            }}><option value="">{t('종목을 선택하세요.')}</option>{options.map(item => <option key={item.id} value={item.id}>{displayExercise(item)}</option>)}</select></label>
-            <p className="text-xs">{t(modeLabels[row.executionMode])}{equipmentType && ` · ${t(equipmentLabels[equipmentType])}`}{loadType && ` · ${t(loadLabels[loadType])}`}</p>
-            {row.notes && <p className="whitespace-pre-wrap break-words text-xs">{t('메모')} · {row.notes}</p>}
-            <p className="text-xs font-semibold">{row.sets.length} {t('세트')} · {row.weightUnit}</p>
-            <ol className="text-xs text-gray-600 dark:text-gray-300 space-y-1">{row.sets.map((set, i) => <li key={i}>{i + 1}. {set.weight}{row.weightUnit} · {set.reps} {t('회')} · {t('권장 휴식')} {set.restSeconds >= 60 ? `${Math.floor(set.restSeconds / 60)}${t('분')} ` : ''}{set.restSeconds % 60 > 0 || set.restSeconds === 0 ? `${set.restSeconds % 60}${t('초')}` : ''}{set.rpe !== undefined && ` · RPE ${set.rpe}`}{set.tempo && ` · ${t('템포')} ${set.tempo.eccentric}-${set.tempo.pause}-${set.tempo.concentric}`}{set.side && ` · ${t(set.side === 'left' ? '왼쪽' : set.side === 'right' ? '오른쪽' : '양쪽')}`}{set.comment && <p className="whitespace-pre-wrap break-words">{set.comment}</p>}</li>)}</ol>
-          </li>;
-        })}
-      </ol>
-      <p className="text-xs text-gray-500 dark:text-gray-400">{t('모든 세트는 미완료로 시작합니다. 무게와 횟수는 시작 후 수정할 수 있습니다.')}</p>
-      <p className="text-xs text-gray-500 dark:text-gray-400">{t('기본은 양측 기록입니다. 한팔·한발 종목도 좌우를 합쳐 기록하며, 원하면 시작 후 운동 설정에서 좌우 개별 기록으로 바꿀 수 있습니다.')}</p>
-      <p className="text-xs text-gray-500 dark:text-gray-400">{t('권장 휴식은 타이머의 기본값입니다. 직접 조절하거나 종료할 수 있으며 실제 쉰 시간은 따로 기록됩니다.')}</p>
-      <button data-ai-routine-start type="button" className={`${primaryButton} w-full`} disabled={state.draft.exercises.some(row => !row.exerciseId)} onClick={() => {
-        try { onStart(sessionFromImportedWorkout(state.draft, catalog)); }
-        catch (error) { setMessage(error instanceof Error ? error.message : '모든 종목을 선택하세요.'); }
-      }}>{t('이 루틴으로 운동 시작')}</button>
-    </section>}
-    </details>
-    {registration && <CreateCustomExerciseModal isOpen initialName={registration.name} importReview={registration.review}
-      onClose={() => setRegistration(null)} onCreated={created => {
-        setCustom(loadCustomExercises());
-        setState(current => current.kind === 'preview' && current.draft === registration.draft ? {
-          kind: 'preview', draft: { ...current.draft, exercises: current.draft.exercises.map((row, index) => index === registration.index ? { ...row, exerciseId: created.id, equipmentType: created.equipment, loadType: created.loadType } : row) },
-        } : current);
-      }} />}
-    {message && <p role="status" className="text-sm text-orange-600 dark:text-orange-400">{t(message)}</p>}
-  </section>;
+          {input && (
+            <button
+              type="button"
+              className={secondaryButton}
+              onClick={() => updateInput('')}
+            >
+              {t('전체 삭제')}
+            </button>
+          )}
+        </div>
+      </details>
+
+      {message && (
+        <p role="status" className="text-xs text-orange-600 dark:text-orange-400 font-medium">
+          {t(message)}
+        </p>
+      )}
+
+      {isPreviewOpen && previewDraft && (
+        <RoutinePreviewModal
+          isOpen={isPreviewOpen}
+          draft={previewDraft}
+          catalog={catalog}
+          onClose={() => setIsPreviewOpen(false)}
+          onStart={session => {
+            setIsPreviewOpen(false);
+            onStart(session);
+          }}
+          onUpdateDraft={updated => setPreviewDraft(updated)}
+          onCustomExerciseCreated={created => {
+            setCustom(loadCustomExercises());
+          }}
+        />
+      )}
+    </section>
+  );
 }

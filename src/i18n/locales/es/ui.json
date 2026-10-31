@@ -1060,5 +1060,14 @@
   "운동 중": "En curso",
   "마치면 세트 완료를 누르세요.": "Pulsa Completar serie al terminar.",
   "시작 취소": "Cancelar inicio",
-  "완료됨": "Completada"
+  "완료됨": "Completada",
+  "오늘의 컨디션 기록": "Registro de estado de hoy",
+  "몸 상태와 피로도를 기록하여 맞춤 가이드를 받아보세요.": "Registra tu estado y fatiga para recibir orientación personalizada.",
+  "예: 7 (시간)": "ej. 7 (horas)",
+  "예: 3 (시간)": "ej. 3 (horas)",
+  "예: 하체, 어깨 전면 등": "ej. Piernas, deltoides anterior, etc.",
+  "예: 오른쪽 손목, 왼쪽 무릎 등": "ej. Muñeca derecha, rodilla izquierda, etc.",
+  "오늘의 컨디션 특이사항, 목표 등을 적어보세요.": "Anota particularidades de tu estado de hoy, metas, etc.",
+  "저장해 둔 루틴 JSON 또는 Markdown 표를 여기에 붙여넣으세요.": "Pega aquí el JSON o tabla Markdown de tu rutina guardada.",
+  "매칭할 운동 이름 검색": "Buscar nombre de ejercicio para asociar"
 }

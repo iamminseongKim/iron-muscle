@@ -30,7 +30,7 @@ import { RepeatWorkoutPanel } from './RepeatWorkoutPanel';
 import { AiRoutineImportPanel } from './AiRoutineImportPanel';
 import { WorkoutCompleteSummary } from './WorkoutCompleteSummary';
 import { ReorderExercisesModal } from './ReorderExercisesModal';
-import { repeatWorkout, moveWorkoutExercise, reorderWorkoutExercise, getExerciseMoveAvailability, replaceWorkoutExercise } from '../../utils/workoutFlow';
+import { repeatWorkout, moveWorkoutExercise, reorderWorkoutExercise, replaceWorkoutExercise } from '../../utils/workoutFlow';
 import { calculateSessionVolume, calculateSessionReps, calculateAverageRPE, convertWeight } from '../../utils/calculations';
 import { saveActiveSession, loadActiveSession, completeWorkoutSession, loadSavedSessions, loadSampleDataForDemo } from '../../utils/storage';
 import { findPreviousMachineExercise, convertExerciseSets } from '../../utils/gymWorkout';
@@ -70,7 +70,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     try { saveWithRecovery({ ...current, exercises: reorderWorkoutExercise(current.exercises, sourceId, targetId, placement) }, 'active'); }
     catch (error) { alert(t((error as Error).message)); }
   });
-  const [isReordering, setIsReordering] = useState(false);
   const [flowMessage, setFlowMessage] = useState('');
 
   useEffect(() => {
@@ -253,7 +252,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     try { existing = localStorage.getItem('iron_active_session_v1'); }
     catch { throw new Error('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.'); }
     if (existing !== null) throw new Error('먼저 진행 중인 운동을 완료하거나 취소하세요.');
-    const prepared = { ...next, ...idleAdaptive, title: next.title === 'AI 루틴' ? t('AI 루틴') : next.title, conditionEmoji: idleCondition, isDeload: idleDeload, bodyWeight: loadHealthPreferences().weight?.kg };
+    const prepared = { ...idleAdaptive, ...next, title: next.title === 'AI 루틴' ? t('AI 루틴') : next.title, conditionEmoji: idleCondition, isDeload: idleDeload, bodyWeight: loadHealthPreferences().weight?.kg };
     saveActiveSession(prepared);
     if (loadActiveSession()?.id !== prepared.id) throw new Error('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.');
     setSession(prepared);
@@ -271,7 +270,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       if (loadActiveSession()?.id !== next.id) throw new Error('운동을 저장하지 못했습니다. 저장 공간을 확인하고 다시 시도하세요.');
       setCompletion(null);
       setCollapsedExerciseIds(new Set());
-      setIsReordering(false);
       setSession(next);
       setFlowMessage('');
     } catch (error) { setFlowMessage((error as Error).message); }
@@ -555,7 +553,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     setSession(null);
 
     setRestTimerState(previous => ({ ...previous, isOpen: false }));
-    setIsReordering(false);
     setFlowMessage('');
     setCompletion({ session: finalSession, history, healthMessage });
   };
@@ -762,13 +759,13 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             <div className="flex gap-2"><button type="button" onClick={applySuggestion} className="min-h-[44px] px-4 rounded-xl bg-accent text-white font-bold">{t('제안 적용')}</button><button type="button" onClick={() => setSuggestion(null)} className="min-h-[44px] px-3">{t('제안 닫기')}</button></div>
           </div>}
           {/* 상단 액션 바: 세션 정보 & 일지 & 취소 (타이머는 최상단 글로벌 헤더 시계로 일원화) */}
-      <div className="flex items-center justify-between pt-1 px-1">
-        <div>
-          <h3 className="text-xl font-extrabold leading-tight text-[#24212B] dark:text-white">
+      <div className="flex items-start justify-between gap-3 pt-1 px-1">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-lg sm:text-xl font-extrabold leading-snug text-[#24212B] dark:text-white break-words">
             {session.title}
           </h3>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-[11px] text-gray-400">
+          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+            <span className="text-[11px] text-gray-400 shrink-0">
               {session.date} · {t("진행 중")}
             </span>
             <button
@@ -777,7 +774,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                 clearFocusAndSelection();
                 setIsNotesModalOpen(true);
               }}
-              className="flex items-center gap-1 hover:opacity-80 transition cursor-pointer"
+              className="inline-flex items-center gap-1 hover:opacity-80 transition cursor-pointer flex-wrap"
               title={t("운동 부위 및 일지 수정")}
             >
               {session.targetPartIds && session.targetPartIds.length > 0 ? (
@@ -787,14 +784,14 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                   return (
                     <span
                       key={id}
-                      className="px-1.5 py-0.2 rounded bg-accent/15 text-accent dark:text-accent-light text-[9px] font-bold"
+                      className="px-1.5 py-0.5 rounded-md bg-accent/15 text-accent dark:text-accent-light text-[10px] font-bold"
                     >
                       {t(opt.label)}
                     </span>
                   );
                 })
               ) : (
-                <span className="px-1.5 py-0.2 rounded bg-gray-500/10 text-gray-500 text-[9px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-md bg-gray-500/10 text-gray-500 text-[10px] font-bold">
                   + {t("부위 설정")}
                 </span>
               )}
@@ -803,9 +800,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         </div>
 
         {/* 일지, 디로딩, 운동 취소 버튼 */}
-        <div className="flex items-center gap-1.5">
+        <div className="shrink-0 flex items-center gap-2">
           {session.isDeload && (
-            <span className="px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-500 text-xs font-bold flex items-center gap-1">
+            <span className="px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-500 text-xs font-bold flex items-center gap-1 shrink-0">
               <Sparkles size={12} />
               {t("디로딩")}
             </span>
@@ -817,17 +814,18 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               clearFocusAndSelection();
               setIsNotesModalOpen(true);
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-bold text-gray-700 dark:text-gray-200 transition shadow-xs active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-full text-xs font-bold text-gray-700 dark:text-gray-200 transition shadow-2xs hover:shadow-xs active:scale-95 shrink-0 whitespace-nowrap cursor-pointer"
           >
-            <ConditionIcon condition={session.conditionEmoji} size={16} />
-            <span>{session.notes ? t('일지 작성됨') : t('일지')}</span>
+            <ConditionIcon condition={session.conditionEmoji} size={15} />
+            <span className="whitespace-nowrap">{session.notes ? t('일지 작성됨') : t('일지')}</span>
           </button>
 
           <button
             type="button"
             onClick={handleCancelWorkout}
-            className="p-1.5 bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-full text-xs font-bold text-gray-400 hover:text-red-500 transition shadow-xs active:scale-95"
+            className="p-1.5 bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 rounded-full text-gray-400 hover:text-red-500 transition shadow-2xs hover:shadow-xs active:scale-95 shrink-0 cursor-pointer"
             title={t("운동 취소")}
+            aria-label={t("운동 취소")}
           >
             <X size={15} />
           </button>
@@ -872,14 +870,12 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               <ArrowUpDown size={13} />
               <span>{t("종목 순서 변경")}</span>
             </button>
-            <button type="button" aria-pressed={isReordering} className="min-h-[32px]" onClick={() => setIsReordering(previous => !previous)}>{t(isReordering ? '순서 변경 완료' : '순서 변경')}</button>
-            <button type="button" className="min-h-[32px]" onClick={() => setCollapsedExerciseIds(new Set(session.exercises.map(item => item.id)))}>{t("모두 접기")}</button>
-            <button type="button" className="min-h-[32px]" onClick={() => setCollapsedExerciseIds(new Set())}>{t("모두 펼치기")}</button>
+            <button type="button" className="min-h-[32px] px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition" onClick={() => setCollapsedExerciseIds(new Set(session.exercises.map(item => item.id)))}>{t("모두 접기")}</button>
+            <button type="button" className="min-h-[32px] px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition" onClick={() => setCollapsedExerciseIds(new Set())}>{t("모두 펼치기")}</button>
           </div>
         </div>
       )}
       {flowMessage && <p role="status" className="text-sm text-accent dark:text-accent-light">{t(flowMessage)}</p>}
-      {isReordering && <p className="text-xs text-gray-500">{t('묶인 종목은 함께 이동합니다.')}</p>}
       <div className="space-y-2">
         {session.exercises.length === 0 ? (
           <div className="soft-surface py-14 text-center bg-white dark:bg-[#1E1B24] p-6 space-y-3">
@@ -908,17 +904,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           session.exercises.map((item, idx) => (
             <div key={item.id} data-workout-exercise={item.id} data-dragging={drag?.sourceId === item.id || undefined} data-drop-placement={drag?.targetId === item.id ? drag.placement : undefined}
               className={`${drag?.sourceId === item.id ? 'opacity-40' : ''} ${drag?.targetId === item.id ? drag.placement === 'before' ? 'border-t-4 border-accent' : 'border-b-4 border-accent' : ''}`}>
-            {isReordering && (!item.groupId || session.exercises.findIndex(exercise => exercise.groupId === item.groupId) === idx) && (
-              <div className="flex items-center justify-end gap-2 pb-2">
-                {(['up', 'down'] as const).map(direction => <button type="button" key={direction}
-                  aria-label={`${t(direction === 'up' ? '위로 이동' : '아래로 이동')} · ${displayExercise(resolveRecordedExercise(item))}`}
-                  disabled={!getExerciseMoveAvailability(session.exercises, item.id)[direction]}
-                  onClick={() => handleMoveExercise(item.id, direction)}
-                  className="min-h-[44px] rounded-xl bg-accent/10 px-3 py-2 text-xs font-bold text-accent dark:text-accent-light disabled:opacity-30">
-                  {t(direction === 'up' ? '위로 이동' : '아래로 이동')}
-                </button>)}
-              </div>
-            )}
             <ExerciseCard
               exerciseItem={item}
               collapsed={Boolean(drag) || collapsedExerciseIds.has(item.id)}
@@ -937,9 +922,6 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               onOpenRpeGuide={() => setIsRpeGuideOpen(true)}
               onOpenGroupModal={() => setGroupModalTarget(item)}
               onUnlinkGroup={() => handleUnlinkExercise(item.id)}
-              onMove={(direction) => handleMoveExercise(item.id, direction)}
-              canMoveUp={getExerciseMoveAvailability(session.exercises, item.id).up}
-              canMoveDown={getExerciseMoveAvailability(session.exercises, item.id).down}
               onReplace={() => {
                 setReplacingExerciseItem(item);
                 setIsAddModalOpen(true);

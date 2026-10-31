@@ -1060,5 +1060,14 @@
   "운동 중": "In progress",
   "마치면 세트 완료를 누르세요.": "Tap Complete set when you finish.",
   "시작 취소": "Cancel start",
-  "완료됨": "Completed"
+  "완료됨": "Completed",
+  "오늘의 컨디션 기록": "Today's Readiness Check-in",
+  "몸 상태와 피로도를 기록하여 맞춤 가이드를 받아보세요.": "Record your condition and fatigue to receive customized guidance.",
+  "예: 7 (시간)": "e.g. 7 (hours)",
+  "예: 3 (시간)": "e.g. 3 (hours)",
+  "예: 하체, 어깨 전면 등": "e.g. Legs, anterior deltoids, etc.",
+  "예: 오른쪽 손목, 왼쪽 무릎 등": "e.g. Right wrist, left knee, etc.",
+  "오늘의 컨디션 특이사항, 목표 등을 적어보세요.": "Note today's condition specifics, targets, etc.",
+  "저장해 둔 루틴 JSON 또는 Markdown 표를 여기에 붙여넣으세요.": "Paste your saved routine JSON or Markdown table here.",
+  "매칭할 운동 이름 검색": "Search exercise name to match"
 }

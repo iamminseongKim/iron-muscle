@@ -5,7 +5,7 @@ import { t } from '../../i18n';
 import { lazy, Suspense } from 'react';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  ChevronDown, ChevronUp, ChevronRight, ArrowLeftRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
+  ChevronDown, ChevronRight, ArrowLeftRight, Trash2, Plus, Dumbbell, Shield, HelpCircle,
   Settings2, Trophy, Eye, Sparkles, Link2, Unlink, Zap, Flame, Check, Tag, Ruler, Lightbulb, Camera, ListOrdered
 } from 'lucide-react';
 import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
@@ -35,9 +35,6 @@ interface ExerciseCardProps {
   isDark?: boolean;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
-  onMove?: (direction: 'up' | 'down') => void;
-  canMoveUp?: boolean;
-  canMoveDown?: boolean;
   onReplace?: () => void;
 }
 
@@ -57,9 +54,6 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   isDark = false,
   collapsed = false,
   onToggleCollapsed,
-  onMove,
-  canMoveUp = false,
-  canMoveDown = false,
   onReplace,
 }) => {
   // 이 종목 고유의 단위 (없으면 기본값 'kg')
@@ -192,7 +186,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const isGrouped = Boolean(exerciseItem.groupId);
 
   return (
-    <div id={`exercise-${exerciseItem.id}`} className={`scroll-mt-24 bg-[#F4F3F8] dark:bg-[#1E1B24] rounded-2xl shadow-[0_5px_16px_rgba(0,0,0,0.045)] dark:shadow-[0_8px_28px_rgba(0,0,0,0.2)] overflow-hidden transition-all ${
+    <div id={`exercise-${exerciseItem.id}`} className={`scroll-mt-24 bg-white dark:bg-[#1E1B24] rounded-2xl border border-black/8 dark:border-white/10 shadow-xs hover:shadow-sm overflow-hidden transition-all ${
       isGrouped
         ? exerciseItem.groupType === 'superset'
           ? 'border-l-4 border-l-accent-strong'
@@ -223,43 +217,20 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
       {/* Main Header */}
       <div data-exercise-header className="border-b border-black/5 dark:border-white/5">
-        <div className="min-w-0 px-3 pt-3 pb-2">
-          <h3 className="select-none w-full text-base font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
-            <button type="button" onClick={onToggleCollapsed} aria-expanded={!collapsed} className="w-full text-left flex items-start gap-1.5 min-h-[28px]">
-              {collapsed ? <ChevronRight size={14} className="shrink-0 mt-1 text-gray-400" /> : <ChevronDown size={14} className="shrink-0 mt-1 text-gray-400" />}
-              <span className="min-w-0 break-words">{exerciseName}</span>
-            </button>
-          </h3>
-          <div className="pl-5 mt-1">
-            <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}{t("세트 완료")}{records.maxWeight > 0 ? ` · ${t("최고")} ${records.maxWeight}${currentUnit}` : ''}</span>
-          </div>
-        </div>
-        {/* 액션 버튼: 순서 이동, 대체 교체, 묶기, 3D 해부도, 삭제 */}
-        <div data-exercise-actions className="mx-3 px-1 py-0.5 flex items-center justify-end gap-1 rounded-2xl bg-white/60 dark:bg-white/5">
-          {onMove && (
-            <div className="flex items-center mr-auto rounded-xl bg-black/[0.03] dark:bg-white/5">
-              <button
-                type="button"
-                onClick={() => onMove('up')}
-                disabled={!canMoveUp}
-                title={t("위로 이동")}
-                aria-label={`${t("위로 이동")} · ${exerciseName}`}
-                className="min-w-[32px] min-h-[32px] flex items-center justify-center rounded-xl text-gray-400 hover:text-accent hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-20 transition"
-              >
-                <ChevronUp size={16} />
+        <div className="flex items-start justify-between gap-2 px-3 pt-3 pb-2">
+          <div className="min-w-0 flex-1">
+            <h3 className="select-none w-full text-base font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
+              <button type="button" onClick={onToggleCollapsed} aria-expanded={!collapsed} className="w-full text-left flex items-start gap-1.5 min-h-[28px] hover:text-accent transition">
+                {collapsed ? <ChevronRight size={14} className="shrink-0 mt-1 text-gray-400" /> : <ChevronDown size={14} className="shrink-0 mt-1 text-gray-400" />}
+                <span className="min-w-0 break-words">{exerciseName}</span>
               </button>
-              <button
-                type="button"
-                onClick={() => onMove('down')}
-                disabled={!canMoveDown}
-                title={t("아래로 이동")}
-                aria-label={`${t("아래로 이동")} · ${exerciseName}`}
-                className="min-w-[32px] min-h-[32px] flex items-center justify-center rounded-xl text-gray-400 hover:text-accent hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-20 transition"
-              >
-                <ChevronDown size={16} />
-              </button>
+            </h3>
+            <div className="pl-5 mt-0.5">
+              <span className="text-xs text-gray-400">{exerciseItem.sets.filter(set => set.completed).length}/{exerciseItem.sets.length}{t("세트 완료")}{records.maxWeight > 0 ? ` · ${t("최고")} ${records.maxWeight}${currentUnit}` : ''}</span>
             </div>
-          )}
+          </div>
+          {/* 액션 버튼: 대체 교체, 묶기, 3D 해부도, 삭제 */}
+          <div data-exercise-actions className="px-1 py-0.5 flex items-center justify-end gap-1 rounded-xl bg-gray-100/70 dark:bg-white/5 shrink-0">
 
           {onReplace && (
             <button
@@ -308,6 +279,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           >
             <Trash2 size={16} />
           </button>
+        </div>
         </div>
         {(canRegisterInGym || (!collapsed && (exerciseItem.machineBrand || exerciseItem.machineSetting || isDumbbellEquipment || isSmithEquipment))) && <div data-exercise-equipment className="px-3 py-2.5 space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
