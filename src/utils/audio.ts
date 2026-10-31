@@ -1,4 +1,5 @@
-﻿import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+import { loadAdaptiveSettings } from './adaptiveSettings';
 
 // Web Audio API를 활용한 순수 합성 사운드 (외부 mp3 파일 다운로드 불필요)
 class AudioManager {
@@ -20,6 +21,9 @@ class AudioManager {
 
   // 세트 완료 찰칵/성공음
   playSuccessSound() {
+    const settings = loadAdaptiveSettings();
+    if (settings.vibration) Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
+    if (!settings.sound) return;
     try {
       const ctx = this.getContext();
       if (!ctx) return;
@@ -39,8 +43,6 @@ class AudioManager {
       osc.start();
       osc.stop(ctx.currentTime + 0.2);
 
-      // 모바일 햅틱 진동
-      Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
     } catch (e) {
       console.warn('Audio play error', e);
     }
@@ -48,6 +50,9 @@ class AudioManager {
 
   // 타이머 종료 알림 (딩-동 2회 멜로디)
   playTimerComplete() {
+    const settings = loadAdaptiveSettings();
+    if (settings.vibration) Haptics.notification({ type: NotificationType.Success }).catch(() => {});
+    if (!settings.sound) return;
     try {
       const ctx = this.getContext();
       if (!ctx) return;
@@ -73,8 +78,6 @@ class AudioManager {
       playChime(523.25, 0.25, 0.45); // C5
       playChime(783.99, 0.6, 0.55); // G5
 
-      // 모바일 진동
-      Haptics.notification({ type: NotificationType.Success }).catch(() => {});
     } catch (e) {
       console.warn('Timer sound error', e);
     }

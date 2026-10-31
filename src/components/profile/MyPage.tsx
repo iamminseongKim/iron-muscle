@@ -1,5 +1,6 @@
 import { countGymEquipment } from '../../utils/gymStorage';
 import { AppUpdates } from './AppUpdates';
+import { AdaptiveSettings } from './AdaptiveSettings';
 import { Capacitor } from '@capacitor/core';
 import { RoutineLibrary } from '../library/RoutineLibrary';
 import { RecoveryPanel } from '../library/RecoveryPanel';
@@ -80,6 +81,7 @@ export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange
     <section className={section}>
       <LanguageSettings />
     </section>
+    <AdaptiveSettings />
     <section className={section}>
       <h3 className="font-bold flex items-center gap-2"><User size={18}/>{t('내 신체 정보')}</h3>
       <div><span className="text-3xl font-black">{preferences.weight ? (preferences.weight.kg * unitFactor).toFixed(1) : '—'}</span><span className="ml-2 text-gray-500">{weightUnit}</span></div>

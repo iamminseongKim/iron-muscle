@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { loadAdaptiveSettings } from './adaptiveSettings';
 
 const id = 29001;
 let revision = 0;
@@ -16,12 +17,15 @@ export function scheduleRestNotification(at: number, title: string, body: string
       permission = await LocalNotifications.requestPermissions();
     }
     if (permission.display !== 'granted' || request !== revision || at <= Date.now()) return false;
+    const settings = loadAdaptiveSettings();
+    const channelId = `rest-complete-s${Number(settings.sound)}-v${Number(settings.vibration)}`;
     if (Capacitor.getPlatform() === 'android') {
-      await LocalNotifications.createChannel({ id: 'rest-complete', name: title, importance: 5, vibration: true, sound: 'rest_complete.wav' });
+      await LocalNotifications.createChannel({ id: channelId, name: title, importance: 5,
+        vibration: settings.vibration, sound: settings.sound ? 'rest_complete.wav' : 'rest_silent.wav' });
     }
     if (request !== revision || at <= Date.now()) return false;
     await LocalNotifications.schedule({ notifications: [{ id, title, body,
-      channelId: 'rest-complete', sound: 'default',
+      channelId, ...(settings.sound ? { sound: 'default' } : {}),
       schedule: { at: new Date(at), allowWhileIdle: true },
     }] });
     return request === revision;
