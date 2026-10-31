@@ -20,7 +20,7 @@ export function WorkoutCompleteSummary({ session, history, healthMessage, onHist
   const [copyStatus, setCopyStatus] = useState<'idle' | 'success' | 'failed'>('idle');
   const markdown = useMemo(() => generateAiCoachingMarkdown([session, ...history.filter(item => item.id !== session.id && item.date === session.date)], {
     language, scope: 'day', selectedDate: session.date, selectedBodyPart: 'all',
-  }), [session, history, language]);
+  }, history), [session, history, language]);
   const seconds = Math.max(0, Math.floor(session.durationSeconds));
   return <section data-workout-complete aria-labelledby="workout-summary-title" className="max-w-lg mx-auto px-4 pt-6 pb-32 space-y-4">
     <div className="soft-surface p-5 bg-white dark:bg-[#1E1B24] space-y-4">

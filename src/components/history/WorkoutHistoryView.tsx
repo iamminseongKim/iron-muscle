@@ -280,8 +280,8 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
       customStartDate: exportCustomStart,
       customEndDate: exportCustomEnd,
       selectedBodyPart,
-    });
-  }, [exportTargetSessions, exportScope, exportDate, exportCustomStart, exportCustomEnd, selectedBodyPart, language]);
+    }, sessions);
+  }, [sessions, exportTargetSessions, exportScope, exportDate, exportCustomStart, exportCustomEnd, selectedBodyPart, language]);
 
   const handleCopyMarkdown = async () => {
     const success = await copyText(currentMarkdown);

@@ -1,3 +1,4 @@
+import type { SetProgress } from '../../utils/adaptiveTraining';
 import { getExerciseEquipment } from '../../utils/equipment';
 import { displayExercise, displayMuscle, displayExerciseInstructions, getLanguage as exerciseLanguage } from '../../i18n';
 import { t } from '../../i18n';
@@ -10,6 +11,7 @@ import {
 import { WorkoutExercise, WorkoutSet, Exercise, POPULAR_MACHINE_BRANDS, EquipmentType, WeightUnit } from '../../types/workout';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import { SetRow } from './SetRow';
+import { ExerciseFeedbackPanel } from './ExerciseFeedbackPanel';
 import { QuickSetEditor } from './QuickSetEditor';
 import { getExerciseRecords, convertWeight, isAssistedExercise } from '../../utils/calculations';
 const HumanMuscle3DViewer = lazy(() => import('../3d/HumanMuscle3DViewer').then(module => ({default: module.HumanMuscle3DViewer})));
@@ -23,6 +25,9 @@ interface ExerciseCardProps {
   onToggleWeightUnit?: () => void;
   onUpdate: (updated: WorkoutExercise) => void;
   onDelete: () => void;
+  onStartSet?: (setId: string) => void;
+  onCancelSetStart?: (setId: string) => void;
+  getSetProgress?: (setId: string) => SetProgress;
   onTriggerRestTimer: (exerciseName: string, setId: string, setNumber: number, isLastSetOfExercise: boolean) => void;
   onOpenRpeGuide: () => void;
   onOpenGroupModal?: () => void;
@@ -42,6 +47,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onToggleWeightUnit: externalToggle,
   onUpdate,
   onDelete,
+  onStartSet,
+  onCancelSetStart,
+  getSetProgress,
   onTriggerRestTimer,
   onOpenRpeGuide,
   onOpenGroupModal,
@@ -63,11 +71,14 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     const updatedSets = exerciseItem.sets.map((s) => ({
       ...s,
       weight: convertWeight(s.weight, currentUnit, nextUnit),
+      plannedWeight: s.plannedWeight === undefined ? undefined : convertWeight(s.plannedWeight, currentUnit, nextUnit),
+      dropSegments: s.dropSegments?.map(segment => ({ ...segment, weight: convertWeight(segment.weight, currentUnit, nextUnit) })),
       previousWeight: s.previousWeight !== undefined ? convertWeight(s.previousWeight, currentUnit, nextUnit) : undefined,
     }));
     onUpdate({
       ...exerciseItem,
       weightUnit: nextUnit,
+      weightIncrement: exerciseItem.weightIncrement === undefined ? undefined : convertWeight(exerciseItem.weightIncrement, currentUnit, nextUnit),
       sets: updatedSets,
     });
   };
@@ -125,8 +136,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       weight: lastSet ? lastSet.weight : defaultWeight,
       reps: lastSet ? lastSet.reps : 10,
       completed: false,
-      rpe: lastSet?.rpe,
-      tempo: lastSet?.tempo,
+      rpe: null,
+      provenance: 'recorded',
+      setType: lastSet?.setType || 'UNSPECIFIED',
+      plannedRestSeconds: lastSet?.plannedRestSeconds,
       previousWeight: lastSet?.weight,
       previousReps: lastSet?.reps,
       side: lastSet?.side || (exerciseItem.executionMode === 'unilateral' ? 'left' : 'both'),
@@ -211,7 +224,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       {/* Main Header */}
       <div data-exercise-header className="border-b border-black/5 dark:border-white/5">
         <div className="min-w-0 px-3 pt-3 pb-2">
-          <h3 className="w-full text-base font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
+          <h3 className="select-none w-full text-base font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
             <button type="button" onClick={onToggleCollapsed} aria-expanded={!collapsed} className="w-full text-left flex items-start gap-1.5 min-h-[28px]">
               {collapsed ? <ChevronRight size={14} className="shrink-0 mt-1 text-gray-400" /> : <ChevronDown size={14} className="shrink-0 mt-1 text-gray-400" />}
               <span className="min-w-0 break-words">{exerciseName}</span>
@@ -669,7 +682,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       {showQuickSets && <QuickSetEditor key={currentUnit} item={exerciseItem} unit={currentUnit} onApply={onUpdate} onClose={() => setShowQuickSets(false)} />}
       <div className="px-[15px] py-1 flex items-center gap-1.5 text-[11px] font-bold text-gray-400 border-b border-black/5 dark:border-white/5">
         <span className="w-6 shrink-0 text-center">{t("세트")}</span>
-        <span className="w-12 shrink-0 text-center">{t("이전")}</span>
+        <span className="hidden min-[380px]:block w-12 shrink-0 text-center">{t("이전")}</span>
         <button
           type="button"
           onClick={handleToggleExerciseUnit}
@@ -680,7 +693,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
         </button>
         <span className="flex-1 text-center font-bold">{t("횟수")}</span>
-        <span className="w-9 shrink-0 text-center">{t("완료")}</span>
+        <span className="w-20 shrink-0 text-center">{t("진행")}</span>
         <span className="w-7 shrink-0 text-center">{t("옵션")}</span>
       </div>
 
@@ -696,6 +709,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             isAssisted={isAssisted}
             onUpdate={(updated) => handleUpdateSet(idx, updated)}
             onDelete={() => handleDeleteSet(idx)}
+            onStart={onStartSet ? () => onStartSet(set.id) : undefined}
+            previousSet={exerciseItem.sets[idx - 1]}
+            progress={getSetProgress?.(set.id)}
+            onCancelStart={onCancelSetStart ? () => onCancelSetStart(set.id) : undefined}
             onCompleteToggle={(comp, setId, setNum) => {
               if (comp) onTriggerRestTimer(exerciseName, setId, setNum,
                 idx === exerciseItem.sets.length - 1 || exerciseItem.sets.every(s => s.id === setId || s.completed));
@@ -704,6 +721,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           />
         ))}
 
+        <label className="block text-xs text-gray-500 px-3 py-2">{t('중량 증가 단위')} ({currentUnit})<input aria-label={t('중량 증가 단위')} type="number" min="0.1" step="0.5" value={exerciseItem.weightIncrement ?? (currentUnit === 'lbs' ? 5 : 2.5)} className="ml-2 rounded-lg p-2 w-20 bg-black/5 dark:bg-white/10" onChange={e => { const increment = Number(e.target.value); if (increment > 0 && Number.isFinite(increment)) onUpdate({ ...exerciseItem, weightIncrement: increment }); }} /></label>
+      <ExerciseFeedbackPanel value={exerciseItem.feedback} onChange={feedback => onUpdate({ ...exerciseItem, feedback })} />
         {/* Add Set Button */}
         <button
           type="button"

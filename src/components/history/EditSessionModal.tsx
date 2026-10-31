@@ -1,3 +1,4 @@
+import { recordSetRevision } from '../../utils/adaptiveTraining';
 import { t } from '../../i18n';
 import React, { useState } from 'react';
 import { 
@@ -45,9 +46,10 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
       weight: lastSet ? lastSet.weight : 20,
       reps: lastSet ? lastSet.reps : 10,
       completed: true,
-      rpe: lastSet?.rpe || 8.0,
-      tempo: lastSet?.tempo,
-      restSeconds: lastSet?.restSeconds || 60,
+      rpe: null,
+      provenance: 'recorded',
+      setType: 'UNSPECIFIED',
+
       side: lastSet?.side || (targetEx.executionMode === 'unilateral' ? 'left' : 'both'),
     };
 
@@ -63,9 +65,9 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
   const handleUpdateSet = (exerciseIndex: number, setIndex: number, field: keyof WorkoutSet, value: any) => {
     const newExs = [...exercises];
     const targetEx = newExs[exerciseIndex];
-    const targetSet = { ...targetEx.sets[setIndex], [field]: value };
+    const targetSet = { ...targetEx.sets[setIndex], [field]: value, ...(field === 'rpe' ? { rpeSource: 'recorded' as const, legacyRpe: targetEx.sets[setIndex].provenance !== 'recorded' ? targetEx.sets[setIndex].legacyRpe ?? targetEx.sets[setIndex].rpe : targetEx.sets[setIndex].legacyRpe } : {}), ...(field === 'restSeconds' ? { restSource: 'reported' as const } : {}) };
     const newSets = [...targetEx.sets];
-    newSets[setIndex] = targetSet;
+    newSets[setIndex] = recordSetRevision(targetEx.sets[setIndex], targetSet);
     newExs[exerciseIndex] = { ...targetEx, sets: newSets };
     setExercises(newExs);
   };
@@ -76,7 +78,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
     const targetEx = newExs[exerciseIndex];
     newExs[exerciseIndex] = {
       ...targetEx,
-      sets: targetEx.sets.map((s) => ({ ...s, restSeconds: seconds })),
+      sets: targetEx.sets.map((s) => ({ ...s, restSeconds: seconds, restSource: 'reported' })),
     };
     setExercises(newExs);
   };
@@ -114,8 +116,9 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
           weight: 20,
           reps: 10,
           completed: true,
-          rpe: 8.0,
-          restSeconds: 60,
+          rpe: null,
+          provenance: 'recorded',
+          setType: 'UNSPECIFIED',
         },
       ],
     };
@@ -417,7 +420,7 @@ export const EditSessionModal: React.FC<EditSessionModalProps> = ({
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') e.currentTarget.blur();
                             }}
-                            onChange={(e) => handleUpdateSet(eIdx, sIdx, 'rpe', parseFloat(e.target.value) || undefined)}
+                            onChange={(e) => handleUpdateSet(eIdx, sIdx, 'rpe', parseFloat(e.target.value) || null)}
                             className="col-span-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] px-1 py-1 rounded-lg text-center font-bold text-amber-500 outline-none"
                           />
 

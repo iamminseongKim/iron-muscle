@@ -54,6 +54,8 @@ export function mergeDaySessions(sessionsToMerge: WorkoutSession[]): WorkoutSess
           m.exerciseId === ex.exerciseId &&
           (m.machineConfigId || '') === (ex.machineConfigId || '') &&
           (m.machineBrand || '') === (ex.machineBrand || '') &&
+          (m.machineSetting || '') === (ex.machineSetting || '') &&
+          JSON.stringify(m.feedback || null) === JSON.stringify(ex.feedback || null) &&
           (m.loadType || '') === (ex.loadType || '') &&
           (m.weightUnit || 'kg') === (ex.weightUnit || 'kg') &&
           (m.executionMode || 'bilateral') === (ex.executionMode || 'bilateral')
@@ -99,6 +101,7 @@ export function mergeDaySessions(sessionsToMerge: WorkoutSession[]): WorkoutSess
 
   return {
     ...baseSession,
+    sourceSessionContexts: sorted.flatMap(source => source.sourceSessionContexts || [{ sessionId: source.id, startTime: source.startTime, checkIn: source.checkIn, programId: source.programId, programWeek: source.programWeek, trainingPhase: source.trainingPhase, sessionGoal: source.sessionGoal }]),
     id: `session-merged-${Date.now()}`,
     title: mergedTitle,
     durationSeconds: totalDurationSeconds,

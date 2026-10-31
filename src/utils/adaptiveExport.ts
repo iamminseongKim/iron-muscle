@@ -4,7 +4,7 @@ import messages from '../i18n/exportMessages.json';
 import adaptiveMessages from '../i18n/adaptiveMessages.json';
 import type { WorkoutSession, WorkoutSet } from '../types/workout';
 import { resolveRecordedExercise } from './exerciseResolver';
-import { actualRpe, isWorkingSet } from './adaptiveTraining';
+import { actualRpe, actualRest, isWorkingSet } from './adaptiveTraining';
 import { compareExercise, summarizeAdaptiveSession } from './adaptiveAnalysis';
 import { calculate1RM } from './calculations';
 
@@ -28,7 +28,7 @@ export function adaptiveExport(sessions: WorkoutSession[], language: Language = 
       [a.averageWorking, summary.workingAverageRpe], [a.maxRpe, summary.maxRpe], [a.failure, summary.failureSets],
     ];
     for (const [label, raw] of entries) md += `- ${label}: ${value(raw)}\n`;
-    md += `- ${a.warmupTime}\n`;
+    md += `- ${a.warmupDuration}: ${value(summary.warmupSeconds)} ${m.seconds}\n`;
     for (const [muscle, count] of Object.entries(summary.muscleWorkingSets)) if (count > 0) md += `- ${displayMuscle(muscle, language)} ${a.working}: ${count}\n`;
     if (session.notes) md += `- ${m.notes}: ${cell(session.notes)}\n`;
     if (session.conditionEmoji) md += `- ${m.condition}: ${cell(session.conditionEmoji)}\n`;
@@ -53,6 +53,7 @@ export function adaptiveExport(sessions: WorkoutSession[], language: Language = 
       if (exercise.equipmentType === 'dumbbell') md += `- ${m.perHand}\n`;
       if (exercise.equipmentType === 'smith') md += `- ${m.platesOnly}\n`;
       if (exercise.machineBrand) md += `- ${m.brand}: ${cell(exercise.machineBrand)}\n`;
+      if (['machine', 'smith', 'cable'].includes(exercise.equipmentType) && !exercise.machineConfigId) md += `- ${a.equipmentUnknown}\n`;
       if (exercise.machineConfigId) md += `- ID: ${cell(exercise.machineConfigId)}\n`;
       if (exercise.machineSetting) md += `- ${m.setting}: ${cell(exercise.machineSetting)}\n`;
       if (exercise.notes) md += `- ${m.notes}: ${cell(exercise.notes)}\n`;
@@ -61,11 +62,11 @@ export function adaptiveExport(sessions: WorkoutSession[], language: Language = 
       for (const set of exercise.sets) {
         const performed = set.completed;
         const confirmed = set.provenance === 'recorded';
-        const notes = [set.plannedNotes ? `${a.plan}: ${set.plannedNotes}` : '', set.comment ? `${a.actual}: ${set.comment}` : '', ...(set.tags || []).map(tag => t(tag, language)), !confirmed ? `${a.unknown} RPE=${value(set.rpe)}; ${m.rest}=${value(set.restSeconds)}` : '', !performed ? m.pending : ''].filter(Boolean).join('; ');
+        const notes = [!confirmed && set.tempo ? `${a.unknown} ${m.tempo}=${tempo(set.tempo)}` : '', set.plannedNotes ? `${a.plan}: ${set.plannedNotes}` : '', set.comment ? `${confirmed || set.commentSource === 'recorded' ? a.actual : a.unknown}: ${set.comment}` : '', ...(set.tags || []).map(tag => t(tag, language)), !confirmed || set.legacyRpe !== undefined ? `${a.unknown} RPE=${value(set.legacyRpe ?? set.rpe)}` : '', actualRest(set) === null && set.restSeconds !== undefined ? `${a.unknown} ${m.rest}=${value(set.restSeconds)}` : '', !performed ? m.pending : ''].filter(Boolean).join('; ');
         const values = [set.setNumber, set.plannedSetType ? typed(set.plannedSetType) : null, performed ? typed(set.setType) : null, set.plannedWeight === undefined ? null : `${set.plannedWeight} ${unit}`, performed ? `${set.weight} ${unit}` : null,
           set.plannedReps, performed ? set.reps : null, set.targetRpe, actualRpe(set), set.plannedRestSeconds === undefined ? null : `${set.plannedRestSeconds} ${m.seconds}`,
-          performed && confirmed && set.restSeconds !== undefined ? `${set.restSeconds} ${m.seconds}` : null, tempo(set.plannedTempo), performed ? tempo(set.tempo) : null,
-          set.failureType ? a[set.failureType] : null, performed ? set.stimulusFeedback : null, set.painFeedback ? `${cell(set.painFeedback.location)} ${set.painFeedback.intensity}/10` : null,
+          actualRest(set) !== null ? `${actualRest(set)} ${m.seconds}` : null, tempo(set.plannedTempo), performed && (confirmed || set.tempoSource === 'recorded') ? tempo(set.tempo) : null,
+          performed && set.failureType ? a[set.failureType] : null, performed ? set.stimulusFeedback : null, performed && set.painFeedback ? `${cell(set.painFeedback.location)} ${set.painFeedback.intensity}/10` : null,
           performed && confirmed && isWorkingSet(set) && set.weight > 0 && set.reps > 0 ? `${calculate1RM(set.weight, set.reps)} ${unit}` : null,
           set.side ? m[set.side] : null, notes];
         md += `| ${values.map(value).join(' | ')} |\n`;
@@ -100,7 +101,7 @@ export function adaptiveExport(sessions: WorkoutSession[], language: Language = 
       const rpe = actualRpe(set);
       if (rpe !== null && set.targetRpe !== undefined && Math.abs(rpe - set.targetRpe) >= 1) rows.push(`${a.plan} RPE ${set.targetRpe} / ${a.actual} RPE ${rpe}`);
       if ((set.painFeedback?.intensity || 0) > 0) rows.push(`${a.pain} ${value(set.painFeedback?.location)} ${set.painFeedback?.intensity}/10`);
-      if (set.restSeconds !== undefined && set.plannedRestSeconds !== undefined && set.restSeconds < set.plannedRestSeconds && set.provenance === 'recorded') rows.push(`${a.actual} ${m.rest} ${set.restSeconds} < ${a.plan} ${set.plannedRestSeconds}`);
+      if (actualRest(set) !== null && set.plannedRestSeconds !== undefined && actualRest(set)! < set.plannedRestSeconds) rows.push(`${a.actual} ${m.rest} ${set.restSeconds} < ${a.plan} ${set.plannedRestSeconds}`);
       return rows.map(row => `${cell(displayExercise(resolveRecordedExercise(exercise), language))} #${set.setNumber}: ${row}`);
     }));
     if ((session.checkIn?.energy !== undefined && session.checkIn.energy <= 2) || (session.checkIn?.fatigue !== undefined && session.checkIn.fatigue >= 4) || (session.checkIn?.sleepHours !== undefined && session.checkIn.sleepHours < 6)) observations.unshift(a.lowReadiness);

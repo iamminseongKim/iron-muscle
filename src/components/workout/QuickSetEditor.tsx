@@ -9,10 +9,10 @@ export function QuickSetEditor({ item, unit, onApply, onClose }: {
   const seed = item.sets.find(s => !s.completed) || item.sets[item.sets.length - 1];
   const [plan, setPlan] = useState<QuickSetPlan>({
     mode: 'same', count: Math.min(20, item.sets.filter(s => !s.completed).length || 3),
-    weight: seed?.weight ?? 20, reps: seed?.reps || 10, rpe: seed?.rpe,
-    tempo: seed?.tempo ? { ...seed.tempo } : undefined,
+    weight: seed?.weight ?? 20, reps: seed?.reps || 10, rpe: seed?.targetRpe,
+    tempo: seed?.plannedTempo ? { ...seed.plannedTempo } : undefined,
     backoffWeight: Math.round((seed?.weight ?? 20) * 0.9 * 2) / 2,
-    backoffReps: seed?.reps || 10, backoffRpe: seed?.rpe,
+    backoffReps: seed?.reps || 10, backoffRpe: seed?.targetRpe,
     weightStep: 2.5, repsStep: -2,
   });
   const change = (patch: Partial<QuickSetPlan>) => setPlan(p => ({ ...p, ...patch }));

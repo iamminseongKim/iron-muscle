@@ -15,8 +15,9 @@ try {
   await page.waitForSelector('[data-ai-routine]');
   console.log('AI import panel ready');
   assert.equal(await page.$eval('[data-ai-routine-copy]',node=>node.textContent),'외부 AI용 질문 복사');
-  assert.ok(await page.$eval('[data-ai-routine-copy]',node=>{const rect=node.getBoundingClientRect();return rect.top>=0 && rect.bottom<innerHeight-100;}),'copy button is visible above mobile navigation on first screen');
-  assert.equal(await page.$eval('[data-ai-routine-paste]',node=>node.open),false,'paste starts collapsed while copy is visible');
+  assert.equal(await page.$eval('[data-ai-routine-helper]', node => node.open), false, 'AI helper is optional for manual workouts');
+  assert.equal(await page.$eval('[data-ai-routine-paste]', node => node.open), false);
+  await page.click('[data-ai-routine-helper] > summary');
   await page.focus('[data-ai-routine-copy]'); await page.keyboard.press('Enter');
   await page.waitForFunction(()=>document.querySelector('[data-ai-routine] [role="status"]')?.textContent.includes('복사했습니다'));
   const prompt=await page.evaluate(()=>navigator.clipboard.readText());
@@ -82,7 +83,7 @@ try {
   await page.evaluate(()=>{Storage.prototype.getItem=window.aiOriginalGetItem;delete window.aiOriginalGetItem;});
   assert.equal(await page.evaluate(()=>localStorage.getItem('iron_active_session_v1')),null,'read errors abort before writing');
   await page.click('[data-ai-routine-start]');
-  await page.waitForSelector('button[aria-label="1세트 완료"]');
+  await page.waitForSelector('button[aria-label="1세트 시작"]');
   const saved = await page.evaluate(()=>JSON.parse(localStorage.getItem('iron_active_session_v1')));
   assert.equal(saved.title,routine.title);
   assert.equal(saved.notes,routine.notes);
@@ -90,9 +91,10 @@ try {
   assert.equal(saved.exercises[0].loadType,'pin-loaded');
   assert.equal(saved.exercises[0].notes,'Seat 4');
   assert.ok((await page.$eval('[data-exercise-notes]',node=>node.textContent)).includes('Seat 4'));
-  assert.equal(saved.exercises[0].sets[0].rpe,7.5);
-  assert.equal(saved.exercises[0].sets[0].tempo.eccentric,3);
-  assert.equal(saved.exercises[0].sets[0].comment,'Slow pull');
+  assert.equal(saved.exercises[0].sets[0].rpe,null);
+  assert.equal(saved.exercises[0].sets[0].targetRpe,7.5);
+  assert.equal(saved.exercises[0].sets[0].plannedTempo.eccentric,3);
+  assert.equal(saved.exercises[0].sets[0].plannedNotes,'Slow pull');
   assert.equal(saved.exercises[0].sets[0].side,'left');
   assert.equal(saved.exercises[0].sets[1].side,'right');
   assert.equal(saved.exercises[0].sets[0].plannedRestSeconds,120);
@@ -100,7 +102,10 @@ try {
   assert.equal(saved.exercises[0].machineBrand,undefined);
   assert.ok(saved.exercises[0].sets.every(set=>!set.completed));
   assert.equal(await page.$('[title="닫기"]'),null,'import does not open rest timer');
+  await page.click('button[aria-label="1세트 시작"]');
   await page.click('button[aria-label="1세트 완료"]');
+  await page.waitForSelector('[role="dialog"][aria-label="세트 피드백"]');
+  await page.evaluate(() => [...document.querySelectorAll('button')].find(node => node.textContent === '건너뛰고 완료').click());
   await page.waitForFunction(()=>document.body.textContent.includes('02:00') || document.body.textContent.includes('01:59'));
   const completed = await page.evaluate(()=>JSON.parse(localStorage.getItem('iron_active_session_v1')));
   assert.equal(completed.exercises[0].sets[0].completed,true);

@@ -72,7 +72,7 @@ export const App: React.FC = () => {
     const saved = loadActiveSession();
     return saved ? saved.durationSeconds : 0;
   });
-  const [isWorkoutTimerRunning, setIsWorkoutTimerRunning] = useState<boolean>(true);
+  const [isWorkoutTimerRunning, setIsWorkoutTimerRunning] = useState<boolean>(() => !loadActiveSession()?.pausedAt);
 
   const isTouchLocked = Boolean(activeSession && !activeSession.completed && !isWorkoutTimerRunning);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -99,7 +99,7 @@ export const App: React.FC = () => {
       if (current) {
         // 💡 세션 갱신 이벤트 발생 시에도 이미 진행 중인 초수가 0이나 이전 값으로 떨어지지 않도록 보존
         setTotalWorkoutSeconds((prev) => activeSession?.id === current.id ? Math.max(prev, current.durationSeconds || 0) : current.durationSeconds || 0);
-        if (!activeSession || activeSession.id !== current.id) setIsWorkoutTimerRunning(true);
+        setIsWorkoutTimerRunning(!current.pausedAt);
       } else {
         setTotalWorkoutSeconds(0);
       }
@@ -137,7 +137,17 @@ export const App: React.FC = () => {
   }, [activeSession?.id, activeSession?.completed, isWorkoutTimerRunning]);
 
   const toggleWorkoutTimer = () => {
-    setIsWorkoutTimerRunning((prev) => !prev);
+    const current = loadActiveSession();
+    if (!current) return;
+    const now = new Date();
+    if (current.pausedAt) {
+      const pausedSeconds = (current.pausedSeconds || 0) + Math.max(0, (now.getTime() - Date.parse(current.pausedAt)) / 1000);
+      saveActiveSession({ ...current, pausedAt: undefined, pausedSeconds });
+      setIsWorkoutTimerRunning(true);
+    } else {
+      saveActiveSession({ ...current, pausedAt: now.toISOString() });
+      setIsWorkoutTimerRunning(false);
+    }
   };
 
   // 기본 테마: 화이트 라이트 모드 (사용자 명시 요구: 테마는 하얀색이 기본이고 다크모드는 설정에서 전환)
@@ -224,7 +234,7 @@ export const App: React.FC = () => {
             <h2 id="touch-lock-title" className="font-bold text-lg">{t('운동 시간이 일시정지되었습니다')}</h2>
             <p className="my-5 text-sm">{t('총운동')} <strong>{Math.floor(totalWorkoutSeconds / 60)}:{String(totalWorkoutSeconds % 60).padStart(2, '0')}</strong>
               {' · '}{t('세트 완료')} <strong>{activeSession?.exercises.reduce((count, ex) => count + ex.sets.filter(set => set.completed).length, 0)}</strong></p>
-            <HoldToCompleteButton onComplete={() => setIsWorkoutTimerRunning(true)} holdDurationMs={1500}
+            <HoldToCompleteButton onComplete={toggleWorkoutTimer} holdDurationMs={1500}
               label={t('1.5초 길게 눌러 잠금 해제 & 운동 재개')} holdingLabel={t('잠금 해제 중...')} />
           </div>
         </div>

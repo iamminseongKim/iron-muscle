@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 const bundle = await build({ stdin: { contents: "export * from './src/utils/adaptiveAnalysis'; export * from './src/utils/aiPromptGenerator';", resolveDir: process.cwd() }, bundle: true, write: false, platform: 'node', format: 'esm' });
 const api = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
-const set = (extra = {}) => ({ id: 'set', setNumber: 1, completed: true, weight: 80, reps: 8, plannedWeight: 80, plannedReps: 8, targetRpe: 8, rpe: 9.5, provenance: 'recorded', setType: 'WORKING', plannedRestSeconds: 120, restSeconds: 90, startedAt: '2026-10-31T00:02:00Z', completedAt: '2026-10-31T00:02:30Z', ...extra });
+const set = (extra = {}) => ({ id: 'set', setNumber: 1, completed: true, weight: 80, reps: 8, plannedWeight: 80, plannedReps: 8, targetRpe: 8, rpe: 9.5, provenance: 'recorded', setType: 'WORKING', plannedRestSeconds: 120, restSeconds: 90, restSource: 'measured', startedAt: '2026-10-31T00:02:00Z', completedAt: '2026-10-31T00:02:30Z', ...extra });
 const exercise = (sets = [set()], extra = {}) => ({ id: 'exercise', exerciseId: 'bench-press', equipmentType: 'barbell', weightUnit: 'kg', sets, ...extra });
 const session = (exercises = [exercise()], extra = {}) => ({ id: 'session', title: 'Adaptive', date: '2026-10-31', startTime: '2026-10-31T00:00:00Z', completed: true, durationSeconds: 3600, exercises, ...extra });
 const sample = session([exercise([set({ id: 'warmup', setType: 'WARMUP', weight: 20 }), set({ id: 'activation', setType: 'ACTIVATION', weight: 20 }), set(), set({ id: 'missing', setType: 'UNSPECIFIED', rpe: null }), set({ id: 'pending', completed: false, weight: 999, reps: 99 })])]);
@@ -55,3 +55,9 @@ const dayWithHistory = api.generateAiCoachingMarkdown([session()], { language: '
 assert.ok(dayWithHistory.includes('Previous performance · 2026-10-30'));
 assert.ok(!dayWithHistory.includes('## 2026-10-30'), 'prior history supports comparison without exporting unrelated sessions');
 console.log('PASS adaptive working-set summaries, nullable provenance, drop segments, pain and RPE gates, approval-only suggestions, comparable history and eight-language actual-only exports');
+for (const feedback of [{ painLocation: 'elbow' }, { painIntensity: 1 }]) {
+  assert.equal(api.suggestNextSet({ exercise: exercise([set({ rpe: 7 })], { feedback }), completedSet: set({ rpe: 7 }), nextSet: set({ completed: false }) }), null, 'pain location or intensity suppress recommendations');
+}
+assert.equal(api.suggestNextSet({ exercise: exercise([set({ painFeedback: { location: 'elbow', intensity: 0 } })]), completedSet: set({ rpe: 7 }), nextSet: set({ completed: false }) }), null);
+const pendingFeedback = api.generateAiCoachingMarkdown([session([exercise([set({ completed: false, painFeedback: { location: 'elbow-draft-only', intensity: 2 }, failureType: 'MUSCULAR' })])])], { language: 'en', scope: 'all', selectedDate: '2026-10-31' });
+assert.ok(!pendingFeedback.includes('elbow-draft-only'), 'pending pain is not actual performance');

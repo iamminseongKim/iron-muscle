@@ -80,6 +80,11 @@ export interface WorkoutSet {
   stimulusFeedback?: number;
   startedAt?: string;
   completedAt?: string;
+  rpeSource?: 'recorded';
+  tempoSource?: 'recorded';
+  commentSource?: 'recorded';
+  legacyRpe?: number | null;
+  revisions?: { at: string; previous: Omit<WorkoutSet, 'revisions'> }[];
   provenance?: 'recorded' | 'legacy-unknown';
   startPausedSeconds?: number;
   completionPausedSeconds?: number;
@@ -98,6 +103,7 @@ export interface WorkoutSet {
   previousWeight?: number;
   previousReps?: number;
   plannedRestSeconds?: number; // 루틴에서 지정한 목표 휴식 시간
+  restSource?: 'measured' | 'reported';
   restSeconds?: number; // 실제로 소요된 휴식 시간 (초)
   side?: 'left' | 'right' | 'both'; // 편측(원암/원레그) 수행 시 좌/우 기록
 }
@@ -209,7 +215,18 @@ export interface WorkoutExercise {
   groupColor?: string;
 }
 
+export interface SessionSourceContext {
+  sessionId: string;
+  startTime: string;
+  checkIn?: WorkoutSession['checkIn'];
+  programId?: string;
+  programWeek?: number;
+  trainingPhase?: TrainingPhase;
+  sessionGoal?: string;
+}
+
 export interface WorkoutSession {
+  sourceSessionContexts?: SessionSourceContext[];
   programId?: string;
   programWeek?: number;
   trainingPhase?: TrainingPhase;

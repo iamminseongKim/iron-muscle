@@ -93,14 +93,16 @@ try {
   }
   for (const language of ['ko', 'en', 'ja', 'zh-CN', 'zh-TW', 'es', 'fr', 'de']) {
     const expected = await page.evaluate(async language => {
-      const i18n = await import('/src/i18n/index.ts'); i18n.setLanguage(language);
+      const source = await (await fetch('/src/components/workout/WorkoutCompleteSummary.tsx')).text();
+      const modulePath = source.match(/from ["']([^"']*i18n\/index\.ts[^"']*)["']/)?.[1] || '/src/i18n/index.ts';
+      const i18n = await import(modulePath); i18n.setLanguage(language);
       return i18n.t('운동 완료 요약', language);
     }, language);
     await page.waitForFunction(expected => document.querySelector('#workout-summary-title')?.textContent === expected, {}, expected);
     await page.setViewport({ width: 320, height: 844, isMobile: true, hasTouch: true });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `translated summary ${language}`);
   }
-  await page.evaluate(async () => (await import('/src/i18n/index.ts')).setLanguage('ko'));
+  await page.evaluate(async () => { const source = await (await fetch('/src/components/workout/WorkoutCompleteSummary.tsx')).text(); const modulePath = source.match(/from ["']([^"']*i18n\/index\.ts[^"']*)["']/)?.[1] || '/src/i18n/index.ts'; (await import(modulePath)).setLanguage('ko'); });
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
   await page.screenshot({ path: join(tmpdir(), 'iron-flow-summary.png'), fullPage: true });
   await page.evaluate(() => document.documentElement.classList.add('dark'));

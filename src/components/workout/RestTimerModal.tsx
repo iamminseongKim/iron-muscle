@@ -7,7 +7,9 @@ import { soundManager } from '../../utils/audio';
 
 interface RestTimerModalProps {
   isOpen: boolean;
+  storageKey?: string;
   initialSeconds?: number;
+  initialElapsedSeconds?: number;
   exerciseName?: string;
   setNumber?: number;
   isLastSetOfExercise?: boolean;
@@ -19,7 +21,9 @@ interface RestTimerModalProps {
 
 export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   isOpen,
+  storageKey,
   initialSeconds = 90,
+  initialElapsedSeconds = 0,
   exerciseName = '',
   setNumber = 1,
   isLastSetOfExercise = false,
@@ -56,6 +60,9 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   };
   const sample = () => {
     const value = clockRef.current.sample();
+    if (storageKey) {
+      try { localStorage.setItem(storageKey, JSON.stringify({ at: Date.now(), remaining: clockRef.current.remaining, elapsed: clockRef.current.elapsed, running: clockRef.current.running, target: targetSeconds, notified: completedRef.current || value.remaining === 0 })); } catch {}
+    }
     setRemainingSeconds(value.remaining);
     setElapsedSeconds(value.elapsed);
     if (value.remaining === 0 && !completedRef.current) {
@@ -124,19 +131,33 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
       }
       window.getSelection()?.removeAllRanges();
 
-      clockRef.current = new RestClock(initialSeconds);
-      completedRef.current = false;
+      let clock = new RestClock(Math.max(0, initialSeconds - initialElapsedSeconds), initialElapsedSeconds);
+      let target = initialSeconds;
+      let notified = false;
+      if (storageKey) {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
+          if (saved && [saved.at, saved.remaining, saved.elapsed, saved.target].every(v => typeof v === 'number' && Number.isFinite(v)) && typeof saved.running === 'boolean') {
+            const delta = saved.running ? Math.max(0, (Date.now() - saved.at) / 1000) : 0;
+            clock = new RestClock(Math.max(0, saved.remaining - delta), saved.elapsed + delta, saved.running);
+            target = saved.target;
+            notified = saved.notified || clock.remaining <= 0;
+          }
+        } catch {}
+      }
+      clockRef.current = clock;
+      completedRef.current = notified;
       armAlarm();
-      setTargetSeconds(initialSeconds);
-      setRemainingSeconds(initialSeconds);
-      setElapsedSeconds(0);
-      setIsActive(true);
+      setTargetSeconds(target);
+      setRemainingSeconds(Math.ceil(clock.remaining));
+      setElapsedSeconds(Math.floor(clock.elapsed));
+      setIsActive(clock.running);
       setIsMinimized(false);
       setDragOffsetVisualY(0);
       setUndoBackup(null);
     }
     return () => { ++alarmRevisionRef.current; cancelRestNotification(); };
-  }, [isOpen, initialSeconds]);
+  }, [isOpen, initialSeconds, initialElapsedSeconds, storageKey]);
 
   // 기본 플로팅 위치 초기화 (화면 크기 기준 우측 하단)
   useEffect(() => {
@@ -156,7 +177,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
       clearInterval(interval);
       document.removeEventListener('visibilitychange', refresh);
     };
-  }, [isOpen]);
+  }, [isOpen, targetSeconds, storageKey]);
 
   if (!isOpen) return null;
 
@@ -200,6 +221,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
   };
 
   const finish = (save: boolean) => {
+    if (storageKey) localStorage.removeItem(storageKey);
     const value = clockRef.current.sample();
     ++alarmRevisionRef.current;
     cancelRestNotification();
@@ -363,7 +385,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               type="button"
               onClick={handleFinish}
               className="px-2 py-1 bg-accent-bright text-white rounded-full text-[11px] font-extrabold shadow-sm active:scale-95 transition"
-              title={t("휴식 종료 & 세트에 기록")}
+              title={t('휴식 타이머 닫기')}
             >
               {t("종료")}
             </button>
@@ -525,7 +547,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
                   {formatTime(remainingSeconds)}
                 </span>
                 <span className="text-xs font-semibold text-gray-400 mt-1">
-                  {t("실제 쉰 시간:")} <strong className="text-[#FF9500] font-bold">{elapsedSeconds}s</strong>
+                  {t('타이머 경과')} <strong className="text-[#FF9500] font-bold">{elapsedSeconds}s</strong>
                 </span>
               </>
             )}
@@ -588,7 +610,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             }`}
           >
             <Check size={18} strokeWidth={2.5} />
-            {t("휴식 종료 & 세트에 기록")} ({elapsedSeconds}s)
+            {t('휴식 타이머 닫기')} ({elapsedSeconds}s)
           </button>
         </div>
       </div>

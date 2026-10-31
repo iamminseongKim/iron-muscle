@@ -35,16 +35,18 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
   const preview = () => {
     setRegistration(null);
     try { setState({ kind: 'preview', draft: parseImportedWorkout(input, catalog) }); setMessage(''); }
-    catch (error) { setState({ kind: 'input' }); setMessage(error instanceof Error ? error.message : 'AI 루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.'); }
+    catch (error) { setState({ kind: 'input' }); setMessage(error instanceof Error ? error.message : '루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.'); }
   };
   const copyPrompt = async () => setMessage(await copyText(buildAiRoutinePrompt()) ? 'AI 요청문을 복사했습니다.' : '복사하지 못했습니다. 예시를 직접 복사하세요.');
   return <section data-ai-routine className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-3">
-    <h3 className="text-sm font-bold">{t('외부 AI로 루틴 준비하기')}</h3>
+    <details data-ai-routine-helper className="space-y-3">
+    <summary className="text-sm font-bold cursor-pointer">{t('외부 AI로 루틴 준비하기')}</summary>
     <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t('질문을 복사해 ChatGPT 등 외부 AI에 붙여넣고 대화한 뒤, 완성된 루틴을 가져오세요.')}</p>
     <button data-ai-routine-copy type="button" className={`${button} w-full`} onClick={copyPrompt}>{t('외부 AI용 질문 복사')}</button>
+    </details>
     <details data-ai-routine-paste className="space-y-3">
-    <summary className="cursor-pointer text-sm font-bold">{t('AI 루틴 붙여넣기')}</summary>
-    <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t('AI가 만든 JSON 또는 Markdown 표를 붙여넣고 종목과 세트를 확인하세요.')}</p>
+    <summary className="cursor-pointer text-sm font-bold">{t('루틴 붙여넣기')}</summary>
+    <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{t('저장해 둔 JSON 또는 Markdown 루틴을 붙여넣고 종목과 세트를 확인하세요.')}</p>
     <details className="text-xs space-y-2">
       <summary className="cursor-pointer font-semibold">{t('지원 형식과 AI 요청문')}</summary>
       <p>{t('종목에 category, primaryMuscles, secondaryMuscles, nameEn을 추가할 수 있습니다. Markdown 근육 열은 ID를 쉼표로 구분하세요. 미등록 종목은 부위와 근육을 확인한 뒤 새 운동으로 등록할 수 있습니다.')}</p>
@@ -104,7 +106,7 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
             <p className="break-words text-sm font-semibold">{index + 1}. {row.sourceName}</p>
             {!row.exerciseId && <>
               <p className="text-xs text-orange-600 dark:text-orange-400">{t('일치하는 종목을 확인할 수 없습니다. 직접 선택하세요.')}</p>
-              {row.proposal && <div data-ai-muscle-proposal className="text-xs space-y-1"><p>{t('AI 근육 제안')}</p><p>{t('주동근')} · {row.proposal.primaryMuscles?.map(displayMuscle).join(', ') || t('미지정')}</p><p>{t('보조근')} · {row.proposal.secondaryMuscles?.map(displayMuscle).join(', ') || t('미지정')}</p></div>}
+              {row.proposal && <div data-ai-muscle-proposal className="text-xs space-y-1"><p>{t('근육 정보 확인')}</p><p>{t('주동근')} · {row.proposal.primaryMuscles?.map(displayMuscle).join(', ') || t('미지정')}</p><p>{t('보조근')} · {row.proposal.secondaryMuscles?.map(displayMuscle).join(', ') || t('미지정')}</p></div>}
               <button data-ai-register-exercise type="button" className={button} onClick={() => setRegistration({ index, draft: state.draft, name: row.sourceName, review: { kind: 'ai-import', proposal: row.proposal, equipmentType: row.equipmentType, loadType: row.loadType } })}>{t('새 운동으로 등록')}</button>
             </>}
             {selected && <div data-confirmed-muscles className="text-xs space-y-1"><p>{t('선택한 종목의 근육')}</p><p>{t('주동근')} · {selected.primaryMuscles.map(displayMuscle).join(', ') || t('미지정')}</p><p>{t('보조근')} · {selected.secondaryMuscles.map(displayMuscle).join(', ') || t('미지정')}</p></div>}

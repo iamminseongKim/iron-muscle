@@ -36,14 +36,15 @@ export function buildQuickSets(plan: QuickSetPlan): Pick<WorkoutSet, 'weight' | 
 export function applyQuickSets(existing: WorkoutSet[], plan: QuickSetPlan, side: WorkoutSet['side'] = 'both'): WorkoutSet[] {
   const planned = buildQuickSets(plan);
   let cursor = 0;
-  const result = existing.map(set => {
+  const result: WorkoutSet[] = existing.map((set): WorkoutSet => {
     if (set.completed || cursor >= planned.length) return set;
     const next = planned[cursor++];
     const tags = [...(set.tags || []).filter(t => t !== '탑세트' && t !== '백오프'), ...(next.tags || [])];
-    return { ...set, ...next, tags: tags.length ? tags : undefined };
+    return { ...set, weight: next.weight, reps: next.reps, plannedWeight: set.plannedWeight ?? next.weight, plannedReps: set.plannedReps ?? next.reps, targetRpe: next.rpe ?? undefined, plannedTempo: next.tempo, setType: plan.mode === 'top' ? (cursor === 1 ? 'TOP_SET' : 'BACK_OFF') : set.setType || 'UNSPECIFIED', rpe: null, tempo: undefined, provenance: 'recorded', tags: tags.length ? tags : undefined };
   });
   while (cursor < planned.length) {
-    result.push({ ...planned[cursor++], id: crypto.randomUUID(), setNumber: result.length + 1, completed: false, side });
+    const next = planned[cursor++];
+    result.push({ weight: next.weight, reps: next.reps, plannedWeight: next.weight, plannedReps: next.reps, targetRpe: next.rpe ?? undefined, plannedTempo: next.tempo, setType: plan.mode === 'top' ? (cursor === 1 ? 'TOP_SET' : 'BACK_OFF') : 'UNSPECIFIED', rpe: null, provenance: 'recorded', tags: next.tags, id: crypto.randomUUID(), setNumber: result.length + 1, completed: false, side });
   }
   return result;
 }

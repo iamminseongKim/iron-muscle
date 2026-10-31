@@ -5,7 +5,19 @@ export function isWorkingSet(set: WorkoutSet): boolean {
 }
 
 export function actualRpe(set: WorkoutSet): number | null {
-  return set.completed && set.provenance === 'recorded' && typeof set.rpe === 'number' && Number.isFinite(set.rpe) ? set.rpe : null;
+  return set.completed && (set.provenance === 'recorded' || set.rpeSource === 'recorded') && typeof set.rpe === 'number' && Number.isFinite(set.rpe) ? set.rpe : null;
+}
+
+export function recordSetRevision(previous: WorkoutSet, next: WorkoutSet, now = new Date()): WorkoutSet {
+  const { revisions, ...before } = previous;
+  const { revisions: ignored, ...after } = next;
+  const prescriptionChanged = ['plannedWeight', 'plannedReps', 'targetRpe', 'plannedRestSeconds', 'plannedTempo', 'plannedSetType', 'plannedNotes'].some(key => JSON.stringify(Reflect.get(before, key)) !== JSON.stringify(Reflect.get(after, key)));
+  if ((!previous.completed && !prescriptionChanged) || JSON.stringify(before) === JSON.stringify(after)) return next;
+  return { ...next, revisions: [...(revisions || []), { at: now.toISOString(), previous: before }] };
+}
+
+export function actualRest(set: WorkoutSet): number | null {
+  return set.completed && (set.restSource === 'reported' || (set.restSource === 'measured' && !!set.startedAt)) && typeof set.restSeconds === 'number' && Number.isFinite(set.restSeconds) ? set.restSeconds : null;
 }
 
 export function normalizeAdaptiveSession(session: WorkoutSession): WorkoutSession {
@@ -21,22 +33,49 @@ export function normalizeAdaptiveSession(session: WorkoutSession): WorkoutSessio
 export function completeWorkoutSet(set: WorkoutSet, now = new Date()): WorkoutSet {
   if (set.completed) return set;
   return {
-    ...set, completed: true, completedAt: now.toISOString(), provenance: 'recorded',
-    plannedWeight: set.plannedWeight ?? set.weight,
-    plannedReps: set.plannedReps ?? set.reps,
+    ...set, ...(set.setType === 'DROP_SET' && set.dropSegments?.length ? { weight: set.dropSegments[0].weight, reps: set.dropSegments[0].reps } : {}), completed: true, completedAt: now.toISOString(), provenance: set.provenance === 'legacy-unknown' ? 'legacy-unknown' : 'recorded',
+    plannedWeight: set.plannedWeight,
+    plannedReps: set.plannedReps,
     plannedSetType: set.plannedSetType ?? set.setType ?? 'UNSPECIFIED',
     setType: set.setType ?? set.plannedSetType ?? 'UNSPECIFIED',
-    rpe: set.provenance === 'recorded' ? set.rpe ?? null : null, failureType: set.failureType ?? 'UNKNOWN',
+    legacyRpe: set.provenance !== 'recorded' ? set.legacyRpe ?? set.rpe : set.legacyRpe,
+    rpe: set.provenance === 'recorded' || set.rpeSource === 'recorded' ? set.rpe ?? null : null, failureType: set.failureType ?? 'UNKNOWN',
   };
 }
 
 export function undoWorkoutSet(set: WorkoutSet): WorkoutSet {
-  const { completedAt, startedAt, restSeconds, restKind, completionPausedSeconds, startPausedSeconds, ...preserved } = set;
+  const { completedAt, startedAt, restSeconds, restSource, restKind, completionPausedSeconds, startPausedSeconds, ...preserved } = set;
   return { ...preserved, completed: false, rpe: null, failureType: 'UNKNOWN', painFeedback: undefined, stimulusFeedback: undefined };
 }
 
+export type SetProgress = { kind: 'ready' } | { kind: 'active' } | { kind: 'completed' } | { kind: 'waiting'; reason: 'earlier-set' | 'active-set' | 'paused' | 'unavailable' };
+
+export function getSetProgress(session: WorkoutSession, exerciseItemId: string, setId: string): SetProgress {
+  const exercise = session.exercises.find(item => item.id === exerciseItemId);
+  const set = exercise?.sets.find(item => item.id === setId);
+  if (!exercise || !set) return { kind: 'waiting', reason: 'unavailable' };
+  if (set.completed) return { kind: 'completed' };
+  if (session.pausedAt) return { kind: 'waiting', reason: 'paused' };
+  const active = session.exercises.flatMap(item => item.sets).filter(item => item.startedAt && !item.completed)
+    .sort((a, b) => Date.parse(a.startedAt!) - Date.parse(b.startedAt!))[0];
+  if (active && active.id !== setId) return { kind: 'waiting', reason: 'active-set' };
+  if (set.startedAt) return { kind: 'active' };
+  if (exercise.sets.find(item => !item.completed)?.id !== setId) return { kind: 'waiting', reason: 'earlier-set' };
+  return { kind: 'ready' };
+}
+
+export function cancelWorkoutSetStart(session: WorkoutSession, exerciseItemId: string, setId: string): WorkoutSession {
+  return { ...session, exercises: session.exercises.map(exercise => exercise.id !== exerciseItemId ? exercise : {
+    ...exercise, sets: exercise.sets.map(set => {
+      if (set.id !== setId || set.completed) return set;
+      const { startedAt, startPausedSeconds, restSeconds, restSource, restKind, ...draft } = set;
+      return draft;
+    }),
+  }) };
+}
+
 export function startWorkoutSet(session: WorkoutSession, exerciseItemId: string, setId: string, now = new Date()): WorkoutSession {
-  if (session.pausedAt) return session;
+  if (getSetProgress(session, exerciseItemId, setId).kind !== 'ready') return session;
   const exercise = session.exercises.find(item => item.id === exerciseItemId);
   const target = exercise?.sets.find(set => set.id === setId);
   if (!exercise || !target || target.completed || target.startedAt) return session;
@@ -54,7 +93,7 @@ export function startWorkoutSet(session: WorkoutSession, exerciseItemId: string,
     exercises: session.exercises.map(item => item.id !== exerciseItemId ? item : {
       ...item, sets: item.sets.map(set => set.id !== setId ? set : {
         ...set, startedAt: now.toISOString(), startPausedSeconds: session.pausedSeconds ?? 0,
-        restSeconds: elapsed === undefined ? undefined : Math.round(elapsed), restKind: elapsed === undefined ? undefined : restKind,
+        restSeconds: elapsed === undefined ? undefined : Math.round(elapsed), restSource: elapsed === undefined ? undefined : 'measured', restKind: elapsed === undefined ? undefined : restKind,
       }),
     }),
   };
@@ -69,10 +108,14 @@ export function validAdaptiveSet(value: Record<string, unknown>): boolean {
       !numeric('stimulusFeedback', 1, 5) || !numeric('startPausedSeconds', 0, Number.MAX_SAFE_INTEGER) ||
       !numeric('completionPausedSeconds', 0, Number.MAX_SAFE_INTEGER) || !text('plannedNotes') || !text('startedAt') || !text('completedAt')) return false;
   if (typeof value.targetRpe === 'number' && !Number.isInteger(value.targetRpe * 2)) return false;
+  if (['rpeSource', 'tempoSource', 'commentSource'].some(key => value[key] !== undefined && value[key] !== 'recorded')) return false;
+  if (value.legacyRpe !== undefined && value.legacyRpe !== null && (typeof value.legacyRpe !== 'number' || !Number.isFinite(value.legacyRpe))) return false;
+  if (value.revisions !== undefined && (!Array.isArray(value.revisions) || !value.revisions.every(revision => revision && typeof revision === 'object' && typeof revision.at === 'string' && revision.previous && typeof revision.previous === 'object' && revision.previous.revisions === undefined && validAdaptiveSet(revision.previous)))) return false;
   if (value.setType !== undefined && !types.includes(String(value.setType))) return false;
   if (value.plannedSetType !== undefined && !types.includes(String(value.plannedSetType))) return false;
   if (value.failureType !== undefined && !['NONE', 'TECHNICAL', 'MUSCULAR', 'OTHER', 'UNKNOWN'].includes(String(value.failureType))) return false;
   if (value.provenance !== undefined && !['recorded', 'legacy-unknown'].includes(String(value.provenance))) return false;
+  if (value.restSource !== undefined && !['measured', 'reported'].includes(String(value.restSource))) return false;
   if (value.restKind !== undefined && !['transition', 'round', 'between-sets'].includes(String(value.restKind))) return false;
   if (value.painFeedback !== undefined) {
     const pain = value.painFeedback;
@@ -106,6 +149,7 @@ export function validAdaptiveSessionMetadata(value: Record<string, unknown>): bo
     !optionalNumbers(value, ['pausedSeconds'], 0, Number.MAX_SAFE_INTEGER) ||
     (typeof value.programWeek === 'number' && !Number.isInteger(value.programWeek)) ||
     (value.trainingPhase !== undefined && !['RECOVERY', 'HYPERTROPHY', 'STRENGTH', 'DELOAD'].includes(String(value.trainingPhase)))) return false;
+  if (value.sourceSessionContexts !== undefined && (!Array.isArray(value.sourceSessionContexts) || !value.sourceSessionContexts.every(context => isRecord(context) && typeof context.sessionId === 'string' && typeof context.startTime === 'string' && validAdaptiveSessionMetadata({ checkIn: context.checkIn, programId: context.programId, programWeek: context.programWeek, trainingPhase: context.trainingPhase, sessionGoal: context.sessionGoal })))) return false;
   if (value.checkIn === undefined) return true;
   const checkIn = value.checkIn;
   return isRecord(checkIn) && optionalText(checkIn, ['soreness', 'jointPain', 'notes']) &&

@@ -38,7 +38,7 @@ export interface ImportedWorkout extends Pick<WorkoutSession, 'programId' | 'pro
   exercises: ImportedExercise[];
 }
 
-const invalid = () => new Error('AI 루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.');
+const invalid = () => new Error('루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.');
 const record = (value: unknown): Record<string, unknown> => {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) throw invalid();
   return value as Record<string, unknown>;
@@ -76,7 +76,7 @@ function tempo(value: unknown): WorkoutSet['tempo'] {
 }
 function set(value: Record<string, unknown>, defaults: Record<string, unknown>, mode: ExecutionMode): ImportedSet {
   const inherited = (key: string) => value[key] === undefined ? defaults[key] : value[key];
-  const first = (...keys: string[]) => keys.map(inherited).find(value => value !== undefined);
+  const first = (...keys: string[]) => { const own = keys.find(key => value[key] !== undefined); return own === undefined ? keys.map(key => defaults[key]).find(item => item !== undefined) : value[own]; };
   const reps = number(first('plannedReps', 'reps'), 10, 1000, true);
   if (reps < 1) throw invalid();
   const rawRpe = first('targetRpe', 'rpe');
@@ -150,7 +150,7 @@ const headers: Record<string, string> = {
 const cells = (line: string) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(cell => cell.trim().replace(/\*\*/g, ''));
 function markdown(raw: string): Record<string, unknown> {
   const lines = raw.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-  let title = 'AI 루틴';
+  let title = t('가져온 루틴');
   let columns: string[] | null = null;
   const exercises: Record<string, unknown>[] = [];
   for (const line of lines) {
@@ -214,7 +214,7 @@ export function parseImportedWorkout(raw: string, catalog: Exercise[]): Imported
   } else value = markdown(source);
   const root = record(value);
   if (!Array.isArray(root.exercises) || !root.exercises.length || root.exercises.length > 50) throw invalid();
-  const title = root.title === undefined ? 'AI 루틴' : name(root.title);
+  const title = root.title === undefined ? t('가져온 루틴') : name(root.title);
   if (root.programWeek !== undefined && (typeof root.programWeek !== 'number' || root.programWeek < 1)) throw invalid();
   return { title, notes: note(root.notes), programId: note(root.programId), programWeek: root.programWeek === undefined ? undefined : number(root.programWeek, 1, 1000, true), trainingPhase: choice(root.trainingPhase, ['RECOVERY', 'HYPERTROPHY', 'STRENGTH', 'DELOAD']), sessionGoal: note(root.sessionGoal), exercises: root.exercises.map(value => exercise(value, catalog)) };
 }
@@ -238,11 +238,11 @@ export function sessionFromImportedWorkout(draft: ImportedWorkout, catalog: Exer
   };
 }
 
-const AI_ROUTINE_SAMPLE = { title: 'Upper body', notes: 'Stay within a comfortable range', exercises: [
-  { name: 'Barbell Bench Press', category: 'chest', primaryMuscles: ['chest'], secondaryMuscles: ['triceps'], exerciseId: 'bench-press', sets: 3, reps: 10, weight: 0, restSeconds: 90, weightUnit: 'kg', executionMode: 'bilateral', rpe: 8, tempo: { eccentric: 3, pause: 1, concentric: 1 }, notes: 'Adjust load to your ability', comment: 'Controlled movement' },
+const AI_ROUTINE_SAMPLE = { title: 'Upper body', programWeek: 1, trainingPhase: 'HYPERTROPHY', sessionGoal: 'Controlled working sets', notes: 'Stay within a comfortable range', exercises: [
+  { name: 'Barbell Bench Press', category: 'chest', primaryMuscles: ['chest'], secondaryMuscles: ['triceps'], exerciseId: 'bench-press', sets: 3, reps: 10, weight: 0, restSeconds: 90, setType: 'WORKING', weightUnit: 'kg', executionMode: 'bilateral', targetRpe: 8, tempo: { eccentric: 3, pause: 1, concentric: 1 }, notes: 'Adjust load to your ability', comment: 'Controlled movement' },
   { name: 'Lat Pulldown', exerciseId: 'lat-pulldown', equipmentType: 'machine', loadType: 'pin-loaded', executionMode: 'bilateral', weightUnit: 'kg', sets: [
-    { reps: 12, weight: 0, restSeconds: 120, rpe: 7.5, tempo: { eccentric: 2, pause: 1, concentric: 1 }, side: 'both', comment: 'First set' },
-    { reps: 12, weight: 0, restSeconds: 120, side: 'both', comment: 'Second set' },
+    { reps: 12, weight: 0, restSeconds: 120, setType: 'WORKING', targetRpe: 7.5, tempo: { eccentric: 2, pause: 1, concentric: 1 }, side: 'both', comment: 'First set' },
+    { reps: 12, weight: 0, restSeconds: 120, setType: 'WORKING', side: 'both', comment: 'Second set' },
   ] },
 ] };
 export const AI_ROUTINE_EXAMPLE = JSON.stringify(AI_ROUTINE_SAMPLE, null, 2);

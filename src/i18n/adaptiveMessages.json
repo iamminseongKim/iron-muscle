@@ -66,7 +66,9 @@
     "lowReadiness": "Low readiness recorded",
     "failureShare": "Working sets with recorded failure",
     "warmupShare": "Warm-up and activation share",
-    "dropSegments": "Drop segments"
+    "dropSegments": "Drop segments",
+    "warmupDuration": "Warm-up time",
+    "equipmentUnknown": "Equipment identity is missing, so direct historical comparison is unavailable."
   },
   "ko": {
     "plan": "계획",
@@ -135,7 +137,9 @@
     "lowReadiness": "컨디션 저하 기록",
     "failureShare": "실패가 기록된 본세트",
     "warmupShare": "워밍업 및 활성화 비중",
-    "dropSegments": "드롭 구간"
+    "dropSegments": "드롭 구간",
+    "warmupDuration": "워밍업 시간",
+    "equipmentUnknown": "장비 식별 정보가 없어 이전 기록과 직접 비교할 수 없습니다."
   },
   "ja": {
     "plan": "計画",
@@ -204,7 +208,9 @@
     "lowReadiness": "体調低下の記録",
     "failureShare": "失敗が記録された本セット",
     "warmupShare": "準備と活性化の割合",
-    "dropSegments": "ドロップ区間"
+    "dropSegments": "ドロップ区間",
+    "warmupDuration": "ウォームアップ時間",
+    "equipmentUnknown": "器具の識別情報がないため過去記録との直接比較はできません。"
   },
   "zh-CN": {
     "plan": "计划",
@@ -273,7 +279,9 @@
     "lowReadiness": "状态不佳记录",
     "failureShare": "记录失败的正式组",
     "warmupShare": "热身与激活占比",
-    "dropSegments": "递减区间"
+    "dropSegments": "递减区间",
+    "warmupDuration": "热身时间",
+    "equipmentUnknown": "缺少器械标识，无法与历史记录直接比较。"
   },
   "zh-TW": {
     "plan": "計畫",
@@ -342,7 +350,9 @@
     "lowReadiness": "狀態不佳紀錄",
     "failureShare": "記錄失敗的正式組",
     "warmupShare": "熱身與啟動占比",
-    "dropSegments": "遞減區間"
+    "dropSegments": "遞減區間",
+    "warmupDuration": "熱身時間",
+    "equipmentUnknown": "缺少器械識別資訊，無法與歷史紀錄直接比較。"
   },
   "es": {
     "plan": "Plan",
@@ -411,7 +421,9 @@
     "lowReadiness": "Estado previo bajo registrado",
     "failureShare": "Series efectivas con fallo registrado",
     "warmupShare": "Proporción de calentamiento y activación",
-    "dropSegments": "Tramos descendentes"
+    "dropSegments": "Tramos descendentes",
+    "warmupDuration": "Tiempo de calentamiento",
+    "equipmentUnknown": "Falta la identidad del equipo y no es posible comparar directamente con el historial."
   },
   "fr": {
     "plan": "Prévu",
@@ -480,7 +492,9 @@
     "lowReadiness": "État de forme bas enregistré",
     "failureShare": "Séries de travail avec échec enregistré",
     "warmupShare": "Part d’échauffement et d’activation",
-    "dropSegments": "Segments dégressifs"
+    "dropSegments": "Segments dégressifs",
+    "warmupDuration": "Durée d’échauffement",
+    "equipmentUnknown": "L’identité du matériel manque, la comparaison directe avec l’historique est indisponible."
   },
   "de": {
     "plan": "Plan",
@@ -549,6 +563,8 @@
     "lowReadiness": "Niedrige Tagesform erfasst",
     "failureShare": "Arbeitssätze mit erfasstem Versagen",
     "warmupShare": "Anteil Aufwärmen und Aktivierung",
-    "dropSegments": "Reduktionsabschnitte"
+    "dropSegments": "Reduktionsabschnitte",
+    "warmupDuration": "Aufwärmzeit",
+    "equipmentUnknown": "Die Geräteidentität fehlt, daher ist kein direkter Vergleich mit früheren Einträgen möglich."
   }
 }

@@ -18,7 +18,7 @@ export function AdaptiveSessionPanel({ value, onChange }: { value: Context; onCh
   return <details className="soft-surface bg-white dark:bg-[#1E1B24] p-4 text-sm">
     <summary className="font-bold min-h-[44px] flex items-center cursor-pointer">{t('컨디션 및 프로그램 선택 기록')}</summary>
     <div className="space-y-3 pt-2">
-      <p className="text-xs text-gray-500">{t('모든 항목은 선택사항입니다. 목표는 자동 변경되지 않습니다.')}</p>
+      <p className="text-xs text-gray-500">{t('몸 상태와 오늘의 운동 방향을 선택해서 기록하세요.')}</p>
       <div className="grid grid-cols-2 gap-3">
         <label>{t('수면시간')}<input aria-label={t('수면시간')} className={fieldClass} type="number" inputMode="decimal" min="0" max="24" step="0.5" value={checkIn.sleepHours ?? ''} onChange={event => update({ sleepHours: event.target.value === '' ? undefined : Math.min(24, Math.max(0, Number(event.target.value))) })} /></label>
         <label>{t('기상 후 경과 시간')}<input aria-label={t('기상 후 경과 시간')} className={fieldClass} type="number" inputMode="decimal" min="0" max="72" step="0.5" value={checkIn.hoursAwake ?? ''} onChange={event => update({ hoursAwake: event.target.value === '' ? undefined : Math.min(72, Math.max(0, Number(event.target.value))) })} /></label>

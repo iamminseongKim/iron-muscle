@@ -27,8 +27,12 @@ assert.equal(applied[2].completed, false);
 assert.equal(new Set(applied.map(s => s.id)).size, 4);
 assert.deepEqual(applied.map(s => s.setNumber), [1,2,3,4]);
 assert.equal(applyQuickSets(applied, { ...plan,count: 1 })[3], applied[3]);
-assert.equal(applyQuickSets(applied, { ...plan,rpe: undefined,tempo: undefined })[1].rpe, undefined);
+assert.equal(applyQuickSets(applied, { ...plan,rpe: undefined,tempo: undefined })[1].rpe, null);
 assert.equal(applyQuickSets(applied, { ...plan,rpe: undefined,tempo: undefined })[1].tempo, undefined);
 for (const patch of [{ count: 0 }, { count: 21 }, { count: 1.5 }, { weight: NaN }, { weight: -1 }, { reps: 1.5 }, { rpe: 8.2 }, { tempo: { eccentric: NaN, pause: 0, concentric: 1 } }, { mode: 'pyramid', repsStep: -5 }]) assert.throws(() => buildQuickSets({ ...plan,...patch }));
 assert.equal(buildQuickSets({ ...plan,weight: 0 })[0].weight, 0);
 console.log('PASS: quick set patterns, validation, completed records, metadata, unique IDs, sides and non-destructive application');
+
+assert.equal(applied[1].targetRpe, 8);
+assert.equal(applied[1].rpe, null);
+assert.deepEqual(applied[1].plannedTempo, plan.tempo);

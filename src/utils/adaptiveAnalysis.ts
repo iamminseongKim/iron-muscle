@@ -1,5 +1,5 @@
 import type { WorkoutExercise, WorkoutSession, WorkoutSet, TrainingPhase } from '../types/workout';
-import { actualRpe, isWorkingSet } from './adaptiveTraining';
+import { actualRpe, actualRest, isWorkingSet } from './adaptiveTraining';
 import { calculate1RM, KG_TO_LBS } from './calculations';
 import { resolveRecordedExercise } from './exerciseResolver';
 
@@ -11,6 +11,9 @@ const volume = (set: WorkoutSet) => set.dropSegments?.length ? set.dropSegments.
 export function summarizeAdaptiveSession(session: WorkoutSession) {
   const sets = session.exercises.flatMap(exercise => exercise.sets.filter(completed));
   const working = sets.filter(isWorkingSet);
+  const warmupSets = sets.filter(set => set.setType === 'WARMUP');
+  const measuredWarmups = !sets.some(set => !set.setType || set.setType === 'UNSPECIFIED') && warmupSets.every(set => set.startedAt && set.completedAt && Number.isFinite(Date.parse(set.startedAt)) && Number.isFinite(Date.parse(set.completedAt)));
+  const warmupSeconds = measuredWarmups ? Math.round(warmupSets.reduce((sum, set) => sum + Math.max(0, (Date.parse(set.completedAt!) - Date.parse(set.startedAt!)) / 1000 - Math.max(0, (set.completionPausedSeconds || 0) - (set.startPausedSeconds || 0))), 0)) : null;
   const rpes = sets.flatMap(set => { const rpe = actualRpe(set); return rpe === null ? [] : [rpe]; });
   const issues = new Set<string>();
   const ids = new Set<string>();
@@ -22,7 +25,7 @@ export function summarizeAdaptiveSession(session: WorkoutSession) {
       if (set.provenance !== 'recorded') issues.add('legacy-unknown');
       if (actualRpe(set) === null) issues.add('missing-rpe');
       if (!set.setType || set.setType === 'UNSPECIFIED') issues.add('unspecified-type');
-      if (!set.startedAt || set.restSeconds === undefined) issues.add('unmeasured-rest');
+      if (actualRest(set) === null) issues.add('unmeasured-rest');
       if (set.restSeconds !== undefined && set.restSeconds > 1800) issues.add('long-rest');
       if (set.previousWeight && Math.abs(set.weight - set.previousWeight) > Math.abs(set.previousWeight)) issues.add('weight-change');
     }
@@ -34,6 +37,7 @@ export function summarizeAdaptiveSession(session: WorkoutSession) {
     for (const muscle of resolveRecordedExercise(exercise).primaryMuscles) muscleWorkingSets[muscle] = (muscleWorkingSets[muscle] || 0) + count;
   }
   return {
+    warmupSeconds,
     muscleWorkingSets,
     totalSets: sets.length,
     warmupSets: sets.filter(set => set.setType === 'WARMUP').length,
@@ -74,7 +78,7 @@ export function compareExercise(current: WorkoutExercise, session: WorkoutSessio
     weightDeltaKg: kg(currentBest.weight, current, session) - kg(previousBest.weight, previous, previousOwner),
     repDelta: currentBest.reps - previousBest.reps,
     rpeDelta: currentRpe !== null && previousRpe !== null ? currentRpe - previousRpe : null,
-    restDelta: currentBest.restSeconds !== undefined && previousBest.restSeconds !== undefined ? currentBest.restSeconds - previousBest.restSeconds : null,
+    restDelta: actualRest(currentBest) !== null && actualRest(previousBest) !== null ? actualRest(currentBest)! - actualRest(previousBest)! : null,
     estimated1RmDeltaKg: calculate1RM(kg(currentBest.weight, current, session), currentBest.reps) - calculate1RM(kg(previousBest.weight, previous, previousOwner), previousBest.reps),
   } };
 }
@@ -84,7 +88,7 @@ export function suggestNextSet({ exercise, completedSet, nextSet, phase, increme
 }) {
   const rpe = actualRpe(completedSet);
   const target = completedSet.targetRpe;
-  if (pain || exercise.feedback?.painIntensity || exercise.sets.some(set => (set.painFeedback?.intensity || 0) > 0) || rpe === null || target === undefined || !isWorkingSet(completedSet) || !isWorkingSet(nextSet) || nextSet.completed || completedSet.weight <= 0) return null;
+  if (pain || exercise.feedback?.painIntensity || exercise.feedback?.painLocation?.trim() || exercise.sets.some(set => (set.painFeedback?.intensity || 0) > 0 || !!set.painFeedback?.location.trim()) || rpe === null || target === undefined || !isWorkingSet(completedSet) || !isWorkingSet(nextSet) || nextSet.completed || completedSet.weight <= 0) return null;
   const deltaRpe = rpe - target;
   if (Math.abs(deltaRpe) < 1) return null;
   const direction = deltaRpe > 0 ? 'decrease' : 'increase';

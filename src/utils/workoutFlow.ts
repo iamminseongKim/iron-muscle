@@ -85,6 +85,18 @@ export function moveWorkoutExercise(exercises: WorkoutExercise[], id: string, di
   return blocks.flat();
 }
 
+export function reorderWorkoutExercise(exercises: WorkoutExercise[], sourceId: string, targetId: string, placement: 'before' | 'after'): WorkoutExercise[] {
+  const blocks = exerciseBlocks(exercises);
+  const source = blocks.findIndex(block => block.some(ex => ex.id === sourceId));
+  const target = blocks.findIndex(block => block.some(ex => ex.id === targetId));
+  if (source < 0 || target < 0 || source === target) return [...exercises];
+  const moving = blocks[source];
+  const remaining = blocks.filter((_, index) => index !== source);
+  const destination = remaining.findIndex(block => block.some(ex => ex.id === targetId));
+  remaining.splice(destination + (placement === 'after' ? 1 : 0), 0, moving);
+  return remaining.flat();
+}
+
 export function replaceWorkoutExercise(
   exercises: WorkoutExercise[],
   targetId: string,

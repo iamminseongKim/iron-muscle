@@ -43,6 +43,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
 
   return (
     <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4">
+      {progression.comparisonLimited && <p role="status" className="text-sm text-amber-600">{t('장비 또는 수행 조건이 달라 비교가 제한됩니다.')}</p>}
       <div className="md:grid md:grid-cols-12 md:gap-8 items-start">
         {/* 좌측 패널: 누적 통계, 디로딩 주기화, 종목별 성장 지표 (고정) */}
         <div className="space-y-4 md:col-span-5 lg:col-span-5 md:sticky md:top-16">
@@ -114,7 +115,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                 </div>
                 <div>
                   <h3 className="font-extrabold text-sm text-[#1D1D1F] dark:text-white">{t("종목별 통합 근력 성장 지표")}</h3>
-                  <p className="text-[11px] text-gray-400">{t("머신 브랜드가 달라도 종목 전체 1RM 성장 추적")}</p>
+                  <p className="text-[11px] text-gray-400">{t("장비와 수행 조건을 확인하고 본세트 기록을 비교합니다.")}</p>
                 </div>
               </div>
             </div>
@@ -132,7 +133,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{targetExercise ? `${displayExercise(targetExercise)} ${t("성장률")}` : t('종목별 성장 기록')}</span>
                 <span className={`text-sm font-black ${
-                  progression.records.length < 2
+                  (progression.records.length < 2 || progression.comparisonLimited)
                     ? 'text-gray-400'
                     : progression.growthRate > 0
                     ? 'text-accent-bright'
@@ -140,7 +141,7 @@ export const HistoryDashboard: React.FC<HistoryDashboardProps> = ({ weightUnit =
                     ? 'text-gray-400'
                     : 'text-[#FF9500]'
                 }`}>
-                  {progression.records.length < 2
+                  {(progression.records.length < 2 || progression.comparisonLimited)
                     ? t('기록 측정 중')
                     : progression.growthRate > 0
                     ? `+${progression.growthRate}% ${t("성장")}`

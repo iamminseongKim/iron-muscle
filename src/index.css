@@ -369,3 +369,48 @@ html[data-theme-changing] *::after { transition: none !important; }
 @media (forced-colors: active) {
   [data-workout-target-grid] button[aria-pressed="true"] { border-color: Highlight; }
 }
+
+.rpe-slider {
+  appearance: none;
+  background: transparent;
+  touch-action: pan-y;
+  cursor: pointer;
+}
+.rpe-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  background: transparent;
+}
+.rpe-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: -8px;
+  border: 3px solid rgb(var(--accent-rgb));
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 8px rgb(var(--accent-rgb) / 0.24);
+  transition: box-shadow 150ms ease, border-width 150ms ease;
+}
+.rpe-slider:active::-webkit-slider-thumb {
+  border-width: 5px;
+  box-shadow: 0 0 0 7px rgb(var(--accent-rgb) / 0.1);
+}
+.rpe-slider-empty::-webkit-slider-thumb {
+  border-color: rgb(180 175 190);
+  box-shadow: none;
+}
+.rpe-slider::-moz-range-track {
+  height: 8px;
+  background: transparent;
+}
+.rpe-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgb(var(--accent-rgb));
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 8px rgb(var(--accent-rgb) / 0.24);
+}
+.rpe-slider-empty::-moz-range-thumb {
+  border-color: rgb(180 175 190);
+}

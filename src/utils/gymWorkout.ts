@@ -17,6 +17,7 @@ export function convertExerciseSets(exercise: WorkoutExercise, targetUnit: Weigh
   return exercise.sets.map(set => ({
     ...set,
     weight: convertWeight(set.weight, exercise.weightUnit || fallbackUnit, targetUnit),
+    dropSegments: set.dropSegments?.map(segment => ({ ...segment, weight: convertWeight(segment.weight, exercise.weightUnit || fallbackUnit, targetUnit) })),
     plannedWeight: set.plannedWeight === undefined ? undefined : convertWeight(set.plannedWeight, exercise.weightUnit || fallbackUnit, targetUnit),
     previousWeight: set.previousWeight === undefined ? undefined : convertWeight(set.previousWeight, exercise.weightUnit || fallbackUnit, targetUnit),
   }));
@@ -33,6 +34,7 @@ export function applyGymMachineConfig(exercise: WorkoutExercise, config: GymMach
     machineSetting: config.machineSetting,
     loadType: config.loadType || exercise.loadType,
     weightUnit: unit,
+    weightIncrement: exercise.weightIncrement === undefined ? undefined : convertWeight(exercise.weightIncrement, exercise.weightUnit || fallbackUnit, unit),
     sets: convertExerciseSets(exercise, unit, fallbackUnit),
   };
 }
