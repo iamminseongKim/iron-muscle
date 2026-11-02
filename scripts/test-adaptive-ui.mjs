@@ -90,9 +90,18 @@ try {
   saved = await active();
   assert.ok(saved.exercises[1].sets[0].restSeconds >= 10);
   assert.equal(saved.exercises[1].sets[0].restKind, 'transition');
+  await page.waitForSelector('[data-rest-after-set="first"]');
+  assert.ok(await page.$eval('[data-workout-exercise="bench"] [data-workout-set="first"] [data-rest-after-set="first"]', node => node.textContent.includes('세트 후 휴식')), 'transition rest displays below previous completed set');
+  assert.equal(await page.$('[data-workout-exercise="row"] [data-rest-after-set]'), null, 'incoming rest is not displayed after the active set');
+  await page.reload({ waitUntil: 'networkidle2' });
+  assert.ok(await page.$('[data-rest-after-set="first"]'), 'rest ownership survives reload');
+  await mkdir('output/adaptive-training', { recursive: true });
+  await page.screenshot({ path: 'output/adaptive-training/rest-after-set.png', fullPage: true });
+
   await page.click('[data-workout-exercise="row"] button[aria-label="1세트 상세 옵션"]');
   await page.evaluate(() => [...document.querySelectorAll('[data-workout-exercise="row"] button')].find(node => node.textContent === '시작 취소').click());
   assert.equal((await active()).exercises[1].sets[0].startedAt, undefined, 'cancel start releases active state');
+  assert.equal(await page.$('[data-rest-after-set="first"]'), null, 'cancelled start clears after-rest display');
   await page.click('[data-workout-exercise="bench"] button[aria-label="1세트 완료 취소"]');
   saved = await active();
   assert.equal(saved.exercises[0].sets[0].completed, false);

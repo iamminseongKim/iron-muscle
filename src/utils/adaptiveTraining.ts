@@ -20,6 +20,19 @@ export function actualRest(set: WorkoutSet): number | null {
   return set.completed && (set.restSource === 'reported' || (set.restSource === 'measured' && !!set.startedAt)) && typeof set.restSeconds === 'number' && Number.isFinite(set.restSeconds) ? set.restSeconds : null;
 }
 
+export function getRestAfterSets(session: WorkoutSession): ReadonlyMap<string, number> {
+  const sets = session.exercises.flatMap(exercise => exercise.sets);
+  const completed = sets.filter(set => set.completed && set.completedAt)
+    .sort((a, b) => Date.parse(b.completedAt!) - Date.parse(a.completedAt!));
+  const restAfter = new Map<string, number>();
+  for (const next of sets) {
+    if (next.restSource !== 'measured' || !next.startedAt || next.restSeconds === undefined) continue;
+    const previous = completed.find(set => set.id !== next.id && Date.parse(set.completedAt!) <= Date.parse(next.startedAt!));
+    if (previous) restAfter.set(previous.id, next.restSeconds);
+  }
+  return restAfter;
+}
+
 export function normalizeAdaptiveSession(session: WorkoutSession): WorkoutSession {
   return {
     ...session,

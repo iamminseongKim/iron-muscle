@@ -21,7 +21,7 @@ import { SessionNotesModal } from './SessionNotesModal';
 import { RpeGuideModal } from './RpeGuideModal';
 import { RestTimerModal } from './RestTimerModal';
 import { AdaptiveSessionPanel } from './AdaptiveSessionPanel';
-import { startWorkoutSet, recordSetRevision, getSetProgress, cancelWorkoutSetStart } from '../../utils/adaptiveTraining';
+import { getRestAfterSets, startWorkoutSet, recordSetRevision, getSetProgress, cancelWorkoutSetStart } from '../../utils/adaptiveTraining';
 import { suggestNextSet } from '../../utils/adaptiveAnalysis';
 import { loadAdaptiveSettings, ADAPTIVE_SETTINGS_CHANGE } from '../../utils/adaptiveSettings';
 import { ExerciseGroupModal } from './ExerciseGroupModal';
@@ -740,6 +740,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const totalVolume = calculateSessionVolume(session);
   const totalReps = calculateSessionReps(session);
   const avgRpe = calculateAverageRPE(session);
+  const restAfterSets = getRestAfterSets(session);
   const sessionSets = session.exercises.flatMap(exercise => exercise.sets);
   const restExerciseIndex = session.exercises.findIndex(item => item.id === restTimerState.exerciseId);
   const nextRestExercise = restExerciseIndex >= 0 ? session.exercises[restExerciseIndex + 1] : undefined;
@@ -906,6 +907,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               className={`${drag?.sourceId === item.id ? 'opacity-40' : ''} ${drag?.targetId === item.id ? drag.placement === 'before' ? 'border-t-4 border-accent' : 'border-b-4 border-accent' : ''}`}>
             <ExerciseCard
               exerciseItem={item}
+              restAfterSets={restAfterSets}
               collapsed={Boolean(drag) || collapsedExerciseIds.has(item.id)}
               onToggleCollapsed={() => setCollapsedExerciseIds(previous => {
                 const next = new Set(previous);

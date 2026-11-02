@@ -11,6 +11,7 @@ import { completeWorkoutSet, undoWorkoutSet, type SetProgress } from '../../util
 
 interface SetRowProps {
   set: WorkoutSet;
+  restAfterSeconds?: number;
   index: number;
   executionMode?: ExecutionMode;
   weightUnit?: WeightUnit;
@@ -27,6 +28,7 @@ interface SetRowProps {
 
 export const SetRow: React.FC<SetRowProps> = ({
   set,
+  restAfterSeconds,
   index,
   executionMode = 'bilateral',
   weightUnit = 'kg',
@@ -202,11 +204,11 @@ export const SetRow: React.FC<SetRowProps> = ({
   const hasActualRpe = (set.provenance === 'recorded' || set.rpeSource === 'recorded') && set.rpe != null;
   const hasCommentOrTags = Boolean((set.comment && set.comment.trim().length > 0) || (set.tags && set.tags.length > 0));
   const hasTempo = Boolean(set.tempo);
-  const hasRestTime = Boolean(set.restSeconds && set.restSeconds > 0);
+  const hasRestTime = Boolean(set.restSeconds && set.restSeconds > 0 && !(set.restSource === 'measured' && set.startedAt));
 
   return (
     <>
-      <div className={`px-2 py-1 transition-colors border-b border-black/5 dark:border-white/5 ${
+      <div data-workout-set={set.id} className={`px-2 py-1 transition-colors border-b border-black/5 dark:border-white/5 ${
         set.completed
           ? 'bg-[var(--accent-soft)] dark:bg-[var(--accent-soft-dark)]'
           : 'bg-transparent'
@@ -449,6 +451,12 @@ export const SetRow: React.FC<SetRowProps> = ({
           </div>
         )}
         </>}
+        {set.completed && restAfterSeconds !== undefined && (
+          <div data-rest-after-set={set.id} className="flex items-center justify-center gap-1 py-2 text-[11px] font-bold text-accent-bright border-t border-black/5 dark:border-white/5">
+            <Timer size={12} />
+            <span>{t('세트 후 휴식')} {restAfterSeconds}{t('초')}</span>
+          </div>
+        )}
       </div>
 
       {feedbackOpen && <SetFeedbackModal set={set} unit={weightUnit} onUpdate={onUpdate} onConfirm={draft => { if (set.completed) { onUpdate(draft); setFeedbackOpen(false); } else confirmCompletion(draft); }} onClose={() => { setFeedbackOpen(false); setFeedbackAt(null); }} />}

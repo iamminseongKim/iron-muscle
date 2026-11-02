@@ -93,3 +93,15 @@ assert.deepEqual(api.startWorkoutSet(sequential, sequential.exercises[0].id, 'or
 const oneActive = api.startWorkoutSet(sequential, sequential.exercises[0].id, 'order-first');
 const crossExercise = { ...oneActive, exercises: [...oneActive.exercises, { ...oneActive.exercises[0], id: 'other-exercise', sets: [{ ...undone, id: 'other-set', startedAt: undefined }] }] };
 assert.deepEqual(api.startWorkoutSet(crossExercise, 'other-exercise', 'other-set'), crossExercise, 'only one set can be active across the workout');
+
+const restSessionBytes = JSON.stringify(session);
+assert.equal(api.getRestAfterSets(session).get(firstId), 100, 'rest before second set displays after first completed set');
+assert.equal(api.getRestAfterSets(session).has(nextId), false, 'active set has no after-rest yet');
+assert.equal(api.getRestAfterSets(transition).get(firstId), 15, 'cross-exercise transition belongs to previous completed set');
+assert.equal(api.getRestAfterSets(transition).has('partner-set'), false, 'first set in new exercise must not display incoming rest as after-rest');
+assert.equal(api.getRestAfterSets(api.cancelWorkoutSetStart(session, exerciseId, nextId)).has(firstId), false, 'cancelling next start removes its measured after-rest');
+assert.equal(JSON.stringify(session), restSessionBytes, 'display mapping preserves stored records');
+console.log('PASS after-set rest ownership across sets, exercise transitions and cancelled starts');
+
+assert.equal(api.getRestAfterSets({ ...session, exercises: [...session.exercises].reverse().map(exercise => ({ ...exercise, sets: [...exercise.sets].reverse() })) }).get(firstId), 100, 'display order does not determine rest ownership');
+assert.equal(api.getRestAfterSets({ ...session, exercises: session.exercises.map(exercise => ({ ...exercise, sets: exercise.sets.map(set => ({ ...set, restSource: 'reported' })) })) }).size, 0, 'reported rest is not silently reassigned');

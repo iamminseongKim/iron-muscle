@@ -21,6 +21,7 @@ import { loadGymProfile, saveGymProfile, getExerciseConfigs, withGymConfigs, sha
 
 interface ExerciseCardProps {
   exerciseItem: WorkoutExercise;
+  restAfterSets?: ReadonlyMap<string, number>;
   weightUnit?: WeightUnit;
   onToggleWeightUnit?: () => void;
   onUpdate: (updated: WorkoutExercise) => void;
@@ -40,6 +41,7 @@ interface ExerciseCardProps {
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   exerciseItem,
+  restAfterSets,
   weightUnit: fallbackUnit = 'kg',
   onToggleWeightUnit: externalToggle,
   onUpdate,
@@ -675,6 +677,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <SetRow
             key={set.id}
             set={set}
+            restAfterSeconds={restAfterSets?.get(set.id)}
             index={idx}
             executionMode={exerciseItem.executionMode || 'bilateral'}
             weightUnit={currentUnit}
