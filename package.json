@@ -1,7 +1,7 @@
 {
   "name": "iron-muscle-tracker",
   "private": true,
-  "version": "3.43.4",
+  "version": "3.43.5",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -411,7 +411,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
       data-rest-timer-overlay
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-md animate-fade-in"
       onClick={(e) => {
-        if (e.target === e.currentTarget) handleDismiss();
+        if (e.target === e.currentTarget) setIsMinimized(true);
       }}
     >
       <div

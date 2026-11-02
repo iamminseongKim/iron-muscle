@@ -50,7 +50,17 @@ try {
   });
   await page.waitForFunction(() => Object.keys(localStorage).some(key => key.startsWith('iron_adaptive_clock_rest-ui_')));
   const beforeBackdrop = await clockState();
-  await page.touchscreen.tap(4, 4);
+  const backdropPoint = await page.$eval('[data-rest-timer-overlay]', node => {
+    const box = node.getBoundingClientRect();
+    for (let y = Math.max(0, box.top) + 4; y < Math.min(innerHeight, box.bottom); y += 20) {
+      for (const x of [box.left + 4, box.right - 4]) {
+        if (document.elementFromPoint(x, y) === node) return { x, y };
+      }
+    }
+    return null;
+  });
+  assert.ok(backdropPoint, 'timer backdrop is reachable');
+  await page.touchscreen.tap(backdropPoint.x, backdropPoint.y);
   await wait(300);
   assert.ok(await page.$('[data-rest-timer-capsule]'), 'backdrop tap must minimize the running timer');
   assert.equal(await page.$('[data-rest-timer-overlay]'), null);
@@ -67,7 +77,7 @@ try {
   await page.waitForSelector('[data-rest-timer-dialog]');
   await page.click('button[aria-label="일시정지"]');
   const pausedClock = await clockState();
-  await page.mouse.click(4, 4);
+  await page.mouse.click(backdropPoint.x, backdropPoint.y);
   assert.ok(await page.$('[data-rest-timer-capsule]'), 'backdrop mouse click also minimizes');
   await wait(1100);
   const stillPaused = await clockState();
