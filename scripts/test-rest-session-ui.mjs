@@ -44,6 +44,37 @@ try {
   await page.click('#exercise-first button[aria-label="1세트 완료"]');
   await clickText('건너뛰고 완료');
   await page.waitForFunction(() => document.body.textContent.includes('종목 완료! 다음 운동 준비'));
+  const clockState = () => page.evaluate(() => {
+    const key = Object.keys(localStorage).find(key => key.startsWith('iron_adaptive_clock_rest-ui_'));
+    return key ? { key, ...JSON.parse(localStorage.getItem(key)) } : null;
+  });
+  await page.waitForFunction(() => Object.keys(localStorage).some(key => key.startsWith('iron_adaptive_clock_rest-ui_')));
+  const beforeBackdrop = await clockState();
+  await page.touchscreen.tap(4, 4);
+  await wait(300);
+  assert.ok(await page.$('[data-rest-timer-capsule]'), 'backdrop tap must minimize the running timer');
+  assert.equal(await page.$('[data-rest-timer-overlay]'), null);
+  await page.waitForFunction(elapsed => {
+    const key = Object.keys(localStorage).find(key => key.startsWith('iron_adaptive_clock_rest-ui_'));
+    return key && JSON.parse(localStorage.getItem(key)).elapsed > elapsed + 1;
+  }, {}, beforeBackdrop.elapsed);
+  const afterBackdrop = await clockState();
+  assert.equal(afterBackdrop.key, beforeBackdrop.key, 'minimize preserves the same timer');
+  assert.equal(afterBackdrop.running, true, 'minimized timer keeps running');
+  assert.ok(afterBackdrop.remaining < beforeBackdrop.remaining, 'countdown continues after backdrop tap');
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('iron_adaptive_rest_ui')).isOpen), true);
+  await page.click('button[title="탭하여 크게 보기"]');
+  await page.waitForSelector('[data-rest-timer-dialog]');
+  await page.click('button[aria-label="일시정지"]');
+  const pausedClock = await clockState();
+  await page.mouse.click(4, 4);
+  assert.ok(await page.$('[data-rest-timer-capsule]'), 'backdrop mouse click also minimizes');
+  await wait(1100);
+  const stillPaused = await clockState();
+  assert.equal(stillPaused.running, false, 'minimize preserves pause');
+  assert.equal(stillPaused.elapsed, pausedClock.elapsed);
+  await page.click('button[title="탭하여 크게 보기"]');
+  await page.click('button[aria-label="재개"]');
   await clickText('+60초 (기구 정리/이동)');
   assert.ok(await page.evaluate(() => document.body.textContent.includes('02:')));
   await page.screenshot({ path: '/tmp/iron-rest-transition.png' });
@@ -75,5 +106,5 @@ try {
   await page.waitForSelector('[aria-label="운동 검색"]');
   assert.ok(await page.$('button[title="탭하여 크게 보기"]'));
   assert.deepEqual(errors, []);
-  console.log('PASS: pause lock, short tap rejection, held unlock, final set mode, +60s, next exercise, uncheck guard, add exercise with minimized timer, background catch-up and single completion sound');
+  console.log('PASS: backdrop touch and mouse minimize, countdown continuity, pause preservation, pause lock, short tap rejection, held unlock, final set mode, +60s, next exercise, uncheck guard, add exercise with minimized timer, background catch-up and single completion sound');
 } finally { await browser.close(); }
