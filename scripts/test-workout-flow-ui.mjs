@@ -51,7 +51,7 @@ try {
   });
   assert.ok(continuedTiming >= 2, 'frequent set edits must not reset the workout clock');
   const originalIds = active.exercises.map(ex => ex.id);
-  await click('순서 변경');
+  await click('종목 순서 변경');
   await page.evaluate(() => [...document.querySelectorAll('button')].find(node => node.getAttribute('aria-label')?.startsWith('아래로 이동') && !node.disabled).click());
   await page.waitForFunction(first => JSON.parse(localStorage.getItem('iron_active_session_v1')).exercises[0].id !== first, {}, originalIds[0]);
   active = await page.evaluate(() => JSON.parse(localStorage.getItem('iron_active_session_v1')));
