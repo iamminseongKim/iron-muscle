@@ -164,30 +164,54 @@ function comparisonKey(session: WorkoutSession): string {
   return JSON.stringify(session.exercises.filter(ex => ex.sets.some(usableSet)).map(exerciseKey).sort());
 }
 const chronologicalKey = (session: WorkoutSession) => `${session.date}\u0000${session.startTime || ''}\u0000${session.id}`;
+export function compareWorkoutChronology(a: WorkoutSession, b: WorkoutSession): number {
+  const left = chronologicalKey(a), right = chronologicalKey(b);
+  return left < right ? -1 : left > right ? 1 : 0;
+}
 const countSets = (session: WorkoutSession) => session.exercises.reduce((sum, ex) => sum + ex.sets.filter(set => set.completed).length, 0);
 
+export interface PersonalBestRecord {
+  exercise: WorkoutExercise;
+  weight: number;
+  unit: WeightUnit;
+}
+
+export function collectPersonalBests(history: WorkoutSession[]): { session: WorkoutSession; records: PersonalBestRecord[] }[] {
+  const previousWeights = new Map<string, number>();
+  return history.filter(session => session.completed)
+    .sort(compareWorkoutChronology)
+    .map(session => {
+      const currentWeights = new Map<string, { record: PersonalBestRecord; kg: number }>();
+      for (const exercise of session.exercises) {
+        const key = exerciseKey(exercise);
+        let weight = 0;
+        for (const set of exercise.sets) {
+          if (usableSet(set) && (!set.setType || ['WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET'].includes(set.setType))) {
+            weight = Math.max(weight, set.weight);
+          }
+        }
+        if (weight <= 0) continue;
+        const unit = exercise.weightUnit || session.weightUnit || 'kg';
+        const kg = unit === 'lbs' ? weight / KG_TO_LBS : weight;
+        if (kg > (currentWeights.get(key)?.kg || 0)) {
+          currentWeights.set(key, { record: { exercise, weight, unit }, kg });
+        }
+      }
+      const records: PersonalBestRecord[] = [];
+      for (const [key, { record, kg }] of currentWeights) {
+        const previous = previousWeights.get(key);
+        if (previous !== undefined && kg > previous + 0.01 && record.exercise.equipmentType !== 'bodyweight' && !isAssistedExercise(resolveRecordedExercise(record.exercise))) {
+          records.push(record);
+        }
+        previousWeights.set(key, Math.max(previous || 0, kg));
+      }
+      return { session, records };
+    });
+}
+
 function personalBestRecords(session: WorkoutSession, history: WorkoutSession[]) {
-  const records: { exercise: WorkoutExercise; weight: number; unit: WeightUnit }[] = [];
-  const previous = history.filter(candidate => candidate.completed && candidate.id !== session.id && chronologicalKey(candidate) < chronologicalKey(session));
-  const visited = new Set<string>();
-  const inKg = (weight: number, exercise: WorkoutExercise, owner: WorkoutSession) =>
-    (exercise.weightUnit || owner.weightUnit) === 'lbs' ? weight / KG_TO_LBS : weight;
-  const maxWeight = (exercise: WorkoutExercise) => Math.max(0, ...exercise.sets.filter(set => usableSet(set) && (!set.setType || ['WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET'].includes(set.setType))).map(set => set.weight));
-  for (const exercise of session.exercises) {
-    const key = exerciseKey(exercise);
-    if (visited.has(key) || exercise.equipmentType === 'bodyweight' || isAssistedExercise(resolveRecordedExercise(exercise))) continue;
-    visited.add(key);
-    const currentExercise = session.exercises.filter(ex => exerciseKey(ex) === key)
-      .sort((a, b) => inKg(maxWeight(b), b, session) - inKg(maxWeight(a), a, session))[0];
-    const weight = maxWeight(currentExercise);
-    if (weight <= 0) continue;
-    const earlierWeights = previous.flatMap(owner => owner.exercises.filter(ex => exerciseKey(ex) === key)
-      .map(ex => inKg(maxWeight(ex), ex, owner))).filter(weight => weight > 0);
-    if (earlierWeights.length && inKg(weight, currentExercise, session) > Math.max(...earlierWeights) + 0.01) {
-      records.push({ exercise: currentExercise, weight, unit: currentExercise.weightUnit || session.weightUnit || 'kg' });
-    }
-  }
-  return records;
+  return collectPersonalBests([...history.filter(candidate => candidate.id !== session.id && compareWorkoutChronology(candidate, session) < 0), { ...session, completed: true }])
+    .find(candidate => candidate.session.id === session.id)?.records || [];
 }
 
 export function workoutSummary(session: WorkoutSession, history: WorkoutSession[]) {
