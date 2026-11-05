@@ -36,3 +36,10 @@ console.log('PASS: quick set patterns, validation, completed records, metadata, 
 assert.equal(applied[1].targetRpe, 8);
 assert.equal(applied[1].rpe, null);
 assert.deepEqual(applied[1].plannedTempo, plan.tempo);
+const imported = { ...pending, plannedWeight: 90, plannedReps: 5, plannedSetType: 'WORKING', weightNeedsConfirmation: true };
+const edited = applyQuickSets([done, imported], { ...plan, count: 1, mode: 'top' });
+assert.strictEqual(edited[0], done);
+assert.equal(edited[1].plannedWeight, 60);
+assert.equal(edited[1].plannedReps, 10);
+assert.equal(edited[1].plannedSetType, 'TOP_SET');
+assert.equal(edited[1].weightNeedsConfirmation, false);

@@ -164,3 +164,35 @@ for (const action of [() => api.purgeRecoveryItems(['first']), () => api.clearRe
 reset(); stored(null, [{ ...first, deletedAt: Date.now() - api.RETENTION_MS - 1 }]); before = new Map(data);
 assert.equal(api.restoreRecoveryItems(['first']), 0); assert.deepEqual(data, before); assert.deepEqual(notifications, []);
 console.log('PASS atomic bulk recovery, snapshot-aware ordering and merge, live edits/duration/units, active conflicts, malformed data, selected purge, clear, quota rollback and single notifications');
+
+reset();
+const replaceBefore = session('replace-session', [exercise('original', [set('done'), { ...set('pending'), completed: false }])]);
+const replaceAfter = { ...replaceBefore, exercises: [{ ...replaceBefore.exercises[0], sets: [replaceBefore.exercises[0].sets[0]] }, { ...exercise('replacement', [{ ...set('pending'), completed: false, weight: 0 }]), exerciseId: 'replacement-exercise' }] };
+stored(replaceBefore, []);
+api.saveReplacementWithRecovery(replaceAfter);
+assert.equal(api.canUndoReplacement(read(activeKey)), true);
+assert.equal(read(trashKey).length, 0);
+write(activeKey, { ...read(activeKey), durationSeconds: 500, notes: 'new session note' });
+assert.equal(api.undoReplacement(), true);
+assert.deepEqual(read(activeKey).exercises, replaceBefore.exercises);
+assert.equal(read(activeKey).durationSeconds, 500);
+assert.equal(read(activeKey).notes, 'new session note');
+assert.equal(api.canUndoReplacement(read(activeKey)), false);
+stored(replaceBefore, []);
+api.saveReplacementWithRecovery(replaceAfter);
+const changedAfter = structuredClone(read(activeKey)); changedAfter.exercises[1].sets[0].completed = true;
+write(activeKey, changedAfter);
+assert.equal(api.canUndoReplacement(changedAfter), false);
+assert.throws(() => api.undoReplacement(), /기록이 변경/);
+assert.deepEqual(read(activeKey), changedAfter);
+for (const failAt of [1, 2]) {
+  reset(); stored(replaceBefore, []); const snapshot = new Map(data);
+  let writes = 0; const writeBefore = localStorage.setItem;
+  localStorage.setItem = (key, value) => { if (++writes === failAt) throw new Error('Quota'); writeBefore(key, value); };
+  try { assert.throws(() => api.saveReplacementWithRecovery(replaceAfter)); } finally { localStorage.setItem = writeBefore; }
+  assert.deepEqual(data, snapshot);
+}
+reset(); stored(replaceBefore, []);
+api.saveWithRecovery(replaceAfter, 'active');
+assert.deepEqual(read(trashKey), [], 'moving a pending set between exercise items does not create deleted-set duplicates');
+console.log('PASS replacement undo survives reload, preserves current duration, rejects later exercise edits, rolls back quota failures, and moved sets are not deleted.');

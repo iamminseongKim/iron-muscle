@@ -22,6 +22,7 @@ export function SetFeedbackModal({ set, unit, onUpdate, onConfirm, onClose }: {
   const type = set.setType || 'UNSPECIFIED';
   const quick = type === 'WARMUP' || type === 'ACTIVATION';
   const actualRpe = (set.provenance === 'recorded' || set.rpeSource === 'recorded') ? set.rpe ?? null : null;
+  const performedTempo = set.tempoSource === 'recorded' ? set.tempo : set.plannedTempo ?? set.tempo;
   const updateRpe = (rpe: number | null) => onUpdate({ ...set, legacyRpe: set.provenance !== 'recorded' ? set.legacyRpe ?? set.rpe : set.legacyRpe, rpe, rpeSource: 'recorded' });
   const submit = (draft: WorkoutSet) => onConfirm(draft.setType === 'DROP_SET' && draft.dropSegments?.length ? { ...draft, weight: draft.dropSegments[0].weight, reps: draft.dropSegments[0].reps } : draft);
   return <div className="keyboard-aware-modal fixed inset-0 z-[70] bg-black/60 flex items-end sm:items-center justify-center p-3" role="dialog" aria-modal="true" aria-label={t('세트 피드백')}>
@@ -44,11 +45,23 @@ export function SetFeedbackModal({ set, unit, onUpdate, onConfirm, onClose }: {
       </div>}
       {set.provenance === 'legacy-unknown' && <p className="text-xs text-gray-500">{t('이전 기록의 입력 출처를 확인할 수 없습니다.')} RPE {set.rpe ?? set.legacyRpe ?? t('미기록')}</p>}
       {set.targetRpe !== undefined && <p className="text-xs text-gray-500">{t('목표 RPE')} {set.targetRpe}</p>}
+      {performedTempo && <fieldset className="space-y-2" data-feedback-tempo>
+        <legend className="text-xs font-semibold">{t('수행 템포 확인')}</legend>
+        <p className="text-xs text-gray-500">{t('처방 템포를 기본 적용합니다. 다르게 수행했다면 수정하세요.')}</p>
+        <div className="grid grid-cols-3 gap-2">{([['eccentric', '이완'], ['pause', '정지'], ['concentric', '수축']] as const).map(([key, label]) => <label key={key} className="text-xs">{t(label)}
+          <input aria-label={`${t('수행 템포 확인')} ${t(label)}`} className={field} type="number" min="0" max="30" step="0.5" value={performedTempo[key]} onChange={e => {
+            if (e.target.value === '') return;
+            const seconds = Number(e.target.value);
+            if (Number.isFinite(seconds) && seconds >= 0 && seconds <= 30) onUpdate({ ...set, tempo: { ...performedTempo, [key]: seconds }, tempoSource: 'recorded' });
+          }} />
+        </label>)}</div>
+      </fieldset>}
       <details open={!quick || details} className="space-y-2"><summary className="text-sm font-bold cursor-pointer">{t(set.targetRpe === undefined ? '체감 강도 (RPE)' : '실제 RPE')}</summary>
         <RpeSlider value={actualRpe} onCommit={updateRpe} />
       </details>
       <button type="button" className="text-accent text-sm min-h-[44px]" onClick={() => setDetails(!details)} aria-expanded={details}>{t('상세 피드백')}</button>
       {(details || type === 'TOP_SET' || !!set.painFeedback?.intensity) && <div className="space-y-2">
+        <label className="block text-xs">{t('보조 반복수')}<input aria-label={t('보조 반복수')} className={field} type="number" min="0" max={set.reps} step="1" value={set.assistedReps ?? ''} onChange={e => onUpdate({ ...set, assistedReps: e.target.value === '' ? undefined : Math.min(set.reps, Math.max(0, Math.floor(Number(e.target.value)))) })} /></label>
         <label className="block text-xs">{t('실패 유형')}<select className={field} value={set.failureType || 'UNKNOWN'} onChange={e => { const failureType = failureTypes.find(code => code === e.target.value); if (failureType) onUpdate({ ...set, failureType: failureType }); }}>{Object.entries(failures).map(([code, label]) => <option key={code} value={code}>{t(label)}</option>)}</select></label>
         <label className="block text-xs">{t('자극 만족도')}<select className={field} value={set.stimulusFeedback ?? ''} onChange={e => onUpdate({ ...set, stimulusFeedback: e.target.value ? Number(e.target.value) : undefined })}><option value="">{t('미기록')}</option>{[1,2,3,4,5].map(v => <option key={v}>{v}</option>)}</select></label>
         <div className="grid grid-cols-2 gap-2"><label className="text-xs">{t('통증 부위')}<input className={field} maxLength={200} value={set.painFeedback?.location || ''} onChange={e => onUpdate({ ...set, painFeedback: { location: e.target.value, intensity: set.painFeedback?.intensity || 0 } })} /></label>

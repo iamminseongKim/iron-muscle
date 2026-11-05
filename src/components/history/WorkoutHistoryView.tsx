@@ -762,7 +762,7 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                             {exItem.sets.map((set, sIdx) => (
                               <div
                                 key={set.id || sIdx}
-                                className="flex items-center justify-between text-xs py-1 px-2 rounded-xl bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/5"
+                                className="flex flex-wrap items-center justify-between gap-1 text-xs py-1 px-2 rounded-xl bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/5"
                               >
                                 <div className="flex items-center gap-2">
                                   <span className="font-bold text-gray-400 text-[11px]">#{set.setNumber}</span>
@@ -778,13 +778,18 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
                                   </span>
                                 </div>
 
-                                <div className="flex items-center gap-2 text-[11px] text-gray-400">
+                                <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-400">
                                   {set.rpe && (
                                     <span className="font-bold text-amber-500">RPE {set.rpe}</span>
                                   )}
+                                  {set.plannedTempo && (
+                                    <span className="text-[10px]">
+                                      {t('계획 템포')} {set.plannedTempo.eccentric}-{set.plannedTempo.pause}-{set.plannedTempo.concentric}s
+                                    </span>
+                                  )}
                                   {set.tempo && (
                                     <span className="text-[10px]">
-                                      {set.tempo.eccentric}-{set.tempo.pause}-{set.tempo.concentric}s
+                                      {t(set.tempoSource === 'prescribed' ? '처방 기준 템포' : set.provenance === 'recorded' || set.tempoSource === 'recorded' ? '실제 템포' : '출처 미확인 템포')} {set.tempo.eccentric}-{set.tempo.pause}-{set.tempo.concentric}s
                                     </span>
                                   )}
                                   {set.restSeconds && (

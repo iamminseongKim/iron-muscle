@@ -1,5 +1,5 @@
 import type { EquipmentType, LoadType, WeightUnit, WorkoutExercise, WorkoutSession, WorkoutSet } from '../types/workout';
-import { calculateSessionReps, calculateSessionVolume, isAssistedExercise, KG_TO_LBS } from './calculations';
+import { calculateSessionReps, calculateSessionVolume, isAssistedExercise, KG_TO_LBS, convertWeight } from './calculations';
 import { resolveRecordedExercise } from './exerciseResolver';
 import { getTodayString } from './calendar';
 
@@ -26,7 +26,9 @@ export function repeatWorkout(source: WorkoutSession, options: { now?: Date; bod
         id: crypto.randomUUID(), setNumber: i + 1, weight: set.weight, reps: set.reps,
         completed: false, provenance: 'recorded', rpe: null, plannedWeight: set.weight, plannedReps: set.reps, plannedSetType: set.setType, setType: set.setType, previousWeight: set.weight, previousReps: set.reps, side: set.side,
         plannedRestSeconds: set.plannedRestSeconds,
-        plannedTempo: set.tempo ? { ...set.tempo } : undefined,
+        plannedTempo: set.plannedTempo ? { ...set.plannedTempo } : set.tempo ? { ...set.tempo } : undefined,
+        targetRpe: set.targetRpe, plannedNotes: set.plannedNotes, targetRir: set.targetRir,
+        plannedRepRange: set.plannedRepRange ? { ...set.plannedRepRange } : undefined,
         tags: set.tags?.filter(tag => planTags.has(tag)),
       })),
     };
@@ -109,55 +111,43 @@ export function replaceWorkoutExercise(
     machineConfigId?: string;
     machineSetting?: string;
     weightUnit?: WeightUnit;
-    initialSets?: WorkoutSet[];
+    reason?: string;
+    at?: string;
   }
 ): WorkoutExercise[] {
   const index = exercises.findIndex(ex => ex.id === targetId);
   if (index === -1) return [...exercises];
   const target = exercises[index];
-
-  const sets: WorkoutSet[] = replacement.initialSets && replacement.initialSets.length > 0
-    ? replacement.initialSets.map((s, i) => ({
-        id: crypto.randomUUID(),
-        setNumber: i + 1,
-        weight: s.weight,
-        reps: s.reps,
-        completed: false,
-        previousWeight: s.previousWeight ?? s.weight,
-        previousReps: s.previousReps ?? s.reps,
-        side: s.side,
-        tags: s.tags,
-      }))
-    : target.sets.map((s, i) => ({
-        id: crypto.randomUUID(),
-        setNumber: i + 1,
-        weight: s.weight,
-        reps: s.reps,
-        completed: false,
-        previousWeight: s.previousWeight ?? s.weight,
-        previousReps: s.previousReps ?? s.reps,
-        side: s.side,
-        tags: s.tags,
-      }));
-
+  const pending = target.sets.filter(set => !set.completed);
+  if (!pending.length) return [...exercises];
+  const sameEquipment = target.exerciseId === replacement.exerciseId && target.equipmentType === replacement.equipmentType &&
+    target.loadType === replacement.loadType && target.machineConfigId === replacement.machineConfigId &&
+    target.machineBrand === replacement.machineBrand && target.machineSetting === replacement.machineSetting &&
+    (target.weightUnit || 'kg') === (replacement.weightUnit || target.weightUnit || 'kg');
+  if (sameEquipment) return [...exercises];
+  const completed = target.sets.filter(set => set.completed);
   const updated: WorkoutExercise = {
     ...target,
+    id: completed.length ? crypto.randomUUID() : target.id,
     exerciseId: replacement.exerciseId,
-    exerciseName: replacement.exerciseName || target.exerciseName,
+    exerciseName: replacement.exerciseName || replacement.exerciseId,
     equipmentType: replacement.equipmentType,
     loadType: replacement.loadType,
     machineBrand: replacement.machineBrand,
     machineConfigId: replacement.machineConfigId,
     machineSetting: replacement.machineSetting,
     weightUnit: replacement.weightUnit || target.weightUnit,
-    sets: sets.length > 0 ? sets : [
-      { id: crypto.randomUUID(), setNumber: 1, weight: 20, reps: 10, completed: false },
-      { id: crypto.randomUUID(), setNumber: 2, weight: 20, reps: 10, completed: false },
-    ],
+    feedback: undefined,
+    replacementHistory: [...(target.replacementHistory || []), {
+      fromExerciseId: target.exerciseId, fromExerciseName: target.exerciseName,
+      toExerciseId: replacement.exerciseId, toExerciseName: replacement.exerciseName,
+      at: replacement.at || new Date().toISOString(), reason: replacement.reason,
+      weightUnit: target.weightUnit || 'kg', weightReset: true,
+    }],
+    sets: pending.map(set => ({ ...set, weight: 0, plannedWeightUnit: set.plannedWeightUnit || target.weightUnit || 'kg', previousWeight: convertWeight(set.weight, target.weightUnit || 'kg', replacement.weightUnit || target.weightUnit || 'kg'), previousReps: set.reps, weightNeedsConfirmation: true })),
   };
-
   const next = [...exercises];
-  next[index] = updated;
+  next.splice(index, 1, ...(completed.length ? [{ ...target, sets: completed }, updated] : [updated]));
   return next;
 }
 

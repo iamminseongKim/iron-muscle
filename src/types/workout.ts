@@ -68,6 +68,11 @@ export interface ExerciseFeedback {
 }
 
 export interface WorkoutSet {
+  plannedRepRange?: { min: number; max: number };
+  targetRir?: number;
+  assistedReps?: number;
+  weightNeedsConfirmation?: boolean;
+  plannedWeightUnit?: WeightUnit;
   plannedWeight?: number;
   plannedReps?: number;
   targetRpe?: number;
@@ -81,7 +86,7 @@ export interface WorkoutSet {
   startedAt?: string;
   completedAt?: string;
   rpeSource?: 'recorded';
-  tempoSource?: 'recorded';
+  tempoSource?: 'recorded' | 'prescribed';
   commentSource?: 'recorded';
   legacyRpe?: number | null;
   revisions?: { at: string; previous: Omit<WorkoutSet, 'revisions'> }[];
@@ -192,7 +197,19 @@ export interface Exercise {
   aliases?: string[]; // 검색용 별칭, 은어 및 줄임말 (예: ['불스스', '스스', '사레레', '라트익'])
 }
 
+export interface ExerciseReplacement {
+  fromExerciseId: string;
+  fromExerciseName?: string;
+  toExerciseId: string;
+  toExerciseName?: string;
+  at: string;
+  reason?: string;
+  weightUnit: WeightUnit;
+  weightReset: boolean;
+}
+
 export interface WorkoutExercise {
+  replacementHistory?: ExerciseReplacement[];
   feedback?: ExerciseFeedback;
   weightIncrement?: number;
   id: string;

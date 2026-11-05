@@ -111,6 +111,7 @@ export const RoutinePreviewModal: React.FC<RoutinePreviewModalProps> = ({
           </div>
 
           {/* Program Badges & Notes */}
+          {!!draft.ignoredFields?.length && <p role="status" className="px-4 py-2 text-xs text-amber-700 dark:text-amber-300 break-words">{t('지원하지 않는 필드는 적용하지 않습니다.')} {draft.ignoredFields.join(', ')}</p>}
           {(draft.programId || draft.programWeek !== undefined || draft.trainingPhase || draft.sessionGoal || draft.notes) && (
             <div className="shrink-0 px-4 py-2.5 bg-gray-50/80 dark:bg-white/[0.02] border-b border-black/5 dark:border-white/5 space-y-1.5 text-xs">
               <div className="flex items-center gap-1.5 flex-wrap">

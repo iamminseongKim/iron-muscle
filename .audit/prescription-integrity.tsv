@@ -1,0 +1,11 @@
+ts	phase	decision	why	evidence	result
+2026-11-05T00:00:00Z	frame	Use latest remote v3.43.5 as baseline	Local 3.34.1 predates existing prescription separation	releases/3.43.5.md	verified remote and clean branch
+2026-11-05T00:01:00Z	design	Keep three-stage tempo and split exercise items on replacement	Preserve legacy consumers and completed record ownership	src/utils/workoutFlow.ts	implementation pending
+2026-11-05T01:03:00.7816552Z	audit	Initial rows use placeholder timestamps; this row supersedes their timing	The initial decisions happened in this run, not at the placeholder times	.audit/prescription-integrity-plan.md	corrected timing
+2026-11-05T01:03:00.7816552Z	policy	Apply prescribed tempo as performed default with prescribed source	User requested survey-only correction while retaining original plan	src/utils/adaptiveTraining.ts	implemented and browser verified
+2026-11-05T01:03:00.7816552Z	test	Keep unknown sample names unresolved until explicit registration	Never substitute an unrelated catalog exercise	scripts/test-prescription-integrity.mjs	20 sets validated
+2026-11-05T01:03:00.7816552Z	review	Fix original planned load unit in conversion and routine recipe	Independent review reproduced 30kg becoming 13.5kg	scripts/test-prescription-integrity.mjs	unit regression passes
+2026-11-05T01:03:00.7816552Z	verification	Run production pipeline and Chromium survey checks	Preserve actual missing values and completed ownership	scripts/test-prescription-survey-ui.mjs	verified survey; replacement browser pending
+2026-11-05T01:05:22.6063342Z	verification	31 suites and production build passed on 3.44.0	Whole repository gates include sample and compatibility	scripts/run-all-tests.mjs	VERIFIED
+2026-11-05T01:05:22.6063342Z	ui	Three Chromium mobile scripts passed	Check actual input, localStorage and replacement undo after reload	scripts/test-prescription-replacement-ui.mjs	VERIFIED after correcting fixture name snapshot race
+2026-11-05T01:05:22.6063342Z	review	No further blocking findings in final independent review	Unit conversion regression fixed and rerun	scripts/test-prescription-integrity.mjs	VERIFIED; configured cross-family models and deslop/control-ui unavailable

@@ -40,11 +40,13 @@ export function applyQuickSets(existing: WorkoutSet[], plan: QuickSetPlan, side:
     if (set.completed || cursor >= planned.length) return set;
     const next = planned[cursor++];
     const tags = [...(set.tags || []).filter(t => t !== '탑세트' && t !== '백오프'), ...(next.tags || [])];
-    return { ...set, weight: next.weight, reps: next.reps, plannedWeight: set.plannedWeight ?? next.weight, plannedReps: set.plannedReps ?? next.reps, targetRpe: next.rpe ?? undefined, plannedTempo: next.tempo, setType: plan.mode === 'top' ? (cursor === 1 ? 'TOP_SET' : 'BACK_OFF') : set.setType || 'UNSPECIFIED', rpe: null, tempo: undefined, provenance: 'recorded', tags: tags.length ? tags : undefined };
+    const setType = plan.mode === 'top' ? (cursor === 1 ? 'TOP_SET' : 'BACK_OFF') : set.setType || 'UNSPECIFIED';
+    return { ...set, weight: next.weight, reps: next.reps, plannedWeight: next.weight, plannedWeightUnit: undefined, plannedReps: next.reps, plannedRepRange: undefined, weightNeedsConfirmation: false, targetRpe: next.rpe ?? undefined, plannedTempo: next.tempo, plannedSetType: setType, setType, rpe: null, tempo: undefined, tempoSource: undefined, provenance: 'recorded', tags: tags.length ? tags : undefined };
   });
   while (cursor < planned.length) {
     const next = planned[cursor++];
-    result.push({ weight: next.weight, reps: next.reps, plannedWeight: next.weight, plannedReps: next.reps, targetRpe: next.rpe ?? undefined, plannedTempo: next.tempo, setType: plan.mode === 'top' ? (cursor === 1 ? 'TOP_SET' : 'BACK_OFF') : 'UNSPECIFIED', rpe: null, provenance: 'recorded', tags: next.tags, id: crypto.randomUUID(), setNumber: result.length + 1, completed: false, side });
+    const setType = plan.mode === 'top' ? (cursor === 1 ? 'TOP_SET' : 'BACK_OFF') : 'UNSPECIFIED';
+    result.push({ weight: next.weight, reps: next.reps, plannedWeight: next.weight, plannedReps: next.reps, targetRpe: next.rpe ?? undefined, plannedTempo: next.tempo, plannedSetType: setType, setType, rpe: null, provenance: 'recorded', tags: next.tags, id: crypto.randomUUID(), setNumber: result.length + 1, completed: false, side });
   }
   return result;
 }

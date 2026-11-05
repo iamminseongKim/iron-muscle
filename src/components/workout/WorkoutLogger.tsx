@@ -1,5 +1,5 @@
 import { useExerciseDrag } from '../../hooks/useExerciseDrag';
-import { removeSession, saveWithRecovery } from '../../utils/recovery';
+import { removeSession, saveWithRecovery, saveReplacementWithRecovery, canUndoReplacement, undoReplacement } from '../../utils/recovery';
 import { loadHealthPreferences, enqueueWorkout } from '../../services/health/healthStore';
 import { flushWorkoutExports } from '../../services/health/healthService';
 import { displayExercise, t } from '../../i18n';
@@ -312,7 +312,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   ) => {
     if (!session) return;
     const previous = findPreviousMachineExercise(loadSavedSessions(), exercise.id, brand, machineConfigId);
-    const targetUnit = weightUnit || previous?.weightUnit || 'kg';
+    const targetUnit = weightUnit || replacingExerciseItem?.weightUnit || (replacingExerciseItem ? session.weightUnit : previous?.weightUnit) || 'kg';
     const previousSets = previous ? convertExerciseSets(previous, targetUnit) : undefined;
 
     const initialSets = previousSets && previousSets.length > 0
@@ -333,6 +333,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     if (replacingExerciseItem) {
       const current = loadActiveSession();
       if (!current) return;
+      if (!window.confirm(t('남은 세트만 교체합니다. 완료한 세트는 원래 종목에 보존됩니다. 기구와 중량 기준이 다르면 기존 중량은 참고값이며 새 중량을 입력해야 합니다. 반복수와 템포도 확인하세요. 계속할까요?'))) return;
+      const reason = window.prompt(t('교체 사유 (선택 사항)'), '');
+      if (reason === null) return;
       const exercises = replaceWorkoutExercise(current.exercises, replacingExerciseItem.id, {
         exerciseId: exercise.id,
         exerciseName: exercise.name,
@@ -342,15 +345,16 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         machineConfigId,
         machineSetting: setting,
         weightUnit: targetUnit,
-        initialSets,
+        reason: reason.trim() || undefined,
       });
       const updated = {
         ...current,
         durationSeconds: getLatestDuration(),
         exercises,
       };
+      try { saveReplacementWithRecovery(updated); }
+      catch (error) { alert(t((error as Error).message)); return; }
       setSession(updated);
-      saveActiveSession(updated);
       setReplacingExerciseItem(null);
       setIsAddModalOpen(false);
       setFlowMessage('운동 종목이 교체되었습니다.');
@@ -748,6 +752,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   return (
     <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
+      {canUndoReplacement(session) && <button className="text-sm text-accent underline" onClick={() => { try { undoReplacement(); } catch (error) { alert(t((error as Error).message)); } }}>{t('종목 교체 되돌리기')}</button>}
       {session.exercises.length > 1 && <p id="workout-drag-help" className="text-[11px] text-gray-400">{t('카드를 길게 누른 채 위아래로 옮겨 순서를 바꾸세요.')}</p>}
       {drag && <div role="status" className="fixed z-[80] pointer-events-none rounded-2xl px-4 py-3 bg-accent text-white shadow-2xl text-sm font-bold max-w-[80vw]" style={{ left: Math.max(12, Math.min(innerWidth - 220, drag.x - 100)), top: Math.max(12, drag.y - 64) }}>{displayExercise(resolveRecordedExercise(session.exercises.find(ex => ex.id === drag.sourceId)!))}<span className="block text-[11px] font-normal opacity-80">{t('순서를 변경하는 중입니다.')} {drag.targetId && t('여기에 놓기')}</span></div>}
       <div className="md:grid md:grid-cols-12 md:gap-8 items-start">

@@ -96,7 +96,7 @@ export const SetRow: React.FC<SetRowProps> = ({
       const prevDisplay = isAssisted && set.weight !== 0 ? String(Math.abs(set.weight)) : String(set.weight || '');
       // 백스페이스로 길이가 줄어든 경우 전체 삭제
       if (rawVal.length < prevDisplay.length) {
-        onUpdate({ ...set, weight: 0 });
+        onUpdate({ ...set, weight: 0, weightNeedsConfirmation: false });
         return;
       }
       // 새로운 숫자 입력 시 기존 값을 덮어쓰고 새로 입력된 숫자만 채택
@@ -109,13 +109,13 @@ export const SetRow: React.FC<SetRowProps> = ({
       const parsedWeight = parseFloat(newlyTyped);
       let num = Number.isNaN(parsedWeight) ? (set.weight || 0) : parsedWeight;
       if (isAssisted && num > 0) num = -num;
-      onUpdate({ ...set, weight: num });
+      onUpdate({ ...set, weight: num, weightNeedsConfirmation: false });
       return;
     }
     const parsed = parseFloat(rawVal);
     let num = Number.isNaN(parsed) ? 0 : parsed;
     if (isAssisted && num > 0) num = -num;
-    onUpdate({ ...set, weight: num });
+    onUpdate({ ...set, weight: num, weightNeedsConfirmation: false });
   };
 
   const handleRepsFocus = () => {
@@ -164,7 +164,7 @@ export const SetRow: React.FC<SetRowProps> = ({
   };
 
   const handleToggleComplete = () => {
-    if (waiting) return;
+    if (waiting || (!set.completed && set.weightNeedsConfirmation)) return;
     if (!set.completed && !set.startedAt && onStart) { onStart(); return; }
     // 안드로이드 커서/핸들 잔존 버그 방지: 인풋 포커스 즉시 해제 및 셀렉션 클리어
     if (document.activeElement && (document.activeElement as HTMLElement).blur) {
@@ -198,12 +198,16 @@ export const SetRow: React.FC<SetRowProps> = ({
   };
 
   const handleSaveTempo = (tempo: Tempo) => {
-    onUpdate({ ...set, tempo, tempoSource: 'recorded' });
+    onUpdate(set.completed ? { ...set, tempo, tempoSource: 'recorded' } : { ...set, plannedTempo: tempo });
   };
 
   const hasActualRpe = (set.provenance === 'recorded' || set.rpeSource === 'recorded') && set.rpe != null;
   const hasCommentOrTags = Boolean((set.comment && set.comment.trim().length > 0) || (set.tags && set.tags.length > 0));
-  const hasTempo = Boolean(set.tempo);
+  const displayedTempo = set.completed ? set.tempo ?? set.plannedTempo : set.plannedTempo ?? set.tempo;
+  const tempoLabel = set.completed && set.tempo
+    ? t(set.tempoSource === 'prescribed' ? '처방 기준 템포' : set.provenance === 'recorded' || set.tempoSource === 'recorded' ? '실제 템포' : '출처 미확인 템포')
+    : t('계획 템포');
+  const hasTempo = Boolean(displayedTempo);
   const hasRestTime = Boolean(set.restSeconds && set.restSeconds > 0 && !(set.restSource === 'measured' && set.startedAt));
 
   return (
@@ -213,12 +217,15 @@ export const SetRow: React.FC<SetRowProps> = ({
           ? 'bg-[var(--accent-soft)] dark:bg-[var(--accent-soft-dark)]'
           : 'bg-transparent'
       }`}>
-        {(progress.kind === 'active' || set.setType && set.setType !== 'UNSPECIFIED' || set.targetRpe !== undefined || set.completed) && <div className="flex flex-wrap items-center justify-between gap-1 py-1 text-[11px]">
+        {!set.completed && set.weightNeedsConfirmation && <p role="status" className="py-1 text-xs text-amber-600 dark:text-amber-400">{t('새 기구의 중량을 확인하세요.')}{set.previousWeight !== undefined && ` (${set.previousWeight}${weightUnit})`}</p>}
+        {(progress.kind === 'active' || set.setType && set.setType !== 'UNSPECIFIED' || set.targetRpe !== undefined || set.targetRir !== undefined || set.plannedRepRange || set.completed) && <div className="flex flex-wrap items-center justify-between gap-1 py-1 text-[11px]">
           {progress.kind === 'active' && <span className="text-accent font-bold">{t('운동 중')} · {t('마치면 세트 완료를 누르세요.')}</span>}
           <span className="text-gray-500">{[
             set.completed ? t('완료됨') : null,
             set.setType && set.setType !== 'UNSPECIFIED' ? t(SET_TYPE_LABELS[set.setType]) : null,
             set.targetRpe !== undefined ? `${t('목표 RPE')} ${set.targetRpe}` : null,
+            set.targetRir !== undefined ? `${t('목표 RIR')} ${set.targetRir}` : null,
+            set.plannedRepRange ? `${t('반복 범위')} ${set.plannedRepRange.min}-${set.plannedRepRange.max}` : null,
             set.completed ? `RPE ${(set.provenance === 'recorded' || set.rpeSource === 'recorded') ? set.rpe ?? t('미기록') : t('출처 불명 기록')}` : null,
           ].filter(Boolean).join(' · ')}</span>
           {set.completed && <button type="button" className="min-h-[36px] px-2 text-accent" onClick={() => { setFeedbackAt(null); setFeedbackOpen(true); }}>{t('기록 수정')}</button>}
@@ -331,7 +338,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           <button
             type="button"
             aria-label={`${index + 1}${t(set.completed ? '세트 완료 취소' : waiting ? '세트 대기' : !set.startedAt && onStart ? '세트 시작' : '세트 완료')}`}
-            disabled={waiting}
+            disabled={waiting || (!set.completed && set.weightNeedsConfirmation)}
             title={t(set.completed ? '완료 취소' : set.startedAt || !onStart ? '세트 완료' : '세트 시작')}
             aria-pressed={set.completed}
             onClick={handleToggleComplete}
@@ -394,7 +401,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             >
               <Clock size={12} />
               <span className="whitespace-nowrap">
-                {hasTempo ? `${set.tempo?.eccentric}-${set.tempo?.pause}-${set.tempo?.concentric}s` : t('템포')}
+                {displayedTempo ? `${tempoLabel} ${displayedTempo.eccentric}-${displayedTempo.pause}-${displayedTempo.concentric}s` : t(set.completed ? '실제 템포' : '계획 템포')}
               </span>
             </button>
 
@@ -471,7 +478,8 @@ export const SetRow: React.FC<SetRowProps> = ({
 
       <TempoModal
         isOpen={isTempoModalOpen}
-        initialTempo={set.tempo}
+        initialTempo={set.completed ? set.tempo ?? set.plannedTempo : set.plannedTempo ?? set.tempo}
+        completed={set.completed}
         onClose={() => setIsTempoModalOpen(false)}
         onSave={handleSaveTempo}
       />

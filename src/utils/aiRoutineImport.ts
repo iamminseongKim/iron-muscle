@@ -5,7 +5,7 @@ import { getTodayString } from './calendar';
 import { t, displayMuscle } from '../i18n';
 import { MUSCLE_INFO_MAP } from '../data/muscleMap';
 
-export interface ImportedSet extends Pick<WorkoutSet, 'rpe' | 'tempo' | 'comment' | 'side'> {
+export interface ImportedSet extends Pick<WorkoutSet, 'rpe' | 'tempo' | 'comment' | 'side' | 'plannedRepRange' | 'targetRir'> {
   reps: number;
   weight: number;
   restSeconds: number;
@@ -33,6 +33,7 @@ export interface ImportedExercise {
   sets: ImportedSet[];
 }
 export interface ImportedWorkout extends Pick<WorkoutSession, 'programId' | 'programWeek' | 'trainingPhase' | 'sessionGoal'> {
+  ignoredFields?: string[];
   title: string;
   notes?: string;
   exercises: ImportedExercise[];
@@ -82,9 +83,15 @@ function set(value: Record<string, unknown>, defaults: Record<string, unknown>, 
   const rawRpe = first('targetRpe', 'rpe');
   const rpe = rawRpe === undefined ? undefined : number(rawRpe, 0, 10);
   if (rpe !== undefined && (rpe < 6 || !Number.isInteger(rpe * 2))) throw invalid();
+  const rawRange = first('plannedRepRange', 'repRange');
+  const range = rawRange === undefined ? undefined : record(rawRange);
+  const plannedRepRange = range ? { min: number(range.min, reps, 1000, true), max: number(range.max, reps, 1000, true) } : undefined;
+  if (plannedRepRange && (range?.min === undefined || range.max === undefined || plannedRepRange.min < 1 || plannedRepRange.min > plannedRepRange.max)) throw invalid();
+  const rawRir = first('targetRir', 'rir');
+  const targetRir = rawRir === undefined ? undefined : number(rawRir, 0, 10);
   return {
     reps, weight: number(first('plannedWeight', 'weight'), 0, 2000), restSeconds: number(first('targetRestSeconds', 'plannedRestSeconds', 'restSeconds'), 90, 3600, true),
-    rpe, tempo: tempo(first('plannedTempo', 'tempo')), comment: note(first('plannedNotes', 'comment')),
+    rpe, plannedRepRange, targetRir, tempo: tempo(first('plannedTempo', 'tempo')), comment: note(first('plannedNotes', 'comment')),
     setType: choice(first('plannedSetType', 'setType'), SET_TYPES, 'UNSPECIFIED'),
     side: choice(inherited('side'), ['left', 'right', 'both'], mode === 'unilateral' ? 'left' : 'both'),
   };
@@ -216,7 +223,20 @@ export function parseImportedWorkout(raw: string, catalog: Exercise[]): Imported
   if (!Array.isArray(root.exercises) || !root.exercises.length || root.exercises.length > 50) throw invalid();
   const title = root.title === undefined ? t('가져온 루틴') : name(root.title);
   if (root.programWeek !== undefined && (typeof root.programWeek !== 'number' || root.programWeek < 1)) throw invalid();
-  return { title, notes: note(root.notes), programId: note(root.programId), programWeek: root.programWeek === undefined ? undefined : number(root.programWeek, 1, 1000, true), trainingPhase: choice(root.trainingPhase, ['RECOVERY', 'HYPERTROPHY', 'STRENGTH', 'DELOAD']), sessionGoal: note(root.sessionGoal), exercises: root.exercises.map(value => exercise(value, catalog)) };
+  const exercises = root.exercises.map(value => exercise(value, catalog));
+  const ignoredFields: string[] = [];
+  const inspect = (row: Record<string, unknown>, allowed: string[], path: string) => {
+    for (const key of Object.keys(row)) if (!allowed.includes(key)) ignoredFields.push(`${path}${key}`);
+  };
+  const setFields = ['reps', 'plannedReps', 'weight', 'plannedWeight', 'restSeconds', 'plannedRestSeconds', 'targetRestSeconds', 'rpe', 'targetRpe', 'rir', 'targetRir', 'repRange', 'plannedRepRange', 'tempo', 'plannedTempo', 'comment', 'plannedNotes', 'setType', 'plannedSetType', 'side'];
+  inspect(root, ['title', 'notes', 'programId', 'programWeek', 'trainingPhase', 'sessionGoal', 'exercises'], '');
+  root.exercises.forEach((value, index) => {
+    const row = record(value);
+    const path = `exercises[${index}].`;
+    inspect(row, [...setFields, 'name', 'exerciseId', 'nameEn', 'category', 'primaryMuscles', 'secondaryMuscles', 'equipmentType', 'loadType', 'executionMode', 'weightUnit', 'notes', 'machineConfigId', 'machineBrand', 'machineSetting', 'weightIncrement', 'sets'], path);
+    if (Array.isArray(row.sets)) row.sets.forEach((set, number) => inspect(record(set), setFields, `${path}sets[${number}].`));
+  });
+  return { title, ignoredFields: ignoredFields.length ? ignoredFields : undefined, notes: note(root.notes), programId: note(root.programId), programWeek: root.programWeek === undefined ? undefined : number(root.programWeek, 1, 1000, true), trainingPhase: choice(root.trainingPhase, ['RECOVERY', 'HYPERTROPHY', 'STRENGTH', 'DELOAD']), sessionGoal: note(root.sessionGoal), exercises };
 }
 
 export function sessionFromImportedWorkout(draft: ImportedWorkout, catalog: Exercise[]): WorkoutSession {
@@ -232,7 +252,7 @@ export function sessionFromImportedWorkout(draft: ImportedWorkout, catalog: Exer
       return {
         id: crypto.randomUUID(), exerciseId: item.id, exerciseName: item.name, equipmentType, executionMode: row.executionMode, loadType, notes: row.notes,
         weightUnit: row.weightUnit, machineConfigId: row.machineConfigId, machineBrand: row.machineBrand, machineSetting: row.machineSetting, weightIncrement: row.weightIncrement,
-        sets: row.sets.map((set, index) => ({ id: crypto.randomUUID(), setNumber: index + 1, weight: set.weight, reps: set.reps, plannedRestSeconds: set.restSeconds, plannedWeight: set.weight, plannedReps: set.reps, targetRpe: set.rpe ?? undefined, plannedTempo: set.tempo ? { ...set.tempo } : undefined, plannedNotes: set.comment, plannedSetType: set.setType, setType: set.setType, provenance: 'recorded', rpe: null, side: set.side, completed: false })),
+        sets: row.sets.map((set, index) => ({ id: crypto.randomUUID(), setNumber: index + 1, weight: set.weight, reps: set.reps, plannedRestSeconds: set.restSeconds, plannedWeight: set.weight, plannedReps: set.reps, targetRpe: set.rpe ?? undefined, targetRir: set.targetRir, plannedRepRange: set.plannedRepRange, plannedTempo: set.tempo ? { ...set.tempo } : undefined, plannedNotes: set.comment, plannedSetType: set.setType, setType: set.setType, provenance: 'recorded', rpe: null, side: set.side, completed: false })),
       };
     }),
   };

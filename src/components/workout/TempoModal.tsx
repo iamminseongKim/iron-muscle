@@ -1,11 +1,12 @@
 import { t } from '../../i18n';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Clock, Zap, Info } from 'lucide-react';
 import { Tempo } from '../../types/workout';
 
 interface TempoModalProps {
   isOpen: boolean;
   initialTempo?: Tempo;
+  completed?: boolean;
   onClose: () => void;
   onSave: (tempo: Tempo) => void;
 }
@@ -13,12 +14,20 @@ interface TempoModalProps {
 export const TempoModal: React.FC<TempoModalProps> = ({
   isOpen,
   initialTempo = { eccentric: 2, pause: 0, concentric: 1 },
+  completed = false,
   onClose,
   onSave,
 }) => {
-  const [eccentric, setEccentric] = useState<number>(initialTempo.eccentric || 2);
-  const [pause, setPause] = useState<number>(initialTempo.pause || 0);
-  const [concentric, setConcentric] = useState<number>(initialTempo.concentric || 1);
+  const [eccentric, setEccentric] = useState(initialTempo.eccentric);
+  const [pause, setPause] = useState(initialTempo.pause);
+  const [concentric, setConcentric] = useState(initialTempo.concentric);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setEccentric(initialTempo.eccentric);
+    setPause(initialTempo.pause);
+    setConcentric(initialTempo.concentric);
+  }, [isOpen, initialTempo.eccentric, initialTempo.pause, initialTempo.concentric]);
 
   if (!isOpen) return null;
 
@@ -52,8 +61,8 @@ export const TempoModal: React.FC<TempoModalProps> = ({
               <Clock size={18} />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">{t("수축·이완 템포 (TUT)")}</h3>
-              <p className="text-xs text-gray-400">{t("근육 긴장 지속시간을 통한 점진적 과부하")}</p>
+              <h3 className="font-extrabold text-base text-[#1D1D1F] dark:text-white">{t(completed ? '실제 템포' : '계획 템포')}</h3>
+              {!completed && <p className="text-xs text-gray-400">{t('템포 계획은 실제 측정값이 아닙니다.')}</p>}
             </div>
           </div>
           <button 
@@ -74,7 +83,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
               <div className="flex items-center justify-center gap-1">
                 <button
                   type="button"
-                  onClick={() => setEccentric(Math.max(1, eccentric - 1))}
+                  onClick={() => setEccentric(Math.max(0, eccentric - 1))}
                   className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   -
@@ -84,7 +93,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
                 </span>
                 <button
                   type="button"
-                  onClick={() => setEccentric(Math.min(8, eccentric + 1))}
+                  onClick={() => setEccentric(Math.min(30, eccentric + 1))}
                   className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   +
@@ -107,7 +116,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
                 </span>
                 <button
                   type="button"
-                  onClick={() => setPause(Math.min(5, pause + 1))}
+                  onClick={() => setPause(Math.min(30, pause + 1))}
                   className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   +
@@ -120,7 +129,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
               <div className="flex items-center justify-center gap-1">
                 <button
                   type="button"
-                  onClick={() => setConcentric(Math.max(1, concentric - 1))}
+                  onClick={() => setConcentric(Math.max(0, concentric - 1))}
                   className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   -
@@ -130,7 +139,7 @@ export const TempoModal: React.FC<TempoModalProps> = ({
                 </span>
                 <button
                   type="button"
-                  onClick={() => setConcentric(Math.min(5, concentric + 1))}
+                  onClick={() => setConcentric(Math.min(30, concentric + 1))}
                   className="w-7 h-7 shrink-0 rounded-lg bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-white font-black text-xs shadow-xs hover:opacity-80 transition"
                 >
                   +

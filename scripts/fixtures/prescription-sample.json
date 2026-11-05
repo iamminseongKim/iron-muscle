@@ -1,0 +1,287 @@
+{
+  "title": "W1 DAY 4 | 등·이두 2회차 | 머신 중심 근비대 테스트",
+  "programWeek": 1,
+  "trainingPhase": "HYPERTROPHY",
+  "sessionGoal": "디로딩 이후 강도 회복, 등·이두 근비대, RPE 8~9, 템포 및 세트별 설정 검증",
+  "notes": "총 20세트: 워밍업 3세트, 본세트 17세트. 등은 머신 및 케이블 중심. 중량은 기존 기록과 당일 컨디션을 고려하여 조정. 워밍업은 피로 누적보다 준비에 집중. 덤벨은 한쪽 중량, 플레이트 머신은 추가 원판 중량 기준. 모든 세트에 템포, RPE, 휴식시간을 명시하여 JSON Import 및 종목 교체 시 설정 유지 여부를 검증한다.",
+  "exercises": [
+    {
+      "name": "Lat Pulldown",
+      "category": "back",
+      "primaryMuscles": ["lats"],
+      "secondaryMuscles": ["biceps"],
+      "equipmentType": "machine",
+      "loadType": "pin-loaded",
+      "executionMode": "bilateral",
+      "weightUnit": "kg",
+      "notes": "견갑을 안정화하고 팔꿈치를 아래로 당긴다. 반동을 최소화한다.",
+      "sets": [
+        {
+          "reps": 15,
+          "weight": 20,
+          "restSeconds": 60,
+          "setType": "WARMUP",
+          "targetRpe": 6,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "1차 워밍업"
+        },
+        {
+          "reps": 10,
+          "weight": 30,
+          "restSeconds": 90,
+          "setType": "WARMUP",
+          "targetRpe": 6.5,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "2차 워밍업"
+        },
+        {
+          "reps": 10,
+          "weight": 0,
+          "restSeconds": 120,
+          "setType": "WORKING",
+          "targetRpe": 8,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 1, 적정 중량 설정"
+        },
+        {
+          "reps": 10,
+          "weight": 0,
+          "restSeconds": 120,
+          "setType": "WORKING",
+          "targetRpe": 8.5,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 2"
+        },
+        {
+          "reps": 10,
+          "weight": 0,
+          "restSeconds": 120,
+          "setType": "WORKING",
+          "targetRpe": 9,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 3"
+        }
+      ]
+    },
+    {
+      "name": "Linear T-Bar Row",
+      "category": "back",
+      "primaryMuscles": ["lats", "traps"],
+      "secondaryMuscles": ["biceps", "deltoid_rear"],
+      "equipmentType": "machine",
+      "loadType": "plate-loaded",
+      "executionMode": "bilateral",
+      "weightUnit": "kg",
+      "notes": "상체를 안정적으로 고정하고 팔꿈치로 당긴다. 기록 중량은 추가 원판 기준.",
+      "sets": [
+        {
+          "reps": 12,
+          "weight": 0,
+          "restSeconds": 90,
+          "setType": "WARMUP",
+          "targetRpe": 6,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "기구 적응 및 가동범위 확인"
+        },
+        {
+          "reps": 10,
+          "weight": 0,
+          "restSeconds": 150,
+          "setType": "WORKING",
+          "targetRpe": 8,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 1"
+        },
+        {
+          "reps": 10,
+          "weight": 0,
+          "restSeconds": 150,
+          "setType": "WORKING",
+          "targetRpe": 8.5,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 2"
+        },
+        {
+          "reps": 10,
+          "weight": 0,
+          "restSeconds": 150,
+          "setType": "WORKING",
+          "targetRpe": 9,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 3"
+        }
+      ]
+    },
+    {
+      "name": "Machine High Row",
+      "category": "back",
+      "primaryMuscles": ["lats"],
+      "secondaryMuscles": ["traps", "biceps", "deltoid_rear"],
+      "equipmentType": "machine",
+      "loadType": "plate-loaded",
+      "executionMode": "bilateral",
+      "weightUnit": "kg",
+      "notes": "어깨를 과도하게 으쓱하지 않고 팔꿈치를 몸통 방향으로 당긴다.",
+      "sets": [
+        {
+          "reps": 12,
+          "weight": 0,
+          "restSeconds": 120,
+          "setType": "WORKING",
+          "targetRpe": 8,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 1"
+        },
+        {
+          "reps": 12,
+          "weight": 0,
+          "restSeconds": 120,
+          "setType": "WORKING",
+          "targetRpe": 8.5,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 2"
+        },
+        {
+          "reps": 12,
+          "weight": 0,
+          "restSeconds": 120,
+          "setType": "WORKING",
+          "targetRpe": 9,
+          "tempo": {"eccentric": 2, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 3"
+        }
+      ]
+    },
+    {
+      "name": "Straight Arm Cable Pulldown",
+      "category": "back",
+      "primaryMuscles": ["lats"],
+      "secondaryMuscles": [],
+      "equipmentType": "cable",
+      "loadType": "cable",
+      "executionMode": "bilateral",
+      "weightUnit": "kg",
+      "notes": "팔꿈치 각도를 일정하게 유지하며 광배근 수축에 집중한다.",
+      "sets": [
+        {
+          "reps": 12,
+          "weight": 20,
+          "restSeconds": 90,
+          "setType": "WORKING",
+          "targetRpe": 8,
+          "tempo": {"eccentric": 3, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 1"
+        },
+        {
+          "reps": 12,
+          "weight": 20,
+          "restSeconds": 90,
+          "setType": "WORKING",
+          "targetRpe": 8.5,
+          "tempo": {"eccentric": 3, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 2"
+        },
+        {
+          "reps": 12,
+          "weight": 20,
+          "restSeconds": 90,
+          "setType": "WORKING",
+          "targetRpe": 9,
+          "tempo": {"eccentric": 3, "pause": 1, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 3"
+        }
+      ]
+    },
+    {
+      "name": "Machine Preacher Curl",
+      "category": "arms",
+      "primaryMuscles": ["biceps"],
+      "secondaryMuscles": ["forearms"],
+      "equipmentType": "machine",
+      "loadType": "pin-loaded",
+      "executionMode": "bilateral",
+      "weightUnit": "kg",
+      "notes": "상완을 패드에 고정하고 이완 구간을 천천히 제어한다.",
+      "sets": [
+        {
+          "reps": 12,
+          "weight": 0,
+          "restSeconds": 90,
+          "setType": "WORKING",
+          "targetRpe": 8,
+          "tempo": {"eccentric": 3, "pause": 0, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 1"
+        },
+        {
+          "reps": 12,
+          "weight": 0,
+          "restSeconds": 90,
+          "setType": "WORKING",
+          "targetRpe": 8.5,
+          "tempo": {"eccentric": 3, "pause": 0, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 2"
+        },
+        {
+          "reps": 10,
+          "weight": 0,
+          "restSeconds": 90,
+          "setType": "WORKING",
+          "targetRpe": 9,
+          "tempo": {"eccentric": 3, "pause": 0, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 3"
+        }
+      ]
+    },
+    {
+      "name": "Rope Hammer Curl",
+      "category": "arms",
+      "primaryMuscles": ["biceps", "forearms"],
+      "secondaryMuscles": [],
+      "equipmentType": "cable",
+      "loadType": "cable",
+      "executionMode": "bilateral",
+      "weightUnit": "kg",
+      "notes": "중립 그립 유지, 팔꿈치 고정, 반동 없이 수행한다.",
+      "sets": [
+        {
+          "reps": 15,
+          "weight": 20,
+          "restSeconds": 75,
+          "setType": "WORKING",
+          "targetRpe": 8,
+          "tempo": {"eccentric": 3, "pause": 0, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 1"
+        },
+        {
+          "reps": 12,
+          "weight": 20,
+          "restSeconds": 75,
+          "setType": "WORKING",
+          "targetRpe": 9,
+          "tempo": {"eccentric": 3, "pause": 0, "concentric": 1},
+          "side": "both",
+          "comment": "본세트 2"
+        }
+      ]
+    }
+  ]
+}

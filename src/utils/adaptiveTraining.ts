@@ -45,12 +45,15 @@ export function normalizeAdaptiveSession(session: WorkoutSession): WorkoutSessio
 
 export function completeWorkoutSet(set: WorkoutSet, now = new Date()): WorkoutSet {
   if (set.completed) return set;
+  if (set.weightNeedsConfirmation) throw new Error('새 기구의 중량을 확인하세요.');
   return {
     ...set, ...(set.setType === 'DROP_SET' && set.dropSegments?.length ? { weight: set.dropSegments[0].weight, reps: set.dropSegments[0].reps } : {}), completed: true, completedAt: now.toISOString(), provenance: set.provenance === 'legacy-unknown' ? 'legacy-unknown' : 'recorded',
     plannedWeight: set.plannedWeight,
     plannedReps: set.plannedReps,
     plannedSetType: set.plannedSetType ?? set.setType ?? 'UNSPECIFIED',
     setType: set.setType ?? set.plannedSetType ?? 'UNSPECIFIED',
+    tempo: set.tempoSource === 'recorded' && set.tempo ? { ...set.tempo } : set.plannedTempo ? { ...set.plannedTempo } : set.tempo,
+    tempoSource: set.tempoSource === 'recorded' && set.tempo ? 'recorded' : set.plannedTempo ? 'prescribed' : set.tempoSource,
     legacyRpe: set.provenance !== 'recorded' ? set.legacyRpe ?? set.rpe : set.legacyRpe,
     rpe: set.provenance === 'recorded' || set.rpeSource === 'recorded' ? set.rpe ?? null : null, failureType: set.failureType ?? 'UNKNOWN',
   };
@@ -121,7 +124,16 @@ export function validAdaptiveSet(value: Record<string, unknown>): boolean {
       !numeric('stimulusFeedback', 1, 5) || !numeric('startPausedSeconds', 0, Number.MAX_SAFE_INTEGER) ||
       !numeric('completionPausedSeconds', 0, Number.MAX_SAFE_INTEGER) || !text('plannedNotes') || !text('startedAt') || !text('completedAt')) return false;
   if (typeof value.targetRpe === 'number' && !Number.isInteger(value.targetRpe * 2)) return false;
-  if (['rpeSource', 'tempoSource', 'commentSource'].some(key => value[key] !== undefined && value[key] !== 'recorded')) return false;
+  if (['rpeSource', 'commentSource'].some(key => value[key] !== undefined && value[key] !== 'recorded')) return false;
+  if (value.tempoSource !== undefined && !['recorded', 'prescribed'].includes(String(value.tempoSource))) return false;
+  if (!numeric('targetRir', 0, 10) || !numeric('assistedReps', 0, 1000)) return false;
+  if (typeof value.assistedReps === 'number' && !Number.isInteger(value.assistedReps)) return false;
+  if (value.weightNeedsConfirmation !== undefined && typeof value.weightNeedsConfirmation !== 'boolean') return false;
+  if (value.plannedWeightUnit !== undefined && !['kg', 'lbs'].includes(String(value.plannedWeightUnit))) return false;
+  if (value.plannedRepRange !== undefined) {
+    const range = value.plannedRepRange;
+    if (!isRecord(range) || typeof range.min !== 'number' || typeof range.max !== 'number' || !Number.isInteger(range.min) || !Number.isInteger(range.max) || range.min < 1 || range.max > 1000 || range.min > range.max) return false;
+  }
   if (value.legacyRpe !== undefined && value.legacyRpe !== null && (typeof value.legacyRpe !== 'number' || !Number.isFinite(value.legacyRpe))) return false;
   if (value.revisions !== undefined && (!Array.isArray(value.revisions) || !value.revisions.every(revision => revision && typeof revision === 'object' && typeof revision.at === 'string' && revision.previous && typeof revision.previous === 'object' && revision.previous.revisions === undefined && validAdaptiveSet(revision.previous)))) return false;
   if (value.setType !== undefined && !types.includes(String(value.setType))) return false;
@@ -172,6 +184,11 @@ export function validAdaptiveSessionMetadata(value: Record<string, unknown>): bo
 }
 export function validAdaptiveExerciseMetadata(value: Record<string, unknown>): boolean {
   if (!optionalNumbers(value, ['weightIncrement'], 0.01, 100)) return false;
+  if (value.replacementHistory !== undefined && (!Array.isArray(value.replacementHistory) || !value.replacementHistory.every(change =>
+    isRecord(change) && typeof change.fromExerciseId === 'string' && typeof change.toExerciseId === 'string' &&
+    typeof change.at === 'string' && Number.isFinite(Date.parse(change.at)) &&
+    optionalText(change, ['fromExerciseName', 'toExerciseName', 'reason']) &&
+    ['kg', 'lbs'].includes(String(change.weightUnit)) && typeof change.weightReset === 'boolean'))) return false;
   if (value.feedback === undefined) return true;
   const feedback = value.feedback;
   return isRecord(feedback) && optionalText(feedback, ['compensation', 'painLocation', 'notes']) &&

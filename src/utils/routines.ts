@@ -3,13 +3,15 @@ import type { WorkoutSession, WorkoutExercise, EquipmentType, ExecutionMode, Wor
 import { resolveRecordedExercise } from './exerciseResolver';
 import { SET_TYPES } from '../types/workout';
 import { getTodayString } from './calendar';
+import { validAdaptiveSet } from './adaptiveTraining';
+import { convertWeight } from './calculations';
 
 const key = 'iron_routines_v1';
 export const ROUTINES_CHANGE = 'iron_routines_change';
 export interface Routine {
   format: 'iron-muscle-routine'; version: 1; id: string; name: string;
   exercises: { exerciseId: string; name: string; equipment: EquipmentType; mode: ExecutionMode; weightUnit?: WeightUnit; group?: number;
-    groupType?: WorkoutExercise['groupType']; sets: ({ reps: number; rest: number; side: 'both' | 'left' | 'right' } & Pick<WorkoutSet, 'plannedWeight' | 'plannedReps' | 'targetRpe' | 'plannedTempo' | 'plannedSetType' | 'plannedNotes'>)[] }[];
+    groupType?: WorkoutExercise['groupType']; sets: ({ reps: number; rest: number; side: 'both' | 'left' | 'right' } & Pick<WorkoutSet, 'plannedWeight' | 'plannedReps' | 'targetRpe' | 'targetRir' | 'plannedRepRange' | 'plannedTempo' | 'plannedSetType' | 'plannedNotes'>)[] }[];
 }
 const error = () => new Error('루틴 형식이 올바르지 않거나 너무 큽니다.');
 const text = (v: unknown, max: number) => typeof v === 'string' && v.trim().length > 0 && v.length <= max;
@@ -31,6 +33,7 @@ export function parseRoutine(raw: string): Routine {
       return { exerciseId: e.exerciseId, name: e.name, equipment: e.equipment, mode: e.mode, ...(e.weightUnit === undefined ? {} : { weightUnit: e.weightUnit }),
         ...(e.group !== undefined ? { group: e.group, groupType: e.groupType } : {}),
         sets: e.sets.map((s: any) => {
+          if (!s || !validAdaptiveSet(s)) throw error();
           if (!s || !Number.isInteger(s.reps) || s.reps < 0 || s.reps > 1000 || !Number.isInteger(s.rest) || s.rest < 0 || s.rest > 3600 || !['both','left','right'].includes(s.side)) throw error();
           if (s.plannedWeight !== undefined && (!Number.isFinite(s.plannedWeight) || Math.abs(s.plannedWeight) > 2000)) throw error();
           if (s.plannedReps !== undefined && (!Number.isInteger(s.plannedReps) || s.plannedReps < 0 || s.plannedReps > 1000)) throw error();
@@ -39,6 +42,8 @@ export function parseRoutine(raw: string): Routine {
           if (s.plannedNotes !== undefined && (typeof s.plannedNotes !== 'string' || s.plannedNotes.length > 2000)) throw error();
           if (s.plannedTempo !== undefined && (!s.plannedTempo || !['eccentric','pause','concentric'].every(k => Number.isFinite(s.plannedTempo[k]) && s.plannedTempo[k] >= 0 && s.plannedTempo[k] <= 30))) throw error();
           return { reps: s.reps, rest: s.rest, side: s.side,
+            ...(s.targetRir === undefined ? {} : { targetRir: s.targetRir }),
+            ...(s.plannedRepRange === undefined ? {} : { plannedRepRange: { min: s.plannedRepRange.min, max: s.plannedRepRange.max } }),
             ...(s.plannedWeight === undefined ? {} : { plannedWeight: s.plannedWeight }),
             ...(s.plannedReps === undefined ? {} : { plannedReps: s.plannedReps }),
             ...(s.targetRpe === undefined ? {} : { targetRpe: s.targetRpe }),
@@ -55,7 +60,7 @@ export function recipeFromSession(session: WorkoutSession, name: string, rest: n
     exercises: session.exercises.filter(e => e.sets.length).map(e => ({ exerciseId: e.exerciseId,
       name: resolveRecordedExercise(e).name, equipment: e.equipmentType, mode: e.executionMode || 'bilateral', ...(e.sets.some(set => set.plannedWeight !== undefined) ? { weightUnit: e.weightUnit || session.weightUnit || 'kg' } : {}),
       ...(e.groupId && e.groupType && e.groupType !== 'single' ? { group: groups.indexOf(e.groupId), groupType: e.groupType } : {}),
-      sets: e.sets.map(s => ({ reps: s.reps, rest: s.plannedRestSeconds ?? rest, side: s.side || 'both', plannedWeight: s.plannedWeight, plannedReps: s.plannedReps, targetRpe: s.targetRpe, plannedSetType: s.plannedSetType ?? s.setType, plannedTempo: s.plannedTempo, plannedNotes: s.plannedNotes })) })) }));
+      sets: e.sets.map(s => ({ reps: s.reps, rest: s.plannedRestSeconds ?? rest, side: s.side || 'both', plannedWeight: s.plannedWeight === undefined ? undefined : convertWeight(s.plannedWeight, s.plannedWeightUnit || e.weightUnit || session.weightUnit || 'kg', e.weightUnit || session.weightUnit || 'kg'), plannedReps: s.plannedReps, targetRpe: s.targetRpe, targetRir: s.targetRir, plannedRepRange: s.plannedRepRange, plannedSetType: s.plannedSetType ?? s.setType, plannedTempo: s.plannedTempo, plannedNotes: s.plannedNotes })) })) }));
 }
 export function loadRoutines(): Routine[] {
   try {
@@ -98,5 +103,5 @@ export function sessionFromRoutine(recipe: Routine): WorkoutSession {
   return { id, title: routine.name, date: getTodayString(), startTime: new Date().toISOString(), durationSeconds: 0, completed: false, weightUnit: 'kg',
     exercises: routine.exercises.map(e => ({ id: crypto.randomUUID(), exerciseId: e.exerciseId, exerciseName: e.name, equipmentType: e.equipment, executionMode: e.mode, weightUnit: e.weightUnit || 'kg',
       ...(e.group !== undefined ? { groupId: `${id}-group-${e.group}`, groupType: e.groupType } : {}),
-      sets: e.sets.map((s, i) => ({ id: crypto.randomUUID(), setNumber: i + 1, reps: s.plannedReps ?? s.reps, weight: s.plannedWeight ?? 0, completed: false, provenance: 'recorded', rpe: null, plannedWeight: s.plannedWeight, plannedReps: s.plannedReps, targetRpe: s.targetRpe, plannedSetType: s.plannedSetType, setType: s.plannedSetType, plannedTempo: s.plannedTempo, plannedNotes: s.plannedNotes, side: s.side, plannedRestSeconds: s.rest })) })) };
+      sets: e.sets.map((s, i) => ({ id: crypto.randomUUID(), setNumber: i + 1, reps: s.plannedReps ?? s.reps, weight: s.plannedWeight ?? 0, completed: false, provenance: 'recorded', rpe: null, plannedWeight: s.plannedWeight, plannedReps: s.plannedReps, targetRpe: s.targetRpe, targetRir: s.targetRir, plannedRepRange: s.plannedRepRange, plannedSetType: s.plannedSetType, setType: s.plannedSetType, plannedTempo: s.plannedTempo, plannedNotes: s.plannedNotes, side: s.side, plannedRestSeconds: s.rest })) })) };
 }

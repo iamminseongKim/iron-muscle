@@ -75,16 +75,43 @@ const replaced = replaceWorkoutExercise(list, 'b', {
   exerciseName: '덤벨 프레스',
   equipmentType: 'dumbbell',
 });
-assert.equal(replaced.length, list.length);
-assert.equal(replaced[1].id, 'b');
-assert.equal(replaced[1].exerciseId, 'dumbbell-press');
-assert.equal(replaced[1].exerciseName, '덤벨 프레스');
-assert.equal(replaced[1].equipmentType, 'dumbbell');
-assert.equal(replaced[1].sets.length, list[1].sets.length);
-assert.equal(replaced[1].sets[0].completed, false);
-assert.equal(replaced[0].id, 'a');
-assert.equal(replaced[2].id, 'c');
+assert.deepEqual(replaced, list, 'a fully completed exercise cannot be reassigned');
 assert.deepEqual(replaceWorkoutExercise(list, 'nonexistent', { exerciseId: 'foo', equipmentType: 'barbell' }), list);
+
+const prescribed = exercise('prescribed', { notes: 'Keep shoulders down', sets: [
+  set('done', { setNumber: 1, setType: 'WARMUP', completedAt: '2026-10-20T10:03:00Z' }),
+  set('pending', { setNumber: 2, completed: false, plannedWeight: 45, plannedReps: 8, targetRpe: 8, plannedTempo: { eccentric: 3, pause: 1, concentric: 1 }, plannedSetType: 'WORKING', setType: 'WORKING', plannedNotes: 'Do not bounce' }),
+  set('pending-drop', { setNumber: 3, completed: false, setType: 'DROP_SET', plannedRestSeconds: 30 }),
+] });
+const beforeReplacement = JSON.stringify(prescribed);
+const replacement = { exerciseId: 'dumbbell-press', exerciseName: 'Dumbbell press', equipmentType: 'dumbbell', weightUnit: 'lbs', reason: 'Machine occupied', at: '2026-10-20T10:05:00Z' };
+const split = replaceWorkoutExercise([prescribed], prescribed.id, replacement);
+assert.equal(split.length, 2);
+assert.equal(split[0].exerciseId, prescribed.exerciseId);
+assert.strictEqual(split[0].sets[0], prescribed.sets[0]);
+assert.deepEqual(split[1].sets.map(s => s.id), ['pending', 'pending-drop']);
+assert.deepEqual(split[1].sets.map(s => s.setNumber), [2, 3]);
+assert.equal(split[1].sets[0].plannedWeight, 45);
+assert.equal(split[1].sets[0].plannedWeightUnit, 'kg');
+assert.equal(split[1].sets[0].weight, 0);
+assert.equal(split[1].sets[0].previousWeight, 110);
+assert.equal(split[1].sets[0].weightNeedsConfirmation, true);
+assert.equal(split[1].sets[0].targetRpe, 8);
+assert.deepEqual(split[1].sets[0].plannedTempo, prescribed.sets[1].plannedTempo);
+assert.equal(split[1].sets[0].plannedNotes, 'Do not bounce');
+assert.equal(split[1].sets[1].setType, 'DROP_SET');
+assert.equal(split[1].sets[1].plannedRestSeconds, 30);
+assert.equal(split[1].notes, prescribed.notes);
+assert.deepEqual(split[1].replacementHistory[0], { fromExerciseId: prescribed.exerciseId, fromExerciseName: prescribed.exerciseName, toExerciseId: replacement.exerciseId, toExerciseName: replacement.exerciseName, at: replacement.at, reason: replacement.reason, weightUnit: 'kg', weightReset: true });
+assert.equal(JSON.stringify(prescribed), beforeReplacement);
+assert.deepEqual(replaceWorkoutExercise(split, prescribed.id, replacement), split, 'retry on source item does not duplicate records');
+assert.deepEqual(replaceWorkoutExercise(split, split[1].id, replacement), split, 'retry on replacement item is a no-op');
+const unchangedEquipment = replaceWorkoutExercise([prescribed], prescribed.id, { exerciseId: prescribed.exerciseId, exerciseName: prescribed.exerciseName, equipmentType: prescribed.equipmentType, machineBrand: prescribed.machineBrand, machineConfigId: prescribed.machineConfigId, machineSetting: prescribed.machineSetting, weightUnit: prescribed.weightUnit });
+assert.deepEqual(unchangedEquipment, [prescribed], 'same exercise and machine retains completed and pending values');
+const repeatPrescribed = repeatWorkout({ ...source, exercises: [{ ...prescribed, sets: [{ ...prescribed.sets[1], completed: true, tempo: undefined }] }] });
+assert.deepEqual(repeatPrescribed.exercises[0].sets[0].plannedTempo, prescribed.sets[1].plannedTempo);
+assert.equal(repeatPrescribed.exercises[0].sets[0].targetRpe, 8);
+assert.equal(repeatPrescribed.exercises[0].sets[0].plannedNotes, 'Do not bounce');
 
 const makeSession = (id, date, extra = {}) => ({ ...source, id, date, startTime: `${date}T10:00:00Z`, exercises: [exercise('summary')], ...extra });
 const old = makeSession('old', '2026-10-18');

@@ -1,0 +1,68 @@
+import assert from 'node:assert/strict';
+import puppeteer from 'puppeteer-core';
+
+const chrome = process.env.CHROME_PATH || (process.platform === 'win32' ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome');
+const browser = await puppeteer.launch({ executablePath: chrome, headless: 'new', args: ['--no-sandbox'] });
+try {
+  const page = await browser.newPage();
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+  await page.goto(process.env.TEST_URL || 'http://127.0.0.1:3000');
+  await page.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem('iron_language', 'ko');
+    localStorage.setItem('iron_adaptive_settings_v1', JSON.stringify({ feedback: true, suggestions: false, sound: false, vibration: false }));
+    const set = (id, setNumber) => ({ id, setNumber, weight: 30, reps: 10, plannedWeight: 30, plannedReps: 10, plannedTempo: { eccentric: 3, pause: 1, concentric: 1 }, targetRpe: 8, rpe: null, provenance: 'recorded', plannedSetType: 'WORKING', setType: 'WORKING', completed: false });
+    localStorage.setItem('iron_active_session_v1', JSON.stringify({ id: 'survey-tempo', title: 'Prescription survey', date: '2026-11-05', startTime: new Date().toISOString(), durationSeconds: 0, completed: false, exercises: [{ id: 'survey-bench', exerciseId: 'bench-press', equipmentType: 'barbell', sets: [{ ...set('default', 1), startedAt: new Date().toISOString() }, set('changed', 2)] }] }));
+  });
+  await page.reload({ waitUntil: 'networkidle0' });
+  const active = () => page.evaluate(() => JSON.parse(localStorage.getItem('iron_active_session_v1')));
+  const click = async text => {
+    assert.ok(await page.evaluate(text => {
+      const button = [...document.querySelectorAll('button')].find(node => node.getClientRects().length && node.textContent.trim() === text);
+      button?.click();
+      return !!button;
+    }, text), text);
+  };
+  const values = () => page.$$eval('[data-feedback-tempo] input', nodes => nodes.map(node => Number(node.value)));
+  await page.click('[data-workout-set="default"] button[aria-label="1세트 완료"]');
+  await page.waitForSelector('[role="dialog"][aria-label="세트 피드백"]');
+  assert.deepEqual(await values(), [3, 1, 1]);
+  assert.equal((await active()).exercises[0].sets[0].tempo, undefined, 'opening survey does not invent a measurement');
+  await click('저장하고 완료');
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem('iron_active_session_v1')).exercises[0].sets[0].completed);
+  let first = (await active()).exercises[0].sets[0];
+  assert.deepEqual(first.tempo, { eccentric: 3, pause: 1, concentric: 1 });
+  assert.deepEqual(first.plannedTempo, first.tempo);
+  assert.equal(first.tempoSource, 'prescribed');
+  assert.equal(first.rpe, null);
+  await page.reload({ waitUntil: 'networkidle0' });
+  first = (await active()).exercises[0].sets[0];
+  assert.equal(first.tempoSource, 'prescribed');
+  await page.evaluate(() => [...document.querySelectorAll('button')].find(node => node.textContent.startsWith('휴식 타이머 닫기'))?.click());
+  await page.click('[data-workout-set="changed"] button[aria-label="2세트 시작"]');
+  await page.click('[data-workout-set="changed"] button[aria-label="2세트 완료"]');
+  await page.waitForSelector('[data-feedback-tempo]');
+  assert.deepEqual(await values(), [3, 1, 1]);
+  const eccentric = await page.$('[data-feedback-tempo] input');
+  await eccentric.click({ clickCount: 3 });
+  await eccentric.type('4');
+  assert.deepEqual(await values(), [4, 1, 1]);
+  await click('저장하고 완료');
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem('iron_active_session_v1')).exercises[0].sets[1].completed);
+  const second = (await active()).exercises[0].sets[1];
+  assert.equal(second.tempoSource, 'recorded');
+  assert.deepEqual(second.tempo, { eccentric: 4, pause: 1, concentric: 1 });
+  assert.deepEqual(second.plannedTempo, { eccentric: 3, pause: 1, concentric: 1 });
+  assert.equal(second.rpe, null);
+  await page.reload({ waitUntil: 'networkidle0' });
+  const restored = await active();
+  assert.equal(restored.exercises[0].sets[0].tempoSource, 'prescribed');
+  assert.equal(restored.exercises[0].sets[1].tempoSource, 'recorded');
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  assert.deepEqual(errors, []);
+  console.log('PASS actual mobile survey default prescribed tempo, explicit performed correction, original plan preservation, missing actual RPE, reload persistence and mobile width.');
+} finally {
+  await browser.close();
+}

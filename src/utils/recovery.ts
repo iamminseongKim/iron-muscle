@@ -68,12 +68,33 @@ export function saveWithRecovery(updated: WorkoutSession, location: RecoveryItem
     const next = updated.exercises.find(e => e.id === exercise.id);
     if (!next) removed.push(entry(previous, location, 'exercise', exercise.id));
     else for (const set of exercise.sets) {
-      if (!next.sets.some(s => s.id === set.id)) removed.push(entry(previous, location, 'set', exercise.id, set.id));
+      if (!updated.exercises.some(item => item.sets.some(s => s.id === set.id))) removed.push(entry(previous, location, 'set', exercise.id, set.id));
     }
   }
   const saved = { ...updated, durationSeconds: location === 'active' ? Math.max(previous.durationSeconds, updated.durationSeconds) : updated.durationSeconds };
   commit({ ...(removed.length ? { [trashKey]: [...removed, ...loadRecovery()] } : {}),
     [location === 'active' ? activeKey : historyKey]: location === 'active' ? saved : history.map(s => s.id === saved.id ? saved : s) });
+}
+const replacementUndoKey = 'iron_replacement_undo_v1';
+export function saveReplacementWithRecovery(updated: WorkoutSession) {
+  const previous = read<WorkoutSession | null>(activeKey, null);
+  if (!previous || previous.id !== updated.id) throw new Error('기록이 변경되었습니다. 다시 열어 주세요.');
+  if (JSON.stringify(previous.exercises) === JSON.stringify(updated.exercises)) return;
+  commit({ [replacementUndoKey]: { before: previous, after: updated }, [activeKey]: updated });
+}
+export function canUndoReplacement(session: WorkoutSession): boolean {
+  try {
+    const snapshot = read<{ before: WorkoutSession; after: WorkoutSession } | null>(replacementUndoKey, null);
+    return !!snapshot && snapshot.after.id === session.id && JSON.stringify(snapshot.after.exercises) === JSON.stringify(session.exercises);
+  } catch { return false; }
+}
+export function undoReplacement(): boolean {
+  const current = read<WorkoutSession | null>(activeKey, null);
+  if (!current || !canUndoReplacement(current)) throw new Error('교체 후 기록이 변경되어 되돌릴 수 없습니다.');
+  const snapshot = read<{ before: WorkoutSession }>(replacementUndoKey, { before: current });
+  if (!validSession(snapshot.before)) throw new Error('복구할 데이터가 올바르지 않습니다.');
+  commit({ [activeKey]: { ...current, exercises: snapshot.before.exercises }, [replacementUndoKey]: null });
+  return true;
 }
 const invalidRecovery = () => new Error('복구할 데이터가 올바르지 않습니다.');
 const isObject = (value: unknown): value is Record<string, any> => !!value && typeof value === 'object' && !Array.isArray(value);
