@@ -1,0 +1,10 @@
+ts	phase	decision	why	evidence	result
+2026-11-05T01:19:20.0832984Z	frame	Keep existing WorkoutSet and Tempo data	Requested change is feedback UX, not historical record migration	src/components/workout/SetFeedbackModal.tsx	implemented
+2026-11-05T01:19:20.0832984Z	design	Use presets and 0.5-second steppers instead of per-phase sliders	Exact seconds need no keyboard or precision dragging	src/components/workout/TempoControl.tsx	implemented
+2026-11-05T01:19:20.0832984Z	data	Keep historical typed pain and assisted reps read-only; use memo for new feedback	Avoid deleting existing records while simplifying input	scripts/test-feedback-ux-ui.mjs	VERIFIED
+2026-11-05T01:19:20.0832984Z	baseline	Reproduced old warmup details closed and three numeric tempo inputs	Check actual disclosure state instead of bounding rectangles	scripts/reproduce-feedback-ux.mjs	VERIFIED
+2026-11-05T01:19:20.0832984Z	ui	Test expanded fields, colors, notes and legacy values at320390768 in light and dark	Prove the real UI and persisted values	scripts/test-feedback-ux-ui.mjs	VERIFIED
+2026-11-05T01:21:50.4358438Z	review	Completed record reset keeps a cloned target tempo with prescribed source	Completed records bypass completion normalization	scripts/test-prescription-survey-ui.mjs	VERIFIED
+2026-11-05T01:21:50.4358438Z	verification	31 suites and three actual browser scripts pass	Check old RPE/rest flow plus expanded feedback and historical data	scripts/test-adaptive-ui.mjs	VERIFIED
+2026-11-05T01:21:50.4358438Z	review	No remaining blocking finding; zero new comments	Independent review rechecked completed reset and legacy fields	src/components/workout/SetFeedbackModal.tsx	VERIFIED; alternate configured model family unavailable
+2026-11-05T01:22:05.4575632Z	release	Production build passed with3.45.0 offline shell	Verify version matches package lock Android and built output	releases/3.45.0.md	VERIFIED

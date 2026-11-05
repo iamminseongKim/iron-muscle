@@ -5,7 +5,6 @@ import type { AdaptiveSettings as Preferences } from '../../utils/adaptiveSettin
 
 const options: { key: keyof Preferences; label: string }[] = [
   { key: 'feedback', label: '세트 완료 피드백 표시' },
-  { key: 'detailedFeedback', label: '상세 피드백 기본 표시' },
   { key: 'suggestions', label: '다음 세트 조정 제안' },
   { key: 'sound', label: '운동 알림음' },
   { key: 'vibration', label: '운동 진동' },

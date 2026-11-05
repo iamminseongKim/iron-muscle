@@ -1097,5 +1097,12 @@
   "남은 세트만 교체합니다. 완료한 세트는 원래 종목에 보존됩니다. 기구와 중량 기준이 다르면 기존 중량은 참고값이며 새 중량을 입력해야 합니다. 반복수와 템포도 확인하세요. 계속할까요?": "Seules les séries restantes changent. Les séries terminées restent associées à l’exercice initial. Si l’appareil ou la convention de charge change, l’ancienne charge reste une référence et une nouvelle doit être saisie. Vérifiez répétitions et tempo. Continuer ?",
   "지원하지 않는 필드는 적용하지 않습니다.": "Les champs non pris en charge ne seront pas appliqués.",
   "반복 범위": "Plage de répétitions",
-  "목표 RIR": "RIR cible"
+  "목표 RIR": "RIR cible",
+  "목표 템포": "Tempo cible",
+  "템포 프리셋": "Tempos prédéfinis",
+  "목표 템포로 복원": "Rétablir le tempo cible",
+  "0.5초 줄이기": "Réduire de 0,5 seconde",
+  "0.5초 늘리기": "Augmenter de 0,5 seconde",
+  "통증, 불편감, 도움받은 반복 등을 자유롭게 적으세요.": "Notez douleurs, gêne, répétitions assistées ou autres détails.",
+  "통증과 불편감은 메모에 남겨 주세요.": "Notez les douleurs et la gêne dans vos remarques."
 }

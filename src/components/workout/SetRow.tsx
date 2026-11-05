@@ -218,16 +218,17 @@ export const SetRow: React.FC<SetRowProps> = ({
           : 'bg-transparent'
       }`}>
         {!set.completed && set.weightNeedsConfirmation && <p role="status" className="py-1 text-xs text-amber-600 dark:text-amber-400">{t('새 기구의 중량을 확인하세요.')}{set.previousWeight !== undefined && ` (${set.previousWeight}${weightUnit})`}</p>}
-        {(progress.kind === 'active' || set.setType && set.setType !== 'UNSPECIFIED' || set.targetRpe !== undefined || set.targetRir !== undefined || set.plannedRepRange || set.completed) && <div className="flex flex-wrap items-center justify-between gap-1 py-1 text-[11px]">
+        {(progress.kind === 'active' || set.setType && set.setType !== 'UNSPECIFIED' || set.targetRpe !== undefined || set.plannedTempo || set.targetRir !== undefined || set.plannedRepRange || set.completed) && <div className="flex flex-wrap items-center justify-between gap-1 py-1 text-[11px]">
           {progress.kind === 'active' && <span className="text-accent font-bold">{t('운동 중')} · {t('마치면 세트 완료를 누르세요.')}</span>}
           <span className="text-gray-500">{[
             set.completed ? t('완료됨') : null,
             set.setType && set.setType !== 'UNSPECIFIED' ? t(SET_TYPE_LABELS[set.setType]) : null,
-            set.targetRpe !== undefined ? `${t('목표 RPE')} ${set.targetRpe}` : null,
             set.targetRir !== undefined ? `${t('목표 RIR')} ${set.targetRir}` : null,
             set.plannedRepRange ? `${t('반복 범위')} ${set.plannedRepRange.min}-${set.plannedRepRange.max}` : null,
             set.completed ? `RPE ${(set.provenance === 'recorded' || set.rpeSource === 'recorded') ? set.rpe ?? t('미기록') : t('출처 불명 기록')}` : null,
           ].filter(Boolean).join(' · ')}</span>
+            {set.targetRpe !== undefined && <span data-target-rpe className="rounded-md bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 font-bold text-amber-800 dark:text-amber-200">{t('목표 RPE')} {set.targetRpe}</span>}
+            {set.plannedTempo && <span data-target-tempo className="rounded-md bg-cyan-50 dark:bg-cyan-950/40 px-1.5 py-0.5 font-bold text-cyan-800 dark:text-cyan-200">{t('목표 템포')} {set.plannedTempo.eccentric}-{set.plannedTempo.pause}-{set.plannedTempo.concentric}{t('초')}</span>}
           {set.completed && <button type="button" className="min-h-[36px] px-2 text-accent" onClick={() => { setFeedbackAt(null); setFeedbackOpen(true); }}>{t('기록 수정')}</button>}
         </div>}
         {/* Line 1: Core Inputs (Set #, Previous Record, Weight, Reps, Complete Check) */}

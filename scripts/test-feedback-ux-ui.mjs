@@ -1,0 +1,67 @@
+import assert from 'node:assert/strict';
+import puppeteer from 'puppeteer-core';
+import { mkdir } from 'node:fs/promises';
+const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', args: ['--no-sandbox'] });
+try {
+  const page = await browser.newPage();
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+  await page.goto(process.env.TEST_URL || 'http://127.0.0.1:3020');
+  await page.evaluate(() => {
+    localStorage.clear(); localStorage.setItem('iron_language', 'ko');
+    localStorage.setItem('iron_adaptive_settings_v1', JSON.stringify({ feedback: true, detailedFeedback: false }));
+    localStorage.setItem('iron_active_session_v1', JSON.stringify({ id: 'feedback-ux', title: 'Feedback UX', date: '2026-11-05', startTime: new Date().toISOString(), durationSeconds: 0, completed: false, exercises: [{ id: 'exercise', exerciseId: 'lat-pulldown', exerciseName: '와이드그립 랫 풀다운', equipmentType: 'machine', notes: 'Preserve exercise', feedback: { painLocation: 'Old shoulder', painIntensity: 3, notes: 'Old exercise memo' }, sets: [{ id: 'set', setNumber: 1, weight: 20, reps: 15, completed: false, startedAt: new Date().toISOString(), provenance: 'recorded', rpe: null, targetRpe: 6, plannedTempo: { eccentric: 2, pause: 1, concentric: 1 }, setType: 'WARMUP', plannedSetType: 'WARMUP', painFeedback: { location: 'Old elbow', intensity: 2 }, assistedReps: 1, comment: 'Old memo' }] }] }));
+  });
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.click('[data-workout-set="set"] button[aria-label="1세트 완료"]');
+  const dialog = '[role="dialog"][aria-label="세트 피드백"]';
+  await page.waitForSelector(dialog);
+  const slider = await page.$(`${dialog} input[aria-label="실제 RPE"]`);
+  assert.ok(await slider.boundingBox(), 'warmup RPE must be expanded by default');
+  assert.ok(await slider.evaluate(node => !node.closest('details:not([open])')), 'RPE must not be inside a collapsed disclosure');
+  assert.equal(await page.$(`${dialog} input[aria-label="보조 반복수"]`), null);
+  assert.equal(await page.$(`${dialog} input[aria-label="통증 부위"]`), null);
+  assert.equal(await page.$$eval('[data-feedback-tempo] input[type=number]', nodes => nodes.length), 0, 'tempo needs no keyboard');
+  const text = await page.$eval(dialog, node => node.textContent);
+  assert.ok(text.includes('목표 RPE'));
+  assert.ok(text.includes('목표 템포'));
+  assert.ok(text.includes('Old elbow'));
+  const note = await page.$(`${dialog} textarea`);
+  assert.ok(await note.boundingBox(), 'notes must be expanded by default');
+  await mkdir('output/feedback-ux', { recursive: true });
+  for (const dark of [false, true]) for (const width of [320, 390, 768]) {
+    await page.setViewport({ width, height: 844, isMobile: true, hasTouch: true });
+    await page.evaluate(dark => document.documentElement.classList.toggle('dark', dark), dark);
+    assert.ok(await page.$eval(`${dialog} > div`, node => node.scrollWidth <= node.clientWidth), `dialog fits ${width}`);
+    const colors = await page.$$eval(`${dialog} [data-feedback-targets] p`, nodes => nodes.map(node => getComputedStyle(node).color));
+    assert.notEqual(colors[0], colors[1]);
+    if (width === 390) await page.screenshot({ path: `output/feedback-ux/${dark ? 'dark' : 'light'}.png` });
+  }
+  await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+  await page.evaluate(() => document.documentElement.classList.remove('dark'));
+  await note.type(' New discomfort memo');
+  await page.evaluate(() => [...document.querySelectorAll('[role=dialog] button')].find(node => node.textContent.trim() === '저장하고 완료').click());
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem('iron_active_session_v1')).exercises[0].sets[0].completed);
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('iron_active_session_v1')).exercises[0].sets[0]);
+  assert.equal(saved.rpe, null);
+  assert.equal(saved.assistedReps, 1);
+  assert.deepEqual(saved.painFeedback, { location: 'Old elbow', intensity: 2 });
+  assert.ok(saved.comment.includes('New discomfort memo'));
+  assert.equal(saved.tempoSource, 'prescribed');
+  await page.reload({ waitUntil: 'networkidle0' });
+  assert.equal(await page.$('input[aria-label="통증 부위"]'), null);
+  assert.equal(await page.$('select[aria-label="통증 강도"]'), null);
+  const exerciseNotes = await page.$('textarea[aria-label="종목 메모"]');
+  assert.ok(await exerciseNotes.evaluate(node => !node.closest('details:not([open])')));
+  await exerciseNotes.type(' New exercise discomfort');
+  const exerciseFeedback = await page.evaluate(() => JSON.parse(localStorage.getItem('iron_active_session_v1')).exercises[0].feedback);
+  assert.equal(exerciseFeedback.painLocation, 'Old shoulder');
+  assert.equal(exerciseFeedback.painIntensity, 3);
+  assert.ok(exerciseFeedback.notes.includes('New exercise discomfort'));
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  assert.deepEqual(errors, []);
+  await mkdir('output/feedback-ux', { recursive: true });
+  await page.screenshot({ path: 'output/feedback-ux/mobile.png', fullPage: true });
+  console.log('PASS expanded warmup RPE/notes, keyboardless tempo, target labels, legacy feedback preservation and reload.');
+} finally { await browser.close(); }
