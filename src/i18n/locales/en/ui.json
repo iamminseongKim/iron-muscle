@@ -1168,5 +1168,21 @@
   "최근 획득": "Recently earned",
   "루틴 확인": "Review routine",
   "저장됨": "Saved",
-  "백업 파일을 읽지 못했습니다.": "Could not read the backup file."
+  "백업 파일을 읽지 못했습니다.": "Could not read the backup file.",
+  "라운드": "Round",
+  "라운드 수": "Number of rounds",
+  "라운드 휴식 (초)": "Round rest (seconds)",
+  "묶음 설정": "Group settings",
+  "전체 세트·설정": "All sets and settings",
+  "현재 라운드 보기": "Show current round",
+  "설정 적용": "Apply settings",
+  "종목별 세트 수가 다릅니다. 설정을 적용하면 라운드 수를 맞춥니다.": "Exercises have different set counts. Apply settings to align the rounds.",
+  "이 라운드에 세트가 없습니다.": "No set for this round.",
+  "남은 라운드에 적용": "Apply to remaining rounds",
+  "휴식을 종료한 뒤 시작하세요.": "End your rest before starting.",
+  "운동을 마치겠습니까?": "Finish your workout?",
+  "예정된 세트를 모두 완료했습니다.": "You have completed all planned sets.",
+  "계속 기록하기": "Keep logging",
+  "운동 마치기": "Finish workout",
+  "완료한 세트와 진행 중인 세트는 유지합니다.": "Completed and active sets are preserved."
 }

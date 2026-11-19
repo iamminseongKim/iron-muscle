@@ -10,6 +10,7 @@ import { loadAdaptiveSettings } from '../../utils/adaptiveSettings';
 import { completeWorkoutSet, undoWorkoutSet, type SetProgress } from '../../utils/adaptiveTraining';
 
 interface SetRowProps {
+  compact?: boolean;
   set: WorkoutSet;
   restAfterSeconds?: number;
   index: number;
@@ -27,6 +28,7 @@ interface SetRowProps {
 }
 
 export const SetRow: React.FC<SetRowProps> = ({
+  compact = false,
   set,
   restAfterSeconds,
   index,
@@ -190,7 +192,7 @@ export const SetRow: React.FC<SetRowProps> = ({
     setFeedbackOpen(false);
     setFeedbackAt(null);
     soundManager.playSuccessSound();
-    onCompleteToggle(true, set.id, index + 1);
+    if (!set.completed) onCompleteToggle(true, set.id, index + 1);
   };
 
   const handleSaveComment = (comment: string, tags: string[]) => {
@@ -218,7 +220,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           : 'bg-transparent'
       }`}>
         {!set.completed && set.weightNeedsConfirmation && <p role="status" className="py-1 text-xs text-amber-600 dark:text-amber-400">{t('새 기구의 중량을 확인하세요.')}{set.previousWeight !== undefined && ` (${set.previousWeight}${weightUnit})`}</p>}
-        {(progress.kind === 'active' || set.setType && set.setType !== 'UNSPECIFIED' || set.targetRpe !== undefined || set.plannedTempo || set.targetRir !== undefined || set.plannedRepRange || set.completed) && <div className="flex flex-wrap items-center justify-between gap-1 py-1 text-[11px]">
+        {!compact && (progress.kind === 'active' || set.setType && set.setType !== 'UNSPECIFIED' || set.targetRpe !== undefined || set.plannedTempo || set.targetRir !== undefined || set.plannedRepRange || set.completed) && <div className="flex flex-wrap items-center justify-between gap-1 py-1 text-[11px]">
           {progress.kind === 'active' && <span className="text-accent font-bold">{t('운동 중')} · {t('마치면 세트 완료를 누르세요.')}</span>}
           <span className="text-gray-500">{[
             set.completed ? t('완료됨') : null,
@@ -255,7 +257,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           </div>
 
           {/* 지난번 기록 대조 */}
-          <div className="hidden min-[380px]:block w-12 shrink-0 text-center">
+          <div className={`${compact ? 'hidden' : 'hidden min-[380px]:block'} w-12 shrink-0 text-center`}>
             {set.previousWeight !== undefined && set.previousReps !== undefined ? (
               <span className="text-[11px] font-mono font-bold text-gray-400 whitespace-nowrap block">
                 {set.previousWeight}k × {set.previousReps}
@@ -340,7 +342,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             type="button"
             aria-label={`${index + 1}${t(set.completed ? '세트 완료 취소' : waiting ? '세트 대기' : !set.startedAt && onStart ? '세트 시작' : '세트 완료')}`}
             disabled={waiting || (!set.completed && set.weightNeedsConfirmation)}
-            title={t(set.completed ? '완료 취소' : set.startedAt || !onStart ? '세트 완료' : '세트 시작')}
+            title={t(progress.kind === 'waiting' && progress.reason === 'rest' ? '휴식을 종료한 뒤 시작하세요.' : set.completed ? '완료 취소' : set.startedAt || !onStart ? '세트 완료' : '세트 시작')}
             aria-pressed={set.completed}
             onClick={handleToggleComplete}
             className={`w-20 min-h-[40px] text-[11px] font-bold disabled:opacity-35 shrink-0 rounded-xl flex items-center justify-center transition-all ${

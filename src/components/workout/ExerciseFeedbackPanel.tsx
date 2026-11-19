@@ -6,7 +6,7 @@ const fieldClass = 'w-full rounded-xl bg-gray-100 dark:bg-[#302B37] px-3 py-2 mi
 
 export function ExerciseFeedbackPanel({ value = {}, onChange }: { value?: WorkoutExercise['feedback']; onChange: (value: Feedback) => void }) {
   const update = (patch: Partial<Feedback>) => onChange({ ...value, ...patch });
-  return <details open className="mx-3 my-2 rounded-xl border border-black/5 dark:border-white/10 p-3 text-sm">
+  return <details className="mx-3 my-2 rounded-xl border border-black/5 dark:border-white/10 p-3 text-sm">
     <summary className="font-bold min-h-[44px] flex items-center cursor-pointer">{t('종목 종료 피드백 선택 기록')}</summary>
     <div className="space-y-3 pt-2">
       {([{ key: 'stimulus', label: '자극 만족도' }, { key: 'fatigue', label: '국소 피로도' }] as const).map(rating => <label key={rating.key} className="block">{t(rating.label)}

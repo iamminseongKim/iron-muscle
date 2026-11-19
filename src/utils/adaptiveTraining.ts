@@ -1,4 +1,5 @@
 import type { WorkoutSession, WorkoutSet } from '../types/workout';
+import { getCurrentGroupRound } from './workoutGroups';
 
 export function isWorkingSet(set: WorkoutSet): boolean {
   return set.setType !== undefined && ['WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET'].includes(set.setType);
@@ -81,19 +82,21 @@ export function undoWorkoutSet(set: WorkoutSet): WorkoutSet {
   return { ...preserved, completed: false, rpe: null, failureType: 'UNKNOWN', painFeedback: undefined, stimulusFeedback: undefined };
 }
 
-export type SetProgress = { kind: 'ready' } | { kind: 'active' } | { kind: 'completed' } | { kind: 'waiting'; reason: 'earlier-set' | 'active-set' | 'paused' | 'unavailable' };
+export type SetProgress = { kind: 'ready' } | { kind: 'active' } | { kind: 'completed' } | { kind: 'waiting'; reason: 'earlier-set' | 'active-set' | 'paused' | 'unavailable' | 'rest' };
 
-export function getSetProgress(session: WorkoutSession, exerciseItemId: string, setId: string): SetProgress {
+export function getSetProgress(session: WorkoutSession, exerciseItemId: string, setId: string, resting = false): SetProgress {
   const exercise = session.exercises.find(item => item.id === exerciseItemId);
   const set = exercise?.sets.find(item => item.id === setId);
   if (!exercise || !set) return { kind: 'waiting', reason: 'unavailable' };
   if (set.completed) return { kind: 'completed' };
   if (session.pausedAt) return { kind: 'waiting', reason: 'paused' };
+  if (resting) return { kind: 'waiting', reason: 'rest' };
   const active = session.exercises.flatMap(item => item.sets).filter(item => item.startedAt && !item.completed)
     .sort((a, b) => Date.parse(a.startedAt!) - Date.parse(b.startedAt!))[0];
   if (active && active.id !== setId) return { kind: 'waiting', reason: 'active-set' };
   if (set.startedAt) return { kind: 'active' };
   if (exercise.sets.find(item => !item.completed)?.id !== setId) return { kind: 'waiting', reason: 'earlier-set' };
+  if (exercise.groupId && set.setNumber !== getCurrentGroupRound(session.exercises.filter(item => item.groupId === exercise.groupId))) return { kind: 'waiting', reason: 'earlier-set' };
   return { kind: 'ready' };
 }
 
@@ -107,8 +110,8 @@ export function cancelWorkoutSetStart(session: WorkoutSession, exerciseItemId: s
   }) };
 }
 
-export function startWorkoutSet(session: WorkoutSession, exerciseItemId: string, setId: string, now = new Date()): WorkoutSession {
-  if (getSetProgress(session, exerciseItemId, setId).kind !== 'ready') return session;
+export function startWorkoutSet(session: WorkoutSession, exerciseItemId: string, setId: string, now = new Date(), resting = false): WorkoutSession {
+  if (getSetProgress(session, exerciseItemId, setId, resting).kind !== 'ready') return session;
   const exercise = session.exercises.find(item => item.id === exerciseItemId);
   const target = exercise?.sets.find(set => set.id === setId);
   if (!exercise || !target || target.completed || target.startedAt) return session;

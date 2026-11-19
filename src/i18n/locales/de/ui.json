@@ -1168,5 +1168,21 @@
   "최근 획득": "Zuletzt erhalten",
   "루틴 확인": "Trainingsplan prüfen",
   "저장됨": "Gespeichert",
-  "백업 파일을 읽지 못했습니다.": "Die Sicherungsdatei konnte nicht gelesen werden."
+  "백업 파일을 읽지 못했습니다.": "Die Sicherungsdatei konnte nicht gelesen werden.",
+  "라운드": "Runde",
+  "라운드 수": "Anzahl der Runden",
+  "라운드 휴식 (초)": "Rundenpause (Sekunden)",
+  "묶음 설정": "Gruppeneinstellungen",
+  "전체 세트·설정": "Alle Sätze und Einstellungen",
+  "현재 라운드 보기": "Aktuelle Runde anzeigen",
+  "설정 적용": "Einstellungen anwenden",
+  "종목별 세트 수가 다릅니다. 설정을 적용하면 라운드 수를 맞춥니다.": "Die Übungen haben unterschiedlich viele Sätze. Wende die Einstellungen an, um die Rundenzahl anzugleichen.",
+  "이 라운드에 세트가 없습니다.": "Kein Satz in dieser Runde.",
+  "남은 라운드에 적용": "Auf verbleibende Runden anwenden",
+  "휴식을 종료한 뒤 시작하세요.": "Beende die Pause, bevor du startest.",
+  "운동을 마치겠습니까?": "Training beenden?",
+  "예정된 세트를 모두 완료했습니다.": "Du hast alle geplanten Sätze abgeschlossen.",
+  "계속 기록하기": "Weiter protokollieren",
+  "운동 마치기": "Training beenden",
+  "완료한 세트와 진행 중인 세트는 유지합니다.": "Abgeschlossene und laufende Sätze bleiben erhalten."
 }

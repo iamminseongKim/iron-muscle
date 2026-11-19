@@ -9,6 +9,7 @@ const testFiles = [
   'test-achievements.mjs',
   'test-prescription-integrity.mjs',
   'test-adaptive-training.mjs',
+  'test-workout-groups.mjs',
   'test-adaptive-export.mjs',
   'test-recovery-bulk.mjs',
   'test-app-updates.mjs',
