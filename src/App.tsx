@@ -209,12 +209,12 @@ export const App: React.FC = () => {
       {/* 메인 컨텐츠 */}
       <main className="flex-1 w-full pt-2"><Suspense fallback={<div role="status" className="p-8 text-center">…</div>}>
         <ErrorBoundary scoped>
-          {(activeTab === 'workout' || activeSession) && (<div hidden={activeTab !== 'workout'}>
+          <div hidden={activeTab !== 'workout'}>
             <WorkoutLogger
               onWorkoutCompleted={onWorkoutCompleted}
               isDark={isDark}
             />
-          </div>)}
+          </div>
           {activeTab === 'my' && <MyPage isDark={isDark} onToggleTheme={toggleTheme} accentTheme={accentTheme} onAccentThemeChange={setAccentTheme} weightUnit={weightUnit} onToggleWeightUnit={toggleWeightUnit} />}
           {activeTab === 'explore' && <ExerciseExplorer isDark={isDark} />}
           {activeTab === 'history' && (

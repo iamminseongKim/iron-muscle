@@ -1165,5 +1165,8 @@
   "개인 신기록": "Personal records",
   "복귀": "Comeback",
   "최고 단계 달성": "Highest level reached",
-  "최근 획득": "Recently earned"
+  "최근 획득": "Recently earned",
+  "루틴 확인": "Review routine",
+  "저장됨": "Saved",
+  "백업 파일을 읽지 못했습니다.": "Could not read the backup file."
 }
