@@ -110,6 +110,7 @@ export interface WorkoutSet {
   plannedRestSeconds?: number; // 루틴에서 지정한 목표 휴식 시간
   restSource?: 'measured' | 'reported';
   restSeconds?: number; // 실제로 소요된 휴식 시간 (초)
+  timerRestSeconds?: number;
   side?: 'left' | 'right' | 'both'; // 편측(원암/원레그) 수행 시 좌/우 기록
 }
 

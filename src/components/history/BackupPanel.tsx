@@ -7,6 +7,7 @@ import { loadSavedSessions } from '../../utils/storage';
 import { generateAiCoachingMarkdown } from '../../utils/aiPromptGenerator';
 import { saveFileToDevice } from '../../utils/nativeFile';
 import { getTodayString } from '../../utils/calendar';
+import { calculateCombinedVolume } from '../../utils/calculations';
 
 export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSession[], date?: string) => void }) {
   const input = useRef<HTMLInputElement>(null);
@@ -71,7 +72,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
   };
 
   const totalSets = pending ? pending.sessions.reduce((acc, s) => acc + s.exercises.reduce((a, e) => a + e.sets.length, 0), 0) : 0;
-  const totalVolume = pending ? pending.sessions.reduce((acc, s) => acc + s.exercises.reduce((a, e) => a + e.sets.reduce((x, set) => x + set.weight * set.reps, 0), 0), 0) : 0;
+  const totalVolume = calculateCombinedVolume(pending?.sessions ?? []);
 
   return (
     <section className="rounded-2xl bg-white dark:bg-[#1C1C1E] p-3 space-y-3 text-xs border border-gray-100 dark:border-white/5 shadow-sm">

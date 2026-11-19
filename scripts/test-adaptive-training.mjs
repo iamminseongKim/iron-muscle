@@ -66,6 +66,25 @@ assert.equal(transition.exercises[1].sets[0].restKind, 'transition');
 assert.equal(transition.exercises[1].sets[0].restSeconds, 15);
 assert.equal(transition.exercises[0].sets[0].completed, true);
 assert.equal(transition.exercises[1].sets[0].completed, false, 'starting partner does not fabricate completion');
+const restedPartner = api.completeWorkoutSet(transition.exercises[1].sets[0], new Date('2026-10-31T01:01:00Z'));
+const sharedRest = {
+  ...grouped,
+  exercises: [
+    { ...grouped.exercises[0], sets: [{ ...finished, timerRestSeconds: 45 }] },
+    { ...partner, sets: [restedPartner, { ...undone, id: 'other-round', setNumber: 2 }] },
+  ],
+};
+assert.deepEqual([...api.getRestAfterSets(sharedRest)], [[finished.id, 45], [restedPartner.id, 45]]);
+api.saveActiveSession(sharedRest);
+assert.equal(api.getRestAfterSets(api.loadActiveSession()).get(restedPartner.id), 45);
+assert.equal(api.undoWorkoutSet(sharedRest.exercises[0].sets[0]).timerRestSeconds, undefined);
+assert.equal(api.calculateCombinedVolume([
+  { ...session, exercises: [equipment] },
+  { ...session, weightUnit: 'lbs', exercises: [{ ...equipment, weightUnit: undefined, sets: [
+    { ...finished, weight: 0, reps: 0, dropSegments: [{ weight: 100, reps: 10 }, { weight: 50, reps: 4 }] },
+    { ...finished, weight: 100, reps: 10, completed: false },
+  ] }] },
+]), 1184, 'combined totals convert legacy lbs and count only completed drop segments');
 const recipe = api.recipeFromSession(session, 'Plan', 90);
 const fromRecipe = api.sessionFromRoutine(recipe);
 assert.equal(fromRecipe.exercises[0].sets[0].targetRpe, 8);

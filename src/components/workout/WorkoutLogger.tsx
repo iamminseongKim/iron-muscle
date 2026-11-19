@@ -446,11 +446,16 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       }
       return ex;
     });
+    const groupStart = updatedExercises.findIndex(exercise => exercise.groupId === groupId);
+    if (groupStart < 0) return;
+    const groupMembers = updatedExercises.filter(exercise => exercise.groupId === groupId);
+    const orderedExercises = updatedExercises.filter(exercise => exercise.groupId !== groupId);
+    orderedExercises.splice(groupStart, 0, ...groupMembers);
 
     const updated = {
       ...session,
       durationSeconds: getLatestDuration(),
-      exercises: updatedExercises,
+      exercises: orderedExercises,
     };
     setSession(updated);
     saveActiveSession(updated);
@@ -495,8 +500,25 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     });
   };
 
-  const handleSaveRestTimeToSet = (_timerElapsedSeconds: number) => {
+  const handleCloseRestTimer = () => {
     setRestTimerState(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleSaveRestTimeToSet = (elapsedSeconds: number) => {
+    const latest = loadActiveSession();
+    if (latest && Number.isFinite(elapsedSeconds)) {
+      const updated = {
+        ...latest,
+        exercises: latest.exercises.map(exercise => exercise.id !== restTimerState.exerciseId ? exercise : {
+          ...exercise,
+          sets: exercise.sets.map(set => set.id === restTimerState.setId && set.completed
+            ? { ...set, timerRestSeconds: Math.max(0, Math.round(elapsedSeconds)) }
+            : set),
+        }),
+      };
+      try { saveWithRecovery(updated, 'active'); } catch (error) { alert(t((error as Error).message)); return; }
+    }
+    handleCloseRestTimer();
   };
 
   const handleStartSet = (exerciseId: string, setId: string) => {
@@ -907,19 +929,24 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             </button>
           </div>
         ) : (
-          session.exercises.map((item, idx) => (
+          session.exercises.map((item, idx) => {
+            const group = item.groupId ? session.exercises.filter(exercise => exercise.groupId === item.groupId) : [];
+            const groupPosition = group.findIndex(exercise => exercise.id === item.id) + 1;
+            const joinsPrevious = item.groupId && session.exercises[idx - 1]?.groupId === item.groupId;
+            return (
             <div key={item.id} data-workout-exercise={item.id} data-dragging={drag?.sourceId === item.id || undefined} data-drop-placement={drag?.targetId === item.id ? drag.placement : undefined}
-              className={`${drag?.sourceId === item.id ? 'opacity-40' : ''} ${drag?.targetId === item.id ? drag.placement === 'before' ? 'border-t-4 border-accent' : 'border-b-4 border-accent' : ''}`}>
+              className={`${joinsPrevious ? `relative before:pointer-events-none before:absolute before:-top-2 before:left-0 before:h-2 before:w-1 ${item.groupType === 'superset' ? 'before:bg-accent-strong' : 'before:bg-[#F47750]'}` : ''} ${drag?.sourceId === item.id ? 'opacity-40' : ''} ${drag?.targetId === item.id ? drag.placement === 'before' ? 'border-t-4 border-accent' : 'border-b-4 border-accent' : ''}`}>
             <ExerciseCard
               exerciseItem={item}
               restAfterSets={restAfterSets}
+              groupPosition={group.length > 1 ? `${groupPosition}/${group.length}` : undefined}
               collapsed={Boolean(drag) || collapsedExerciseIds.has(item.id)}
               onToggleCollapsed={() => setCollapsedExerciseIds(previous => {
                 const next = new Set(previous);
                 if (next.has(item.id)) next.delete(item.id); else next.add(item.id);
                 return next;
               })}
-              weightUnit={item.weightUnit || 'kg'}
+              weightUnit={item.weightUnit || session.weightUnit || 'kg'}
               onUpdate={(updated) => handleUpdateExercise(idx, updated)}
               onDelete={() => handleDeleteExercise(idx)}
               onStartSet={setId => handleStartSet(item.id, setId)}
@@ -936,7 +963,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
               isDark={isDark}
             />
             </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -979,7 +1007,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         initialElapsedSeconds={restTimerState.initialElapsedSeconds || 0}
         exerciseName={restTimerState.exerciseName}
         setNumber={restTimerState.setNumber}
-        onClose={handleSaveRestTimeToSet}
+        onClose={handleCloseRestTimer}
         onFinishAndSave={handleSaveRestTimeToSet}
       />
 

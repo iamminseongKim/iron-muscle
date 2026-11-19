@@ -30,6 +30,23 @@ export function getRestAfterSets(session: WorkoutSession): ReadonlyMap<string, n
     const previous = completed.find(set => set.id !== next.id && Date.parse(set.completedAt!) <= Date.parse(next.startedAt!));
     if (previous) restAfter.set(previous.id, next.restSeconds);
   }
+  for (const set of completed) {
+    if (set.timerRestSeconds !== undefined) restAfter.set(set.id, set.timerRestSeconds);
+  }
+  const groupedRest = new Map<string, number>();
+  const groupRounds = new Map(session.exercises.flatMap(exercise => exercise.groupId
+    ? exercise.sets.map(set => [set.id, JSON.stringify([exercise.groupId, set.setNumber])] as const)
+    : []));
+  for (const set of completed) {
+    const round = groupRounds.get(set.id);
+    const rest = restAfter.get(set.id);
+    if (round && rest !== undefined && !groupedRest.has(round)) groupedRest.set(round, rest);
+  }
+  for (const set of sets) {
+    const round = groupRounds.get(set.id);
+    const rest = round && groupedRest.get(round);
+    if (set.completed && typeof rest === 'number') restAfter.set(set.id, rest);
+  }
   return restAfter;
 }
 
@@ -60,7 +77,7 @@ export function completeWorkoutSet(set: WorkoutSet, now = new Date()): WorkoutSe
 }
 
 export function undoWorkoutSet(set: WorkoutSet): WorkoutSet {
-  const { completedAt, startedAt, restSeconds, restSource, restKind, completionPausedSeconds, startPausedSeconds, ...preserved } = set;
+  const { completedAt, startedAt, restSeconds, timerRestSeconds, restSource, restKind, completionPausedSeconds, startPausedSeconds, ...preserved } = set;
   return { ...preserved, completed: false, rpe: null, failureType: 'UNKNOWN', painFeedback: undefined, stimulusFeedback: undefined };
 }
 
@@ -121,6 +138,7 @@ export function validAdaptiveSet(value: Record<string, unknown>): boolean {
   const text = (field: string) => value[field] === undefined || typeof value[field] === 'string';
   const types = ['WARMUP', 'ACTIVATION', 'WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET', 'UNSPECIFIED'];
   if (!numeric('plannedWeight', -2000, 2000) || !numeric('plannedReps', 0, 1000) || !numeric('targetRpe', 6, 10) ||
+      !numeric('timerRestSeconds', 0, Number.MAX_SAFE_INTEGER) ||
       !numeric('stimulusFeedback', 1, 5) || !numeric('startPausedSeconds', 0, Number.MAX_SAFE_INTEGER) ||
       !numeric('completionPausedSeconds', 0, Number.MAX_SAFE_INTEGER) || !text('plannedNotes') || !text('startedAt') || !text('completedAt')) return false;
   if (typeof value.targetRpe === 'number' && !Number.isInteger(value.targetRpe * 2)) return false;
