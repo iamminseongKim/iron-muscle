@@ -1,0 +1,66 @@
+import assert from 'node:assert/strict';
+import { mkdir } from 'node:fs/promises';
+import puppeteer from 'puppeteer-core';
+const url = process.env.TEST_URL || 'http://127.0.0.1:3012';
+const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', args: ['--no-sandbox'] });
+try {
+  const page = await browser.newPage();
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+  await page.goto(url, { waitUntil: 'networkidle2' });
+  const raw = { title: 'AI grouped arms', groups: [{ id: 'A', type: 'compound', rounds: 2, restSeconds: 120, targetRpe: 8 }], exercises: [{ name: 'Dumbbell Bicep Curl', groupId: 'A', weight: 10, reps: 12, weightUnit: 'kg' }, { name: 'Hammer Curls', groupId: 'A', weight: 8, reps: 12, weightUnit: 'kg' }] };
+  const paste = async raw => {
+    await page.waitForSelector('[data-ai-routine-paste]');
+    await page.$eval('[data-ai-routine-paste]', node => { node.open = true; });
+    await page.$eval('[data-ai-routine-input]', (node, text) => { Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(node, text); node.dispatchEvent(new Event('input', { bubbles: true })); }, JSON.stringify(raw));
+    await page.$eval('[data-ai-routine-preview-button]', node => node.click());
+  };
+  for (const language of ['ko', 'en', 'ja', 'zh-CN', 'zh-TW', 'es', 'fr', 'de']) {
+    await page.evaluate(language => { localStorage.clear(); localStorage.setItem('iron_language', language); }, language);
+    await page.setViewport({ width: 320, height: 844, isMobile: true, hasTouch: true });
+    await page.reload({ waitUntil: 'networkidle2' });
+    await paste(raw);
+    await page.waitForSelector('[data-ai-group-preview="A"]');
+    assert.equal(await page.$$eval('[data-ai-group-preview="A"]', nodes => nodes.length), 2, `same group shown for both members ${language}`);
+    const label = await page.$eval('[data-ai-group-preview="A"]', node => node.textContent);
+    assert.ok(label.includes('120') && label.includes('8') && label.includes('2'));
+    if (language !== 'ko') assert.ok(!/[가-힣]/.test(label), `group labels translated ${language}`);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `preview layout ${language}`);
+    assert.equal(await page.$eval('[data-ai-routine-start]', node => node.disabled), false);
+  }
+  await page.evaluate(() => { localStorage.clear(); localStorage.setItem('iron_language', 'ko'); });
+  await page.reload({ waitUntil: 'networkidle2' });
+  const invalid = structuredClone(raw); invalid.groups[0].targetRpe = 7.3;
+  await paste(invalid);
+  assert.equal(await page.$('[data-ai-routine-preview]'), null, 'invalid target cannot open start preview');
+  assert.equal(await page.evaluate(() => localStorage.getItem('iron_active_session_v1')), null);
+  await paste(raw);
+  await page.waitForSelector('[data-ai-group-preview="A"]');
+  await mkdir('output/ai-group-import', { recursive: true });
+  await page.screenshot({ path: 'output/ai-group-import/preview.png', fullPage: true });
+  await page.$eval('[data-ai-routine-start]', node => node.click());
+  await page.waitForSelector('[data-workout-group]');
+  const active = () => page.evaluate(() => JSON.parse(localStorage.getItem('iron_active_session_v1')));
+  let session = await active();
+  assert.equal(session.exercises.length, 2);
+  assert.equal(new Set(session.exercises.map(ex => ex.groupId)).size, 1);
+  assert.ok(session.exercises.every(ex => ex.groupType === 'compound' && ex.sets.length === 2));
+  assert.ok(session.exercises.every(ex => ex.sets.every(set => set.targetRpe === 8 && set.rpe === null && set.plannedRestSeconds === 120)));
+  assert.equal(await page.$$eval('[data-group-action]', nodes => nodes.length), 1);
+  await page.$eval('[data-group-action]', node => node.click());
+  await page.waitForFunction(() => !document.querySelector('[data-group-action]').disabled);
+  await page.$eval('[data-group-action]', node => node.click());
+  session = await active();
+  assert.equal(session.exercises[0].sets[0].completed, true);
+  assert.ok(session.exercises[1].sets[0].startedAt);
+  assert.equal(session.exercises[1].sets[0].completed, false);
+  assert.equal(session.exercises[1].sets[0].restKind, 'transition');
+  assert.equal(await page.$('[data-rest-timer-overlay]'), null);
+  assert.equal(await page.$('[aria-label="세트 피드백"]'), null);
+  const backup = await page.evaluate(async () => { const api = await import('/src/utils/backup.ts'); return api.parseBackup(JSON.stringify(api.createBackup())); });
+  assert.deepEqual(backup.activeSession.exercises.map(ex => ex.groupId), session.exercises.map(ex => ex.groupId), 'backup retains imported actual group identity');
+  assert.ok(backup.activeSession.exercises.every(ex => ex.sets.every(set => set.targetRpe === 8 && set.rpe === null)), 'backup preserves target/actual distinction');
+  assert.deepEqual(errors, []);
+  console.log('PASS AI JSON -> eight-language grouped preview -> actual single round control -> common rest/target RPE -> no intermediate timer -> backup preservation');
+} finally { await browser.close(); }

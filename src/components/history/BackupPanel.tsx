@@ -7,6 +7,7 @@ import { loadSavedSessions } from '../../utils/storage';
 import { generateAiCoachingMarkdown } from '../../utils/aiPromptGenerator';
 import { saveFileToDevice } from '../../utils/nativeFile';
 import { getTodayString } from '../../utils/calendar';
+import { calculateCombinedVolume } from '../../utils/calculations';
 
 export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSession[], date?: string) => void }) {
   const input = useRef<HTMLInputElement>(null);
@@ -14,8 +15,15 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
   const [message, setMessage] = useState('');
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
+  const previewRevision = useRef(0);
+
+  const invalidatePreview = () => {
+    previewRevision.current++;
+    setPending(null);
+  };
 
   const preview = (raw: string) => {
+    invalidatePreview();
     try {
       setPending(parseBackup(raw));
       setMessage('');
@@ -35,6 +43,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         setMessage(t('저장을 취소했습니다.'));
       } else {
         setMessage(res.message || t('백업 파일을 저장했습니다. 앱 삭제 전 파일이 있는지 확인하세요.'));
+        invalidatePreview();
         setText(data);
       }
     } catch (e) {
@@ -61,6 +70,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         setMessage(t('저장을 취소했습니다.'));
       } else {
         setMessage(res.message || t('전체 마크다운 일지 파일을 저장했습니다.'));
+        invalidatePreview();
         setText(md);
       }
     } catch (e) {
@@ -71,7 +81,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
   };
 
   const totalSets = pending ? pending.sessions.reduce((acc, s) => acc + s.exercises.reduce((a, e) => a + e.sets.length, 0), 0) : 0;
-  const totalVolume = pending ? pending.sessions.reduce((acc, s) => acc + s.exercises.reduce((a, e) => a + e.sets.reduce((x, set) => x + set.weight * set.reps, 0), 0), 0) : 0;
+  const totalVolume = calculateCombinedVolume(pending?.sessions ?? []);
 
   return (
     <section className="rounded-2xl bg-white dark:bg-[#1C1C1E] p-3 space-y-3 text-xs border border-gray-100 dark:border-white/5 shadow-sm">
@@ -152,12 +162,27 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
         className="hidden"
         aria-label={t("복원할 백업 또는 마크다운 파일")}
         onChange={async (e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            if (file.size > 10_000_000) setMessage(t('10MB 이하 파일을 선택하세요.'));
-            else preview(await file.text());
+          const fileInput = e.currentTarget;
+          const file = fileInput.files?.[0];
+          fileInput.value = '';
+          if (!file) return;
+          invalidatePreview();
+          setMessage('');
+          const revision = previewRevision.current;
+          try {
+            if (file.size > 10_000_000) {
+              setMessage(t('10MB 이하 파일을 선택하세요.'));
+              return;
+            }
+            const raw = await file.text();
+            if (revision !== previewRevision.current) return;
+            setText(raw);
+            preview(raw);
+          } catch (error) {
+            if (revision === previewRevision.current) {
+              setMessage(error instanceof Error ? error.message : t('백업 파일을 읽지 못했습니다.'));
+            }
           }
-          e.target.value = '';
         }}
       />
 
@@ -167,7 +192,7 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
           <textarea
             aria-label={t("운동 일지 텍스트")}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => { invalidatePreview(); setText(e.target.value); setMessage(''); }}
             className="w-full h-28 rounded-lg border border-gray-200 dark:border-white/10 p-2 bg-transparent text-xs font-mono"
             placeholder={t("앱에서 추출했던 마크다운 일지(_YYYYMMDD.md) 내용이나 백업 JSON을 여기에 붙여넣으세요.")}
           />

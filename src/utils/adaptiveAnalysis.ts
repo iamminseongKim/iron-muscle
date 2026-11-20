@@ -1,5 +1,6 @@
 import type { WorkoutExercise, WorkoutSession, WorkoutSet, TrainingPhase } from '../types/workout';
-import { actualRpe, actualRest, isWorkingSet } from './adaptiveTraining';
+import { actualRpe, isWorkingSet } from './adaptiveTraining';
+import { resolveWorkoutInterval } from './workoutIntervals';
 import { calculate1RM, KG_TO_LBS } from './calculations';
 import { resolveRecordedExercise } from './exerciseResolver';
 
@@ -25,8 +26,9 @@ export function summarizeAdaptiveSession(session: WorkoutSession) {
       if (set.provenance !== 'recorded') issues.add('legacy-unknown');
       if (actualRpe(set) === null) issues.add('missing-rpe');
       if (!set.setType || set.setType === 'UNSPECIFIED') issues.add('unspecified-type');
-      if (actualRest(set) === null) issues.add('unmeasured-rest');
-      if (set.restSeconds !== undefined && set.restSeconds > 1800) issues.add('long-rest');
+      const interval = resolveWorkoutInterval(session, exercise.id, set.id);
+      if (interval.kind !== 'transition' && (interval.kind !== 'rest' || interval.seconds === null)) issues.add('unmeasured-rest');
+      if (interval.kind === 'rest' && interval.seconds !== null && interval.seconds > 1800) issues.add('long-rest');
       if (set.previousWeight && Math.abs(set.weight - set.previousWeight) > Math.abs(set.previousWeight)) issues.add('weight-change');
     }
   }
@@ -58,6 +60,11 @@ export function summarizeAdaptiveSession(session: WorkoutSession) {
 function equipmentKey(exercise: WorkoutExercise) {
   return JSON.stringify([exercise.exerciseId, exercise.equipmentType, exercise.loadType || '', exercise.executionMode || 'bilateral', exercise.machineConfigId || '', exercise.machineBrand || '', exercise.machineSetting || '', [...new Set(exercise.sets.filter(set => completed(set) && isWorkingSet(set)).map(set => set.side || 'both'))].sort()]);
 }
+function groupContext(exercise: WorkoutExercise, session: WorkoutSession): string {
+  if (!exercise.groupId) return 'standalone';
+  const members = session.exercises.filter(item => item.groupId === exercise.groupId);
+  return JSON.stringify([exercise.groupType || '', members.findIndex(item => item.id === exercise.id), members.map(equipmentKey)]);
+}
 function bestWorkingSet(exercise: WorkoutExercise, session: WorkoutSession) {
   return exercise.sets.filter(set => completed(set) && isWorkingSet(set) && set.provenance === 'recorded' && set.weight > 0)
     .sort((a, b) => kg(b.weight, exercise, session) - kg(a.weight, exercise, session) || b.reps - a.reps)[0] || null;
@@ -66,19 +73,21 @@ export function compareExercise(current: WorkoutExercise, session: WorkoutSessio
   const earlier = history.filter(candidate => candidate.id !== session.id && candidate.completed && `${candidate.date} ${candidate.startTime || ''}` < `${session.date} ${session.startTime || ''}`)
     .sort((a, b) => `${b.date} ${b.startTime || ''}`.localeCompare(`${a.date} ${a.startTime || ''}`));
   const currentBest = bestWorkingSet(current, session);
-  const previousOwner = earlier.find(owner => owner.exercises.some(exercise => equipmentKey(exercise) === equipmentKey(current) && bestWorkingSet(exercise, owner)));
-  const previous = previousOwner?.exercises.find(exercise => equipmentKey(exercise) === equipmentKey(current) && bestWorkingSet(exercise, previousOwner));
+  const previousOwner = earlier.find(owner => owner.exercises.some(exercise => equipmentKey(exercise) === equipmentKey(current) && groupContext(exercise, owner) === groupContext(current, session) && bestWorkingSet(exercise, owner)));
+  const previous = previousOwner?.exercises.find(exercise => equipmentKey(exercise) === equipmentKey(current) && groupContext(exercise, previousOwner) === groupContext(current, session) && bestWorkingSet(exercise, previousOwner));
   const equipmentChanged = earlier.some(owner => owner.exercises.some(exercise => exercise.exerciseId === current.exerciseId && equipmentKey(exercise) !== equipmentKey(current)));
   if ((['machine', 'smith', 'cable'].includes(current.equipmentType) && !current.machineConfigId) || !previousOwner || !previous || !currentBest) return { comparison: null, equipmentChanged };
   const previousBest = bestWorkingSet(previous, previousOwner)!;
   const currentRpe = actualRpe(currentBest);
   const previousRpe = actualRpe(previousBest);
+  const currentInterval = resolveWorkoutInterval(session, current.id, currentBest.id);
+  const previousInterval = resolveWorkoutInterval(previousOwner, previous.id, previousBest.id);
   return { equipmentChanged, comparison: {
     previousDate: previousOwner.date, previousUnit: previous.weightUnit || previousOwner.weightUnit || 'kg', previousBest, currentBest,
     weightDeltaKg: kg(currentBest.weight, current, session) - kg(previousBest.weight, previous, previousOwner),
     repDelta: currentBest.reps - previousBest.reps,
     rpeDelta: currentRpe !== null && previousRpe !== null ? currentRpe - previousRpe : null,
-    restDelta: actualRest(currentBest) !== null && actualRest(previousBest) !== null ? actualRest(currentBest)! - actualRest(previousBest)! : null,
+    restDelta: currentInterval.kind === 'rest' && previousInterval.kind === 'rest' && currentInterval.scope === previousInterval.scope && currentInterval.seconds !== null && previousInterval.seconds !== null ? currentInterval.seconds - previousInterval.seconds : null,
     estimated1RmDeltaKg: calculate1RM(kg(currentBest.weight, current, session), currentBest.reps) - calculate1RM(kg(previousBest.weight, previous, previousOwner), previousBest.reps),
   } };
 }

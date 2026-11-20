@@ -1,0 +1,112 @@
+import assert from 'node:assert/strict';
+import { mkdir } from 'node:fs/promises';
+import puppeteer from 'puppeteer-core';
+
+const url = process.env.TEST_URL || 'http://127.0.0.1:3012';
+const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new', args: ['--no-sandbox'] });
+try {
+  const page = await browser.newPage();
+  page.on('dialog', dialog => dialog.accept());
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+  await page.goto(url, { waitUntil: 'networkidle2' });
+  const seed = async (grouped, offset = false) => {
+    await page.evaluate(({ grouped, offset }) => {
+      localStorage.clear();
+      localStorage.setItem('iron_language', 'ko');
+      const exercises = ['dumbbell-curl', 'hammer-curl'].map((exerciseId, index) => ({ id: index ? 'hammer' : 'curl', exerciseId, equipmentType: 'dumbbell', weightUnit: 'kg', ...(grouped ? { groupId: 'pair', groupType: 'compound', groupLabel: `컴파운드세트 A-${index + 1}` } : {}), sets: [0, 1].map(n => ({ id: `${index ? 'b' : 'a'}${n + 1}`, setNumber: offset ? n + (index ? 7 : 3) : n + 1, weight: index ? 8 : 10, reps: 12, completed: false, rpe: null, provenance: 'recorded', setType: 'WORKING', plannedRestSeconds: 120 })) }));
+      localStorage.setItem('iron_active_session_v1', JSON.stringify({ id: 'guided-ui', date: '2026-11-19', title: '컬 + 해머 컬', startTime: new Date().toISOString(), durationSeconds: 0, completed: false, exercises }));
+    }, { grouped, offset });
+    await page.reload({ waitUntil: 'networkidle2' });
+    await page.waitForSelector('[data-workout-exercise="curl"]');
+  };
+  const active = () => page.evaluate(() => JSON.parse(localStorage.getItem('iron_active_session_v1')));
+  const groupAction = async () => {
+    await page.waitForFunction(() => !document.querySelector('[data-group-action]')?.disabled);
+    await page.$eval('[data-group-action]', node => node.click());
+  };
+  const clickText = async (text, scope = 'body') => {
+    const found = await page.$eval(scope, (node, text) => { const button = [...node.querySelectorAll('button')].find(item => item.textContent.trim() === text); button?.click(); return Boolean(button); }, text);
+    assert.ok(found, `button ${text}`);
+  };
+  await seed(true, true);
+  assert.equal(await page.$$eval('[data-workout-group] button[aria-label$="세트 시작"]', nodes => nodes.length), 0, 'members do not have independent start controls');
+  assert.equal(await page.$eval('[data-group-action]', node => node.textContent.trim()), '라운드 시작');
+  await page.$eval('[data-group-action]', node => { node.click(); node.click(); });
+  let current = await active();
+  assert.ok(current.exercises[0].sets[0].startedAt);
+  assert.equal(current.exercises[0].sets[0].completed, false, 'double action never fabricates first member completion');
+  assert.equal(current.exercises[1].sets[0].startedAt, undefined);
+  await seed(true, true);
+  await page.$eval('[data-group-action]', node => node.scrollIntoView({ block: 'center' }));
+  const actionBox = await (await page.$('[data-group-action]')).boundingBox();
+  await page.mouse.click(actionBox.x + actionBox.width / 2, actionBox.y + actionBox.height / 2, { clickCount: 1 });
+  await page.mouse.click(actionBox.x + actionBox.width / 2, actionBox.y + actionBox.height / 2, { clickCount: 2 });
+  current = await active();
+  assert.ok(current.exercises[0].sets[0].startedAt, 'real pointer starts first member');
+  assert.equal(current.exercises[0].sets[0].completed, false, 'real pointer double click cannot fabricate completion');
+  assert.equal(current.exercises[1].sets[0].startedAt, undefined);
+  await page.evaluate(() => {
+    window.originalWrite = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key, value) { if (key === 'iron_active_session_v1') throw new DOMException('test quota', 'QuotaExceededError'); return window.originalWrite.call(this, key, value); };
+  });
+  await groupAction();
+  current = await active();
+  assert.equal(current.exercises[0].sets[0].completed, false, 'failed advance does not complete current member');
+  assert.equal(current.exercises[1].sets[0].startedAt, undefined, 'failed advance does not start partner');
+  await page.evaluate(() => { Storage.prototype.setItem = window.originalWrite; });
+  await groupAction();
+  current = await active();
+  assert.equal(current.exercises[0].sets[0].completed, true);
+  assert.ok(current.exercises[1].sets[0].startedAt, 'next member starts from same action');
+  assert.equal(current.exercises[1].sets[0].completed, false);
+  assert.equal(current.exercises[1].sets[0].restKind, 'transition');
+  assert.deepEqual(current.exercises.map(ex => ex.sets[0].setNumber), [3, 7], 'raw labels not rewritten');
+  assert.equal(await page.$('[data-rest-timer-overlay]'), null);
+  assert.equal(await page.$('[aria-label="세트 피드백"]'), null, 'no forced intermediate feedback');
+  await mkdir('output/guided-group', { recursive: true });
+  await page.screenshot({ path: 'output/guided-group/partner-active.png', fullPage: true });
+  await page.reload({ waitUntil: 'networkidle2' });
+  assert.equal(await page.$eval('[data-group-action]', node => node.textContent.trim()), '라운드 완료', 'active partner restored');
+  await groupAction();
+  await page.waitForSelector('[data-rest-timer-overlay]');
+  assert.equal(await page.$$eval('[data-rest-timer-overlay]', nodes => nodes.length), 1);
+  await page.$eval('[data-rest-timer-overlay]', node => node.click());
+  assert.equal(await page.$eval('[data-group-action]', node => node.disabled), true, 'group waits through minimized round rest');
+  await page.$eval('[data-rest-timer-capsule] button[title="휴식 타이머 닫기"]', node => node.click());
+  await groupAction();
+  current = await active();
+  assert.ok(current.exercises[0].sets[1].startedAt);
+  assert.equal(current.exercises[0].sets[1].restKind, 'round');
+  await groupAction();
+  assert.equal(await page.$('[data-rest-timer-overlay]'), null);
+  await groupAction();
+  await page.waitForSelector('[data-workout-finish-confirm]');
+  current = await active();
+  assert.ok(current.exercises.every(ex => ex.sets.every(set => set.completed)));
+  assert.equal(await page.$('[data-rest-timer-overlay]'), null);
+  await clickText('계속 기록하기');
+  console.log('PASS guided curl/hammer rounds, ordinal legacy labels, atomic failure recovery, no intermediate rest/feedback, reload and final confirmation');
+
+  await seed(false);
+  await page.$eval('[data-workout-exercise="curl"] button[aria-label="1세트 시작"]', node => node.click());
+  await page.$eval('[data-workout-exercise="curl"] button[aria-label="1세트 완료"]', node => node.click());
+  await page.waitForSelector('[aria-label="세트 피드백"]');
+  await clickText('건너뛰고 완료');
+  await page.waitForSelector('[data-rest-timer-overlay]');
+  await page.$eval('[data-rest-timer-overlay]', node => node.click());
+  await page.$eval('[data-workout-exercise="curl"] button[title="다른 종목과 슈퍼세트/컴파운드세트로 묶기"]', node => node.click());
+  await page.waitForSelector('[aria-label="종목 묶기 설정"]');
+  await page.$eval('[aria-label="종목 묶기 설정"]', node => [...node.querySelectorAll('button')].find(button => button.textContent.includes('덤벨 해머 컬')).click());
+  await clickText('선택한 종목과 묶기', '[aria-label="종목 묶기 설정"]');
+  await page.waitForSelector('[data-workout-group]');
+  assert.equal(await page.$('[data-rest-timer-capsule]'), null, 'grouping reclassifies old mid-round rest');
+  assert.equal(await page.$eval('[data-group-action]', node => node.disabled), false);
+  await groupAction();
+  assert.ok((await active()).exercises[1].sets[0].startedAt, 'partner starts without manually dismissing old timer');
+  console.log('PASS grouping during existing rest clears obsolete member-rest timer without losing records');
+  assert.deepEqual(errors, []);
+} finally {
+  await browser.close();
+}

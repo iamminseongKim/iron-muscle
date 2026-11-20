@@ -6,6 +6,7 @@ import { workoutSummary } from '../../utils/workoutFlow';
 import { resolveRecordedExercise } from '../../utils/exerciseResolver';
 import { generateAiCoachingMarkdown } from '../../utils/aiPromptGenerator';
 import { copyText } from '../../utils/clipboard';
+import { NewlyEarnedAchievements } from '../profile/AchievementSection';
 
 const signed = (value: number) => `${value > 0 ? '+' : ''}${value.toLocaleString()}`;
 
@@ -44,6 +45,7 @@ export function WorkoutCompleteSummary({ session, history, healthMessage, onHist
       </dl>
       {healthMessage && <p role="status" className="text-sm text-gray-500">{healthMessage}</p>}
     </div>
+    <NewlyEarnedAchievements session={session} history={history} />
     <div className="soft-surface p-4 bg-white dark:bg-[#1E1B24] space-y-3">
       <h3 className="font-bold">{t('지난 운동 대비')}</h3>
       {summary.previous ? <>

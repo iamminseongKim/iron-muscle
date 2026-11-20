@@ -6,7 +6,7 @@ import { displayExercise, t } from '../../i18n';
 import { getLanguage, useLanguage } from '../../i18n';
 import { BodyPartIcon } from '../common/BodyPartIcon';
 import { ConditionIcon } from '../common/ConditionIcon';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Play, Pause, Plus, CheckCircle2, Clock, Dumbbell, Sparkles, X, Flame,
   Target, ArrowRight, Calendar, ArrowUpDown
@@ -16,12 +16,14 @@ import {
   TARGET_BODY_PARTS, WeightUnit, LoadType
 } from '../../types/workout';
 import { ExerciseCard } from './ExerciseCard';
+import { GroupedExerciseCard, type GroupAdvanceExpectation } from './GroupedExerciseCard';
+import { applyGroupSettings, getPostSetAction } from '../../utils/workoutGroups';
 import { AddExerciseModal } from './AddExerciseModal';
 import { SessionNotesModal } from './SessionNotesModal';
 import { RpeGuideModal } from './RpeGuideModal';
 import { RestTimerModal } from './RestTimerModal';
 import { AdaptiveSessionPanel } from './AdaptiveSessionPanel';
-import { getRestAfterSets, startWorkoutSet, recordSetRevision, getSetProgress, cancelWorkoutSetStart } from '../../utils/adaptiveTraining';
+import { getRestAfterSets, advanceGroupRound, startWorkoutSet, recordSetRevision, getSetProgress, cancelWorkoutSetStart } from '../../utils/adaptiveTraining';
 import { suggestNextSet } from '../../utils/adaptiveAnalysis';
 import { loadAdaptiveSettings, ADAPTIVE_SETTINGS_CHANGE } from '../../utils/adaptiveSettings';
 import { ExerciseGroupModal } from './ExerciseGroupModal';
@@ -71,6 +73,8 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     catch (error) { alert(t((error as Error).message)); }
   });
   const [flowMessage, setFlowMessage] = useState('');
+  const [finishConfirmation, setFinishConfirmation] = useState<{ sessionId: string; setId: string } | null>(null);
+  const followedUpSet = useRef('');
 
   useEffect(() => {
     const refresh = () => setSession(loadActiveSession());
@@ -120,13 +124,19 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     try {
       const saved = JSON.parse(localStorage.getItem('iron_adaptive_rest_ui') || 'null');
       const active = loadActiveSession();
-      if (saved?.sessionId === active?.id && saved?.isOpen && active?.exercises.some(ex => ex.id === saved.exerciseId && ex.sets.some(set => set.id === saved.setId && set.completed))) setRestTimerState(saved);
+      if (active && saved?.sessionId === active.id && saved?.isOpen && getPostSetAction(active, saved.exerciseId, saved.setId).kind === 'rest') setRestTimerState(saved);
     } catch {}
   }, []);
 
   useEffect(() => {
     try { if (session) localStorage.setItem('iron_adaptive_rest_ui', JSON.stringify({ ...restTimerState, sessionId: session.id })); } catch {}
   }, [restTimerState]);
+
+  useEffect(() => {
+    if (restTimerState.isOpen && (!session || getPostSetAction(session, restTimerState.exerciseId, restTimerState.setId).kind !== 'rest')) {
+      setRestTimerState(previous => ({ ...previous, isOpen: false }));
+    }
+  }, [session, restTimerState.isOpen, restTimerState.exerciseId, restTimerState.setId]);
 
   useEffect(() => {
     let released = false;
@@ -425,15 +435,16 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   // 종목 묶기 (슈퍼세트/컴파운드세트)
   const handleLinkExercises = (exerciseIds: string[], groupType: ExerciseGroupType) => {
-    if (!session) return;
+    const latest = loadActiveSession();
+    if (!latest || latest.id !== session?.id) return;
     const groupId = 'group-' + Date.now();
     const groupName = groupType === 'superset' ? t('슈퍼세트') : groupType === 'compound' ? t('컴파운드세트') : t('자이언트세트');
     const groupColor = groupType === 'superset' ? 'rgb(var(--accent-rgb))' : '#FF9500';
 
-    const existingGroupIds = new Set(session.exercises.map((e) => e.groupId).filter(Boolean));
+    const existingGroupIds = new Set(latest.exercises.map((e) => e.groupId).filter(Boolean));
     const groupLetter = String.fromCharCode(65 + existingGroupIds.size);
 
-    const updatedExercises = session.exercises.map((ex) => {
+    const updatedExercises = latest.exercises.map((ex) => {
       const matchIdx = exerciseIds.indexOf(ex.id);
       if (matchIdx !== -1) {
         return {
@@ -446,14 +457,19 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       }
       return ex;
     });
+    const groupStart = updatedExercises.findIndex(exercise => exercise.groupId === groupId);
+    if (groupStart < 0) return;
+    const groupMembers = updatedExercises.filter(exercise => exercise.groupId === groupId);
+    const orderedExercises = updatedExercises.filter(exercise => exercise.groupId !== groupId);
+    orderedExercises.splice(groupStart, 0, ...groupMembers);
 
     const updated = {
-      ...session,
+      ...latest,
       durationSeconds: getLatestDuration(),
-      exercises: updatedExercises,
+      exercises: orderedExercises,
     };
-    setSession(updated);
-    saveActiveSession(updated);
+    try { saveWithRecovery(updated, 'active'); }
+    catch (error) { alert(t((error as Error).message)); }
   };
 
   const handleUnlinkExercise = (exerciseId: string) => {
@@ -482,6 +498,28 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   };
 
   const handleTriggerRestTimer = (exerciseName: string, setId: string, setNumber: number, isLastSetOfExercise: boolean, exerciseId: string) => {
+    const latest = loadActiveSession();
+    if (!latest || latest.id !== session?.id) return;
+    const action = getPostSetAction(latest, exerciseId, setId);
+    if (action.kind === 'none') return;
+    const completedAt = latest.exercises.find(exercise => exercise.id === exerciseId)?.sets.find(set => set.id === setId)?.completedAt;
+    const completionKey = JSON.stringify([latest.id, setId, completedAt]);
+    if (followedUpSet.current === completionKey) return;
+    followedUpSet.current = completionKey;
+    if (action.kind === 'finish') {
+      setRestTimerState(previous => ({ ...previous, isOpen: false }));
+      setFinishConfirmation({ sessionId: latest.id, setId });
+      return;
+    }
+    if (action.kind === 'next-member') {
+      const next = latest.exercises.find(exercise => exercise.id === action.exerciseId)?.sets.find(set => set.id === action.setId);
+      if (next && !next.weightNeedsConfirmation && getSetProgress(latest, action.exerciseId, action.setId).kind === 'ready') {
+        try { saveWithRecovery(startWorkoutSet(latest, action.exerciseId, action.setId), 'active'); }
+        catch (error) { alert(t((error as Error).message)); }
+      }
+      setRestTimerState(previous => ({ ...previous, isOpen: false }));
+      return;
+    }
     setRestTimerState({
       isOpen: true,
       exerciseName,
@@ -495,16 +533,57 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     });
   };
 
-  const handleSaveRestTimeToSet = (_timerElapsedSeconds: number) => {
+  const handleCloseRestTimer = () => {
     setRestTimerState(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleSaveRestTimeToSet = (elapsedSeconds: number) => {
+    const latest = loadActiveSession();
+    if (latest && Number.isFinite(elapsedSeconds)) {
+      const updated = {
+        ...latest,
+        exercises: latest.exercises.map(exercise => exercise.id !== restTimerState.exerciseId ? exercise : {
+          ...exercise,
+          sets: exercise.sets.map(set => set.id === restTimerState.setId && set.completed
+            ? { ...set, timerRestSeconds: Math.max(0, Math.round(elapsedSeconds)) }
+            : set),
+        }),
+      };
+      try { saveWithRecovery(updated, 'active'); } catch (error) { alert(t((error as Error).message)); return; }
+    }
+    handleCloseRestTimer();
   };
 
   const handleStartSet = (exerciseId: string, setId: string) => {
     const latest = loadActiveSession();
     if (!latest) return;
-    const updated = startWorkoutSet(latest, exerciseId, setId);
+    const resting = restTimerState.isOpen && getPostSetAction(latest, restTimerState.exerciseId, restTimerState.setId).kind === 'rest';
+    if (getSetProgress(latest, exerciseId, setId, resting).kind !== 'ready') return;
+    const updated = startWorkoutSet(latest, exerciseId, setId, new Date(), resting);
     try { saveWithRecovery(updated, 'active'); } catch (error) { alert(t((error as Error).message)); return; }
-    setRestTimerState(prev => ({ ...prev, isOpen: false }));
+    setFlowMessage('');
+  };
+
+  const handleAdvanceGroup = (groupId: string, expected: GroupAdvanceExpectation): boolean => {
+    const latest = loadActiveSession();
+    if (!latest || latest.id !== session?.id) return false;
+    const target = latest.exercises.find(exercise => exercise.id === expected.exerciseId && exercise.groupId === groupId)?.sets.find(set => set.id === expected.setId);
+    if (!target || target.completed || target.startedAt !== expected.startedAt) return false;
+    const resting = restTimerState.isOpen && getPostSetAction(latest, restTimerState.exerciseId, restTimerState.setId).kind === 'rest';
+    const progress = getSetProgress(latest, expected.exerciseId, expected.setId, resting);
+    if (progress.kind !== (expected.startedAt ? 'active' : 'ready')) return false;
+    const result = advanceGroupRound(latest, groupId, new Date(), resting);
+    if (result.kind === 'blocked') return false;
+    const updated = { ...result.session, durationSeconds: getLatestDuration() };
+    try { saveWithRecovery(updated, 'active'); }
+    catch (error) { alert(t((error as Error).message)); return false; }
+    setFlowMessage('');
+    if (result.kind === 'advanced' || result.kind === 'round-completed') {
+      const exercise = updated.exercises.find(item => item.id === result.completed.exerciseId);
+      const set = exercise?.sets.find(item => item.id === result.completed.setId);
+      if (exercise && set) handleTriggerRestTimer(displayExercise(resolveRecordedExercise(exercise)), set.id, set.setNumber, exercise.sets.every(item => item.completed), exercise.id);
+    }
+    return true;
   };
 
   const applySuggestion = () => {
@@ -522,8 +601,9 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   };
 
   const handleCompleteWorkout = () => {
-    if (!session) return;
-    if (session.exercises.length === 0) {
+    const latest = loadActiveSession();
+    if (!latest || latest.id !== session?.id) return;
+    if (latest.exercises.length === 0) {
       if (!window.confirm(t('등록된 운동 종목이 없습니다. 그래도 운동을 완료하시겠습니까?'))) {
         return;
       }
@@ -532,11 +612,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     const finalDuration = getLatestDuration();
 
     const finalSession: WorkoutSession = {
-      ...session,
+      ...latest,
       durationSeconds: finalDuration,
       completed: true,
       endTime: new Date().toISOString(),
-      overallRpe: calculateAverageRPE(session) || undefined,
+      overallRpe: calculateAverageRPE(latest) || undefined,
     };
 
     let history: WorkoutSession[];
@@ -555,6 +635,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       }
     } catch { healthMessage = '\n' + t('운동은 저장했지만 건강 앱 전송을 예약하지 못했습니다.'); }
     setSession(null);
+    setFinishConfirmation(null);
 
     setRestTimerState(previous => ({ ...previous, isOpen: false }));
     setFlowMessage('');
@@ -749,9 +830,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const restExerciseIndex = session.exercises.findIndex(item => item.id === restTimerState.exerciseId);
   const nextRestExercise = restExerciseIndex >= 0 ? session.exercises[restExerciseIndex + 1] : undefined;
   const completedSetCount = sessionSets.filter(set => set.completed).length;
+  const resting = restTimerState.isOpen && getPostSetAction(session, restTimerState.exerciseId, restTimerState.setId).kind === 'rest';
 
   return (
     <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
+      {resting && <p data-rest-lock role="status" className="rounded-xl bg-accent/10 px-3 py-2 text-xs font-semibold text-accent">{t('휴식을 종료한 뒤 시작하세요.')}</p>}
       {canUndoReplacement(session) && <button className="text-sm text-accent underline" onClick={() => { try { undoReplacement(); } catch (error) { alert(t((error as Error).message)); } }}>{t('종목 교체 되돌리기')}</button>}
       {session.exercises.length > 1 && <p id="workout-drag-help" className="text-[11px] text-gray-400">{t('카드를 길게 누른 채 위아래로 옮겨 순서를 바꾸세요.')}</p>}
       {drag && <div role="status" className="fixed z-[80] pointer-events-none rounded-2xl px-4 py-3 bg-accent text-white shadow-2xl text-sm font-bold max-w-[80vw]" style={{ left: Math.max(12, Math.min(innerWidth - 220, drag.x - 100)), top: Math.max(12, drag.y - 64) }}>{displayExercise(resolveRecordedExercise(session.exercises.find(ex => ex.id === drag.sourceId)!))}<span className="block text-[11px] font-normal opacity-80">{t('순서를 변경하는 중입니다.')} {drag.targetId && t('여기에 놓기')}</span></div>}
@@ -907,36 +990,50 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
             </button>
           </div>
         ) : (
-          session.exercises.map((item, idx) => (
-            <div key={item.id} data-workout-exercise={item.id} data-dragging={drag?.sourceId === item.id || undefined} data-drop-placement={drag?.targetId === item.id ? drag.placement : undefined}
-              className={`${drag?.sourceId === item.id ? 'opacity-40' : ''} ${drag?.targetId === item.id ? drag.placement === 'before' ? 'border-t-4 border-accent' : 'border-b-4 border-accent' : ''}`}>
-            <ExerciseCard
-              exerciseItem={item}
-              restAfterSets={restAfterSets}
-              collapsed={Boolean(drag) || collapsedExerciseIds.has(item.id)}
-              onToggleCollapsed={() => setCollapsedExerciseIds(previous => {
-                const next = new Set(previous);
-                if (next.has(item.id)) next.delete(item.id); else next.add(item.id);
-                return next;
-              })}
-              weightUnit={item.weightUnit || 'kg'}
-              onUpdate={(updated) => handleUpdateExercise(idx, updated)}
-              onDelete={() => handleDeleteExercise(idx)}
-              onStartSet={setId => handleStartSet(item.id, setId)}
-              getSetProgress={setId => getSetProgress(session, item.id, setId)}
-              onCancelSetStart={setId => { const latest = loadActiveSession(); if (latest) saveWithRecovery(cancelWorkoutSetStart(latest, item.id, setId), 'active'); }}
-              onTriggerRestTimer={(exName, setId, setNum, last) => handleTriggerRestTimer(exName, setId, setNum, last, item.id)}
-              onOpenRpeGuide={() => setIsRpeGuideOpen(true)}
-              onOpenGroupModal={() => setGroupModalTarget(item)}
-              onUnlinkGroup={() => handleUnlinkExercise(item.id)}
-              onReplace={() => {
-                setReplacingExerciseItem(item);
-                setIsAddModalOpen(true);
-              }}
-              isDark={isDark}
-            />
-            </div>
-          ))
+          (() => {
+            const renderExercise = (item: WorkoutExercise) => {
+              const idx = session.exercises.findIndex(exercise => exercise.id === item.id);
+              return <div key={item.id} data-workout-exercise={item.id} data-dragging={drag?.sourceId === item.id || undefined} data-drop-placement={drag?.targetId === item.id ? drag.placement : undefined}
+                className={`${drag?.sourceId === item.id ? 'opacity-40' : ''} ${drag?.targetId === item.id ? drag.placement === 'before' ? 'border-t-4 border-accent' : 'border-b-4 border-accent' : ''}`}>
+                <ExerciseCard exerciseItem={item} restAfterSets={restAfterSets}
+                  collapsed={Boolean(drag) || collapsedExerciseIds.has(item.id)}
+                  onToggleCollapsed={() => setCollapsedExerciseIds(previous => { const next = new Set(previous); if (next.has(item.id)) next.delete(item.id); else next.add(item.id); return next; })}
+                  weightUnit={item.weightUnit || session.weightUnit || 'kg'} onUpdate={updated => handleUpdateExercise(idx, updated)} onDelete={() => handleDeleteExercise(idx)}
+                  onStartSet={setId => handleStartSet(item.id, setId)} getSetProgress={setId => getSetProgress(session, item.id, setId, resting)}
+                  onCancelSetStart={setId => { const latest = loadActiveSession(); if (latest) saveWithRecovery(cancelWorkoutSetStart(latest, item.id, setId), 'active'); }}
+                  onTriggerRestTimer={(exName, setId, setNum, last) => handleTriggerRestTimer(exName, setId, setNum, last, item.id)}
+                  onOpenRpeGuide={() => setIsRpeGuideOpen(true)} onOpenGroupModal={() => setGroupModalTarget(item)} onUnlinkGroup={() => handleUnlinkExercise(item.id)}
+                  onReplace={() => { setReplacingExerciseItem(item); setIsAddModalOpen(true); }} isDark={isDark} />
+              </div>;
+            };
+            const renderedGroups = new Set<string>();
+            return session.exercises.map(item => {
+              const members = item.groupId ? session.exercises.filter(exercise => exercise.groupId === item.groupId) : [];
+              if (!item.groupId || members.length < 2) return renderExercise(item);
+              if (renderedGroups.has(item.groupId)) return null;
+              renderedGroups.add(item.groupId);
+              const groupId = item.groupId;
+              return <GroupedExerciseCard key={groupId} drag={drag} collapsed={Boolean(drag) || members.every(exercise => collapsedExerciseIds.has(exercise.id))}
+                onToggleCollapsed={() => setCollapsedExerciseIds(previous => {
+                  const next = new Set(previous);
+                  const expand = members.every(exercise => previous.has(exercise.id));
+                  for (const exercise of members) { if (expand) next.delete(exercise.id); else next.add(exercise.id); }
+                  return next;
+                })} exercises={members} weightUnit={session.weightUnit || 'kg'} restAfterSets={restAfterSets}
+                getProgress={(exerciseId, setId) => getSetProgress(session, exerciseId, setId, resting)}
+                onUpdate={updated => handleUpdateExercise(session.exercises.findIndex(exercise => exercise.id === updated.id), updated)}
+                onAdvance={expected => handleAdvanceGroup(groupId, expected)}
+                onCancelStart={(exerciseId, setId) => { const latest = loadActiveSession(); if (latest) saveWithRecovery(cancelWorkoutSetStart(latest, exerciseId, setId), 'active'); }}
+                onComplete={(exercise, setId, setNumber, last) => handleTriggerRestTimer(displayExercise(resolveRecordedExercise(exercise)), setId, setNumber, last, exercise.id)}
+                onOpenRpeGuide={() => setIsRpeGuideOpen(true)} renderExercise={renderExercise}
+                onApplySettings={settings => {
+                  const latest = loadActiveSession();
+                  if (!latest) return;
+                  try { saveWithRecovery(applyGroupSettings(latest, groupId, settings), 'active'); }
+                  catch (error) { alert(t((error as Error).message)); }
+                }} />;
+            });
+          })()
         )}
       </div>
 
@@ -961,6 +1058,26 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
         </div>
       </div>
 
+      {finishConfirmation?.sessionId === session.id && sessionSets.length > 0 && sessionSets.every(set => set.completed) && <div role="dialog" aria-modal="true" aria-labelledby="workout-finish-title" data-workout-finish-confirm className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onKeyDown={event => {
+        if (event.key === 'Escape') { event.preventDefault(); setFinishConfirmation(null); }
+        if (event.key !== 'Tab') return;
+        const buttons = event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not([disabled])');
+        const first = buttons[0];
+        const last = buttons[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }}>
+        <div className="w-full max-w-sm space-y-4 rounded-2xl bg-white dark:bg-[#1E1B24] p-5 shadow-xl">
+          <h2 id="workout-finish-title" className="text-lg font-extrabold">{t('운동을 마치겠습니까?')}</h2>
+          <p className="text-sm text-gray-500">{t('예정된 세트를 모두 완료했습니다.')}</p>
+          {flowMessage && <p role="alert" className="text-sm text-red-500">{t(flowMessage)}</p>}
+          <div className="flex flex-wrap gap-2">
+            <button type="button" autoFocus onClick={() => setFinishConfirmation(null)} className="min-h-[44px] flex-1 rounded-xl bg-black/5 dark:bg-white/10 px-3 py-2 text-sm font-bold">{t('계속 기록하기')}</button>
+            <button type="button" onClick={handleCompleteWorkout} className="min-h-[44px] flex-1 rounded-xl bg-accent px-3 py-2 text-sm font-bold text-white">{t('운동 마치기')}</button>
+          </div>
+        </div>
+      </div>}
+
       {/* 대형 원형 스마트 휴식 타이머 모달 */}
       <RestTimerModal
         storageKey={`iron_adaptive_clock_${session.id}_${restTimerState.runId}`}
@@ -974,12 +1091,12 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
           });
           requestAnimationFrame(() => document.getElementById(`exercise-${nextRestExercise.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
         }}
-        isOpen={restTimerState.isOpen}
+        isOpen={resting}
         initialSeconds={restTimerState.initialSeconds}
         initialElapsedSeconds={restTimerState.initialElapsedSeconds || 0}
         exerciseName={restTimerState.exerciseName}
         setNumber={restTimerState.setNumber}
-        onClose={handleSaveRestTimeToSet}
+        onClose={handleCloseRestTimer}
         onFinishAndSave={handleSaveRestTimeToSet}
       />
 

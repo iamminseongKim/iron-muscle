@@ -1,6 +1,8 @@
 import { countGymEquipment } from '../../utils/gymStorage';
 import { AppUpdates } from './AppUpdates';
 import { AdaptiveSettings } from './AdaptiveSettings';
+import { AchievementSection } from './AchievementSection';
+import { loadSavedSessions } from '../../utils/storage';
 import { Capacitor } from '@capacitor/core';
 import { RoutineLibrary } from '../library/RoutineLibrary';
 import { RecoveryPanel } from '../library/RecoveryPanel';
@@ -20,6 +22,7 @@ export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange
   isDark: boolean; onToggleTheme: () => void; accentTheme: 'green' | 'purple'; onAccentThemeChange: (theme: 'green' | 'purple') => void;
   weightUnit: WeightUnit; onToggleWeightUnit: () => void;
 }) {
+  const [achievementHistory, setAchievementHistory] = useState(loadSavedSessions);
   const [gymState, setGymState] = useState<MultiGymState>(() => loadGymState());
   const [gymProfile, setGymProfile] = useState<GymEquipmentProfile>(() => loadGymProfile());
   const [isGymModalOpen, setIsGymModalOpen] = useState(false);
@@ -32,6 +35,15 @@ export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange
   const platform = healthPlatform();
   const provider = platform === 'ios' ? 'Apple Health' : 'Health Connect';
   const unitFactor = weightUnit === 'lbs' ? 2.2046226218 : 1;
+  useEffect(() => {
+    const refresh = () => setAchievementHistory(loadSavedSessions());
+    window.addEventListener('iron_sessions_change', refresh);
+    window.addEventListener('storage', refresh);
+    return () => {
+      window.removeEventListener('iron_sessions_change', refresh);
+      window.removeEventListener('storage', refresh);
+    };
+  }, []);
   useEffect(() => {
     let active = true;
     const read = () => {
@@ -78,6 +90,7 @@ export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange
       </div>
       <p className="text-sm text-gray-500 mt-1">{t('내 몸과 운동 환경을 관리하세요.')}</p>
     </div>
+    <AchievementSection history={achievementHistory} />
     <section className={section}>
       <LanguageSettings />
     </section>
@@ -204,7 +217,7 @@ export function MyPage({ isDark, onToggleTheme, accentTheme, onAccentThemeChange
     {Capacitor.getPlatform() === 'android' && <AppUpdates />}
     <RoutineLibrary />
     <RecoveryPanel />
-    <BackupPanel onRestored={() => {}}/>
+    <BackupPanel onRestored={() => setAchievementHistory(loadSavedSessions())}/>
     <details className={section}>
       <summary className="font-bold cursor-pointer"><Shield size={18} className="inline mr-2"/>{t('건강 데이터 개인정보 안내')}</summary>
       <p className="text-sm leading-relaxed">{t('허용한 경우에만 최근 체중을 읽고 완료한 운동을 건강 앱에 저장합니다. Iron Muscle은 건강 데이터를 외부 서버로 보내거나 광고에 사용하지 않습니다. 건강 앱 자체의 동기화 설정은 별도로 적용됩니다.')}</p>

@@ -88,7 +88,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
     if (!matchCat || (equipment !== 'all' && getExerciseEquipment(ex) !== equipment)) return false;
     if (!searchQuery.trim()) return true;
     return matchesExerciseSearch(ex, searchQuery) || (!!sharedEquipmentType(ex.id) && matchesExerciseSearch({ ...ex, name: t(ex.name) }, searchQuery));
-  });
+  }).sort((a, b) => Number(getExerciseConfigs(activeGym, b.id).length > 0) - Number(getExerciseConfigs(activeGym, a.id).length > 0));
 
   const selectedCount = countGymEquipment(activeGym);
 
@@ -388,15 +388,12 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                         : 'bg-white dark:bg-[#242426] border-black/5 dark:border-white/5'
                     }`}
                   >
-                    <div
-                      role="checkbox" aria-checked={isSelected} tabIndex={0}
-                      aria-label={sharedEquipmentType(ex.id) ? t(ex.name) : displayExercise(ex)}
-                      onKeyDown={event => { if (event.target === event.currentTarget && (event.key === ' ' || event.key === 'Enter')) { event.preventDefault(); handleToggleExercise(ex); } }}
-                      onClick={() => handleToggleExercise(ex)}
-                      className="p-3 flex items-center justify-between cursor-pointer select-none"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div
+                    <div className="p-3 flex items-center justify-between gap-2 select-none">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <button
+                          type="button" role="checkbox" aria-checked={isSelected}
+                          aria-label={sharedEquipmentType(ex.id) ? t(ex.name) : displayExercise(ex)}
+                          onClick={() => handleToggleExercise(ex)}
                           className={`w-5 h-5 rounded-md flex items-center justify-center border shrink-0 transition ${
                             isSelected
                               ? 'bg-accent border-accent text-white'
@@ -404,24 +401,30 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                           }`}
                         >
                           {isSelected && <Check size={14} strokeWidth={3} />}
-                        </div>
-                        <div className="min-w-0">
+                        </button>
+                        <button
+                          type="button"
+                          aria-expanded={isSelected ? isExpanded : undefined}
+                          onClick={() => isSelected ? setExpandedConfigId(isExpanded ? null : ex.id) : handleToggleExercise(ex)}
+                          className="min-w-0 flex-1 text-left min-h-8"
+                        >
                           <p className="text-xs font-bold text-[#1D1D1F] dark:text-white truncate">
                             {sharedEquipmentType(ex.id) ? t(ex.name) : displayExercise(ex)}
                           </p>
                           <p className="text-[10px] text-gray-400 truncate">{sharedEquipmentType(ex.id) ? t('여러 운동에서 함께 사용하는 장비') : getExerciseEquipment(ex) !== 'machine' ? t('기존 개별 설정') : ex.nameEn}</p>
-                        </div>
+                        </button>
                       </div>
 
                       {isSelected && (
                         <div className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
                           <button
                             type="button"
+                            aria-expanded={isExpanded}
                             onClick={() => setExpandedConfigId(isExpanded ? null : ex.id)}
                             className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-accent/10 text-accent dark:text-accent-light hover:bg-accent/20 transition"
                           >
                             <Sliders size={12} />
-                            <span>{settingLabel}</span>
+                            <span>{t('수정')} · {settingLabel}</span>
                           </button>
                         </div>
                       )}
@@ -466,6 +469,7 @@ export const GymEquipmentModal: React.FC<GymEquipmentModalProps> = ({
                                   className="w-full text-xs p-1.5 rounded-lg bg-white dark:bg-[#1C1C1E] border border-black/10 dark:border-white/10 text-[#1D1D1F] dark:text-white"
                                 >
                                   <option value="">{t('브랜드 미지정')}</option>
+                                  <option value="기타 (직접 입력)">{t('기타 (직접 입력)')}</option>
                                   {POPULAR_MACHINE_BRANDS.map(brand => (
                                     <option key={brand} value={brand}>
                                       {brand}

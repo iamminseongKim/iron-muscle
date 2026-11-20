@@ -3,15 +3,16 @@ import { t, getLanguage, displayExercise } from '../i18n';
 import { ANATOMY_REGIONS } from '../data/anatomyRegions';
 import { WorkoutSession, WeightUnit } from '../types/workout';
 import { resolveRecordedExercise } from './exerciseResolver';
-import { KG_TO_LBS } from './calculations';
+import { calculateCombinedVolume, KG_TO_LBS } from './calculations';
 
 export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, unit: WeightUnit = 'kg') {
   const rows = new Map<string, { name: string; sets: number; reps: number; maxWeight: number; groupLabel?: string }>();
   const primaryMuscles = new Set<string>(), secondaryMuscles = new Set<string>();
   const groupLabels = new Map<string, string>();
   const exerciseIds = new Set<string>();
-  let seconds = 0, volumeKg = 0;
-  for (const [sessionIndex, session] of sessions.filter(s => s.date === date).entries()) {
+  const daySessions = sessions.filter(s => s.date === date);
+  let seconds = 0;
+  for (const [sessionIndex, session] of daySessions.entries()) {
     let hasCompleted = false;
     for (const exercise of session.exercises) {
       const sets = exercise.sets.filter(s => s.completed && s.reps > 0);
@@ -32,18 +33,20 @@ export function summarizeWorkoutDay(sessions: WorkoutSession[], date: string, un
       const rowKey = JSON.stringify([resolved.id, groupKey]);
       const row = rows.get(rowKey) || { name: displayExercise(resolved), sets: 0, reps: 0, maxWeight: 0, groupLabel: groupLabels.get(groupKey) };
       for (const set of sets) {
-        const kg = Math.max(0, set.weight) / (exercise.weightUnit === 'lbs' ? KG_TO_LBS : 1);
+        const divisor = (exercise.weightUnit || session.weightUnit) === 'lbs' ? KG_TO_LBS : 1;
+        const segments = set.dropSegments?.length ? set.dropSegments : [set];
         row.sets++;
-        row.reps += set.reps;
-        row.maxWeight = Math.max(row.maxWeight, kg * (unit === 'lbs' ? KG_TO_LBS : 1));
-        volumeKg += kg * set.reps;
+        for (const segment of segments) {
+          row.reps += segment.reps;
+          row.maxWeight = Math.max(row.maxWeight, segment.weight / divisor * (unit === 'lbs' ? KG_TO_LBS : 1));
+        }
       }
       rows.set(rowKey, row);
     }
     if (hasCompleted) seconds += Math.max(0, session.durationSeconds);
   }
   const exercises = [...rows.values()];
-  return { exerciseCount: exerciseIds.size, primaryMuscles: [...primaryMuscles], secondaryMuscles: [...secondaryMuscles].filter(m => !primaryMuscles.has(m)), date, unit, exercises, seconds, volume: Math.round(volumeKg * (unit === 'lbs' ? KG_TO_LBS : 1)),
+  return { exerciseCount: exerciseIds.size, primaryMuscles: [...primaryMuscles], secondaryMuscles: [...secondaryMuscles].filter(m => !primaryMuscles.has(m)), date, unit, exercises, seconds, volume: calculateCombinedVolume(daySessions, unit),
     sets: exercises.reduce((sum, row) => sum + row.sets, 0), reps: exercises.reduce((sum, row) => sum + row.reps, 0) };
 }
 

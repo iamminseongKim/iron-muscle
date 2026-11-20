@@ -30,7 +30,7 @@ export function useExerciseDrag(sessionId: string | undefined, onDrop: (sourceId
       if (gesture?.kind !== 'dragging') return;
       const sourceId = gesture.view.sourceId;
       const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-workout-exercise]'))
-        .filter(card => card.dataset.workoutExercise !== sourceId);
+        .filter(card => card.dataset.workoutExercise !== sourceId && card.getClientRects().length > 0);
       const next = cards.find(card => {
         const rect = card.getBoundingClientRect();
         return y < rect.top + rect.height / 2;

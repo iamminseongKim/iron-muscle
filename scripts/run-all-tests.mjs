@@ -6,8 +6,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const testFiles = [
+  'test-achievements.mjs',
   'test-prescription-integrity.mjs',
   'test-adaptive-training.mjs',
+  'test-workout-groups.mjs',
+  'test-group-intervals.mjs',
   'test-adaptive-export.mjs',
   'test-recovery-bulk.mjs',
   'test-app-updates.mjs',
@@ -27,6 +30,7 @@ const testFiles = [
   'test-session-merge.mjs',
   'test-ai-prompts.mjs',
   'test-ai-routine-import.mjs',
+  'test-ai-group-import.mjs',
   'test-session-bodyparts.mjs',
   'test-i18n.mjs',
   'test-localized-exports.mjs',
