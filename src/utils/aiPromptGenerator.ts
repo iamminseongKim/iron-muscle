@@ -195,9 +195,8 @@ export function filterSessionsForAiExport(
   if (selectedBodyPart && selectedBodyPart !== 'all') {
     return dateFiltered
       .map((session) => {
-        const matchingExercises = (session.exercises || []).filter((ex) =>
-          matchesBodyPart(ex, selectedBodyPart)
-        );
+        const matchedGroups = new Set(session.exercises.filter(exercise => matchesBodyPart(exercise, selectedBodyPart) && exercise.groupId).map(exercise => exercise.groupId));
+        const matchingExercises = session.exercises.filter(exercise => matchesBodyPart(exercise, selectedBodyPart) || Boolean(exercise.groupId && matchedGroups.has(exercise.groupId)));
         if (matchingExercises.length === 0) return null;
         return {
           ...session,

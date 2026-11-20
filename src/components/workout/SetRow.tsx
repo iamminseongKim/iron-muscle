@@ -11,6 +11,7 @@ import { completeWorkoutSet, undoWorkoutSet, type SetProgress } from '../../util
 
 interface SetRowProps {
   compact?: boolean;
+  progressControl?: 'button' | 'status';
   set: WorkoutSet;
   restAfterSeconds?: number;
   index: number;
@@ -29,6 +30,7 @@ interface SetRowProps {
 
 export const SetRow: React.FC<SetRowProps> = ({
   compact = false,
+  progressControl = 'button',
   set,
   restAfterSeconds,
   index,
@@ -337,8 +339,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold pointer-events-none">{t("회")}</span>
           </div>
 
-          {/* 세트 완료 체크 버튼 (라운드 체크) */}
-          <button
+          {progressControl === 'status' ? <span data-group-member-status className="w-20 shrink-0 text-center text-[11px] font-bold text-gray-500">{t(set.completed ? '완료됨' : progress.kind === 'active' ? '운동 중' : '대기')}</span> : <button
             type="button"
             aria-label={`${index + 1}${t(set.completed ? '세트 완료 취소' : waiting ? '세트 대기' : !set.startedAt && onStart ? '세트 시작' : '세트 완료')}`}
             disabled={waiting || (!set.completed && set.weightNeedsConfirmation)}
@@ -352,13 +353,14 @@ export const SetRow: React.FC<SetRowProps> = ({
             }`}
           >
             {t(set.completed ? '완료 취소' : waiting ? '대기' : !set.startedAt && onStart ? '시작' : '세트 완료')}
-          </button>
+          </button>}
           <button type="button" aria-label={`${index + 1}${t("세트 상세 옵션")}`} aria-expanded={showOptions} onClick={() => setShowOptions(!showOptions)} className={`relative w-7 h-9 shrink-0 flex items-center justify-center rounded-lg ${showOptions ? 'bg-accent/10 text-accent' : 'text-gray-400'}`}>
             <MoreHorizontal size={16} />
             {(hasActualRpe || hasTempo || hasCommentOrTags || hasRestTime) && <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent" />}
           </button>
         </div>
 
+        {compact && progressControl === 'status' && set.completed && <button type="button" className="min-h-[36px] text-xs text-accent" onClick={() => { setFeedbackAt(null); setFeedbackOpen(true); }}>{t('기록 수정')}</button>}
         {showOptions && <>
         {set.startedAt && !set.completed && onCancelStart && <button type="button" className="min-h-[40px] text-xs text-gray-500" onClick={onCancelStart}>{t('시작 취소')}</button>}
         {previousSet && !set.completed && <button type="button" className="text-xs min-h-[44px] text-accent" onClick={() => onUpdate({ ...set, weight: previousSet.weight, reps: previousSet.reps })}>{t('이전 세트 값 복사')}</button>}

@@ -4,7 +4,7 @@ import { EXERCISES_DATABASE } from '../../data/exercises';
 import type { WorkoutSession } from '../../types/workout';
 import { loadCustomExercises } from '../../utils/storage';
 import { copyText } from '../../utils/clipboard';
-import { AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, buildAiRoutinePrompt, parseImportedWorkout } from '../../utils/aiRoutineImport';
+import { AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, AI_GROUP_ROUTINE_EXAMPLE, AI_GROUP_IMPORT_GUIDANCE, buildAiRoutinePrompt, parseImportedWorkout } from '../../utils/aiRoutineImport';
 import type { ImportedWorkout } from '../../utils/aiRoutineImport';
 import { RoutinePreviewModal } from './RoutinePreviewModal';
 
@@ -91,6 +91,9 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
           <p>{t('executionMode는 bilateral·unilateral·alternating, loadType은 pin-loaded·plate-loaded·barbell·dumbbell·cable·bodyweight·other, equipmentType은 smith·barbell·dumbbell·machine·cable·bodyweight·other입니다. side는 left·right·both이며 단위는 종목별로 지정합니다.')} </p>
           <p>{t('Markdown 선택 열: rpe, tempo, notes, comment, executionMode, loadType, equipmentType, side, unit. tempo는 3-1-1처럼 작성하세요.')} </p>
           <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2 font-mono text-[11px]">{AI_ROUTINE_EXAMPLE}</pre>
+          {AI_GROUP_IMPORT_GUIDANCE.map(message => <p key={message}>{t(message)}</p>)}
+          <p className="font-semibold">{t('묶음 JSON 예시')}</p>
+          <pre data-ai-group-example className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2 font-mono text-[11px]">{AI_GROUP_ROUTINE_EXAMPLE}</pre>
           <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2 font-mono text-[11px]">{AI_ROUTINE_MARKDOWN_EXAMPLE}</pre>
           <p>{t('Markdown 표는 name, sets, reps 열이 필요합니다. weight와 rest는 선택입니다. 한국어 열 이름도 지원합니다. 범위 대신 숫자 하나를 써주세요.')}</p>
         </details>

@@ -18,6 +18,7 @@ export interface ImportedExerciseProposal {
   nameEn?: string;
 }
 export interface ImportedExercise {
+  groupId?: string;
   proposal?: ImportedExerciseProposal;
   sourceName: string;
   exerciseId: string | null;
@@ -33,10 +34,42 @@ export interface ImportedExercise {
   sets: ImportedSet[];
 }
 export interface ImportedWorkout extends Pick<WorkoutSession, 'programId' | 'programWeek' | 'trainingPhase' | 'sessionGoal'> {
+  groups?: ImportedGroup[];
   ignoredFields?: string[];
   title: string;
   notes?: string;
   exercises: ImportedExercise[];
+}
+
+export interface ImportedGroup {
+  id: string;
+  type: 'superset' | 'compound' | 'giant';
+  rounds: number;
+  restSeconds: number;
+  targetRpe?: number;
+}
+
+const invalidGroup = () => new Error('묶음 정의를 확인하세요. groups의 id·type·rounds·restSeconds·targetRpe를 확인하세요.');
+const invalidMembers = () => new Error('묶음의 groupId와 종목 수를 확인하세요. 슈퍼세트와 컴파운드세트는 2종목, 자이언트세트는 3종목 이상입니다.');
+function importedGroups(value: unknown): ImportedGroup[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.length > 25) throw invalidGroup();
+  const ids = new Set<string>();
+  return value.map(item => {
+    const row = record(item);
+    if (typeof row.id !== 'string' || !row.id.trim() || row.id.length > 80 || ids.has(row.id.trim())) throw invalidGroup();
+    const id = row.id.trim();
+    ids.add(id);
+    const type = choice(row.type, ['superset', 'compound', 'giant']);
+    if (!type || row.rounds === undefined) throw invalidGroup();
+    const rounds = number(row.rounds, 0, 50, true);
+    if (rounds < 1) throw invalidGroup();
+    const restSeconds = number(row.restSeconds, 90, 3600, true);
+    const rawRpe = row.targetRpe === undefined ? row.rpe : row.targetRpe;
+    const targetRpe = rawRpe === undefined ? undefined : number(rawRpe, 0, 10);
+    if (targetRpe !== undefined && (targetRpe < 6 || !Number.isInteger(targetRpe * 2))) throw invalidGroup();
+    return { id, type, rounds, restSeconds, targetRpe };
+  });
 }
 
 const invalid = () => new Error('루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.');
@@ -114,8 +147,27 @@ function proposal(row: Record<string, unknown>): ImportedExerciseProposal | unde
   if (category === undefined && primaryMuscles === undefined && secondaryMuscles === undefined && nameEn === undefined) return undefined;
   return { category, primaryMuscles, secondaryMuscles, nameEn };
 }
-function exercise(value: unknown, catalog: Exercise[]): ImportedExercise {
-  const row = record(value);
+function exercise(value: unknown, catalog: Exercise[], groups: readonly ImportedGroup[] = []): ImportedExercise {
+  const original = record(value);
+  if (original.groupType !== undefined || original.group !== undefined) throw invalidGroup();
+  const groupId = original.groupId === undefined ? undefined : name(original.groupId);
+  const group = groupId === undefined ? undefined : groups.find(item => item.id === groupId);
+  if (groupId !== undefined && !group) throw invalidMembers();
+  if (group) {
+    const count = Array.isArray(original.sets) ? original.sets.length : original.sets;
+    if (count !== undefined && count !== group.rounds) throw new Error('묶음 종목의 세트 수는 rounds와 같아야 합니다.');
+    const checkRest = (row: Record<string, unknown>) => {
+      if (['restSeconds', 'plannedRestSeconds', 'targetRestSeconds'].some(key => row[key] !== undefined && row[key] !== group.restSeconds)) throw new Error('묶음 휴식은 groups의 restSeconds에만 지정하거나 같은 값으로 입력하세요.');
+    };
+    checkRest(original);
+    if (Array.isArray(original.sets)) original.sets.forEach(item => checkRest(record(item)));
+  }
+  const row = group ? {
+    ...original,
+    sets: original.sets ?? group.rounds,
+    restSeconds: group.restSeconds,
+    ...(original.targetRpe === undefined && original.rpe === undefined && group.targetRpe !== undefined ? { targetRpe: group.targetRpe } : {}),
+  } : original;
   const sourceName = name(row.name === undefined ? row.exerciseId : row.name);
   const normalized = normalizeSearch(sourceName);
   const candidates = catalog.filter(item => item.id === sourceName || getExerciseSearchFields(item).some(field => field.trim() && normalizeSearch(field) === normalized));
@@ -142,7 +194,7 @@ function exercise(value: unknown, catalog: Exercise[]): ImportedExercise {
     if (count < 1) throw invalid();
     sets = Array.from({ length: count }, () => set(row, {}, executionMode));
   }
-  return { sourceName, exerciseId, proposal: proposal(row), weightUnit: unit(row.weightUnit), equipmentType, executionMode, loadType, notes: note(row.notes), machineConfigId: note(row.machineConfigId), machineBrand: note(row.machineBrand), machineSetting: note(row.machineSetting), weightIncrement: row.weightIncrement === undefined ? undefined : number(row.weightIncrement, 0, 100), sets };
+  return { sourceName, exerciseId, groupId, proposal: proposal(row), weightUnit: unit(row.weightUnit), equipmentType, executionMode, loadType, notes: note(row.notes), machineConfigId: note(row.machineConfigId), machineBrand: note(row.machineBrand), machineSetting: note(row.machineSetting), weightIncrement: row.weightIncrement === undefined ? undefined : number(row.weightIncrement, 0, 100), sets };
 }
 
 const headers: Record<string, string> = {
@@ -223,24 +275,31 @@ export function parseImportedWorkout(raw: string, catalog: Exercise[]): Imported
   if (!Array.isArray(root.exercises) || !root.exercises.length || root.exercises.length > 50) throw invalid();
   const title = root.title === undefined ? t('가져온 루틴') : name(root.title);
   if (root.programWeek !== undefined && (typeof root.programWeek !== 'number' || root.programWeek < 1)) throw invalid();
-  const exercises = root.exercises.map(value => exercise(value, catalog));
+  const groups = importedGroups(root.groups);
+  const exercises = root.exercises.map(value => exercise(value, catalog, groups));
+  for (const group of groups) {
+    const count = exercises.filter(row => row.groupId === group.id).length;
+    if (group.type === 'giant' ? count < 3 : count !== 2) throw invalidMembers();
+  }
   const ignoredFields: string[] = [];
   const inspect = (row: Record<string, unknown>, allowed: string[], path: string) => {
     for (const key of Object.keys(row)) if (!allowed.includes(key)) ignoredFields.push(`${path}${key}`);
   };
   const setFields = ['reps', 'plannedReps', 'weight', 'plannedWeight', 'restSeconds', 'plannedRestSeconds', 'targetRestSeconds', 'rpe', 'targetRpe', 'rir', 'targetRir', 'repRange', 'plannedRepRange', 'tempo', 'plannedTempo', 'comment', 'plannedNotes', 'setType', 'plannedSetType', 'side'];
-  inspect(root, ['title', 'notes', 'programId', 'programWeek', 'trainingPhase', 'sessionGoal', 'exercises'], '');
+  inspect(root, ['title', 'notes', 'programId', 'programWeek', 'trainingPhase', 'sessionGoal', 'exercises', 'groups'], '');
+  if (Array.isArray(root.groups)) root.groups.forEach((group, index) => inspect(record(group), ['id', 'type', 'rounds', 'restSeconds', 'targetRpe', 'rpe'], `groups[${index}].`));
   root.exercises.forEach((value, index) => {
     const row = record(value);
     const path = `exercises[${index}].`;
-    inspect(row, [...setFields, 'name', 'exerciseId', 'nameEn', 'category', 'primaryMuscles', 'secondaryMuscles', 'equipmentType', 'loadType', 'executionMode', 'weightUnit', 'notes', 'machineConfigId', 'machineBrand', 'machineSetting', 'weightIncrement', 'sets'], path);
+    inspect(row, [...setFields, 'name', 'exerciseId', 'nameEn', 'category', 'primaryMuscles', 'secondaryMuscles', 'equipmentType', 'loadType', 'executionMode', 'weightUnit', 'notes', 'machineConfigId', 'machineBrand', 'machineSetting', 'weightIncrement', 'sets', 'groupId'], path);
     if (Array.isArray(row.sets)) row.sets.forEach((set, number) => inspect(record(set), setFields, `${path}sets[${number}].`));
   });
-  return { title, ignoredFields: ignoredFields.length ? ignoredFields : undefined, notes: note(root.notes), programId: note(root.programId), programWeek: root.programWeek === undefined ? undefined : number(root.programWeek, 1, 1000, true), trainingPhase: choice(root.trainingPhase, ['RECOVERY', 'HYPERTROPHY', 'STRENGTH', 'DELOAD']), sessionGoal: note(root.sessionGoal), exercises };
+  return { title, groups: groups.length ? groups : undefined, ignoredFields: ignoredFields.length ? ignoredFields : undefined, notes: note(root.notes), programId: note(root.programId), programWeek: root.programWeek === undefined ? undefined : number(root.programWeek, 1, 1000, true), trainingPhase: choice(root.trainingPhase, ['RECOVERY', 'HYPERTROPHY', 'STRENGTH', 'DELOAD']), sessionGoal: note(root.sessionGoal), exercises };
 }
 
 export function sessionFromImportedWorkout(draft: ImportedWorkout, catalog: Exercise[]): WorkoutSession {
   if (!draft.exercises.length || draft.exercises.some(row => !row.exerciseId || !catalog.some(item => item.id === row.exerciseId))) throw new Error('모든 종목을 선택하세요.');
+  const groups = new Map((draft.groups || []).map((group, index) => [group.id, { ...group, sessionId: crypto.randomUUID(), letter: String.fromCharCode(65 + index) }]));
   return {
     id: crypto.randomUUID(), title: draft.title, date: getTodayString(), startTime: new Date().toISOString(),
     durationSeconds: 0, completed: false, weightUnit: 'kg', notes: draft.notes, programId: draft.programId, programWeek: draft.programWeek, trainingPhase: draft.trainingPhase, sessionGoal: draft.sessionGoal,
@@ -249,9 +308,13 @@ export function sessionFromImportedWorkout(draft: ImportedWorkout, catalog: Exer
       if (!item) throw new Error('모든 종목을 선택하세요.');
       const equipmentType = row.equipmentType || item.equipment;
       const loadType = row.loadType || item.loadType || (equipmentType === 'machine' || equipmentType === 'smith' ? 'plate-loaded' : undefined);
+      const group = row.groupId === undefined ? undefined : groups.get(row.groupId);
+      if (row.groupId !== undefined && !group) throw invalidMembers();
+      const position = draft.exercises.filter(member => member.groupId === row.groupId).indexOf(row) + 1;
       return {
         id: crypto.randomUUID(), exerciseId: item.id, exerciseName: item.name, equipmentType, executionMode: row.executionMode, loadType, notes: row.notes,
         weightUnit: row.weightUnit, machineConfigId: row.machineConfigId, machineBrand: row.machineBrand, machineSetting: row.machineSetting, weightIncrement: row.weightIncrement,
+        ...(group ? { groupId: group.sessionId, groupType: group.type, groupLabel: `${t(group.type === 'superset' ? '슈퍼세트' : group.type === 'compound' ? '컴파운드세트' : '자이언트세트')} ${group.letter}-${position}` } : {}),
         sets: row.sets.map((set, index) => ({ id: crypto.randomUUID(), setNumber: index + 1, weight: set.weight, reps: set.reps, plannedRestSeconds: set.restSeconds, plannedWeight: set.weight, plannedReps: set.reps, targetRpe: set.rpe ?? undefined, targetRir: set.targetRir, plannedRepRange: set.plannedRepRange, plannedTempo: set.tempo ? { ...set.tempo } : undefined, plannedNotes: set.comment, plannedSetType: set.setType, setType: set.setType, provenance: 'recorded', rpe: null, side: set.side, completed: false })),
       };
     }),
@@ -266,6 +329,21 @@ const AI_ROUTINE_SAMPLE = { title: 'Upper body', programWeek: 1, trainingPhase: 
   ] },
 ] };
 export const AI_ROUTINE_EXAMPLE = JSON.stringify(AI_ROUTINE_SAMPLE, null, 2);
+const AI_GROUP_ROUTINE_SAMPLE = {
+  title: 'Arms compound set',
+  groups: [{ id: 'A', type: 'compound', rounds: 2, restSeconds: 120, targetRpe: 8 }],
+  exercises: [
+    { name: 'Dumbbell Bicep Curl', groupId: 'A', reps: 12, weight: 10, weightUnit: 'kg', setType: 'WORKING', executionMode: 'bilateral' },
+    { name: 'Hammer Curls', groupId: 'A', reps: 12, weight: 8, weightUnit: 'kg', setType: 'WORKING', executionMode: 'bilateral' },
+  ],
+};
+export const AI_GROUP_ROUTINE_EXAMPLE = JSON.stringify(AI_GROUP_ROUTINE_SAMPLE, null, 2);
+export const AI_GROUP_IMPORT_GUIDANCE = [
+  '묶음은 groups에 정의하고 종목의 groupId로 연결합니다. type은 superset·compound·giant이며 rounds는 1~50입니다. 슈퍼세트·컴파운드는 2종목, 자이언트는 3종목 이상입니다.',
+  '묶음의 sets를 생략하면 rounds를 사용합니다. 휴식은 groups.restSeconds로 통일하며 라운드의 모든 종목을 마친 뒤에만 적용합니다.',
+  'JSON의 RPE는 목표값입니다. groups.targetRpe보다 종목의 targetRpe 또는 rpe가 우선하고, 세트별 값이 가장 우선합니다. 실제 수행 RPE는 자동 입력하지 않습니다.',
+  '묶음 루틴은 Markdown 대신 groups와 groupId를 포함한 JSON으로 반환하세요. 종목별 중량·반복수·단위는 따로 지정하고 브랜드는 임의로 추가하지 마세요.',
+] as const;
 export const AI_ROUTINE_MARKDOWN_EXAMPLE = '# Upper body\n| name | sets | reps | weight | rest |\n| --- | --- | --- | --- | --- |\n| Barbell Bench Press | 3 | 10 | 0kg | 90s |';
 
 export function buildAiRoutinePrompt(): string {
@@ -284,6 +362,8 @@ export function buildAiRoutinePrompt(): string {
     [['chest', '가슴'], ['back', '등'], ['legs', '하체'], ['shoulders', '어깨'], ['arms', '팔'], ['core', '복근'], ['fullbody', '전신']].map(([id, label]) => `${id}=${t(label)}`).join(', '),
     Object.values(MUSCLE_INFO_MAP).map(muscle => `${muscle.id}=${displayMuscle(muscle.id)}`).join(', '),
     t('restSeconds는 권장 휴식 시간입니다. 세트 완료 후 타이머의 기본값으로 사용하며 사용자가 직접 조절하거나 종료할 수 있습니다.'),
-    JSON.stringify(example, null, 2),
+    ...AI_GROUP_IMPORT_GUIDANCE.map(message => t(message)),
+    t('묶음 JSON 예시'),
+    JSON.stringify({ ...example, groups: AI_GROUP_ROUTINE_SAMPLE.groups, exercises: [...example.exercises, ...AI_GROUP_ROUTINE_SAMPLE.exercises] }, null, 2),
   ].join('\n\n');
 }

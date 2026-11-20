@@ -35,11 +35,24 @@ try {
     assert.ok(found, `button ${text}`);
   };
   const start = async (exercise, round) => {
+    if (await page.$('[data-workout-group]')) {
+      const current = await active();
+      const target = current.exercises.find(item => item.id === exercise)?.sets[round - 1];
+      if (target?.startedAt) return;
+      await page.waitForFunction(() => !document.querySelector('[data-group-action]')?.disabled);
+      await page.$eval('[data-group-action]', node => node.click());
+      return;
+    }
     const selector = `[data-workout-exercise="${exercise}"] button[aria-label="${round}세트 시작"]`;
     await page.waitForSelector(selector);
     await page.$eval(selector, node => node.click());
   };
   const complete = async (exercise, round) => {
+    if (await page.$('[data-workout-group]')) {
+      await page.waitForFunction(() => !document.querySelector('[data-group-action]')?.disabled);
+      await page.$eval('[data-group-action]', node => node.click());
+      return;
+    }
     await page.$eval(`[data-workout-exercise="${exercise}"] button[aria-label="${round}세트 완료"]`, node => node.click());
     await page.waitForSelector('[aria-label="세트 피드백"]');
     await clickText('건너뛰고 완료');

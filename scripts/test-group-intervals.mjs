@@ -1,0 +1,105 @@
+import assert from 'node:assert/strict';
+import { webcrypto } from 'node:crypto';
+import { build } from 'esbuild';
+
+globalThis.crypto ??= webcrypto;
+const bundle = await build({ stdin: { contents: `export * from './src/utils/workoutIntervals'; export * from './src/utils/workoutGroups'; export * from './src/utils/adaptiveTraining'; export * from './src/utils/adaptiveAnalysis'; export * from './src/utils/aiPromptGenerator';`, resolveDir: process.cwd() }, bundle: true, write: false, platform: 'node', format: 'esm' });
+const api = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
+const makeSet = (id, setNumber, extra = {}) => ({ id, setNumber, weight: 10, reps: 12, completed: false, rpe: null, provenance: 'recorded', setType: 'WORKING', plannedRestSeconds: 120, ...extra });
+const makeSession = () => ({ id: 'group-intervals', date: '2026-11-19', title: 'Curl and hammer', startTime: '2026-11-19T00:00:00Z', durationSeconds: 300, completed: false, exercises: [
+  { id: 'curl', exerciseId: 'dumbbell-curl', equipmentType: 'dumbbell', groupId: 'pair', groupType: 'compound', groupLabel: '컴파운드세트 A-1', weightUnit: 'kg', sets: [makeSet('a1', 1), makeSet('a2', 2)] },
+  { id: 'hammer', exerciseId: 'hammer-curl', equipmentType: 'dumbbell', groupId: 'pair', groupType: 'compound', groupLabel: '컴파운드세트 A-2', weightUnit: 'kg', sets: [makeSet('b1', 1, { weight: 8 }), makeSet('b2', 2, { weight: 8 })] },
+] });
+const t = seconds => new Date(Date.UTC(2026, 10, 19, 0, 0, seconds));
+let session = makeSession();
+let result = api.advanceGroupRound(session, 'pair', t(0));
+assert.equal(result.kind, 'started');
+session = result.session;
+assert.ok(session.exercises[0].sets[0].startedAt);
+assert.equal(session.exercises[1].sets[0].startedAt, undefined);
+result = api.advanceGroupRound(session, 'pair', t(30));
+assert.equal(result.kind, 'advanced');
+session = result.session;
+assert.equal(session.exercises[0].sets[0].completed, true);
+assert.equal(session.exercises[1].sets[0].completed, false, 'next member is started, never fabricated as completed');
+assert.ok(session.exercises[1].sets[0].startedAt, 'same group control starts next member');
+assert.equal(session.exercises[1].sets[0].restKind, 'transition');
+assert.equal(api.actualRest(session.exercises[1].sets[0]), null);
+result = api.advanceGroupRound(session, 'pair', t(60));
+assert.equal(result.kind, 'round-completed');
+session = result.session;
+assert.ok(session.exercises.every(ex => ex.sets[0].completed));
+assert.ok(session.exercises.every(ex => !ex.sets[1].startedAt), 'round end waits for rest');
+assert.deepEqual(api.advanceGroupRound(session, 'pair', t(65), true).session, session);
+result = api.advanceGroupRound(session, 'pair', t(180));
+assert.equal(result.kind, 'started');
+assert.equal(result.session.exercises[0].sets[1].restKind, 'round');
+assert.equal(result.session.exercises[0].sets[1].restSeconds, 120);
+assert.equal(result.session.exercises[0].sets[0].rpe, null, 'group control does not invent feedback');
+const offset = makeSession();
+offset.exercises[0].sets.forEach((set, index) => { set.setNumber = index + 3; });
+offset.exercises[1].sets.forEach((set, index) => { set.setNumber = index + 7; });
+const originalNumbers = offset.exercises.map(ex => ex.sets.map(set => set.setNumber));
+let offsetResult = api.advanceGroupRound(offset, 'pair', t(0));
+offsetResult = api.advanceGroupRound(offsetResult.session, 'pair', t(30));
+assert.equal(offsetResult.kind, 'advanced', 'ordinal rounds do not split because stored labels differ');
+assert.deepEqual(offsetResult.session.exercises.map(ex => ex.sets.map(set => set.setNumber)), originalNumbers, 'historical labels remain intact');
+
+session = makeSession();
+session.exercises[0].sets[0] = { ...session.exercises[0].sets[0], completed: true, startedAt: t(0).toISOString(), completedAt: t(30).toISOString(), restKind: 'between-sets', restSource: 'reported', restSeconds: 90 };
+session.exercises[1].sets[0] = { ...session.exercises[1].sets[0], completed: true, startedAt: t(40).toISOString(), completedAt: t(70).toISOString(), restKind: 'transition', restSource: 'measured', restSeconds: 10 };
+let original = JSON.stringify(session);
+assert.equal(api.resolveWorkoutInterval(session, 'hammer', 'b1').kind, 'transition');
+assert.equal(api.resolveWorkoutInterval(session, 'hammer', 'b1').seconds, 10);
+assert.equal(api.actualRest(session.exercises[1].sets[0]), null, 'explicit completed transition is not actual rest');
+assert.equal(api.getRestAfterSets(session).get('a1'), undefined, 'transition is not displayed as round rest');
+assert.equal(api.getRestAfterSets(session).get('b1'), undefined);
+for (const language of ['ko', 'en', 'ja', 'zh-CN', 'zh-TW', 'es', 'fr', 'de']) {
+  const md = api.generateAiCoachingMarkdown([session], { language, scope: 'all', selectedDate: session.date });
+  assert.ok(md.includes('10'), `transition duration preserved ${language}`);
+  assert.ok(!md.split('\n').some(line => line.startsWith('- ') && /10\s*<.*120/.test(line)), `no false short-rest observation ${language}`);
+  if (language === 'ko') {
+    assert.ok(md.includes('컴파운드세트'), 'group type reaches AI');
+    assert.ok(md.includes('종목 전환 시간'));
+    assert.ok(md.includes('라운드'));
+    assert.ok(md.includes('전환 시간은 라운드 휴식 목표와 비교하지 않습니다.'));
+  } else assert.ok(!/[가-힣]/.test(md), `group semantics translated ${language}`);
+}
+assert.equal(JSON.stringify(session), original, 'analysis/export do not rewrite old rest fields');
+session.exercises[0].sets[1] = { ...session.exercises[0].sets[1], completed: true, startedAt: t(130).toISOString(), completedAt: t(160).toISOString(), restKind: 'round', restSource: 'measured', restSeconds: 60, plannedRestSeconds: 30 };
+const interval = api.resolveWorkoutInterval(session, 'curl', 'a2');
+assert.equal(interval.kind, 'rest');
+assert.equal(interval.scope, 'round');
+assert.equal(interval.seconds, 60);
+assert.equal(interval.plannedSeconds, 120, 'before-set rest uses prior round source plan, not target after-set plan');
+assert.equal(api.getRestAfterSets(session).get('a1'), 60);
+assert.equal(api.getRestAfterSets(session).get('b1'), 60);
+const withoutKind = structuredClone(session);
+delete withoutKind.exercises[1].sets[0].restKind;
+assert.equal(api.resolveWorkoutInterval(withoutKind, 'hammer', 'b1').kind, 'transition', 'reliable historical timeline infers same-round transition');
+const ambiguous = structuredClone(withoutKind);
+delete ambiguous.exercises[0].sets[0].completedAt;
+assert.notEqual(api.resolveWorkoutInterval(ambiguous, 'hammer', 'b1').kind, 'transition', 'missing evidence does not fabricate a transition');
+const longTransition = makeSession();
+longTransition.exercises[0].sets[0] = { ...session.exercises[0].sets[0] };
+longTransition.exercises[1].sets[0] = { ...session.exercises[1].sets[0], restSeconds: 1900 };
+assert.ok(!api.summarizeAdaptiveSession(longTransition).issues.includes('long-rest'), 'transition elapsed is not a round-rest penalty');
+assert.equal(longTransition.exercises[1].sets[0].restSeconds, 1900, 'long raw elapsed preserved');
+const crossBodyGroup = makeSession();
+crossBodyGroup.exercises[0].exerciseId = 'bench-press';
+crossBodyGroup.exercises[1].exerciseId = 'lat-pulldown';
+crossBodyGroup.exercises.push({ id: 'leg', exerciseId: 'barbell-squat', equipmentType: 'barbell', sets: [makeSet('leg1', 1)] });
+const filtered = api.filterSessionsForAiExport([crossBodyGroup], { scope: 'all', selectedDate: crossBodyGroup.date, selectedBodyPart: 'chest' });
+assert.deepEqual(filtered[0].exercises.map(ex => ex.id), ['curl', 'hammer'], 'body-part filter preserves partner context without unrelated exercises');
+assert.equal(crossBodyGroup.exercises.length, 3, 'filter does not mutate saved session');
+const historical = structuredClone(session);
+historical.id = 'older-group';
+historical.date = '2026-11-18';
+historical.startTime = '2026-11-18T00:00:00Z';
+historical.completed = true;
+for (const ex of historical.exercises) ex.groupId = 'different-opaque-id';
+assert.ok(api.compareExercise(session.exercises[0], session, [historical]).comparison, 'same ordered composition compares across different group IDs');
+const standalone = structuredClone(historical);
+for (const ex of standalone.exercises) { delete ex.groupId; delete ex.groupType; }
+assert.equal(api.compareExercise(session.exercises[0], session, [standalone]).comparison, null, 'standalone and grouped performance are not falsely comparable');
+console.log('PASS one group action, ordinal rounds, atomic member progression, preserved records, transition/rest classification, source-owned targets and eight-language group-aware analysis');

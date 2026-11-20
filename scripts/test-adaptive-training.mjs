@@ -70,14 +70,20 @@ const restedPartner = api.completeWorkoutSet(transition.exercises[1].sets[0], ne
 const sharedRest = {
   ...grouped,
   exercises: [
-    { ...grouped.exercises[0], sets: [{ ...finished, timerRestSeconds: 45 }] },
-    { ...partner, sets: [restedPartner, { ...undone, id: 'other-round', setNumber: 2 }] },
+    { ...grouped.exercises[0], sets: [finished] },
+    { ...partner, sets: [{ ...restedPartner, timerRestSeconds: 45 }, { ...undone, id: 'other-round', setNumber: 2 }] },
   ],
 };
 assert.deepEqual([...api.getRestAfterSets(sharedRest)], [[finished.id, 45], [restedPartner.id, 45]]);
 api.saveActiveSession(sharedRest);
 assert.equal(api.getRestAfterSets(api.loadActiveSession()).get(restedPartner.id), 45);
-assert.equal(api.undoWorkoutSet(sharedRest.exercises[0].sets[0]).timerRestSeconds, undefined);
+assert.equal(api.undoWorkoutSet(sharedRest.exercises[1].sets[0]).timerRestSeconds, undefined);
+const memberTimer = { ...sharedRest, exercises: [
+  { ...sharedRest.exercises[0], sets: [{ ...finished, timerRestSeconds: 45 }] },
+  { ...sharedRest.exercises[1], sets: [restedPartner] },
+] };
+assert.deepEqual([...api.getRestAfterSets(memberTimer)], [], 'mid-round timer is not broadcast as round rest');
+assert.equal(memberTimer.exercises[0].sets[0].timerRestSeconds, 45, 'original mid-round timer remains preserved');
 assert.equal(api.calculateCombinedVolume([
   { ...session, exercises: [equipment] },
   { ...session, weightUnit: 'lbs', exercises: [{ ...equipment, weightUnit: undefined, sets: [
@@ -116,7 +122,8 @@ assert.deepEqual(api.startWorkoutSet(crossExercise, 'other-exercise', 'other-set
 const restSessionBytes = JSON.stringify(session);
 assert.equal(api.getRestAfterSets(session).get(firstId), 100, 'rest before second set displays after first completed set');
 assert.equal(api.getRestAfterSets(session).has(nextId), false, 'active set has no after-rest yet');
-assert.equal(api.getRestAfterSets(transition).get(firstId), 15, 'cross-exercise transition belongs to previous completed set');
+assert.equal(api.getRestAfterSets(transition).get(firstId), undefined, 'same-round member transition is not displayed as rest');
+assert.equal(transition.exercises[1].sets[0].restSeconds, 15, 'transition elapsed remains in the original record');
 assert.equal(api.getRestAfterSets(transition).has('partner-set'), false, 'first set in new exercise must not display incoming rest as after-rest');
 assert.equal(api.getRestAfterSets(api.cancelWorkoutSetStart(session, exerciseId, nextId)).has(firstId), false, 'cancelling next start removes its measured after-rest');
 assert.equal(JSON.stringify(session), restSessionBytes, 'display mapping preserves stored records');

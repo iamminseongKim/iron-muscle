@@ -16,14 +16,14 @@ import {
   TARGET_BODY_PARTS, WeightUnit, LoadType
 } from '../../types/workout';
 import { ExerciseCard } from './ExerciseCard';
-import { GroupedExerciseCard } from './GroupedExerciseCard';
+import { GroupedExerciseCard, type GroupAdvanceExpectation } from './GroupedExerciseCard';
 import { applyGroupSettings, getPostSetAction } from '../../utils/workoutGroups';
 import { AddExerciseModal } from './AddExerciseModal';
 import { SessionNotesModal } from './SessionNotesModal';
 import { RpeGuideModal } from './RpeGuideModal';
 import { RestTimerModal } from './RestTimerModal';
 import { AdaptiveSessionPanel } from './AdaptiveSessionPanel';
-import { getRestAfterSets, startWorkoutSet, recordSetRevision, getSetProgress, cancelWorkoutSetStart } from '../../utils/adaptiveTraining';
+import { getRestAfterSets, advanceGroupRound, startWorkoutSet, recordSetRevision, getSetProgress, cancelWorkoutSetStart } from '../../utils/adaptiveTraining';
 import { suggestNextSet } from '../../utils/adaptiveAnalysis';
 import { loadAdaptiveSettings, ADAPTIVE_SETTINGS_CHANGE } from '../../utils/adaptiveSettings';
 import { ExerciseGroupModal } from './ExerciseGroupModal';
@@ -131,6 +131,12 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   useEffect(() => {
     try { if (session) localStorage.setItem('iron_adaptive_rest_ui', JSON.stringify({ ...restTimerState, sessionId: session.id })); } catch {}
   }, [restTimerState]);
+
+  useEffect(() => {
+    if (restTimerState.isOpen && (!session || getPostSetAction(session, restTimerState.exerciseId, restTimerState.setId).kind !== 'rest')) {
+      setRestTimerState(previous => ({ ...previous, isOpen: false }));
+    }
+  }, [session, restTimerState.isOpen, restTimerState.exerciseId, restTimerState.setId]);
 
   useEffect(() => {
     let released = false;
@@ -429,15 +435,16 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
 
   // 종목 묶기 (슈퍼세트/컴파운드세트)
   const handleLinkExercises = (exerciseIds: string[], groupType: ExerciseGroupType) => {
-    if (!session) return;
+    const latest = loadActiveSession();
+    if (!latest || latest.id !== session?.id) return;
     const groupId = 'group-' + Date.now();
     const groupName = groupType === 'superset' ? t('슈퍼세트') : groupType === 'compound' ? t('컴파운드세트') : t('자이언트세트');
     const groupColor = groupType === 'superset' ? 'rgb(var(--accent-rgb))' : '#FF9500';
 
-    const existingGroupIds = new Set(session.exercises.map((e) => e.groupId).filter(Boolean));
+    const existingGroupIds = new Set(latest.exercises.map((e) => e.groupId).filter(Boolean));
     const groupLetter = String.fromCharCode(65 + existingGroupIds.size);
 
-    const updatedExercises = session.exercises.map((ex) => {
+    const updatedExercises = latest.exercises.map((ex) => {
       const matchIdx = exerciseIds.indexOf(ex.id);
       if (matchIdx !== -1) {
         return {
@@ -457,12 +464,12 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
     orderedExercises.splice(groupStart, 0, ...groupMembers);
 
     const updated = {
-      ...session,
+      ...latest,
       durationSeconds: getLatestDuration(),
       exercises: orderedExercises,
     };
-    setSession(updated);
-    saveActiveSession(updated);
+    try { saveWithRecovery(updated, 'active'); }
+    catch (error) { alert(t((error as Error).message)); }
   };
 
   const handleUnlinkExercise = (exerciseId: string) => {
@@ -505,6 +512,11 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
       return;
     }
     if (action.kind === 'next-member') {
+      const next = latest.exercises.find(exercise => exercise.id === action.exerciseId)?.sets.find(set => set.id === action.setId);
+      if (next && !next.weightNeedsConfirmation && getSetProgress(latest, action.exerciseId, action.setId).kind === 'ready') {
+        try { saveWithRecovery(startWorkoutSet(latest, action.exerciseId, action.setId), 'active'); }
+        catch (error) { alert(t((error as Error).message)); }
+      }
       setRestTimerState(previous => ({ ...previous, isOpen: false }));
       return;
     }
@@ -545,11 +557,33 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const handleStartSet = (exerciseId: string, setId: string) => {
     const latest = loadActiveSession();
     if (!latest) return;
-    const resting = restTimerState.isOpen && latest.exercises.some(exercise => exercise.id === restTimerState.exerciseId && exercise.sets.some(set => set.id === restTimerState.setId && set.completed));
+    const resting = restTimerState.isOpen && getPostSetAction(latest, restTimerState.exerciseId, restTimerState.setId).kind === 'rest';
     if (getSetProgress(latest, exerciseId, setId, resting).kind !== 'ready') return;
     const updated = startWorkoutSet(latest, exerciseId, setId, new Date(), resting);
     try { saveWithRecovery(updated, 'active'); } catch (error) { alert(t((error as Error).message)); return; }
     setFlowMessage('');
+  };
+
+  const handleAdvanceGroup = (groupId: string, expected: GroupAdvanceExpectation): boolean => {
+    const latest = loadActiveSession();
+    if (!latest || latest.id !== session?.id) return false;
+    const target = latest.exercises.find(exercise => exercise.id === expected.exerciseId && exercise.groupId === groupId)?.sets.find(set => set.id === expected.setId);
+    if (!target || target.completed || target.startedAt !== expected.startedAt) return false;
+    const resting = restTimerState.isOpen && getPostSetAction(latest, restTimerState.exerciseId, restTimerState.setId).kind === 'rest';
+    const progress = getSetProgress(latest, expected.exerciseId, expected.setId, resting);
+    if (progress.kind !== (expected.startedAt ? 'active' : 'ready')) return false;
+    const result = advanceGroupRound(latest, groupId, new Date(), resting);
+    if (result.kind === 'blocked') return false;
+    const updated = { ...result.session, durationSeconds: getLatestDuration() };
+    try { saveWithRecovery(updated, 'active'); }
+    catch (error) { alert(t((error as Error).message)); return false; }
+    setFlowMessage('');
+    if (result.kind === 'advanced' || result.kind === 'round-completed') {
+      const exercise = updated.exercises.find(item => item.id === result.completed.exerciseId);
+      const set = exercise?.sets.find(item => item.id === result.completed.setId);
+      if (exercise && set) handleTriggerRestTimer(displayExercise(resolveRecordedExercise(exercise)), set.id, set.setNumber, exercise.sets.every(item => item.completed), exercise.id);
+    }
+    return true;
   };
 
   const applySuggestion = () => {
@@ -796,7 +830,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
   const restExerciseIndex = session.exercises.findIndex(item => item.id === restTimerState.exerciseId);
   const nextRestExercise = restExerciseIndex >= 0 ? session.exercises[restExerciseIndex + 1] : undefined;
   const completedSetCount = sessionSets.filter(set => set.completed).length;
-  const resting = restTimerState.isOpen && session.exercises.some(exercise => exercise.id === restTimerState.exerciseId && exercise.sets.some(set => set.id === restTimerState.setId && set.completed));
+  const resting = restTimerState.isOpen && getPostSetAction(session, restTimerState.exerciseId, restTimerState.setId).kind === 'rest';
 
   return (
     <div className="pb-32 max-w-lg md:max-w-6xl lg:max-w-7xl mx-auto px-4 space-y-4 animate-fade-in">
@@ -988,7 +1022,7 @@ export const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({
                 })} exercises={members} weightUnit={session.weightUnit || 'kg'} restAfterSets={restAfterSets}
                 getProgress={(exerciseId, setId) => getSetProgress(session, exerciseId, setId, resting)}
                 onUpdate={updated => handleUpdateExercise(session.exercises.findIndex(exercise => exercise.id === updated.id), updated)}
-                onStart={handleStartSet}
+                onAdvance={expected => handleAdvanceGroup(groupId, expected)}
                 onCancelStart={(exerciseId, setId) => { const latest = loadActiveSession(); if (latest) saveWithRecovery(cancelWorkoutSetStart(latest, exerciseId, setId), 'active'); }}
                 onComplete={(exercise, setId, setNumber, last) => handleTriggerRestTimer(displayExercise(resolveRecordedExercise(exercise)), setId, setNumber, last, exercise.id)}
                 onOpenRpeGuide={() => setIsRpeGuideOpen(true)} renderExercise={renderExercise}
