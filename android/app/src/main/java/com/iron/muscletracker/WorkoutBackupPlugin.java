@@ -9,11 +9,18 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.ActivityCallback;
+import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @CapacitorPlugin(name = "WorkoutBackup")
 public class WorkoutBackupPlugin extends Plugin {
+    private static final String STAGED_FILE = "stagedFile";
+    private final AtomicBoolean saveInProgress = new AtomicBoolean();
+
     /** Gallery insertion is kept pending until the PNG is fully written and verified. */
     @PluginMethod
     public void saveImage(PluginCall call) {
@@ -76,7 +83,11 @@ public class WorkoutBackupPlugin extends Plugin {
 
     @PluginMethod
     public void save(PluginCall call) {
-        if (call.getString("data") == null) { call.reject("백업 내용이 없습니다."); return; }
+        String data = call.getString("data");
+        if (data == null) {
+            call.reject("백업 내용이 없습니다.");
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         String filename = call.getString("filename", "iron-muscle-backup.json");
@@ -90,21 +101,49 @@ public class WorkoutBackupPlugin extends Plugin {
         }
         intent.setType(mimeType);
         intent.putExtra(Intent.EXTRA_TITLE, filename);
-        startActivityForResult(call, intent, "onFileCreated");
+
+        if (!saveInProgress.compareAndSet(false, true)) {
+            call.reject("파일 저장 및 검증에 실패했습니다.");
+            return;
+        }
+
+        File stagedFile = null;
+        try {
+            byte[] bytes = "base64".equals(call.getString("encoding"))
+                ? android.util.Base64.decode(data, android.util.Base64.DEFAULT)
+                : data.getBytes(StandardCharsets.UTF_8);
+            stagedFile = File.createTempFile("workout-export-", ".tmp", getContext().getCacheDir());
+            Files.write(stagedFile.toPath(), bytes);
+            // Capacitor saves the entire call in the activity's size-limited state Bundle.
+            call.getData().put(STAGED_FILE, stagedFile.getName());
+            call.getData().remove("data");
+            startActivityForResult(call, intent, "onFileCreated");
+        } catch (Exception error) {
+            if (stagedFile != null) stagedFile.delete();
+            saveInProgress.set(false);
+            call.reject("파일 저장 및 검증에 실패했습니다.", error);
+        }
     }
 
     @ActivityCallback
     private void onFileCreated(PluginCall call, ActivityResult result) {
-        if (call == null) return;
-        JSObject response = new JSObject();
-        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null || result.getData().getData() == null) {
-            response.put("cancelled", true); call.resolve(response); return;
+        if (call == null) {
+            saveInProgress.set(false);
+            return;
         }
-        android.net.Uri uri = result.getData().getData();
+        String stagedFilename = call.getString(STAGED_FILE);
+        File stagedFile = stagedFilename == null ? null : new File(getContext().getCacheDir(), stagedFilename);
+        Intent document = result.getData();
+        android.net.Uri uri = document == null ? null : document.getData();
         try {
-            byte[] bytes = "base64".equals(call.getString("encoding"))
-                ? android.util.Base64.decode(call.getString("data", ""), android.util.Base64.DEFAULT)
-                : call.getString("data", "").getBytes(StandardCharsets.UTF_8);
+            JSObject response = new JSObject();
+            if (result.getResultCode() != Activity.RESULT_OK || uri == null) {
+                response.put("cancelled", true);
+                call.resolve(response);
+                return;
+            }
+            if (stagedFile == null) throw new IOException("Missing staged export");
+            byte[] bytes = Files.readAllBytes(stagedFile.toPath());
             writeAndVerify(uri, bytes);
             response.put("cancelled", false);
             response.put("bytesWritten", bytes.length);
@@ -112,6 +151,9 @@ public class WorkoutBackupPlugin extends Plugin {
         } catch (Exception error) {
             try { android.provider.DocumentsContract.deleteDocument(getContext().getContentResolver(), uri); } catch (Exception ignored) {}
             call.reject("파일 저장 및 검증에 실패했습니다.", error);
+        } finally {
+            if (stagedFile != null) stagedFile.delete();
+            saveInProgress.set(false);
         }
     }
 }

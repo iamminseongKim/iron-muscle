@@ -13,9 +13,11 @@ export function RoutineLibrary() {
   const [rest, setRest] = useState(90);
   const [input, setInput] = useState(() => location.hash.startsWith('#routine=') ? location.href : '');
   const [preview, setPreview] = useState<Routine | null>(null);
+  const savedPreview = useRef<Routine | null>(null);
   const [message, setMessage] = useState('');
   const [share, setShare] = useState('');
   const history = loadSavedSessions();
+  const previewSaved = preview !== null && routines.some(routine => routine.id === preview.id);
   const action = (fn: () => void) => { try { fn(); setMessage(''); } catch (e) { setMessage((e as Error).message); } };
   useEffect(() => {
     const refresh = () => { try { setRoutines(loadRoutines()); } catch { setMessage('저장된 루틴을 읽지 못했습니다.'); } };
@@ -78,7 +80,14 @@ export function RoutineLibrary() {
       })}</ol>
       <p className="text-xs text-gray-500">{t('새 운동의 무게는 0으로 시작합니다. 시작 후 본인에게 맞게 입력하세요.')}</p>
       <div className="flex flex-wrap gap-2">
-        <button className={button} onClick={() => action(() => { const copy = { ...preview, id: crypto.randomUUID() }; saveRoutine(copy); setPreview(copy); historyReplace(); })}>{t('내 루틴으로 저장')}</button>
+        <button className={`${button} disabled:opacity-50`} disabled={previewSaved} onClick={() => action(() => {
+          if (savedPreview.current === preview || loadRoutines().some(routine => routine.id === preview.id)) return;
+          const copy = { ...preview, id: crypto.randomUUID() };
+          saveRoutine(copy);
+          savedPreview.current = preview;
+          setPreview(copy);
+          historyReplace();
+        })}>{t(previewSaved ? '저장됨' : '내 루틴으로 저장')}</button>
         <button className={button} onClick={() => start(preview)}>{t('루틴 시작')}</button>
         <button className={button} onClick={() => action(() => setShare(routineLink(preview)))}>{t('공유 링크 만들기')}</button>
         <button className={button} onClick={async () => { try { const result = await saveFileToDevice('routine.json', JSON.stringify(preview, null, 2), 'application/json'); if (!result.success && !result.cancelled) setMessage('파일을 저장하지 못했습니다.'); } catch { setMessage('파일을 저장하지 못했습니다.'); } }}>{t('루틴 파일 저장')}</button>

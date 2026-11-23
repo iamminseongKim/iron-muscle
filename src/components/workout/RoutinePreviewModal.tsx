@@ -150,6 +150,8 @@ export const RoutinePreviewModal: React.FC<RoutinePreviewModalProps> = ({
               const selected = fullCatalog.find(item => item.id === row.exerciseId);
               const equipmentType = row.equipmentType || selected?.equipment;
               const loadType = row.loadType || selected?.loadType || (equipmentType === 'machine' || equipmentType === 'smith' ? 'plate-loaded' : undefined);
+              const group = draft.groups?.find(group => group.id === row.groupId);
+              const groupPosition = group ? draft.exercises.filter(member => member.groupId === group.id).indexOf(row) + 1 : 0;
 
               return (
                 <div
@@ -165,6 +167,11 @@ export const RoutinePreviewModal: React.FC<RoutinePreviewModalProps> = ({
                       {row.sets.length}{t('세트')}
                     </span>
                   </div>
+
+                  {group && <div data-ai-group-preview={group.id} className="rounded-xl bg-accent/10 p-2.5 text-xs text-accent space-y-1">
+                    <p className="font-bold">{t(group.type === 'superset' ? '슈퍼세트' : group.type === 'compound' ? '컴파운드세트' : '자이언트세트')} {group.id} · {t('묶음 내 순서')} {groupPosition}</p>
+                    <p>{group.rounds} {t('라운드')} · {t('라운드 휴식')} {group.restSeconds}{t('초')}{group.targetRpe !== undefined && ` · ${t('목표 RPE')} ${group.targetRpe}`}</p>
+                  </div>}
 
                   {!row.exerciseId && (
                     <div className="rounded-xl bg-orange-500/10 border border-orange-500/20 p-2.5 space-y-2 text-xs">
@@ -243,7 +250,7 @@ export const RoutinePreviewModal: React.FC<RoutinePreviewModalProps> = ({
                     <ol className="text-xs text-gray-600 dark:text-gray-300 space-y-1 pl-1">
                       {row.sets.map((set, i) => (
                         <li key={i}>
-                          {i + 1}. {set.weight}{row.weightUnit} · {set.reps} {t('회')} · {t('권장 휴식')} {set.restSeconds >= 60 ? `${Math.floor(set.restSeconds / 60)}${t('분')} ` : ''}{set.restSeconds % 60 > 0 || set.restSeconds === 0 ? `${set.restSeconds % 60}${t('초')}` : ''}{set.rpe !== undefined && ` · RPE ${set.rpe}`}{set.tempo && ` · ${t('템포')} ${set.tempo.eccentric}-${set.tempo.pause}-${set.tempo.concentric}`}{set.side && ` · ${t(set.side === 'left' ? '왼쪽' : set.side === 'right' ? '오른쪽' : '양쪽')}`}{set.comment && <p className="whitespace-pre-wrap break-words">{set.comment}</p>}
+                          {i + 1}. {set.weight}{row.weightUnit} · {set.reps} {t('회')} · {t(group ? '라운드 휴식' : '권장 휴식')} {set.restSeconds >= 60 ? `${Math.floor(set.restSeconds / 60)}${t('분')} ` : ''}{set.restSeconds % 60 > 0 || set.restSeconds === 0 ? `${set.restSeconds % 60}${t('초')}` : ''}{set.rpe !== undefined && ` · ${t('목표 RPE')} ${set.rpe}`}{set.tempo && ` · ${t('템포')} ${set.tempo.eccentric}-${set.tempo.pause}-${set.tempo.concentric}`}{set.side && ` · ${t(set.side === 'left' ? '왼쪽' : set.side === 'right' ? '오른쪽' : '양쪽')}`}{set.comment && <p className="whitespace-pre-wrap break-words">{set.comment}</p>}
                         </li>
                       ))}
                     </ol>

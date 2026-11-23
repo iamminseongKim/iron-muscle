@@ -26,8 +26,9 @@ export async function saveFileToDevice(
         return { success: false, cancelled: true, message: '저장을 취소했습니다.' };
       }
       return { success: true, message: `[${filename}] 파일이 기기에 저장되었습니다.` };
-    } catch (e: any) {
-      console.warn('Android native file save failed, falling back:', e);
+    } catch (error) {
+      console.warn('Android native file save failed:', error);
+      return { success: false };
     }
   }
 

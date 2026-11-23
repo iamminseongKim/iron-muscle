@@ -22,6 +22,7 @@ import { loadGymProfile, saveGymProfile, getExerciseConfigs, withGymConfigs, sha
 interface ExerciseCardProps {
   exerciseItem: WorkoutExercise;
   restAfterSets?: ReadonlyMap<string, number>;
+  groupPosition?: string;
   weightUnit?: WeightUnit;
   onToggleWeightUnit?: () => void;
   onUpdate: (updated: WorkoutExercise) => void;
@@ -42,6 +43,7 @@ interface ExerciseCardProps {
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   exerciseItem,
   restAfterSets,
+  groupPosition,
   weightUnit: fallbackUnit = 'kg',
   onToggleWeightUnit: externalToggle,
   onUpdate,
@@ -215,7 +217,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         }`}>
           <span className="flex items-center gap-1.5 tracking-tight">
             {exerciseItem.groupType === 'superset' ? <Zap size={13} /> : <Flame size={13} />}
-            {exerciseItem.groupLabel || (exerciseItem.groupType === 'superset' ? t("슈퍼세트") : t("컴파운드세트"))}
+            {t(exerciseItem.groupType === 'superset' ? '슈퍼세트' : exerciseItem.groupType === 'giant' ? '자이언트세트' : '컴파운드세트')}
+            {exerciseItem.groupLabel?.match(/ ([A-Z])-\d+$/)?.[0].split('-')[0]}
+            {groupPosition && <span className="rounded-full bg-black/20 px-2 py-0.5 tabular-nums">{groupPosition}</span>}
           </span>
           <button
             type="button"
@@ -707,7 +711,6 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           />
         ))}
 
-        <label className="block text-xs text-gray-500 px-3 py-2">{t('중량 증가 단위')} ({currentUnit})<input aria-label={t('중량 증가 단위')} type="number" min="0.1" step="0.5" value={exerciseItem.weightIncrement ?? (currentUnit === 'lbs' ? 5 : 2.5)} className="ml-2 rounded-lg p-2 w-20 bg-black/5 dark:bg-white/10" onChange={e => { const increment = Number(e.target.value); if (increment > 0 && Number.isFinite(increment)) onUpdate({ ...exerciseItem, weightIncrement: increment }); }} /></label>
       <ExerciseFeedbackPanel value={exerciseItem.feedback} onChange={feedback => onUpdate({ ...exerciseItem, feedback })} />
         {/* Add Set Button */}
         <button

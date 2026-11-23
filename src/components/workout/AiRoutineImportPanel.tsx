@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { t } from '../../i18n';
 import { EXERCISES_DATABASE } from '../../data/exercises';
 import type { WorkoutSession } from '../../types/workout';
 import { loadCustomExercises } from '../../utils/storage';
 import { copyText } from '../../utils/clipboard';
-import { AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, buildAiRoutinePrompt, parseImportedWorkout } from '../../utils/aiRoutineImport';
+import { AI_ROUTINE_EXAMPLE, AI_ROUTINE_MARKDOWN_EXAMPLE, AI_GROUP_ROUTINE_EXAMPLE, AI_GROUP_IMPORT_GUIDANCE, buildAiRoutinePrompt, parseImportedWorkout } from '../../utils/aiRoutineImport';
 import type { ImportedWorkout } from '../../utils/aiRoutineImport';
 import { RoutinePreviewModal } from './RoutinePreviewModal';
 
 export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSession) => void }) {
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = useState('');
   const [previewDraft, setPreviewDraft] = useState<ImportedWorkout | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -37,12 +38,17 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
   const handleOpenPreview = () => {
     setMessage('');
     try {
-      const parsed = parseImportedWorkout(input, catalog);
+      const parsed = previewDraft ?? parseImportedWorkout(input, catalog);
       setPreviewDraft(parsed);
       setIsPreviewOpen(true);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : t('루틴 형식을 확인하세요. 예시의 표 또는 JSON 형식을 사용하세요.'));
     }
+  };
+
+  const clearInput = () => {
+    updateInput('');
+    inputRef.current?.focus();
   };
 
   const copyPrompt = async () => {
@@ -69,7 +75,7 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
         </button>
       </details>
 
-      <details data-ai-routine-paste className="space-y-3" open={Boolean(input)}>
+      <details data-ai-routine-paste className="space-y-3">
         <summary className="cursor-pointer text-sm font-bold select-none text-[#24212B] dark:text-white">
           {t('루틴 붙여넣기')}
         </summary>
@@ -85,6 +91,9 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
           <p>{t('executionMode는 bilateral·unilateral·alternating, loadType은 pin-loaded·plate-loaded·barbell·dumbbell·cable·bodyweight·other, equipmentType은 smith·barbell·dumbbell·machine·cable·bodyweight·other입니다. side는 left·right·both이며 단위는 종목별로 지정합니다.')} </p>
           <p>{t('Markdown 선택 열: rpe, tempo, notes, comment, executionMode, loadType, equipmentType, side, unit. tempo는 3-1-1처럼 작성하세요.')} </p>
           <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2 font-mono text-[11px]">{AI_ROUTINE_EXAMPLE}</pre>
+          {AI_GROUP_IMPORT_GUIDANCE.map(message => <p key={message}>{t(message)}</p>)}
+          <p className="font-semibold">{t('묶음 JSON 예시')}</p>
+          <pre data-ai-group-example className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2 font-mono text-[11px]">{AI_GROUP_ROUTINE_EXAMPLE}</pre>
           <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-black/5 dark:bg-white/5 p-2 font-mono text-[11px]">{AI_ROUTINE_MARKDOWN_EXAMPLE}</pre>
           <p>{t('Markdown 표는 name, sets, reps 열이 필요합니다. weight와 rest는 선택입니다. 한국어 열 이름도 지원합니다. 범위 대신 숫자 하나를 써주세요.')}</p>
         </details>
@@ -96,13 +105,14 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
               <button
                 type="button"
                 className="text-xs text-red-500 hover:text-red-600 dark:text-red-400 font-normal transition-colors"
-                onClick={() => updateInput('')}
+                onClick={clearInput}
               >
                 {t('전체 삭제')}
               </button>
             )}
           </div>
           <textarea
+            ref={inputRef}
             data-ai-routine-input
             aria-label={t('루틴 Markdown 또는 JSON')}
             rows={3}
@@ -125,13 +135,13 @@ export function AiRoutineImportPanel({ onStart }: { onStart: (session: WorkoutSe
             onClick={handleOpenPreview}
             disabled={!input.trim()}
           >
-            {t('운동 시작')}
+            {t('루틴 확인')}
           </button>
           {input && (
             <button
               type="button"
               className={secondaryButton}
-              onClick={() => updateInput('')}
+              onClick={clearInput}
             >
               {t('전체 삭제')}
             </button>

@@ -358,7 +358,7 @@ export const AddExerciseModal: React.FC<AddExerciseModalProps> = ({
 
         <div className="shrink-0 px-4 py-1 flex items-center justify-between text-xs border-b border-black/5 dark:border-white/10">
           <span role="status" className="text-gray-600 dark:text-gray-300">{cleanQuery ? t(selectedCategory === 'all' || selectedCategory === 'targets' ? '전체 부위 검색' : '검색 결과') : t(showAll ? '전체 종목' : '내 운동·대표 종목')} {filteredExercises.length}{t("개")}</span>
-          <button type="button" className="min-h-[36px] text-accent font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); }}>{t("필터 초기화")}</button>
+          <button type="button" className="min-h-[36px] text-accent font-semibold" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedEquipment('all'); setOnlyGymFilter(false); }}>{t("필터 초기화")}</button>
         </div>
         {/* 운동 목록 */}
         <div className="exercise-picker-results min-h-0 p-3 overflow-y-auto overscroll-contain flex-1 space-y-2">

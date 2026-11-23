@@ -1,4 +1,6 @@
 import type { WorkoutSession, WorkoutSet } from '../types/workout';
+import { getCurrentGroupRound, getGroupRoundNumber, getGroupRounds, getPostSetAction } from './workoutGroups';
+import { getSessionRestAfterSets } from './workoutIntervals';
 
 export function isWorkingSet(set: WorkoutSet): boolean {
   return set.setType !== undefined && ['WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET'].includes(set.setType);
@@ -17,20 +19,11 @@ export function recordSetRevision(previous: WorkoutSet, next: WorkoutSet, now = 
 }
 
 export function actualRest(set: WorkoutSet): number | null {
-  return set.completed && (set.restSource === 'reported' || (set.restSource === 'measured' && !!set.startedAt)) && typeof set.restSeconds === 'number' && Number.isFinite(set.restSeconds) ? set.restSeconds : null;
+  return set.restKind !== 'transition' && set.completed && (set.restSource === 'reported' || (set.restSource === 'measured' && !!set.startedAt)) && typeof set.restSeconds === 'number' && Number.isFinite(set.restSeconds) ? set.restSeconds : null;
 }
 
 export function getRestAfterSets(session: WorkoutSession): ReadonlyMap<string, number> {
-  const sets = session.exercises.flatMap(exercise => exercise.sets);
-  const completed = sets.filter(set => set.completed && set.completedAt)
-    .sort((a, b) => Date.parse(b.completedAt!) - Date.parse(a.completedAt!));
-  const restAfter = new Map<string, number>();
-  for (const next of sets) {
-    if (next.restSource !== 'measured' || !next.startedAt || next.restSeconds === undefined) continue;
-    const previous = completed.find(set => set.id !== next.id && Date.parse(set.completedAt!) <= Date.parse(next.startedAt!));
-    if (previous) restAfter.set(previous.id, next.restSeconds);
-  }
-  return restAfter;
+  return getSessionRestAfterSets(session);
 }
 
 export function normalizeAdaptiveSession(session: WorkoutSession): WorkoutSession {
@@ -60,23 +53,31 @@ export function completeWorkoutSet(set: WorkoutSet, now = new Date()): WorkoutSe
 }
 
 export function undoWorkoutSet(set: WorkoutSet): WorkoutSet {
-  const { completedAt, startedAt, restSeconds, restSource, restKind, completionPausedSeconds, startPausedSeconds, ...preserved } = set;
+  const { completedAt, startedAt, restSeconds, timerRestSeconds, restSource, restKind, completionPausedSeconds, startPausedSeconds, ...preserved } = set;
   return { ...preserved, completed: false, rpe: null, failureType: 'UNKNOWN', painFeedback: undefined, stimulusFeedback: undefined };
 }
 
-export type SetProgress = { kind: 'ready' } | { kind: 'active' } | { kind: 'completed' } | { kind: 'waiting'; reason: 'earlier-set' | 'active-set' | 'paused' | 'unavailable' };
+export type SetProgress = { kind: 'ready' } | { kind: 'active' } | { kind: 'completed' } | { kind: 'waiting'; reason: 'earlier-set' | 'active-set' | 'paused' | 'unavailable' | 'rest' };
 
-export function getSetProgress(session: WorkoutSession, exerciseItemId: string, setId: string): SetProgress {
+export function getSetProgress(session: WorkoutSession, exerciseItemId: string, setId: string, resting = false): SetProgress {
   const exercise = session.exercises.find(item => item.id === exerciseItemId);
   const set = exercise?.sets.find(item => item.id === setId);
   if (!exercise || !set) return { kind: 'waiting', reason: 'unavailable' };
   if (set.completed) return { kind: 'completed' };
   if (session.pausedAt) return { kind: 'waiting', reason: 'paused' };
+  if (resting) return { kind: 'waiting', reason: 'rest' };
   const active = session.exercises.flatMap(item => item.sets).filter(item => item.startedAt && !item.completed)
     .sort((a, b) => Date.parse(a.startedAt!) - Date.parse(b.startedAt!))[0];
   if (active && active.id !== setId) return { kind: 'waiting', reason: 'active-set' };
   if (set.startedAt) return { kind: 'active' };
   if (exercise.sets.find(item => !item.completed)?.id !== setId) return { kind: 'waiting', reason: 'earlier-set' };
+  if (exercise.groupId) {
+    const members = session.exercises.filter(item => item.groupId === exercise.groupId);
+    const roundNumber = getGroupRoundNumber(exercise, setId);
+    if (roundNumber !== getCurrentGroupRound(members)) return { kind: 'waiting', reason: 'earlier-set' };
+    const next = getGroupRounds(members).find(round => round.ordinal === roundNumber)?.members.find(member => !members.find(item => item.id === member.exerciseId)?.sets.find(item => item.id === member.setId)?.completed);
+    if (next?.setId !== setId) return { kind: 'waiting', reason: 'earlier-set' };
+  }
   return { kind: 'ready' };
 }
 
@@ -90,8 +91,8 @@ export function cancelWorkoutSetStart(session: WorkoutSession, exerciseItemId: s
   }) };
 }
 
-export function startWorkoutSet(session: WorkoutSession, exerciseItemId: string, setId: string, now = new Date()): WorkoutSession {
-  if (getSetProgress(session, exerciseItemId, setId).kind !== 'ready') return session;
+export function startWorkoutSet(session: WorkoutSession, exerciseItemId: string, setId: string, now = new Date(), resting = false): WorkoutSession {
+  if (getSetProgress(session, exerciseItemId, setId, resting).kind !== 'ready') return session;
   const exercise = session.exercises.find(item => item.id === exerciseItemId);
   const target = exercise?.sets.find(set => set.id === setId);
   if (!exercise || !target || target.completed || target.startedAt) return session;
@@ -102,7 +103,7 @@ export function startWorkoutSet(session: WorkoutSession, exerciseItemId: string,
     .sort((a, b) => Date.parse(b.set.completedAt!) - Date.parse(a.set.completedAt!))[0];
   const elapsed = previous ? Math.max(0, (timestamp - Date.parse(previous.set.completedAt!)) / 1000 - Math.max(0, (session.pausedSeconds ?? 0) - (previous.set.completionPausedSeconds ?? 0))) : undefined;
   const restKind = previous && exercise.groupId && exercise.groupId === previous.exercise.groupId
-    ? previous.exercise.id === exercise.id || previous.set.setNumber < target.setNumber ? 'round' : 'transition'
+    ? previous.exercise.id === exercise.id || (getGroupRoundNumber(previous.exercise, previous.set.id) ?? 0) < (getGroupRoundNumber(exercise, setId) ?? 0) ? 'round' : 'transition'
     : 'between-sets';
   return {
     ...session,
@@ -115,12 +116,44 @@ export function startWorkoutSet(session: WorkoutSession, exerciseItemId: string,
   };
 }
 
+export type GroupRoundAdvance =
+  | { kind: 'blocked'; session: WorkoutSession }
+  | { kind: 'started'; session: WorkoutSession }
+  | { kind: 'advanced' | 'round-completed'; session: WorkoutSession; completed: { exerciseId: string; setId: string } };
+
+export function advanceGroupRound(session: WorkoutSession, groupId: string, now = new Date(), resting = false): GroupRoundAdvance {
+  const members = session.exercises.filter(exercise => exercise.groupId === groupId);
+  if (members.length < 2 || resting || session.pausedAt) return { kind: 'blocked', session };
+  const round = getGroupRounds(members).find(item => item.ordinal === getCurrentGroupRound(members));
+  if (!round) return { kind: 'blocked', session };
+  const globalActive = session.exercises.flatMap(exercise => exercise.sets.filter(set => set.startedAt && !set.completed).map(set => ({ exercise, set })))[0];
+  if (globalActive && globalActive.exercise.groupId !== groupId) return { kind: 'blocked', session };
+  const active = globalActive;
+  if (!active) {
+    const next = round.members.find(member => !members.find(exercise => exercise.id === member.exerciseId)?.sets.find(set => set.id === member.setId)?.completed);
+    if (!next || getSetProgress(session, next.exerciseId, next.setId, resting).kind !== 'ready') return { kind: 'blocked', session };
+    const set = members.find(exercise => exercise.id === next.exerciseId)?.sets.find(item => item.id === next.setId);
+    if (set?.weightNeedsConfirmation) return { kind: 'blocked', session };
+    return { kind: 'started', session: startWorkoutSet(session, next.exerciseId, next.setId, now, resting) };
+  }
+  if (getSetProgress(session, active.exercise.id, active.set.id, resting).kind !== 'active' || active.set.weightNeedsConfirmation) return { kind: 'blocked', session };
+  const completedSet = { ...completeWorkoutSet(active.set, now), completionPausedSeconds: session.pausedSeconds ?? 0 };
+  let updated = { ...session, exercises: session.exercises.map(exercise => exercise.id !== active.exercise.id ? exercise : { ...exercise, sets: exercise.sets.map(set => set.id === active.set.id ? completedSet : set) }) };
+  const action = getPostSetAction(updated, active.exercise.id, active.set.id);
+  if (action.kind === 'next-member') {
+    const next = updated.exercises.find(exercise => exercise.id === action.exerciseId)?.sets.find(set => set.id === action.setId);
+    if (!next?.weightNeedsConfirmation) updated = startWorkoutSet(updated, action.exerciseId, action.setId, now);
+  }
+  return { kind: action.kind === 'next-member' ? 'advanced' : 'round-completed', session: updated, completed: { exerciseId: active.exercise.id, setId: active.set.id } };
+}
+
 export function validAdaptiveSet(value: Record<string, unknown>): boolean {
   const numeric = (field: string, min: number, max: number) => value[field] === undefined ||
     (typeof value[field] === 'number' && Number.isFinite(value[field]) && value[field] >= min && value[field] <= max);
   const text = (field: string) => value[field] === undefined || typeof value[field] === 'string';
   const types = ['WARMUP', 'ACTIVATION', 'WORKING', 'TOP_SET', 'BACK_OFF', 'DROP_SET', 'UNSPECIFIED'];
   if (!numeric('plannedWeight', -2000, 2000) || !numeric('plannedReps', 0, 1000) || !numeric('targetRpe', 6, 10) ||
+      !numeric('timerRestSeconds', 0, Number.MAX_SAFE_INTEGER) ||
       !numeric('stimulusFeedback', 1, 5) || !numeric('startPausedSeconds', 0, Number.MAX_SAFE_INTEGER) ||
       !numeric('completionPausedSeconds', 0, Number.MAX_SAFE_INTEGER) || !text('plannedNotes') || !text('startedAt') || !text('completedAt')) return false;
   if (typeof value.targetRpe === 'number' && !Number.isInteger(value.targetRpe * 2)) return false;

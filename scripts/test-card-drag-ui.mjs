@@ -15,12 +15,12 @@ try {
   });
   await page.reload({ waitUntil: 'networkidle2' });
   const order = () => page.$$eval('[data-workout-exercise]', cards => cards.map(card => card.dataset.workoutExercise));
-  const title = id => page.$(`[data-workout-exercise="${id}"] h3 button`);
+  const title = id => page.$(`[data-workout-exercise="${id}"] h3 button, [data-workout-exercise="${id}"] h4`);
   let start = await (await title('one')).boundingBox();
   await page.mouse.move(start.x + 45, start.y + start.height / 2); await page.mouse.down();
   await wait(520);
   await page.waitForSelector('[data-dragging=true]');
-  let target = await page.$eval('[data-workout-exercise="three"]', card => { const box = card.getBoundingClientRect(); return { x: box.x + 80, y: box.bottom - 8 }; });
+  let target = await page.$eval('[data-workout-exercise="three"]', card => { const box = (card.getClientRects().length ? card : card.closest('[data-workout-group]')).getBoundingClientRect(); return { x: box.x + 80, y: box.bottom - 8 }; });
   await page.mouse.move(target.x, target.y, { steps: 12 }); await page.mouse.up();
   await page.waitForFunction(() => JSON.parse(localStorage.getItem('iron_active_session_v1')).exercises[0].id === 'two');
   await page.waitForFunction(() => document.querySelector('[data-workout-exercise]')?.getAttribute('data-workout-exercise') === 'two');

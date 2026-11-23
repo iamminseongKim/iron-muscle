@@ -42,18 +42,23 @@ export function calculate1RM(weight: number, reps: number, rpe?: number | null):
 
 // 2. 세션 총 볼륨 (kg 기본, unit 지정 시 해당 단위로 환산) 계산
 export function calculateSessionVolume(session: WorkoutSession, unit: WeightUnit = 'kg'): number {
-  let totalVolumeKg = 0;
-  session.exercises.forEach(ex => {
-    const isLbs = (ex.weightUnit || session.weightUnit) === 'lbs';
-    ex.sets.forEach(s => {
-      if (s.completed && s.weight > 0 && s.reps > 0) {
-        const segments = s.dropSegments?.length ? s.dropSegments : [{ weight: s.weight, reps: s.reps }];
-        totalVolumeKg += segments.reduce((sum, segment) => sum + Math.max(0, isLbs ? segment.weight / KG_TO_LBS : segment.weight) * segment.reps, 0);
+  return calculateCombinedVolume([session], unit);
+}
+
+export function calculateCombinedVolume(sessions: readonly WorkoutSession[], unit: WeightUnit = 'kg'): number {
+  let totalKg = 0;
+  for (const session of sessions) {
+    for (const exercise of session.exercises) {
+      const divisor = (exercise.weightUnit || session.weightUnit) === 'lbs' ? KG_TO_LBS : 1;
+      for (const set of exercise.sets) {
+        if (!set.completed) continue;
+        for (const segment of set.dropSegments?.length ? set.dropSegments : [set]) {
+          totalKg += Math.max(0, segment.weight) * Math.max(0, segment.reps) / divisor;
+        }
       }
-    });
-  });
-  const vol = unit === 'lbs' ? totalVolumeKg * KG_TO_LBS : totalVolumeKg;
-  return Math.round(vol);
+    }
+  }
+  return Math.round(unit === 'lbs' ? totalKg * KG_TO_LBS : totalKg);
 }
 
 // 5. 세션 총 횟수 (Reps)
