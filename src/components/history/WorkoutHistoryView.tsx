@@ -306,10 +306,10 @@ export const WorkoutHistoryView: React.FC<WorkoutHistoryViewProps> = ({ weightUn
 
     // 💡 사용자가 다운로드 시 클립보드 복사는 수행하지 않고, 실제 파일 다운로드/저장만 실행
     const res = await saveFileToDevice(filename, currentMarkdown, 'text/markdown');
-    if (res.message) {
-      setDownloadFeedback(res.cancelled ? t("저장을 취소했습니다.") : res.success ? `${t("저장")}: ${filename}` : `${t("저장")} ✕`);
-      setTimeout(() => setDownloadFeedback(null), 3000);
-    }
+    setDownloadFeedback(res.cancelled
+      ? t("저장을 취소했습니다.")
+      : res.success ? `${t("저장")}: ${filename}` : t("파일을 저장하지 못했습니다."));
+    setTimeout(() => setDownloadFeedback(null), 3000);
   };
 
   return (

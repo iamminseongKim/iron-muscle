@@ -42,7 +42,9 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
       if (res.cancelled) {
         setMessage(t('저장을 취소했습니다.'));
       } else {
-        setMessage(res.message || t('백업 파일을 저장했습니다. 앱 삭제 전 파일이 있는지 확인하세요.'));
+        setMessage(res.success
+          ? res.message || t('백업 파일을 저장했습니다. 앱 삭제 전 파일이 있는지 확인하세요.')
+          : t('파일을 저장하지 못했습니다.'));
         invalidatePreview();
         setText(data);
       }
@@ -69,7 +71,9 @@ export function BackupPanel({ onRestored }: { onRestored: (sessions: WorkoutSess
       if (res.cancelled) {
         setMessage(t('저장을 취소했습니다.'));
       } else {
-        setMessage(res.message || t('전체 마크다운 일지 파일을 저장했습니다.'));
+        setMessage(res.success
+          ? res.message || t('전체 마크다운 일지 파일을 저장했습니다.')
+          : t('파일을 저장하지 못했습니다.'));
         invalidatePreview();
         setText(md);
       }
